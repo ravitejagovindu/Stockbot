@@ -1,0 +1,58 @@
+# FInsight Trading Engine — Strategy Configuration
+# ALL parameters tracked by Git.
+# Any change to this file requires a new Pass 2 backtest and fresh authorization via authorize_live.py
+
+universe:
+  min_market_cap_cr: 5000          # Market cap must exceed ₹5,000 crores
+  min_adtv_cr: 25                  # 20-day ADTV must exceed ₹25 crores
+  min_listing_age_trading_days: 252 # Minimum listing history in trading days
+  volume_breakout_multiplier: 0    # Gate 6: set to 0 to disable; >0 requires today's volume >= Nx avg volume
+  relative_strength_lookback_days: 63  # Gate 7: 3-month (63 trading days) price return lookback
+  relative_strength_top_pct: 50    # Gate 7: stock must rank in top 50% of universe by 3-month return [loosened from 35%]
+
+macro:
+  nifty_kill_sma_period: 200       # Nifty50 below this SMA triggers kill switch
+  vix_kill_threshold: 22.0         # India VIX above this triggers kill switch [was 20.0 — raised to reduce oversensitivity]
+  nifty_reentry_sma_period: 50     # Nifty50 must be above this SMA for re-entry
+  vix_reentry_threshold: 18.0      # India VIX must be below this for re-entry
+  reentry_consecutive_sessions: 3  # Consecutive sessions required to deactivate kill switch
+
+risk:
+  atr_period: 14                   # ATR lookback period (Wilder's smoothing)
+  atr_stop_multiplier: 2.0         # Stop A = Entry - (2.0 × ATR14)  [was 1.5 — widened to reduce premature stop-outs]
+  donchian_period: 20              # Donchian channel period for Stop B
+  trailing_stop_atr_period: 14     # ATR period for trailing stop (same as above)
+  trailing_stop_atr_multiplier: 2.0 # Trailing stop = Highest High - (2 × ATR14)
+  max_loss_pct_per_trade: 1.0      # Max loss per trade as % of total account equity
+  min_rr_ratio: 1.5                # Minimum Reward:Risk ratio (1:1.5)
+  max_concurrent_positions: 10     # Hard cap on open positions
+  max_total_portfolio_risk_pct: 10.0 # Hard cap on total equity at risk across all positions
+  max_sector_exposure_pct: 15.0    # Max exposure in any single sector as % of allocated capital
+
+trade_management:
+  time_decay_sessions: 25          # Days in INITIAL_RISK before PENDING_MANUAL_EXIT flag [was 15 — extended to give winners room]
+  binary_event_block_days: 14      # Block new entries if earnings/corp action within N calendar days
+  earnings_alert_days: 7           # Show EARNINGS_ALERT on open positions N days before event
+
+data:
+  eod_source: "bhavcopy"           # Options: "bhavcopy" or "kite"
+  adtv_sma_period: 20              # SMA period for ADTV calculation (must use raw volume × raw close)
+  resistance_lookback_days: 252    # Lookback for identifying first major resistance (52-week high)
+  nifty_symbol: "NIFTY50_INDEX"   # Symbol key used in market_data_lake
+  vix_symbol: "INDIA_VIX"         # Symbol key used in market_data_lake
+
+backtest:
+  regimes:
+    - name: "sideways_inflation"
+      start: "2020-01-01"
+      end: "2021-12-31"
+    - name: "bull_run"
+      start: "2022-01-01"
+      end: "2026-09-30"
+  initial_equity: 1000000          # ₹10 lakhs starting capital for backtest simulation
+  pass_criteria:
+    max_drawdown_pct: 15.0         # Strict less-than: must be < 15%
+    must_outperform_nifty: true    # Risk-adjusted return must beat Nifty 50 benchmark
+    include_tax_drag: true         # Account for estimated STCG/LTCG, STT, slippage
+    estimated_slippage_pct: 0.1    # 0.1% slippage per trade (buy + sell)
+    estimated_stt_pct: 0.025       # STT on sell side
