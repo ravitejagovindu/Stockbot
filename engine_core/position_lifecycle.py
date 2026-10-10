@@ -73,6 +73,7 @@ class PositionState(str, Enum):
     INITIAL_RISK = "INITIAL_RISK"
     RISK_FREE_1_TO_1 = "RISK_FREE_1_TO_1"
     TRAILING_ATR = "TRAILING_ATR"
+    PARABOLIC_TRAILING = "PARABOLIC_TRAILING"
     PENDING_MANUAL_EXIT = "PENDING_MANUAL_EXIT"
 
 
@@ -142,6 +143,12 @@ class PositionLifecycleManager:
         self._trailing_stop_mult: float = float(risk["trailing_stop_atr_multiplier"])
         self._time_decay_sessions: int = int(tm["time_decay_sessions"])
         self._earnings_alert_days: int = int(tm["earnings_alert_days"])
+        
+        parabolic = config.get("parabolic_stop", {})
+        self._parabolic_enabled: bool = bool(parabolic.get("enabled", False))
+        self._parabolic_thresh: float = float(parabolic.get("acceleration_threshold_atr", 3.0))
+        self._parabolic_lookback: int = int(parabolic.get("acceleration_lookback_days", 5))
+        self._parabolic_mult: float = float(parabolic.get("parabolic_atr_multiplier", 1.0))
 
         self._session = session
 
@@ -251,6 +258,7 @@ class PositionLifecycleManager:
             atr_14=latest_atr,
             new_days_held=new_days_held,
             new_highest_high=new_highest_high,
+            adj_ohlcv=adj_ohlcv,
         )
         new_state = PositionState(updated["position_state"])
         new_live_stop_loss = updated["live_stop_loss"]
@@ -357,6 +365,7 @@ class PositionLifecycleManager:
         atr_14: float,
         new_days_held: int,
         new_highest_high: float,
+        adj_ohlcv: pd.DataFrame,
     ) -> dict:
         """Apply the position state machine for one session.
 
@@ -388,9 +397,18 @@ class PositionLifecycleManager:
                 candidate_stop = new_highest_high - (self._trailing_stop_mult * atr_14)
                 live_stop = max(live_stop, candidate_stop)
 
-        elif state == PositionState.TRAILING_ATR:
-            # Ratchet trailing stop — only moves UP
-            candidate_stop = new_highest_high - (self._trailing_stop_mult * atr_14)
+        if state == PositionState.TRAILING_ATR:
+            # Check for parabolic acceleration
+            if self._check_parabolic_acceleration(adj_ohlcv, atr_14):
+                state = PositionState.PARABOLIC_TRAILING
+            else:
+                # Ratchet standard trailing stop — only moves UP
+                candidate_stop = new_highest_high - (self._trailing_stop_mult * atr_14)
+                live_stop = max(live_stop, candidate_stop)
+
+        if state == PositionState.PARABOLIC_TRAILING:
+            # Ratchet parabolic trailing stop — tighter multiplier
+            candidate_stop = new_highest_high - (self._parabolic_mult * atr_14)
             live_stop = max(live_stop, candidate_stop)
 
         # PENDING_MANUAL_EXIT: no automated transitions
@@ -424,6 +442,25 @@ class PositionLifecycleManager:
         if row is None:
             return False, None
         return True, row
+
+    def _check_parabolic_acceleration(self, adj_ohlcv: pd.DataFrame, atr_14: float) -> bool:
+        """Check if stock has moved up > threshold ATRs in lookback days."""
+        if not self._parabolic_enabled or adj_ohlcv.empty or atr_14 <= 0:
+            return False
+            
+        lookback = min(self._parabolic_lookback, len(adj_ohlcv))
+        if lookback < 2:
+            return False
+            
+        # Get the closing price from 'lookback' days ago and today's close
+        close_today = float(adj_ohlcv.iloc[-1]["close_adj"])
+        close_past = float(adj_ohlcv.iloc[-lookback]["close_adj"])
+        
+        net_move = close_today - close_past
+        
+        if net_move >= (self._parabolic_thresh * atr_14):
+            return True
+        return False
 
     def _fetch_raw_ohlcv(
         self, symbol: str, eval_date: date, lookback: int

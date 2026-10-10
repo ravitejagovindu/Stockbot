@@ -57,3 +57,9 @@ backtest:
     include_tax_drag: true         # Account for estimated STCG/LTCG, STT, slippage
     estimated_slippage_pct: 0.1    # 0.1% slippage per trade (buy + sell)
     estimated_stt_pct: 0.025       # STT on sell side
+
+parabolic_stop:
+  enabled: true
+  acceleration_threshold_atr: 3.0   # If stock moves up this many ATR multiples within the lookback window, go parabolic
+  acceleration_lookback_days: 5
+  parabolic_atr_multiplier: 1.0     # When parabolic, tighten trailing stop from default to this multiplier

@@ -20,7 +20,39 @@ export interface RegimeState {
   reentry_consecutive_count: number;
   reentry_sessions_required: number;
   reentry_progress_pct: number | null;
+  nifty_distance_to_sma200_pct: number;
+  nifty_distance_to_sma50_pct: number;
+  vix_distance_to_trigger_pct: number;
+  vix_distance_to_reentry_pct: number;
 }
+
+export interface LedgerSummary {
+  live_equity: number;
+  total_deposits: number;
+  total_withdrawals: number;
+  total_realized_pnl: number;
+  fallback_used: boolean;
+}
+
+export interface LedgerRequest {
+  amount: number;
+  notes?: string;
+}
+
+export const fetchLedgerSummary = async (): Promise<LedgerSummary> => {
+  const { data } = await apiClient.get("/ledger/summary");
+  return data;
+};
+
+export const depositFunds = async (req: LedgerRequest) => {
+  const { data } = await apiClient.post("/ledger/deposit", req);
+  return data;
+};
+
+export const withdrawFunds = async (req: LedgerRequest) => {
+  const { data } = await apiClient.post("/ledger/withdraw", req);
+  return data;
+};
 
 export interface WatchlistResponse {
   run_date: string;

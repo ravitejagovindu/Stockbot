@@ -85,7 +85,7 @@ app.add_middleware(
 )
 
 # ── Routers ────────────────────────────────────────────────────────────────────
-from live_runner.routers import health, regime, watchlist, portfolio, analytics, positions
+from live_runner.routers import health, regime, watchlist, portfolio, analytics, positions, ledger
 
 app.include_router(health.router)
 app.include_router(regime.router, prefix="/regime", tags=["Regime"])
@@ -93,6 +93,7 @@ app.include_router(watchlist.router, prefix="/watchlist", tags=["Watchlist"])
 app.include_router(portfolio.router, prefix="/portfolio", tags=["Portfolio"])
 app.include_router(analytics.router, prefix="/analytics", tags=["Analytics"])
 app.include_router(positions.router, prefix="/positions", tags=["Positions"])
+app.include_router(ledger.router, prefix="/ledger", tags=["Ledger"])
 
 
 if __name__ == "__main__":

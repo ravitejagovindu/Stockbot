@@ -203,3 +203,15 @@ class DailyWatchlist(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     __table_args__ = (UniqueConstraint("run_date", "symbol"),)
+
+
+class AccountLedger(Base):
+    """Tracks deposits, withdrawals, and realized PnL."""
+    __tablename__ = "account_ledger"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    transaction_date: Mapped[date] = mapped_column(Date, nullable=False)
+    transaction_type: Mapped[str] = mapped_column(String(20), nullable=False)
+    amount_inr: Mapped[float] = mapped_column(Float, nullable=False)
+    notes: Mapped[Optional[str]] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

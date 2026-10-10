@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchPortfolio } from "../api";
 import HeatGauge from "../components/portfolio/HeatGauge";
 import PositionTable from "../components/portfolio/PositionTable";
+import ManageFundsPanel from "../components/portfolio/ManageFundsPanel";
 import { AlertTriangle } from "lucide-react";
 
 export default function Portfolio() {
@@ -19,6 +20,8 @@ export default function Portfolio() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-800">Portfolio Manager</h2>
       </div>
+
+      <ManageFundsPanel />
 
       {alerts.length > 0 && (
         <div className="space-y-3 mb-6">

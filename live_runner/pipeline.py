@@ -240,7 +240,9 @@ class EODPipeline:
         current_positions = self._get_open_positions_for_heat_cap()
 
         # Size and gate candidates
-        account_equity = float(os.getenv("ACCOUNT_EQUITY", "1000000"))
+        from engine_core.account_ledger import get_live_equity
+        fallback_equity = float(os.getenv("ACCOUNT_EQUITY", "1000000"))
+        account_equity = get_live_equity(self.session, fallback_equity)
         sizing_engine = RiskAndSizingEngine(config=self.config)
         setups = sizing_engine.compute_all(
             candidates=passed_symbols,

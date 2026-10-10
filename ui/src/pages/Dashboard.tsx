@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPortfolio } from "../api";
 import RegimeBanner from "../components/regime/RegimeBanner";
+import KillSwitchGauge from "../components/regime/KillSwitchGauge";
 import HeatGauge from "../components/portfolio/HeatGauge";
 import SectorExposureBar from "../components/portfolio/SectorExposureBar";
 
@@ -12,11 +13,12 @@ export default function Dashboard() {
     return <div className="p-8 text-center text-gray-500">Loading dashboard...</div>;
   }
 
-  const { summary } = portfolio || {};
+  const { summary, sector_performance } = portfolio || {};
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <RegimeBanner />
+      <KillSwitchGauge />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <HeatGauge 
@@ -47,7 +49,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <SectorExposureBar data={summary?.sector_exposure || {}} maxPct={summary?.max_sector_pct || 15} />
+      <SectorExposureBar data={sector_performance || []} maxPct={summary?.max_sector_pct || 15} />
     </div>
   );
 }

@@ -29,11 +29,44 @@ def get_portfolio():
     total_position_value = 0.0
     sector_exposure: dict[str, float] = {}
 
+    from engine_core.account_ledger import get_live_equity
+    import os
+    
+    with get_session() as session:
+        account_equity = get_live_equity(session, float(os.getenv("ACCOUNT_EQUITY", "1000000")))
+        
+        symbols = [p.symbol for p in positions]
+        latest_closes = {}
+        if symbols:
+            sym_list = ','.join([f"'{s}'" for s in symbols])
+            query = f"""
+            SELECT m1.symbol, m1.close_raw 
+            FROM market_data_lake m1
+            INNER JOIN (
+                SELECT symbol, MAX(trade_date) as max_date 
+                FROM market_data_lake 
+                WHERE symbol IN ({sym_list})
+                GROUP BY symbol
+            ) m2 ON m1.symbol = m2.symbol AND m1.trade_date = m2.max_date
+            """
+            for row in session.execute(text(query)).fetchall():
+                latest_closes[row.symbol] = row.close_raw
+
+    sector_performance_dict = {}
+
     for p in positions:
         risk_amount = p.shares * (p.entry_price - p.initial_stop_loss)
         position_value = p.shares * p.entry_price
         total_risk += risk_amount
         total_position_value += position_value
+
+        sector = p.sector or "Unknown"
+        if sector not in sector_performance_dict:
+            sector_performance_dict[sector] = {"total_capital_deployed": 0.0, "estimated_pnl": 0.0}
+        
+        sector_performance_dict[sector]["total_capital_deployed"] += position_value
+        live_price = latest_closes.get(p.symbol, p.entry_price)
+        sector_performance_dict[sector]["estimated_pnl"] += (live_price - p.entry_price) * p.shares
 
         if p.sector:
             sector_exposure[p.sector] = sector_exposure.get(p.sector, 0) + position_value
@@ -59,17 +92,29 @@ def get_portfolio():
             "last_evaluated_date": str(p.last_evaluated_date) if p.last_evaluated_date else None,
         })
 
-    account_equity = float(__import__("os").getenv("ACCOUNT_EQUITY", "1000000"))
     total_risk_pct = (total_risk / account_equity) * 100 if account_equity > 0 else 0.0
 
     # Sector exposure as % of total allocated capital
     sector_pct = {
-        sector: round((val / total_position_value) * 100, 1)
-        for sector, val in sector_exposure.items()
+        sec: round((val / total_position_value) * 100, 1)
+        for sec, val in sector_exposure.items()
     } if total_position_value > 0 else {}
+
+    sector_performance = []
+    for sec, data in sector_performance_dict.items():
+        cap = data["total_capital_deployed"]
+        est_pnl = data["estimated_pnl"]
+        sector_performance.append({
+            "sector": sec,
+            "total_capital_deployed": round(cap, 2),
+            "pct_of_equity": round((cap / account_equity) * 100, 2) if account_equity > 0 else 0.0,
+            "estimated_pnl": round(est_pnl, 2),
+            "pnl_pct": round((est_pnl / cap) * 100, 2) if cap > 0 else 0.0
+        })
 
     return {
         "positions": position_list,
+        "sector_performance": sector_performance,
         "summary": {
             "open_positions": len(position_list),
             "max_positions": risk_cfg["max_concurrent_positions"],

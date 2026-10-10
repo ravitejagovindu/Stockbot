@@ -10,6 +10,7 @@ export default function PositionTable({ positions }: { positions: any[] }) {
       case "INITIAL_RISK": return "bg-blue-100 text-blue-800 border-blue-200";
       case "RISK_FREE_1_TO_1": return "bg-green-100 text-green-800 border-green-200";
       case "TRAILING_ATR": return "bg-amber-100 text-amber-800 border-amber-200";
+      case "PARABOLIC_TRAILING": return "bg-purple-100 text-purple-800 border-purple-200";
       case "PENDING_MANUAL_EXIT": return "bg-red-100 text-red-800 border-red-300 animate-pulse";
       default: return "bg-gray-100 text-gray-800";
     }
@@ -71,8 +72,12 @@ export default function PositionTable({ positions }: { positions: any[] }) {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={clsx("px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border", getStateColor(pos.position_state))}>
+                    <span 
+                      className={clsx("px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border", getStateColor(pos.position_state))}
+                      title={pos.position_state === "PARABOLIC_TRAILING" ? "Stock is accelerating vertically. Stop-loss has been tightened to 1x ATR." : ""}
+                    >
                       {pos.position_state.replace(/_/g, " ")}
+                      {pos.position_state === "PARABOLIC_TRAILING" && " 🚀"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

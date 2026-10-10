@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchWatchlist, fetchRegime } from "../api";
 import RegimeBanner from "../components/regime/RegimeBanner";
+import KillSwitchGauge from "../components/regime/KillSwitchGauge";
 import TradeTicketCard from "../components/watchlist/TradeTicketCard";
 import { AlertCircle } from "lucide-react";
 
@@ -14,6 +15,7 @@ export default function Watchlist() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <RegimeBanner />
+      <KillSwitchGauge />
 
       {regime?.kill_switch_active ? (
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-12 text-center">
