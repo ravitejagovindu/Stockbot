@@ -74,15 +74,25 @@ def verify_git_lock() -> None:
             "Commit all changes or stash them before running the live engine."
         )
 
-    # 4. Check current SHA matches authorized SHA
+    # 4. Check current SHA matches authorized SHA (or its parent if the auth script committed it)
     current_sha = get_current_sha()
     if current_sha != authorized_sha:
-        sys.exit(
-            f"SYSTEM_LOCKED_CODE_MODIFIED: "
-            f"Current HEAD ({current_sha[:8]}) does not match "
-            f"authorized SHA ({authorized_sha[:8]}). "
-            f"Re-run 'python authorize_live.py' to re-authorize."
-        )
+        try:
+            parent_sha = _run_git(["rev-parse", "HEAD~1"])
+            if parent_sha != authorized_sha:
+                sys.exit(
+                    f"SYSTEM_LOCKED_CODE_MODIFIED: "
+                    f"Current HEAD ({current_sha[:8]}) and parent ({parent_sha[:8]}) do not match "
+                    f"authorized SHA ({authorized_sha[:8]}). "
+                    f"Re-run 'python authorize_live.py' to re-authorize."
+                )
+        except Exception:
+            sys.exit(
+                f"SYSTEM_LOCKED_CODE_MODIFIED: "
+                f"Current HEAD ({current_sha[:8]}) does not match "
+                f"authorized SHA ({authorized_sha[:8]}). "
+                f"Re-run 'python authorize_live.py' to re-authorize."
+            )
 
     print(f"[GIT-LOCK] ✓ Deployment lock verified. Running authorized commit: {current_sha[:8]}")
     print(f"[GIT-LOCK] ✓ Authorized at: {authorized.get('authorized_at', 'unknown')}")
