@@ -12,7 +12,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-AUTHORIZED_DEPLOYMENT_FILE = Path(__file__).parent / "authorized_deployment.json"
+AUTHORIZED_DEPLOYMENT_FILE = Path(__file__).resolve().parents[1] / "authorized_deployment.json"
 
 
 def _run_git(args: list[str]) -> str:
