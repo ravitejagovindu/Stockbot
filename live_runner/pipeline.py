@@ -211,8 +211,8 @@ class EODPipeline:
                 text("DELETE FROM market_data_lake WHERE symbol = :sym AND trade_date = :td"),
                 {"sym": db_symbol, "td": target_date}
             )
-            df.to_sql("market_data_lake", con=engine, if_exists="append", index=False)
             self.session.commit()
+            df.to_sql("market_data_lake", con=engine, if_exists="append", index=False)
             logger.info(f"[PIPELINE] Ingested {db_symbol} via yfinance for {target_date}")
 
     def _run_screening(self, eval_date: date, results: dict) -> list:
