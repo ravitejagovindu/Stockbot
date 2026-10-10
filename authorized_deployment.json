@@ -1,0 +1,12 @@
+{
+  "authorized_at": "2026-10-10T10:35:06.006104",
+  "authorized_sha": "06338633de875f71a265760798a96a505cffe3dd",
+  "dual_gate_summary": {
+    "max_drawdown_pass": true,
+    "outperformance_pass": true,
+    "overall_pass": true
+  },
+  "strategy_config_sha": "0b9d3ce8ffec715416c28c4d9d00bab8dd0ab07e",
+  "audit_generated_at": "2026-10-10T04:40:43.928192Z",
+  "note": "This file authorizes the live EOD runner. Any code change after this will break the SHA lock. Re-run authorize_live.py after any change."
+}
