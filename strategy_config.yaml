@@ -63,3 +63,13 @@ parabolic_stop:
   acceleration_threshold_atr: 3.0   # If stock moves up this many ATR multiples within the lookback window, go parabolic
   acceleration_lookback_days: 5
   parabolic_atr_multiplier: 1.0     # When parabolic, tighten trailing stop from default to this multiplier
+
+partial_profit:
+  enabled: true
+  exit_ladder:
+    - rr_trigger: 1.0
+      exit_pct: 25
+    - rr_trigger: 2.0
+      exit_pct: 33
+    - rr_trigger: 3.0
+      exit_pct: 50

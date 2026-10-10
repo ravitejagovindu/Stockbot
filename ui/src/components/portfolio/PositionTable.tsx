@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import clsx from "clsx";
+import { useQueryClient } from "@tanstack/react-query";
+import { recordPartialClose } from "../../api";
 import ClosePositionModal from "./ClosePositionModal";
 
 export default function PositionTable({ positions }: { positions: any[] }) {
   const [closingPos, setClosingPos] = useState<any | null>(null);
+  const [partialPos, setPartialPos] = useState<any | null>(null);
 
   const getStateColor = (state: string) => {
     switch (state) {
@@ -83,7 +86,20 @@ export default function PositionTable({ positions }: { positions: any[] }) {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getDaysHeldDisplay(pos)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end space-x-2 items-center">
+                    {pos.partial_profit_triggered && (
+                      <span className="animate-pulse bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-md border border-amber-300 flex items-center">
+                        ⚡ Partial Alert
+                      </span>
+                    )}
+                    {pos.partial_profit_triggered && (
+                      <button 
+                        onClick={() => setPartialPos(pos)}
+                        className="text-amber-700 hover:text-amber-900 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md transition-colors"
+                      >
+                        Record Partial
+                      </button>
+                    )}
                     <button 
                       onClick={() => setClosingPos(pos)}
                       className="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1.5 rounded-md transition-colors"
@@ -99,6 +115,58 @@ export default function PositionTable({ positions }: { positions: any[] }) {
       </div>
 
       {closingPos && <ClosePositionModal position={closingPos} onClose={() => setClosingPos(null)} />}
+      {partialPos && <RecordPartialModal position={partialPos} onClose={() => setPartialPos(null)} />}
+    </div>
+  );
+}
+
+function RecordPartialModal({ position, onClose }: { position: any, onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const [price, setPrice] = useState(position.entry_price);
+  const [shares, setShares] = useState(Math.floor(position.shares_remaining * 0.25)); // Default 25%
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await recordPartialClose({
+        position_id: position.id,
+        exit_price: Number(price),
+        shares_sold: Number(shares),
+        exit_date: new Date().toISOString().split('T')[0]
+      });
+      queryClient.invalidateQueries({ queryKey: ["portfolio"] });
+      onClose();
+    } catch (err) {
+      alert("Failed to record partial exit.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Record Partial Exit: {position.symbol}</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Target R:R hit! Enter the exact details of your partial exit.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Exit Price (₹)</label>
+            <input type="number" step="0.05" required value={price} onChange={e => setPrice(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Shares Sold (Max: {position.shares_remaining - 1})</label>
+            <input type="number" step="1" max={position.shares_remaining - 1} min="1" required value={shares} onChange={e => setShares(e.target.value)} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+          </div>
+          <div className="flex space-x-3 pt-4">
+            <button type="button" onClick={onClose} className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200">Cancel</button>
+            <button type="submit" disabled={isSubmitting} className="flex-1 bg-amber-600 text-white py-2 rounded-lg font-medium hover:bg-amber-700 disabled:opacity-50">Confirm</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

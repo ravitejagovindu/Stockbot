@@ -71,6 +71,12 @@ def get_portfolio():
         if p.sector:
             sector_exposure[p.sector] = sector_exposure.get(p.sector, 0) + position_value
 
+        one_r = p.entry_price - p.initial_stop_loss
+        current_rr = (live_price - p.entry_price) / one_r if one_r > 0 else 0
+        partial_triggered = False
+        if p.next_partial_exit_rr is not None and current_rr >= p.next_partial_exit_rr:
+            partial_triggered = True
+
         position_list.append({
             "id": p.id,
             "symbol": p.symbol,
@@ -82,6 +88,7 @@ def get_portfolio():
             "initial_stop_loss": p.initial_stop_loss,
             "initial_resistance_target": p.initial_resistance_target,
             "projected_rr": round(p.projected_rr, 2),
+            "current_rr": round(current_rr, 2),
             "position_state": p.position_state,
             "days_held": p.days_held,
             "highest_high_since_breakout": p.highest_high_since_breakout,
@@ -90,6 +97,13 @@ def get_portfolio():
             "earnings_alert": bool(p.earnings_alert),
             "next_earnings_date": str(p.next_earnings_date) if p.next_earnings_date else None,
             "last_evaluated_date": str(p.last_evaluated_date) if p.last_evaluated_date else None,
+            "original_shares": p.original_shares,
+            "shares_remaining": p.shares_remaining if p.shares_remaining is not None else p.shares,
+            "partial_exit_count": p.partial_exit_count,
+            "total_realized_pnl_partial": p.total_realized_pnl_partial,
+            "last_partial_exit_rr": p.last_partial_exit_rr,
+            "next_partial_exit_rr": p.next_partial_exit_rr,
+            "partial_profit_triggered": partial_triggered,
         })
 
     total_risk_pct = (total_risk / account_equity) * 100 if account_equity > 0 else 0.0

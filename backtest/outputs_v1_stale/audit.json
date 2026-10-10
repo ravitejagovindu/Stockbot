@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-10-10T04:40:43.928192Z",
+  "strategy_config_sha": "0b9d3ce8ffec715416c28c4d9d00bab8dd0ab07e",
+  "regimes": {
+    "sideways_inflation": {
+      "max_drawdown_pct": 7.347747155844292,
+      "cagr_pct": 22.407383124733716,
+      "nifty_cagr_pct": 19.27923744972182,
+      "alpha_pct": 3.128145675011897,
+      "sharpe": 0.43586406634043073,
+      "total_trades": 48,
+      "win_rate": 0.20833333333333334
+    },
+    "bull_run": {
+      "max_drawdown_pct": 19.586807442295378,
+      "cagr_pct": 6.093372524018337,
+      "nifty_cagr_pct": 6.786497818220338,
+      "alpha_pct": -0.6931252942020016,
+      "sharpe": -0.003839826568493068,
+      "total_trades": 104,
+      "win_rate": 0.19230769230769232
+    }
+  },
+  "dual_gate": {
+    "max_drawdown_pass": true,
+    "outperformance_pass": true,
+    "overall_pass": true
+  },
+  "eligible_for_deployment": true
+}

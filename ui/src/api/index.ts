@@ -109,3 +109,15 @@ export const closePosition = async (req: ClosePositionRequest) => {
   const { data } = await apiClient.post("/positions/close", req);
   return data;
 };
+
+export interface RecordPartialExitRequest {
+  position_id: number;
+  exit_price: number;
+  shares_sold: number;
+  exit_date: string;
+}
+
+export const recordPartialClose = async (req: RecordPartialExitRequest) => {
+  const { data } = await apiClient.post("/positions/partial_close", req);
+  return data;
+};

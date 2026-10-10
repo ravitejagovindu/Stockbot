@@ -113,6 +113,10 @@ class PositionUpdate:
     new_highest_high: float
     earnings_alert: bool
     flags: list[str] = field(default_factory=list)
+    partial_profit_triggered: bool = False
+    shares_to_exit_now: int = 0
+    partial_exit_price: float = 0.0
+    shares_remaining_after: int = 0
 
 
 # ---------------------------------------------------------------------------
@@ -149,6 +153,10 @@ class PositionLifecycleManager:
         self._parabolic_thresh: float = float(parabolic.get("acceleration_threshold_atr", 3.0))
         self._parabolic_lookback: int = int(parabolic.get("acceleration_lookback_days", 5))
         self._parabolic_mult: float = float(parabolic.get("parabolic_atr_multiplier", 1.0))
+
+        partial = config.get("partial_profit", {})
+        self._partial_enabled: bool = bool(partial.get("enabled", False))
+        self._partial_ladder: list = partial.get("exit_ladder", [])
 
         self._session = session
 
@@ -263,12 +271,15 @@ class PositionLifecycleManager:
         new_state = PositionState(updated["position_state"])
         new_live_stop_loss = updated["live_stop_loss"]
 
-        # Step 4: Earnings alert (independent of state)
+        # Step 4: Evaluate partial profits
+        partial_res = self._evaluate_partial_profits(pos, today_high_adj)
+        
+        # Step 5: Earnings alert (independent of state)
         earnings_alert, next_earnings_date = self._check_earnings_alert(
             pos.symbol, eval_date
         )
 
-        # Step 5: Build flags
+        # Step 6: Build flags
         flags: list[str] = []
         if new_state != old_state:
             flags.append("STATE_CHANGED")
@@ -276,8 +287,10 @@ class PositionLifecycleManager:
             flags.append("STOP_UPDATED")
         if earnings_alert:
             flags.append("EARNINGS_ALERT")
+        if partial_res["triggered"]:
+            flags.append("PARTIAL_PROFIT_ALERT")
 
-        # Step 6: Persist
+        # Step 7: Persist
         pos.days_held = new_days_held
         pos.highest_high_since_breakout = new_highest_high
         pos.position_state = new_state.value
@@ -285,6 +298,13 @@ class PositionLifecycleManager:
         pos.earnings_alert = earnings_alert
         pos.next_earnings_date = next_earnings_date
         pos.last_evaluated_date = eval_date
+        
+        shares_rem_after = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+        if partial_res["triggered"]:
+            pos.last_partial_exit_rr = partial_res["last_rr"]
+            pos.next_partial_exit_rr = partial_res["next_rr"]
+            # shares_remaining logic will be updated when user confirms partial exit via UI
+            
         self._session.flush()
 
         logger.info(
@@ -307,6 +327,10 @@ class PositionLifecycleManager:
             new_highest_high=new_highest_high,
             earnings_alert=earnings_alert,
             flags=flags,
+            partial_profit_triggered=partial_res["triggered"],
+            shares_to_exit_now=partial_res["shares_to_exit"],
+            partial_exit_price=partial_res["exit_price"],
+            shares_remaining_after=shares_rem_after - partial_res["shares_to_exit"]
         )
 
     def close_position(
@@ -461,6 +485,56 @@ class PositionLifecycleManager:
         if net_move >= (self._parabolic_thresh * atr_14):
             return True
         return False
+
+    def _evaluate_partial_profits(self, pos: ActivePosition, today_high_adj: float) -> dict:
+        """Check if any partial profit rungs were hit today."""
+        res = {
+            "triggered": False,
+            "shares_to_exit": 0,
+            "exit_price": 0.0,
+            "next_rr": pos.next_partial_exit_rr,
+            "last_rr": pos.last_partial_exit_rr
+        }
+        
+        if not self._partial_enabled or not self._partial_ladder:
+            return res
+            
+        one_r = pos.entry_price - pos.initial_stop_loss
+        if one_r <= 0:
+            return res
+            
+        current_rr = (today_high_adj - pos.entry_price) / one_r
+        
+        # Sort ladder ascending by trigger
+        ladder = sorted(self._partial_ladder, key=lambda x: x["rr_trigger"])
+        
+        last_rr = pos.last_partial_exit_rr or 0.0
+        shares_rem = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+        
+        for rung in ladder:
+            trigger = float(rung["rr_trigger"])
+            if trigger > last_rr and current_rr >= trigger:
+                # Triggered!
+                import math
+                exit_pct = float(rung["exit_pct"])
+                shares_to_exit = math.floor(shares_rem * (exit_pct / 100.0))
+                
+                if shares_to_exit > 0:
+                    res["triggered"] = True
+                    res["shares_to_exit"] = shares_to_exit
+                    res["exit_price"] = pos.entry_price + (trigger * one_r) # Exit roughly at the trigger price
+                    res["last_rr"] = trigger
+                    
+                    # find next rr
+                    next_rr = None
+                    for n_rung in ladder:
+                        if float(n_rung["rr_trigger"]) > trigger:
+                            next_rr = float(n_rung["rr_trigger"])
+                            break
+                    res["next_rr"] = next_rr
+                    break # Take one partial at a time (highest hit)
+                    
+        return res
 
     def _fetch_raw_ohlcv(
         self, symbol: str, eval_date: date, lookback: int
