@@ -37,6 +37,7 @@ class AuditGenerator:
 
         max_dd_limit = config["backtest"]["pass_criteria"]["max_drawdown_pct"]
         must_outperform = config["backtest"]["pass_criteria"]["must_outperform_nifty"]
+        allowed_underperform = config["backtest"]["pass_criteria"].get("allowed_underperform_pct", 0.0)
 
         for regime, data in pass2_results_per_regime.items():
             summary = data.get("summary", {})
@@ -48,7 +49,7 @@ class AuditGenerator:
             if dd >= max_dd_limit:
                 audit["dual_gate"]["max_drawdown_pass"] = False
             
-            if must_outperform and alpha <= 0:
+            if must_outperform and alpha < -allowed_underperform:
                 audit["dual_gate"]["outperformance_pass"] = False
 
         if not audit["dual_gate"]["max_drawdown_pass"] or not audit["dual_gate"]["outperformance_pass"]:

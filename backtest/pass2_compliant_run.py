@@ -171,6 +171,11 @@ class Pass2CompliantRun:
         # We'll need slippage/STT params
         slip_pct = self.config.get("backtest", {}).get("pass_criteria", {}).get("estimated_slippage_pct", 0.1) / 100.0
         stt_pct = self.config.get("backtest", {}).get("pass_criteria", {}).get("estimated_stt_pct", 0.025) / 100.0
+        
+        time_decay_sessions = self.config.get("trade_management", {}).get("time_decay_sessions", 25)
+        trail_mult = self.config.get("risk", {}).get("trailing_stop_atr_multiplier", 2.0)
+        # Approximate 1 ATR as ~2.5% of stock price. Trail % = multiplier * 2.5%
+        trail_pct = trail_mult * 0.025 
 
         for current_day in trading_days:
             # A. Update Exits
@@ -184,9 +189,13 @@ class Pass2CompliantRun:
                 high_val, low_val, close_val = prices[sym][current_day]
                 pos["current_close"] = close_val
                 
-                # Check Stop Hit
-                if low_val <= pos["live_stop"]:
-                    exit_price = pos["live_stop"]
+                # Check Stop Hit OR Pending Manual Exit (simulate human closing the dead trade)
+                if low_val <= pos["live_stop"] or pos["state"] == "PENDING_MANUAL_EXIT":
+                    if pos["state"] == "PENDING_MANUAL_EXIT":
+                        exit_price = close_val  # Human exits at EOD price
+                    else:
+                        exit_price = pos["live_stop"]
+                        
                     gross_val = exit_price * pos["shares"]
                     slippage = (pos["entry_price"] + exit_price) * pos["shares"] * slip_pct
                     stt = gross_val * stt_pct
@@ -208,14 +217,14 @@ class Pass2CompliantRun:
                         if pos["highest_high"] >= pos["entry_price"] + one_r:
                             pos["state"] = "RISK_FREE"
                             pos["live_stop"] = pos["entry_price"]
-                        elif pos["days_held"] >= 15:
+                        elif pos["days_held"] >= time_decay_sessions:
                             pos["state"] = "PENDING_MANUAL_EXIT"
                     elif pos["state"] == "RISK_FREE":
                         if pos["highest_high"] >= pos["target"]:
                             pos["state"] = "TRAILING"
                     elif pos["state"] == "TRAILING":
-                        # Approx 1.5% trail
-                        trail = pos["highest_high"] - (close_val * 0.015)
+                        # Approx ATR-based trail (e.g., 2.0x ATR = ~5%)
+                        trail = pos["highest_high"] - (close_val * trail_pct)
                         if trail > pos["live_stop"]:
                             pos["live_stop"] = trail
                             

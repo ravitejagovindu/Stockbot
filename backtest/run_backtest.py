@@ -38,6 +38,11 @@ def main():
     if args.pass1:
         print("\n--- Running Pass 1 (Naive Run) ---")
         with get_session() as session:
+            from sqlalchemy import text
+            session.execute(text("DELETE FROM regime_state"))
+            session.commit()
+            print("Cleared stale regime_state data.")
+            
             p1 = Pass1NaiveRun(config)
             for regime in config["backtest"]["regimes"]:
                 df = p1.run(
