@@ -158,9 +158,9 @@ class BhavcopyIngestor:
                 ),
                 {"td": target_date},
             )
+            session.commit()
 
             df.to_sql("market_data_lake", con=engine, if_exists="append", index=False)
-            session.commit()
 
             logger.info(f"Successfully ingested {len(df)} symbols from Bhavcopy for {target_date}.")
             return len(df)
