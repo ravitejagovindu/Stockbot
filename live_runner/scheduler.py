@@ -30,23 +30,36 @@ def run_eod_pipeline():
         from datetime import timedelta
 
         with get_session() as session:
-            # 1. Find last successful run date
-            last_run = (
-                session.query(PipelineRunLog.run_date)
-                .filter(PipelineRunLog.status == "COMPLETE")
-                .order_by(PipelineRunLog.run_date.desc())
-                .first()
-            )
-            
-            if last_run:
-                last_date = last_run[0]
+            # 1. Find last successful run date anchored to actual equity data in market_data_lake
+            from sqlalchemy import text
+            latest_equity_date = session.execute(
+                text("SELECT MAX(trade_date) FROM market_data_lake WHERE symbol NOT IN ('NIFTY50_INDEX', 'INDIA_VIX')")
+            ).scalar()
+
+            if latest_equity_date:
+                if isinstance(latest_equity_date, str):
+                    from datetime import datetime
+                    latest_equity_date = datetime.strptime(latest_equity_date, "%Y-%m-%d").date()
+                last_date = latest_equity_date
             else:
-                # Default to yesterday if never run to avoid massive catchup on day 1
-                last_date = today - timedelta(days=1)
+                last_run = (
+                    session.query(PipelineRunLog.run_date)
+                    .filter(PipelineRunLog.status == "COMPLETE")
+                    .order_by(PipelineRunLog.run_date.desc())
+                    .first()
+                )
+                last_date = last_run[0] if last_run else (today - timedelta(days=1))
 
             if last_date >= today:
                 logger.info("[SCHEDULER] System is fully caught up.")
                 return
+
+            # Clear any stale pipeline logs after last_date so IdempotencyGuard allows re-processing
+            session.execute(
+                text("DELETE FROM pipeline_run_log WHERE run_date > :last_date"),
+                {"last_date": last_date}
+            )
+            session.commit()
 
             # 2. Get true trading days using Yahoo Finance Nifty50 index
             logger.info(f"[SCHEDULER] Fetching actual trading calendar between {last_date} and {today}...")
