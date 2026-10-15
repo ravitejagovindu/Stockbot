@@ -26,7 +26,7 @@ def get_regime():
 
     cfg = load_config()["macro"]
 
-    vix_trigger_threshold = cfg["vix_trigger_threshold"]
+    vix_trigger_threshold = cfg["vix_kill_threshold"]
     vix_reentry_threshold = cfg["vix_reentry_threshold"]
     
     nifty_dist_200 = round(((result.nifty_close - result.nifty_sma200) / result.nifty_sma200) * 100, 2) if result.nifty_sma200 else 0

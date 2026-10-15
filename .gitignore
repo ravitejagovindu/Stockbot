@@ -16,6 +16,8 @@ env/
 
 # Databases (dev SQLite files — use named exception for production DB)
 *.db
+*.db-wal
+*.db-shm
 *.sqlite3
 
 # Backtest outputs (re-generated; not committed)
