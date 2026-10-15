@@ -127,6 +127,10 @@ class _SimPosition:
     sector: Optional[str] = None
     account_equity_at_entry: float = 0.0
     regime: str = ""
+    shares_remaining: Optional[int] = None
+    last_partial_exit_rr: float = 0.0
+    atr_at_entry: float = 0.0
+    close_history: list[float] = field(default_factory=list, repr=False)
 
     # Running P&L for equity-curve tracking
     _current_close: float = field(default=0.0, repr=False)
@@ -177,7 +181,17 @@ class Pass1NaiveRun:
         """
         self._config = config
         self._risk_cfg = config["risk"]
+        self._tm_cfg = config.get("trade_management", {})
         self._backtest_cfg = config.get("backtest", {})
+        self._macro_cfg = config.get("macro", {})
+
+        ratchet_cfg = config.get("profit_ratchet", {})
+        self._ratchet_enabled = bool(ratchet_cfg.get("enabled", False))
+        self._ratchet_enabled_regimes = ratchet_cfg.get("enabled_regimes")
+        self._ratchet_rungs = sorted(
+            ratchet_cfg.get("rungs", []),
+            key=lambda x: float(x["trigger_rr"])
+        )
 
         # Ensure output directory exists
         os.makedirs(_OUTPUTS_DIR, exist_ok=True)
@@ -261,6 +275,24 @@ class Pass1NaiveRun:
         regime_filter = RegimeFilter(self._config, session)
         risk_engine = RiskAndSizingEngine(self._config)
 
+        # Pillar 2: Pre-compute Nifty SMA if bull entry filter configured
+        bull_sma_period = int(self._macro_cfg.get("bull_entry_sma_period", 0))
+        nifty_sma_map = {}
+        if regime_name == "bull_run" and bull_sma_period > 0:
+            from engine_core.indicators import sma
+            nifty_sym = self._config.get("data", {}).get("nifty_symbol", "NIFTY50_INDEX")
+            n_rows = session.execute(
+                select(MarketDataLake.trade_date, MarketDataLake.close_raw)
+                .where(MarketDataLake.symbol == nifty_sym)
+                .where(MarketDataLake.trade_date <= end_date)
+                .order_by(MarketDataLake.trade_date)
+            ).all()
+            if n_rows:
+                n_df = pd.DataFrame(n_rows, columns=["trade_date", "close_raw"])
+                n_df["close_raw"] = n_df["close_raw"].astype(float)
+                n_df["sma"] = sma(n_df["close_raw"], bull_sma_period)
+                nifty_sma_map = dict(zip(n_df["trade_date"], n_df["sma"]))
+
         for eval_date in trading_days:
             # ----------------------------------------------------------------
             # 1. Regime evaluation (uses PIT Nifty/VIX from market_data_lake)
@@ -280,12 +312,21 @@ class Pass1NaiveRun:
                 eval_date=eval_date,
                 session=session,
                 account_equity=account_equity,
+                kill_switch_active=regime_state.kill_switch_active,
+                regime_name=regime_name,
             )
 
             # ----------------------------------------------------------------
             # 3. Universe screening + sizing (only when kill switch is OFF)
             # ----------------------------------------------------------------
-            if not regime_state.kill_switch_active:
+            allow_entries = not regime_state.kill_switch_active
+            if allow_entries and regime_name == "bull_run" and bull_sma_period > 0:
+                n_sma = nifty_sma_map.get(eval_date)
+                if regime_state.nifty_close is not None and n_sma is not None and not pd.isna(n_sma):
+                    if regime_state.nifty_close < n_sma:
+                        allow_entries = False
+
+            if allow_entries:
                 # Discover all symbols present in the lake with data on eval_date
                 universe_symbols = self._fetch_universe_symbols(session, eval_date)
 
@@ -311,12 +352,19 @@ class Pass1NaiveRun:
                     session=session,
                 )
 
-                # Size each candidate
+                # Size each candidate with bull regime awareness
+                is_bull = (not regime_state.kill_switch_active) and (
+                    regime_state.nifty_close is not None
+                    and regime_state.nifty_sma200 is not None
+                    and regime_state.nifty_close > regime_state.nifty_sma200
+                )
                 setups: list[TradeSetup] = risk_engine.compute_all(
                     candidates=candidate_dicts,
                     eval_date=eval_date,
                     account_equity=account_equity,
                     current_positions=positions_for_heat,
+                    session=session,
+                    is_bull_regime=is_bull,
                 )
 
                 for setup in setups:
@@ -339,6 +387,9 @@ class Pass1NaiveRun:
                         "account_equity_at_entry": account_equity,
                     })
 
+                    atr_stop_m = float(self._risk_cfg.get("atr_stop_multiplier", 2.0))
+                    calc_atr = (setup.entry_price - setup.stop_a) / atr_stop_m if atr_stop_m > 0 else 0.0
+
                     # Open the simulated position
                     pos = _SimPosition(
                         symbol=setup.symbol,
@@ -353,6 +404,7 @@ class Pass1NaiveRun:
                         stop_b_at_entry=setup.stop_b,
                         account_equity_at_entry=account_equity,
                         regime=regime_name,
+                        atr_at_entry=calc_atr,
                     )
                     open_positions.append(pos)
 
@@ -452,6 +504,8 @@ class Pass1NaiveRun:
         eval_date: date,
         session: Session,
         account_equity: float,
+        kill_switch_active: bool = False,
+        regime_name: str = "",
     ) -> float:
         """Update open positions for eval_date and realise P&L for stop-hits.
 
@@ -509,7 +563,8 @@ class Pass1NaiveRun:
             # --- Stop hit check ---
             if low_raw <= pos.live_stop_loss:
                 exit_price = pos.live_stop_loss  # Assume filled at stop
-                pnl = (exit_price - pos.entry_price) * pos.shares
+                shares_to_close = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+                pnl = (exit_price - pos.entry_price) * shares_to_close
                 account_equity += pnl
                 positions_to_remove.append(pos)
                 logger.debug(
@@ -525,31 +580,89 @@ class Pass1NaiveRun:
             pos.days_held += 1
             pos.highest_high_since_breakout = max(pos.highest_high_since_breakout, high_raw)
             pos._current_close = close_raw
+            pos.close_history.append(close_raw)
 
             one_r = pos.entry_price - pos.initial_stop_loss  # 1R in price units
+
+            # --- Partial profit check ---
+            partial_cfg = self._config.get("partial_profit", {})
+            if partial_cfg.get("enabled", False) and one_r > 0:
+                ladder = sorted(
+                    partial_cfg.get("exit_ladder", []),
+                    key=lambda x: float(x["rr_trigger"])
+                )
+                current_rr = (high_raw - pos.entry_price) / one_r
+                for rung in ladder:
+                    trigger = float(rung["rr_trigger"])
+                    if trigger > pos.last_partial_exit_rr and current_rr >= trigger:
+                        import numpy as np
+                        exit_pct = float(rung["exit_pct"])
+                        shares_rem = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+                        shares_to_exit = int(np.floor(shares_rem * (exit_pct / 100.0)))
+                        if 0 < shares_to_exit < shares_rem:
+                            p_exit_price = pos.entry_price + (trigger * one_r)
+                            pnl = (p_exit_price - pos.entry_price) * shares_to_exit
+                            account_equity += pnl
+                            pos.shares_remaining = shares_rem - shares_to_exit
+                            pos.last_partial_exit_rr = trigger
+                            break
 
             if pos.position_state == "INITIAL_RISK":
                 # Breakeven transition: price reached 1:1 (entry + 1R)
                 if pos.highest_high_since_breakout >= pos.entry_price + one_r:
                     pos.position_state = "RISK_FREE_1_TO_1"
                     pos.live_stop_loss = pos.entry_price  # Move stop to breakeven
-                elif pos.days_held >= self._risk_cfg.get("time_decay_sessions", 15):
+                elif pos.days_held >= self._tm_cfg.get("time_decay_sessions", 40):
                     pos.position_state = "PENDING_MANUAL_EXIT"
 
             elif pos.position_state == "RISK_FREE_1_TO_1":
                 if pos.highest_high_since_breakout >= pos.initial_resistance_target:
                     pos.position_state = "TRAILING_ATR"
 
-            elif pos.position_state == "TRAILING_ATR":
-                # Ratchet trailing stop (simple version: use 2×ATR approximation
-                # via ATR proxy; full ATR computation is done in live runner)
-                # Here we use a simplified 1.5% trailing stop for the sim.
-                trailing_mult = float(self._risk_cfg.get("trailing_stop_atr_multiplier", 2.0))
-                # Approximate ATR as 1.5% of current price (conservative fallback)
-                approx_atr = close_raw * 0.015
-                candidate_stop = pos.highest_high_since_breakout - trailing_mult * approx_atr
+            pos_atr = pos.atr_at_entry if pos.atr_at_entry > 0 else close_raw * 0.025
+
+            if pos.position_state == "TRAILING_ATR":
+                parabolic_cfg = self._config.get("parabolic_stop", {})
+                parabolic_enabled = bool(parabolic_cfg.get("enabled", False))
+                if parabolic_enabled and len(pos.close_history) >= 2 and pos_atr > 0:
+                    parabolic_thresh = float(parabolic_cfg.get("acceleration_threshold_atr", 3.0))
+                    parabolic_lookback = int(parabolic_cfg.get("acceleration_lookback_days", 5))
+                    lb = min(parabolic_lookback, len(pos.close_history))
+                    net_move = close_raw - pos.close_history[-lb]
+                    if net_move >= (parabolic_thresh * pos_atr):
+                        pos.position_state = "PARABOLIC_TRAILING"
+
+                if pos.position_state == "TRAILING_ATR":
+                    normal_mult = float(self._risk_cfg.get("trailing_stop_atr_multiplier", 2.5))
+                    ks_mult = float(self._risk_cfg.get("trailing_stop_atr_multiplier_kill_switch", 2.0))
+                    trailing_mult = ks_mult if kill_switch_active else normal_mult
+                    candidate_stop = pos.highest_high_since_breakout - trailing_mult * pos_atr
+                    if candidate_stop > pos.live_stop_loss:
+                        pos.live_stop_loss = candidate_stop
+
+            if pos.position_state == "PARABOLIC_TRAILING":
+                parabolic_cfg = self._config.get("parabolic_stop", {})
+                parabolic_mult = float(parabolic_cfg.get("parabolic_atr_multiplier", 1.0))
+                candidate_stop = pos.highest_high_since_breakout - parabolic_mult * pos_atr
                 if candidate_stop > pos.live_stop_loss:
                     pos.live_stop_loss = candidate_stop
+
+            # Apply Step-Lock Profit Ratchet floor across active states
+            ratchet_active = self._ratchet_enabled
+            if self._ratchet_enabled_regimes is not None and regime_name not in self._ratchet_enabled_regimes:
+                ratchet_active = False
+
+            if (
+                ratchet_active
+                and one_r > 0
+                and pos.position_state != "PENDING_MANUAL_EXIT"
+            ):
+                highest_rr = (pos.highest_high_since_breakout - pos.entry_price) / one_r
+                for rung in self._ratchet_rungs:
+                    if highest_rr >= float(rung["trigger_rr"]):
+                        ratchet_stop = pos.entry_price + (float(rung["lock_rr"]) * one_r)
+                        if ratchet_stop > pos.live_stop_loss:
+                            pos.live_stop_loss = ratchet_stop
 
         # Remove closed positions
         for p in positions_to_remove:
@@ -562,15 +675,16 @@ class Pass1NaiveRun:
         """Convert simulated positions to the dict format expected by RiskAndSizingEngine."""
         result = []
         for pos in open_positions:
-            risk_amount = (pos.entry_price - pos.live_stop_loss) * pos.shares
+            shares_cnt = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+            risk_amount = (pos.entry_price - pos.live_stop_loss) * shares_cnt
             result.append({
                 "symbol": pos.symbol,
                 "sector": pos.sector,
                 "entry_price": pos.entry_price,
                 "live_stop_loss": pos.live_stop_loss,
-                "shares": pos.shares,
+                "shares": shares_cnt,
                 "risk_amount": risk_amount,
-                "position_value": pos.entry_price * pos.shares,
+                "position_value": pos.entry_price * shares_cnt,
             })
         return result
 

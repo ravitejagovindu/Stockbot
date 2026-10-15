@@ -56,6 +56,7 @@ from data.db.models import (
     EarningsCalendar,
     MarketDataLake,
     CorporateActionsLog,
+    TradeAnalyticsLog,
 )
 from engine_core.adjustments import get_adjusted_series
 from engine_core.indicators import atr
@@ -75,6 +76,7 @@ class PositionState(str, Enum):
     TRAILING_ATR = "TRAILING_ATR"
     PARABOLIC_TRAILING = "PARABOLIC_TRAILING"
     PENDING_MANUAL_EXIT = "PENDING_MANUAL_EXIT"
+    CLOSED = "CLOSED"
 
 
 @dataclass
@@ -144,7 +146,13 @@ class PositionLifecycleManager:
         tm = config["trade_management"]
 
         self._atr_period: int = int(risk["atr_period"])
-        self._trailing_stop_mult: float = float(risk["trailing_stop_atr_multiplier"])
+        self._trailing_stop_mult_normal: float = float(
+            risk.get("trailing_stop_atr_multiplier", 2.5)
+        )
+        self._trailing_stop_mult_kill_switch: float = float(
+            risk.get("trailing_stop_atr_multiplier_kill_switch", 2.0)
+        )
+        self._trailing_stop_mult: float = self._trailing_stop_mult_normal
         self._time_decay_sessions: int = int(tm["time_decay_sessions"])
         self._earnings_alert_days: int = int(tm["earnings_alert_days"])
         
@@ -158,13 +166,23 @@ class PositionLifecycleManager:
         self._partial_enabled: bool = bool(partial.get("enabled", False))
         self._partial_ladder: list = partial.get("exit_ladder", [])
 
+        ratchet = config.get("profit_ratchet", {})
+        self._ratchet_enabled: bool = bool(ratchet.get("enabled", False))
+        self._ratchet_enabled_regimes: Optional[list[str]] = ratchet.get("enabled_regimes")
+        self._ratchet_rungs: list = sorted(
+            ratchet.get("rungs", []),
+            key=lambda x: float(x["trigger_rr"])
+        )
+
         self._session = session
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 
-    def process_all(self, eval_date: date) -> list[PositionUpdate]:
+    def process_all(
+        self, eval_date: date, kill_switch_active: Optional[bool] = None
+    ) -> list[PositionUpdate]:
         """Process every open position for ``eval_date``.
 
         Positions are loaded ordered by ``entry_date`` ascending so that
@@ -174,6 +192,8 @@ class PositionLifecycleManager:
         ----------
         eval_date:
             The trading date being processed.
+        kill_switch_active:
+            Optional boolean indicating if macro kill switch is active today.
 
         Returns
         -------
@@ -191,7 +211,9 @@ class PositionLifecycleManager:
         updates = []
         for pos in positions:
             try:
-                update = self.process_single(pos.id, eval_date)
+                update = self.process_single(
+                    pos.id, eval_date, kill_switch_active=kill_switch_active
+                )
                 updates.append(update)
             except Exception as exc:
                 logger.error(
@@ -203,7 +225,9 @@ class PositionLifecycleManager:
                 )
         return updates
 
-    def process_single(self, position_id: int, eval_date: date) -> PositionUpdate:
+    def process_single(
+        self, position_id: int, eval_date: date, kill_switch_active: Optional[bool] = None
+    ) -> PositionUpdate:
         """Process one open position through the daily state machine.
 
         Parameters
@@ -239,8 +263,78 @@ class PositionLifecycleManager:
         corp_actions = self._fetch_corporate_actions(pos.symbol)
         adj_ohlcv = get_adjusted_series(raw_ohlcv, corp_actions, as_of_date=eval_date)
 
-        # Today's adjusted high (for highest-high tracking)
+        # Today's adjusted prices (for highest-high, stop-loss, and exit tracking)
         today_high_adj = float(adj_ohlcv.loc[eval_date, "high_adj"])
+        today_low_adj = float(adj_ohlcv.loc[eval_date, "low_adj"])
+        today_close_adj = float(adj_ohlcv.loc[eval_date, "close_adj"])
+
+        old_state = PositionState(pos.position_state)
+
+        # Step 0: Earnings alert (independent of state)
+        earnings_alert, next_earnings_date = self._check_earnings_alert(
+            pos.symbol, eval_date
+        )
+
+        # ── Automated Exit Check: Stop-Loss Hit ───────────────────────────────
+        # Assumption of Execution: If today's adjusted low breaches or touches
+        # live_stop_loss, the market stop order was triggered. Do not wait for manual UI
+        # confirmation — immediately close paper position and archive to analytics.
+        if today_low_adj <= pos.live_stop_loss:
+            exit_price = pos.live_stop_loss
+            shares_to_close = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+            one_r = pos.entry_price - pos.initial_stop_loss
+            realized_rr = (exit_price - pos.entry_price) / one_r if one_r > 0 else 0.0
+            pnl = (exit_price - pos.entry_price) * shares_to_close
+            new_days_held = pos.days_held + 1
+
+            log_entry = TradeAnalyticsLog(
+                position_id=pos.id,
+                symbol=pos.symbol,
+                entry_date=pos.entry_date,
+                exit_date=eval_date,
+                entry_price=pos.entry_price,
+                exit_price=exit_price,
+                shares=shares_to_close,
+                initial_stop_loss=pos.initial_stop_loss,
+                projected_rr=pos.projected_rr,
+                realized_rr=realized_rr,
+                pnl_gross=pnl,
+                exit_reason="STOP_HIT",
+                sector=pos.sector,
+                days_held=new_days_held,
+            )
+            self._session.add(log_entry)
+            self._session.delete(pos)
+            self._session.flush()
+
+            logger.info(
+                "[PositionLifecycle] AUTOMATED EXIT (STOP_HIT): %s (id=%d) exited at %.2f | PnL=%.2f | R:R=%.2f",
+                pos.symbol,
+                pos.id,
+                exit_price,
+                pnl,
+                realized_rr,
+            )
+
+            exit_flags = ["AUTOMATED_EXIT_STOP_HIT", "STATE_CHANGED"]
+            if earnings_alert:
+                exit_flags.append("EARNINGS_ALERT")
+
+            return PositionUpdate(
+                position_id=position_id,
+                symbol=pos.symbol,
+                old_state=old_state,
+                new_state=PositionState.CLOSED,
+                new_live_stop_loss=pos.live_stop_loss,
+                new_days_held=new_days_held,
+                new_highest_high=pos.highest_high_since_breakout,
+                earnings_alert=earnings_alert,
+                flags=exit_flags,
+                partial_profit_triggered=False,
+                shares_to_exit_now=shares_to_close,
+                partial_exit_price=exit_price,
+                shares_remaining_after=0,
+            )
 
         # Compute ATR14 on adjusted series
         atr_series = atr(
@@ -250,8 +344,6 @@ class PositionLifecycleManager:
             period=self._atr_period,
         )
         latest_atr = float(atr_series.iloc[-1]) if not pd.isna(atr_series.iloc[-1]) else 0.0
-
-        old_state = PositionState(pos.position_state)
 
         # Step 1: Increment days_held
         new_days_held = pos.days_held + 1
@@ -267,19 +359,113 @@ class PositionLifecycleManager:
             new_days_held=new_days_held,
             new_highest_high=new_highest_high,
             adj_ohlcv=adj_ohlcv,
+            eval_date=eval_date,
+            kill_switch_active=kill_switch_active,
         )
         new_state = PositionState(updated["position_state"])
         new_live_stop_loss = updated["live_stop_loss"]
 
+        # ── Automated Exit Check: Time-Decay Reached ──────────────────────────
+        # Assumption of Execution: If position reached time decay (or was pending exit)
+        # without graduating to 1:1, exit immediately at today's close price.
+        # Do not wait for manual UI confirmation.
+        if new_state == PositionState.PENDING_MANUAL_EXIT or old_state == PositionState.PENDING_MANUAL_EXIT:
+            exit_price = today_close_adj
+            shares_to_close = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+            one_r = pos.entry_price - pos.initial_stop_loss
+            realized_rr = (exit_price - pos.entry_price) / one_r if one_r > 0 else 0.0
+            pnl = (exit_price - pos.entry_price) * shares_to_close
+
+            log_entry = TradeAnalyticsLog(
+                position_id=pos.id,
+                symbol=pos.symbol,
+                entry_date=pos.entry_date,
+                exit_date=eval_date,
+                entry_price=pos.entry_price,
+                exit_price=exit_price,
+                shares=shares_to_close,
+                initial_stop_loss=pos.initial_stop_loss,
+                projected_rr=pos.projected_rr,
+                realized_rr=realized_rr,
+                pnl_gross=pnl,
+                exit_reason="TIME_DECAY",
+                sector=pos.sector,
+                days_held=new_days_held,
+            )
+            self._session.add(log_entry)
+            self._session.delete(pos)
+            self._session.flush()
+
+            logger.info(
+                "[PositionLifecycle] AUTOMATED EXIT (TIME_DECAY): %s (id=%d) exited at %.2f | days_held=%d | PnL=%.2f | R:R=%.2f",
+                pos.symbol,
+                pos.id,
+                exit_price,
+                new_days_held,
+                pnl,
+                realized_rr,
+            )
+
+            decay_flags = ["AUTOMATED_EXIT_TIME_DECAY", "STATE_CHANGED"]
+            if earnings_alert:
+                decay_flags.append("EARNINGS_ALERT")
+
+            return PositionUpdate(
+                position_id=position_id,
+                symbol=pos.symbol,
+                old_state=old_state,
+                new_state=PositionState.CLOSED,
+                new_live_stop_loss=new_live_stop_loss,
+                new_days_held=new_days_held,
+                new_highest_high=new_highest_high,
+                earnings_alert=earnings_alert,
+                flags=decay_flags,
+                partial_profit_triggered=False,
+                shares_to_exit_now=shares_to_close,
+                partial_exit_price=exit_price,
+                shares_remaining_after=0,
+            )
+        
         # Step 4: Evaluate partial profits
         partial_res = self._evaluate_partial_profits(pos, today_high_adj)
         
-        # Step 5: Earnings alert (independent of state)
-        earnings_alert, next_earnings_date = self._check_earnings_alert(
-            pos.symbol, eval_date
-        )
+        if partial_res["triggered"]:
+            # Automated Assumption of Execution
+            shares_sold = partial_res["shares_to_exit"]
+            exit_price = partial_res["exit_price"]
+            shares_rem = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
+            
+            pos.shares_remaining = shares_rem - shares_sold
+            pos.partial_exit_count += 1
+            
+            pnl = (exit_price - pos.entry_price) * shares_sold
+            pos.total_realized_pnl_partial += pnl
+            pos.last_partial_exit_rr = partial_res["last_rr"]
+            pos.next_partial_exit_rr = partial_res["next_rr"]
+            
+            # Log the partial exit to analytics immediately
+            one_r = pos.entry_price - pos.initial_stop_loss
+            realized_rr = (exit_price - pos.entry_price) / one_r if one_r > 0 else 0
+            
+            log_entry = TradeAnalyticsLog(
+                position_id=pos.id,
+                symbol=pos.symbol,
+                entry_date=pos.entry_date,
+                exit_date=eval_date,
+                entry_price=pos.entry_price,
+                exit_price=exit_price,
+                shares=shares_sold,
+                initial_stop_loss=pos.initial_stop_loss,
+                projected_rr=pos.projected_rr,
+                realized_rr=realized_rr,
+                pnl_gross=pnl,
+                exit_reason="PARTIAL_PROFIT",
+                sector=pos.sector,
+                days_held=new_days_held
+            )
+            self._session.add(log_entry)
 
-        # Step 6: Build flags
+        # Step 5: Build flags
         flags: list[str] = []
         if new_state != old_state:
             flags.append("STATE_CHANGED")
@@ -288,7 +474,7 @@ class PositionLifecycleManager:
         if earnings_alert:
             flags.append("EARNINGS_ALERT")
         if partial_res["triggered"]:
-            flags.append("PARTIAL_PROFIT_ALERT")
+            flags.append(f"PARTIAL_PROFIT_EXECUTED_{shares_sold}_SHARES")
 
         # Step 7: Persist
         pos.days_held = new_days_held
@@ -299,12 +485,6 @@ class PositionLifecycleManager:
         pos.next_earnings_date = next_earnings_date
         pos.last_evaluated_date = eval_date
         
-        shares_rem_after = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
-        if partial_res["triggered"]:
-            pos.last_partial_exit_rr = partial_res["last_rr"]
-            pos.next_partial_exit_rr = partial_res["next_rr"]
-            # shares_remaining logic will be updated when user confirms partial exit via UI
-            
         self._session.flush()
 
         logger.info(
@@ -330,7 +510,7 @@ class PositionLifecycleManager:
             partial_profit_triggered=partial_res["triggered"],
             shares_to_exit_now=partial_res["shares_to_exit"],
             partial_exit_price=partial_res["exit_price"],
-            shares_remaining_after=shares_rem_after - partial_res["shares_to_exit"]
+            shares_remaining_after=pos.shares_remaining if pos.shares_remaining is not None else pos.shares
         )
 
     def close_position(
@@ -382,6 +562,63 @@ class PositionLifecycleManager:
     # Private helpers
     # ------------------------------------------------------------------
 
+    def _is_kill_switch_active(self, eval_date: date) -> bool:
+        """Check if macro kill switch was active on or immediately prior to eval_date."""
+        if self._session is None:
+            return False
+        try:
+            from data.db.models import RegimeState as DBRegimeState
+            row = (
+                self._session.execute(
+                    select(DBRegimeState.kill_switch_active)
+                    .where(DBRegimeState.eval_date <= eval_date)
+                    .order_by(DBRegimeState.eval_date.desc())
+                    .limit(1)
+                )
+                .scalars()
+                .first()
+            )
+            return bool(row) if row is not None else False
+        except Exception:
+            return False
+
+    def _is_bull_regime(self, eval_date: date) -> bool:
+        """Check if market is in confirmed bull regime (kill switch OFF and Nifty > 200 SMA)."""
+        if self._session is None:
+            return False
+        try:
+            from data.db.models import RegimeState as DBRegimeState
+            row = (
+                self._session.execute(
+                    select(
+                        DBRegimeState.kill_switch_active,
+                        DBRegimeState.nifty_close,
+                        DBRegimeState.nifty_sma200,
+                    )
+                    .where(DBRegimeState.eval_date <= eval_date)
+                    .order_by(DBRegimeState.eval_date.desc())
+                    .limit(1)
+                )
+                .first()
+            )
+            if row and not row.kill_switch_active:
+                if row.nifty_close and row.nifty_sma200 and row.nifty_close > row.nifty_sma200:
+                    return True
+        except Exception:
+            return False
+        return False
+
+    def _get_trailing_multiplier(
+        self, eval_date: Optional[date] = None, kill_switch_active: Optional[bool] = None
+    ) -> float:
+        """Return the effective trailing ATR multiplier based on macro kill switch state."""
+        if kill_switch_active is None and eval_date is not None:
+            kill_switch_active = self._is_kill_switch_active(eval_date)
+
+        if kill_switch_active:
+            return self._trailing_stop_mult_kill_switch
+        return self._trailing_stop_mult_normal
+
     def _evaluate_state_machine(
         self,
         pos: ActivePosition,
@@ -390,6 +627,8 @@ class PositionLifecycleManager:
         new_days_held: int,
         new_highest_high: float,
         adj_ohlcv: pd.DataFrame,
+        eval_date: Optional[date] = None,
+        kill_switch_active: Optional[bool] = None,
     ) -> dict:
         """Apply the position state machine for one session.
 
@@ -403,6 +642,10 @@ class PositionLifecycleManager:
 
         # 1R = initial risk per share
         one_r = pos.entry_price - pos.initial_stop_loss
+
+        trail_mult = self._get_trailing_multiplier(
+            eval_date=eval_date, kill_switch_active=kill_switch_active
+        )
 
         if state == PositionState.INITIAL_RISK:
             # Check graduation to RISK_FREE_1_TO_1 first (priority)
@@ -418,7 +661,7 @@ class PositionLifecycleManager:
             if new_highest_high > pos.initial_resistance_target:
                 state = PositionState.TRAILING_ATR
                 # Initialise trailing stop
-                candidate_stop = new_highest_high - (self._trailing_stop_mult * atr_14)
+                candidate_stop = new_highest_high - (trail_mult * atr_14)
                 live_stop = max(live_stop, candidate_stop)
 
         if state == PositionState.TRAILING_ATR:
@@ -427,13 +670,31 @@ class PositionLifecycleManager:
                 state = PositionState.PARABOLIC_TRAILING
             else:
                 # Ratchet standard trailing stop — only moves UP
-                candidate_stop = new_highest_high - (self._trailing_stop_mult * atr_14)
+                candidate_stop = new_highest_high - (trail_mult * atr_14)
                 live_stop = max(live_stop, candidate_stop)
 
         if state == PositionState.PARABOLIC_TRAILING:
             # Ratchet parabolic trailing stop — tighter multiplier
             candidate_stop = new_highest_high - (self._parabolic_mult * atr_14)
             live_stop = max(live_stop, candidate_stop)
+
+        # Apply Step-Lock Profit Ratchet floor across active states
+        ratchet_active = self._ratchet_enabled
+        if ratchet_active and self._ratchet_enabled_regimes is not None and eval_date is not None:
+            is_bull = self._is_bull_regime(eval_date)
+            if is_bull and "bull_run" not in self._ratchet_enabled_regimes:
+                ratchet_active = False
+
+        if (
+            ratchet_active
+            and one_r > 0
+            and state not in (PositionState.PENDING_MANUAL_EXIT, PositionState.CLOSED)
+        ):
+            highest_rr = (new_highest_high - pos.entry_price) / one_r
+            for rung in self._ratchet_rungs:
+                if highest_rr >= float(rung["trigger_rr"]):
+                    ratchet_stop = pos.entry_price + (float(rung["lock_rr"]) * one_r)
+                    live_stop = max(live_stop, ratchet_stop)
 
         # PENDING_MANUAL_EXIT: no automated transitions
 

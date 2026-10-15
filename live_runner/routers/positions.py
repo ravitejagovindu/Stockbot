@@ -55,63 +55,6 @@ def close_position(req: ClosePositionRequest):
     }
 
 
-class RecordPartialExitRequest(BaseModel):
-    position_id: int
-    exit_price: float = Field(gt=0, description="Exit price in ₹")
-    shares_sold: int = Field(gt=0, description="Number of shares sold")
-    exit_date: date = Field(description="Date the partial was executed")
-
-
-@router.post("/partial_close")
-def record_partial_close(req: RecordPartialExitRequest):
-    """
-    Record a partial profit booking. Decrements shares_remaining and logs the partial exit.
-    """
-    with get_session() as session:
-        from data.db.models import ActivePosition
-        pos = session.query(ActivePosition).filter(ActivePosition.id == req.position_id).first()
-        if not pos:
-            raise HTTPException(status_code=404, detail="Position not found.")
-            
-        shares_rem = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
-        if req.shares_sold >= shares_rem:
-            raise HTTPException(status_code=400, detail="Cannot sell all remaining shares via partial. Use full close.")
-            
-        pos.shares_remaining = shares_rem - req.shares_sold
-        pos.partial_exit_count += 1
-        
-        pnl = (req.exit_price - pos.entry_price) * req.shares_sold
-        pos.total_realized_pnl_partial += pnl
-        
-        # Log to trade_analytics_log
-        from data.db.models import TradeAnalyticsLog
-        one_r = pos.entry_price - pos.initial_stop_loss
-        realized_rr = (req.exit_price - pos.entry_price) / one_r if one_r > 0 else 0
-        
-        log_entry = TradeAnalyticsLog(
-            position_id=pos.id,
-            symbol=pos.symbol,
-            entry_date=pos.entry_date,
-            exit_date=req.exit_date,
-            entry_price=pos.entry_price,
-            exit_price=req.exit_price,
-            shares=req.shares_sold,
-            initial_stop_loss=pos.initial_stop_loss,
-            projected_rr=pos.projected_rr,
-            realized_rr=realized_rr,
-            pnl_gross=pnl,
-            exit_reason="PARTIAL_PROFIT",
-            regime_at_entry=None,
-            regime_at_exit=None,
-            sector=pos.sector,
-            days_held=pos.days_held
-        )
-        session.add(log_entry)
-        session.commit()
-        
-    return {"success": True, "message": f"Partial exit recorded for {req.shares_sold} shares of {pos.symbol}."}
-
-
 @router.get("/states")
 def get_position_state_legend():
     """Returns the meaning of each position state — for UI reference."""

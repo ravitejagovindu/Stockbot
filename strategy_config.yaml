@@ -8,10 +8,11 @@ universe:
   min_listing_age_trading_days: 252 # Minimum listing history in trading days
   volume_breakout_multiplier: 0    # Gate 6: set to 0 to disable; >0 requires today's volume >= Nx avg volume
   relative_strength_lookback_days: 63  # Gate 7: 3-month (63 trading days) price return lookback
-  relative_strength_top_pct: 50    # Gate 7: stock must rank in top 50% of universe by 3-month return [loosened from 35%]
+  relative_strength_top_pct: 40    # Gate 7: stock must rank in top 40% of universe by 3-month return [tuned to 40%]
 
 macro:
   nifty_kill_sma_period: 200       # Nifty50 below this SMA triggers kill switch
+  bull_entry_sma_period: 50        # In bull regime, Nifty must be > this SMA to take new entries
   vix_kill_threshold: 22.0         # India VIX above this triggers kill switch
   nifty_reentry_sma_period: 20     # Nifty50 must be above this SMA for re-entry [restored to aggressive 20 SMA]
   vix_reentry_threshold: 20.0      # India VIX must be below this for re-entry [restored to aggressive 20.0]
@@ -22,15 +23,17 @@ risk:
   atr_stop_multiplier: 2.0         # Stop A = Entry - (2.0 × ATR14)
   donchian_period: 30              # Donchian channel period for Stop B
   trailing_stop_atr_period: 14     # ATR period for trailing stop
-  trailing_stop_atr_multiplier: 2.5 # Trailing stop = Highest High - (2.5 × ATR14) [widened to reduce whipsaw]
-  max_loss_pct_per_trade: 1.2      # Max loss per trade as % of total account equity [tuned to 1.2% for max DD control]
-  min_rr_ratio: 1.5                # Minimum Reward:Risk ratio [reverted to 1.5]
-  max_concurrent_positions: 10     # Hard cap on open positions
+  trailing_stop_atr_multiplier: 2.5 # Trailing stop = Highest High - (2.5 × ATR14) [default for healthy/bull regimes]
+  trailing_stop_atr_multiplier_kill_switch: 1.5 # Tightened trailing stop (1.5 × ATR14) when macro kill switch is active
+  max_loss_pct_per_trade: 1.0      # Max loss per trade as % of total account equity [tuned to 1.0% for max DD control]
+  min_rr_ratio: 1.5                # Minimum Reward:Risk ratio [restored to 1.5]
+  max_concurrent_positions: 12     # Hard cap on open positions [default in sideways/neutral market]
+  max_concurrent_positions_bull: 12 # Cap on open positions in confirmed bull regime [set to 12]
   max_total_portfolio_risk_pct: 15.0 # Hard cap on total equity at risk [raised to 15%]
   max_sector_exposure_pct: 15.0    # Max exposure in any single sector as % of allocated capital
 
 trade_management:
-  time_decay_sessions: 40          # Days in INITIAL_RISK before PENDING_MANUAL_EXIT flag [extended to 40]
+  time_decay_sessions: 20          # Days in INITIAL_RISK before exit [restored to 20 trading days / 1 month]
   binary_event_block_days: 14      # Block new entries if earnings/corp action within N calendar days
   earnings_alert_days: 7           # Show EARNINGS_ALERT on open positions N days before event
 
@@ -51,9 +54,9 @@ backtest:
       end: "2026-09-30"
   initial_equity: 1000000          # ₹10 lakhs starting capital for backtest simulation
   pass_criteria:
-    max_drawdown_pct: 20.0         # Strict less-than: must be < 20% [relaxed to allow aggressive settings]
+    max_drawdown_pct: 15.0         # Strict less-than: must be < 15%
     must_outperform_nifty: true    # Risk-adjusted return must beat Nifty 50 benchmark
-    allowed_underperform_pct: 2.0  # If must_outperform is true, alpha can be negative up to this %
+    allowed_underperform_pct: 1.0  # If must_outperform is true, alpha can be negative up to this %
     include_tax_drag: true         # Account for estimated STCG/LTCG, STT, slippage
     estimated_slippage_pct: 0.1    # 0.1% slippage per trade (buy + sell)
     estimated_stt_pct: 0.025       # STT on sell side
@@ -68,8 +71,16 @@ partial_profit:
   enabled: true
   exit_ladder:
     - rr_trigger: 1.0
-      exit_pct: 25
-    - rr_trigger: 2.0
-      exit_pct: 33
-    - rr_trigger: 3.0
-      exit_pct: 50
+      exit_pct: 12
+
+profit_ratchet:
+  enabled: true
+  enabled_regimes:
+    - "sideways_inflation"         # Active in mean-reverting regimes; disabled in bull to let runners trail freely
+  rungs:
+    - trigger_rr: 1.0
+      lock_rr: 0.0      # At +1.0R, stop moves to Breakeven (+0R)
+    - trigger_rr: 2.0
+      lock_rr: 1.0      # At +2.0R, lock in +1.0R profit
+    - trigger_rr: 3.0
+      lock_rr: 2.0      # At +3.0R, lock in +2.0R profit

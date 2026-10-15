@@ -126,17 +126,33 @@ def get_portfolio():
             "pnl_pct": round((est_pnl / cap) * 100, 2) if cap > 0 else 0.0
         })
 
+    effective_max_positions = risk_cfg["max_concurrent_positions"]
+    try:
+        from data.db.models import RegimeState as DBRegimeState
+        from sqlalchemy import select
+        with get_session() as session:
+            latest_regime = session.execute(
+                select(DBRegimeState.kill_switch_active, DBRegimeState.nifty_close, DBRegimeState.nifty_sma200)
+                .order_by(DBRegimeState.eval_date.desc())
+                .limit(1)
+            ).first()
+            if latest_regime and not latest_regime.kill_switch_active:
+                if latest_regime.nifty_close and latest_regime.nifty_sma200 and latest_regime.nifty_close > latest_regime.nifty_sma200:
+                    effective_max_positions = risk_cfg.get("max_concurrent_positions_bull", effective_max_positions)
+    except Exception:
+        pass
+
     return {
         "positions": position_list,
         "sector_performance": sector_performance,
         "summary": {
             "open_positions": len(position_list),
-            "max_positions": risk_cfg["max_concurrent_positions"],
+            "max_positions": effective_max_positions,
             "total_risk_amount": round(total_risk, 2),
             "total_risk_pct": round(total_risk_pct, 2),
             "max_risk_pct": risk_cfg["max_total_portfolio_risk_pct"],
             "total_position_value": round(total_position_value, 2),
-            "positions_capacity_used_pct": round((len(position_list) / risk_cfg["max_concurrent_positions"]) * 100, 1),
+            "positions_capacity_used_pct": round((len(position_list) / effective_max_positions) * 100, 1),
             "risk_capacity_used_pct": round((total_risk_pct / risk_cfg["max_total_portfolio_risk_pct"]) * 100, 1),
             "sector_exposure": sector_pct,
             "max_sector_pct": risk_cfg["max_sector_exposure_pct"],

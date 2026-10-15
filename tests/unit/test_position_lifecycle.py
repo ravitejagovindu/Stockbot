@@ -194,7 +194,7 @@ class TestInitialRiskGraduation:
 class TestTimedecayPendingManualExit:
 
     def test_no_graduation_in_15_days_triggers_pending(self, session):
-        """Never hitting 1:1 in 15 sessions must result in PENDING_MANUAL_EXIT."""
+        """Never hitting 1:1 in 15 sessions must trigger automated exit as TIME_DECAY."""
         symbol = "DECAYTEST"
         _add_many_ohlcv(session, symbol, date(2023, 12, 1), n=30,
                         high=105.0, low=95.0, close=100.0)
@@ -210,8 +210,10 @@ class TestTimedecayPendingManualExit:
         )
         mgr = PositionLifecycleManager(_config(time_decay=15), session)
         update = mgr.process_single(pos_id, eval_date)
-        assert update.new_state == PositionState.PENDING_MANUAL_EXIT
+        assert update.new_state == PositionState.CLOSED
+        assert "AUTOMATED_EXIT_TIME_DECAY" in update.flags
         assert "STATE_CHANGED" in update.flags
+        assert session.get(ActivePosition, pos_id) is None
 
     def test_hits_1r_on_day_14_not_flagged_as_pending(self, session):
         """Graduating to RISK_FREE on day 14 takes priority over PENDING_MANUAL_EXIT."""
@@ -235,9 +237,10 @@ class TestTimedecayPendingManualExit:
         # Must graduate to RISK_FREE, not PENDING_MANUAL_EXIT
         assert update.new_state == PositionState.RISK_FREE_1_TO_1
         assert update.new_state != PositionState.PENDING_MANUAL_EXIT
+        assert update.new_state != PositionState.CLOSED
 
     def test_exactly_on_day_15_triggers_pending_if_no_graduation(self, session):
-        """Day 15 exactly is the trigger boundary — must be PENDING on day 15."""
+        """Day 15 exactly is the trigger boundary — must auto-exit on day 15."""
         symbol = "EXACT15"
         _add_many_ohlcv(session, symbol, date(2023, 12, 1), n=30,
                         high=105.0, low=95.0, close=100.0)
@@ -254,7 +257,31 @@ class TestTimedecayPendingManualExit:
         mgr = PositionLifecycleManager(_config(time_decay=15), session)
         update = mgr.process_single(pos_id, eval_date)
         assert update.new_days_held == 15
-        assert update.new_state == PositionState.PENDING_MANUAL_EXIT
+        assert update.new_state == PositionState.CLOSED
+        assert "AUTOMATED_EXIT_TIME_DECAY" in update.flags
+        assert session.get(ActivePosition, pos_id) is None
+
+    def test_stop_loss_hit_triggers_automated_exit(self, session):
+        """When low <= live_stop_loss, position automatically closes as STOP_HIT without manual confirmation."""
+        symbol = "STOPTEST"
+        _add_many_ohlcv(session, symbol, date(2023, 12, 1), n=30,
+                        high=105.0, low=95.0, close=100.0)
+        eval_date = date(2024, 1, 16)
+        _add_ohlcv(session, symbol, eval_date, high=102.0, low=88.0, close=91.0)
+
+        pos_id = _add_position(
+            session, symbol=symbol,
+            entry_price=100.0, initial_stop=90.0, live_stop=90.0,
+            days_held=5,
+            highest_high=105.0,
+            state="INITIAL_RISK",
+        )
+        mgr = PositionLifecycleManager(_config(), session)
+        update = mgr.process_single(pos_id, eval_date)
+
+        assert update.new_state == PositionState.CLOSED
+        assert "AUTOMATED_EXIT_STOP_HIT" in update.flags
+        assert session.get(ActivePosition, pos_id) is None
 
 
 # ===========================================================================
@@ -432,3 +459,144 @@ class TestEarningsAlert:
         update = mgr.process_single(pos_id, eval_date)
 
         assert update.earnings_alert is False
+
+
+# ===========================================================================
+# Step-Lock Profit Ratchet Tests
+# ===========================================================================
+
+class TestProfitRatchet:
+
+    def test_locks_1r_at_2r(self, session):
+        """When highest high reaches +2R, stop is locked at +1R."""
+        symbol = "RATCHET_2R"
+        entry_date = date(2024, 1, 2)
+        entry_price = 100.0
+        stop = 90.0  # 1R = 10, so +2R = 120, locked stop = 110 (+1R)
+
+        _add_many_ohlcv(session, symbol, entry_date, n=20, high=105.0, low=95.0, close=100.0)
+        eval_date = entry_date + timedelta(days=20)
+        # Today hits 122 (> 120 = +2R)
+        _add_ohlcv(session, symbol, eval_date, high=122.0, low=115.0, close=118.0)
+
+        pos_id = _add_position(
+            session,
+            symbol=symbol,
+            entry_date=entry_date,
+            entry_price=entry_price,
+            initial_stop=stop,
+            live_stop=100.0,
+            initial_resistance=150.0,
+            state="RISK_FREE_1_TO_1",
+            highest_high=112.0,
+        )
+
+        cfg = _config()
+        cfg["profit_ratchet"] = {
+            "enabled": True,
+            "rungs": [
+                {"trigger_rr": 1.0, "lock_rr": 0.0},
+                {"trigger_rr": 2.0, "lock_rr": 1.0},
+                {"trigger_rr": 3.0, "lock_rr": 2.0},
+            ],
+        }
+
+        mgr = PositionLifecycleManager(cfg, session)
+        update = mgr.process_single(pos_id, eval_date)
+
+        # 1R = 10. +1R lock = 100 + 10 = 110.0
+        assert update.new_live_stop_loss >= 110.0
+
+    def test_locks_2r_at_3r(self, session):
+        """When highest high reaches +3R, stop is locked at +2R."""
+        symbol = "RATCHET_3R"
+        entry_date = date(2024, 1, 2)
+        entry_price = 100.0
+        stop = 90.0  # 1R = 10, so +3R = 130, locked stop = 120 (+2R)
+
+        _add_many_ohlcv(session, symbol, entry_date, n=20, high=105.0, low=95.0, close=100.0)
+        eval_date = entry_date + timedelta(days=20)
+        # Today hits 132 (> 130 = +3R)
+        _add_ohlcv(session, symbol, eval_date, high=132.0, low=125.0, close=128.0)
+
+        pos_id = _add_position(
+            session,
+            symbol=symbol,
+            entry_date=entry_date,
+            entry_price=entry_price,
+            initial_stop=stop,
+            live_stop=110.0,
+            initial_resistance=150.0,
+            state="RISK_FREE_1_TO_1",
+            highest_high=122.0,
+        )
+
+        cfg = _config()
+        cfg["profit_ratchet"] = {
+            "enabled": True,
+            "rungs": [
+                {"trigger_rr": 1.0, "lock_rr": 0.0},
+                {"trigger_rr": 2.0, "lock_rr": 1.0},
+                {"trigger_rr": 3.0, "lock_rr": 2.0},
+            ],
+        }
+
+        mgr = PositionLifecycleManager(cfg, session)
+        update = mgr.process_single(pos_id, eval_date)
+
+        # 1R = 10. +2R lock = 100 + 20 = 120.0
+        assert update.new_live_stop_loss >= 120.0
+
+    def test_ratchet_bypassed_when_regime_not_enabled(self, session):
+        """When enabled_regimes is set and market is in bull regime, ratchet is bypassed."""
+        from data.db.models import RegimeState as DBRegimeState
+        symbol = "RATCHET_BYPASS"
+        entry_date = date(2024, 1, 2)
+        entry_price = 100.0
+        stop = 90.0
+
+        _add_many_ohlcv(session, symbol, entry_date, n=20, high=105.0, low=95.0, close=100.0)
+        eval_date = entry_date + timedelta(days=20)
+        _add_ohlcv(session, symbol, eval_date, high=122.0, low=115.0, close=118.0)
+
+        # Record a confirmed bull regime in regime_state
+        r_state = DBRegimeState(
+            eval_date=eval_date,
+            nifty_close=20000.0,
+            nifty_sma200=18000.0,
+            nifty_sma50=19500.0,
+            vix_close=14.0,
+            kill_switch_active=False,
+            reentry_consecutive_count=0,
+        )
+        session.add(r_state)
+        session.flush()
+
+        pos_id = _add_position(
+            session,
+            symbol=symbol,
+            entry_date=entry_date,
+            entry_price=entry_price,
+            initial_stop=stop,
+            live_stop=100.0,
+            initial_resistance=150.0,
+            state="RISK_FREE_1_TO_1",
+            highest_high=112.0,
+        )
+
+        cfg = _config()
+        cfg["profit_ratchet"] = {
+            "enabled": True,
+            "enabled_regimes": ["sideways_inflation"],  # Not active in bull
+            "rungs": [
+                {"trigger_rr": 1.0, "lock_rr": 0.0},
+                {"trigger_rr": 2.0, "lock_rr": 1.0},
+                {"trigger_rr": 3.0, "lock_rr": 2.0},
+            ],
+        }
+
+        mgr = PositionLifecycleManager(cfg, session)
+        update = mgr.process_single(pos_id, eval_date)
+
+        # Stop should remain at 100.0 (breakeven), NOT ratcheted to 110.0 (+1R)
+        assert update.new_live_stop_loss == 100.0

@@ -132,6 +132,9 @@ class RiskAndSizingEngine:
         self._max_loss_pct: float = float(risk["max_loss_pct_per_trade"])  # e.g. 1.0
         self._min_rr: float = float(risk["min_rr_ratio"])  # e.g. 1.5
         self._max_positions: int = int(risk["max_concurrent_positions"])
+        self._max_positions_bull: int = int(
+            risk.get("max_concurrent_positions_bull", self._max_positions)
+        )
         self._max_total_risk_pct: float = float(risk["max_total_portfolio_risk_pct"])
         self._max_sector_pct: float = float(risk["max_sector_exposure_pct"])
 
@@ -148,6 +151,7 @@ class RiskAndSizingEngine:
         account_equity: float,
         current_positions: list[dict],
         sector: Optional[str] = None,
+        max_positions: Optional[int] = None,
     ) -> TradeSetup:
         """Compute a single candidate's trade setup.
 
@@ -359,6 +363,7 @@ class RiskAndSizingEngine:
             risk_amount=risk_amount,
             account_equity=account_equity,
             current_positions=current_positions,
+            max_positions=max_positions,
         )
 
         blocked = block_reason is not None
@@ -387,6 +392,9 @@ class RiskAndSizingEngine:
         eval_date: date,
         account_equity: float,
         current_positions: list[dict],
+        session: Optional[Any] = None,
+        is_bull_regime: Optional[bool] = None,
+        max_positions: Optional[int] = None,
     ) -> list[TradeSetup]:
         """Compute setups for all candidates sequentially.
 
@@ -408,6 +416,12 @@ class RiskAndSizingEngine:
             Total account equity.
         current_positions:
             Currently open positions (before today's new entries).
+        session:
+            Optional DB session to detect regime state.
+        is_bull_regime:
+            Optional override for bull regime position cap.
+        max_positions:
+            Optional explicit cap on open positions.
 
         Returns
         -------
@@ -418,6 +432,15 @@ class RiskAndSizingEngine:
         # Rolling position list for sequential heat cap evaluation
         virtual_positions = list(current_positions)
         heat_cap_full = False
+
+        if max_positions is None:
+            if is_bull_regime is None and session is not None:
+                is_bull_regime = self._is_bull_regime(eval_date, session)
+            effective_max_positions = (
+                self._max_positions_bull if is_bull_regime else self._max_positions
+            )
+        else:
+            effective_max_positions = max_positions
 
         for candidate in candidates:
             symbol = candidate["symbol"]
@@ -478,6 +501,7 @@ class RiskAndSizingEngine:
                 account_equity=account_equity,
                 current_positions=virtual_positions,
                 sector=sector,
+                max_positions=effective_max_positions,
             )
             results.append(setup)
 
@@ -494,7 +518,7 @@ class RiskAndSizingEngine:
                 ]
                 # Re-check if cap is now full for future candidates
                 heat_cap_full = self._is_heat_cap_full(
-                    virtual_positions, account_equity
+                    virtual_positions, account_equity, max_positions=effective_max_positions
                 )
 
         return results
@@ -503,6 +527,35 @@ class RiskAndSizingEngine:
     # Private helpers
     # ------------------------------------------------------------------
 
+    def _is_bull_regime(
+        self, eval_date: date, session: Optional[Any] = None
+    ) -> bool:
+        """Check if market is in confirmed bull regime (kill switch OFF and Nifty > 200 SMA)."""
+        if session is None:
+            return False
+        try:
+            from sqlalchemy import select
+            from data.db.models import RegimeState as DBRegimeState
+            row = (
+                session.execute(
+                    select(
+                        DBRegimeState.kill_switch_active,
+                        DBRegimeState.nifty_close,
+                        DBRegimeState.nifty_sma200,
+                    )
+                    .where(DBRegimeState.eval_date <= eval_date)
+                    .order_by(DBRegimeState.eval_date.desc())
+                    .limit(1)
+                )
+                .first()
+            )
+            if row and not row.kill_switch_active:
+                if row.nifty_close and row.nifty_sma200 and row.nifty_close > row.nifty_sma200:
+                    return True
+        except Exception:
+            pass
+        return False
+
     def _check_heat_cap(
         self,
         sector: Optional[str],
@@ -510,6 +563,7 @@ class RiskAndSizingEngine:
         risk_amount: float,
         account_equity: float,
         current_positions: list[dict],
+        max_positions: Optional[int] = None,
     ) -> Optional[str]:
         """Return a block reason string if any heat cap gate is breached.
 
@@ -525,6 +579,8 @@ class RiskAndSizingEngine:
             Total account equity.
         current_positions:
             Positions already open (or virtually accepted earlier in the run).
+        max_positions:
+            Optional effective cap on open positions.
 
         Returns
         -------
@@ -532,10 +588,11 @@ class RiskAndSizingEngine:
             Block reason if any gate is breached, else ``None``.
         """
         # Gate A: position count
+        allowed_max = max_positions if max_positions is not None else self._max_positions
         projected_positions = len(current_positions) + 1
-        if projected_positions > self._max_positions:
+        if projected_positions > allowed_max:
             return (
-                f"BLOCKED_BY_RISK(positions:{projected_positions}>{self._max_positions})"
+                f"BLOCKED_BY_RISK(positions:{projected_positions}>{allowed_max})"
             )
 
         # Gate B: total portfolio risk
@@ -570,10 +627,14 @@ class RiskAndSizingEngine:
         return None  # All gates passed
 
     def _is_heat_cap_full(
-        self, positions: list[dict], account_equity: float
+        self,
+        positions: list[dict],
+        account_equity: float,
+        max_positions: Optional[int] = None,
     ) -> bool:
         """Return True if adding any more positions would breach any heat cap."""
-        if len(positions) >= self._max_positions:
+        allowed_max = max_positions if max_positions is not None else self._max_positions
+        if len(positions) >= allowed_max:
             return True
         total_risk = sum(p.get("risk_amount", 0.0) for p in positions)
         if total_risk / account_equity * 100.0 >= self._max_total_risk_pct:
