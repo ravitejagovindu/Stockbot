@@ -9,25 +9,104 @@ interface HeatGaugeProps {
 }
 
 export default function HeatGauge({ label, value, max, formatAsPct = false }: HeatGaugeProps) {
-  const pct = Math.min(100, Math.max(0, (value / max) * 100));
-  
-  let color = "bg-green-500";
-  if (pct >= 80) color = "bg-orange-500";
-  if (pct >= 95) color = "bg-red-500";
+  const pct = Math.min(100, Math.max(0, (value / (max || 1)) * 100));
+  const isPositions = label.toLowerCase().includes("position");
 
   const displayValue = formatAsPct ? `${value.toFixed(1)}%` : value.toString();
   const displayMax = formatAsPct ? `${max.toFixed(1)}%` : max.toString();
 
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <div className="flex justify-between items-end mb-4">
-        <h4 className="text-gray-500 font-medium">{label}</h4>
-        <div className="text-2xl font-bold text-gray-800">
-          {displayValue} <span className="text-sm font-normal text-gray-400">/ {displayMax}</span>
+  // If it's the positions gauge:
+  if (isPositions) {
+    const slots = Array.from({ length: max || 10 }, (_, i) => i + 1);
+    return (
+      <div className="glass-card border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
+            {label}
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+            {value} / {max} USED
+          </span>
+        </div>
+        <div>
+          <div className="flex items-baseline space-x-2">
+            <span className="text-3xl font-extrabold text-white font-mono tabular-nums tracking-tight">
+              {displayValue}
+            </span>
+            <span className="text-xs text-slate-400 font-mono">/ {displayMax} Active Positions</span>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">Max 15% capital per single sector</p>
+        </div>
+        {/* Discrete Slot Blocks */}
+        <div className="grid grid-cols-10 gap-1.5 pt-2">
+          {slots.map((slotNum) => {
+            const isFilled = slotNum <= value;
+            return (
+              <div
+                key={slotNum}
+                className={clsx(
+                  "h-5 rounded border flex items-center justify-center text-[10px] font-mono transition-all",
+                  isFilled
+                    ? "bg-blue-600 border-blue-400 text-white shadow-sm shadow-blue-500/50"
+                    : "bg-slate-800/80 border-slate-700/50 text-slate-400"
+                )}
+              >
+                {slotNum}
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-3">
-        <div className={clsx("h-3 rounded-full transition-all duration-500", color)} style={{ width: `${pct}%` }} />
+    );
+  }
+
+  // Risk Heat Gauge:
+  return (
+    <div className="glass-card border border-slate-800 rounded-2xl p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
+          {label}
+        </span>
+        <span
+          className={clsx(
+            "text-[10px] font-mono px-2 py-0.5 rounded border",
+            pct >= 80
+              ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+              : pct >= 50
+              ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+              : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+          )}
+        >
+          {pct >= 80 ? "HIGH RISK" : pct >= 50 ? "CAUTION" : "SAFE"}
+        </span>
+      </div>
+      <div>
+        <div className="flex items-baseline space-x-2">
+          <span className="text-3xl font-extrabold text-white font-mono tabular-nums tracking-tight">
+            {displayValue}
+          </span>
+          <span className="text-xs text-slate-400 font-mono">/ {displayMax} Max Cap</span>
+        </div>
+        <p className="text-xs text-slate-400 mt-1">1% Max Risk per position allocation</p>
+      </div>
+      {/* Risk Progress Bar with 10% Caution Notch */}
+      <div className="space-y-1.5 pt-2">
+        <div className="flex justify-between text-xs font-mono">
+          <span className="text-slate-400">Risk Budget</span>
+          <span className={clsx(pct >= 80 ? "text-rose-400" : "text-emerald-400")}>
+            {Math.max(0, max - value).toFixed(1)}% Available
+          </span>
+        </div>
+        <div className="w-full h-2 rounded-full bg-slate-800 relative">
+          <div
+            className={clsx(
+              "h-full rounded-full transition-all duration-500",
+              pct >= 80 ? "bg-rose-500" : pct >= 50 ? "bg-amber-500" : "bg-emerald-500"
+            )}
+            style={{ width: `${pct}%` }}
+          />
+          <div className="absolute top-0 bottom-0 left-[66%] w-0.5 bg-amber-500" title="10% Caution Notch" />
+        </div>
       </div>
     </div>
   );

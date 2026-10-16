@@ -65,6 +65,7 @@ export interface WatchlistResponse {
 export interface PortfolioResponse {
   positions: any[];
   summary: any;
+  sector_performance?: any[];
 }
 
 export interface AnalyticsResponse {
