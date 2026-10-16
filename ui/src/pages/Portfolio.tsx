@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPortfolio, fetchLedgerSummary } from "../api";
+import { fetchPortfolio, fetchLedgerSummary, type PortfolioSummary } from "../api";
 import PositionTable from "../components/portfolio/PositionTable";
 import ManageFundsPanel from "../components/portfolio/ManageFundsPanel";
 import { AlertTriangle } from "lucide-react";
@@ -31,7 +31,8 @@ export default function Portfolio() {
     );
   }
 
-  const { positions = [], summary = {} } = portfolio || {};
+  const positions = portfolio?.positions || [];
+  const summary: PortfolioSummary = portfolio?.summary || {};
   const liveEquity = ledger?.live_equity || 1000000;
   
   // Calculate invested capital and mark-to-market P&L
@@ -64,7 +65,7 @@ export default function Portfolio() {
             </span>
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Live position tracking with 2×ATR trailing stops, earnings event surveillance, and 15-day time decay monitor.
+            Live position tracking with 2×ATR trailing stops, earnings event surveillance, and 20-session time decay monitor.
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { fetchHealth, fetchWatchlist, fetchPortfolio } from "../../api";
+import { fetchHealth, fetchWatchlist, fetchPortfolio, fetchAnalytics } from "../../api";
 import { 
   LayoutDashboard, 
   List, 
@@ -18,6 +18,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { data: health } = useQuery({ queryKey: ["health"], queryFn: fetchHealth });
   const { data: watchlist } = useQuery({ queryKey: ["watchlist"], queryFn: () => fetchWatchlist() });
   const { data: portfolio } = useQuery({ queryKey: ["portfolio"], queryFn: fetchPortfolio });
+  const { data: analytics } = useQuery({ queryKey: ["analytics"], queryFn: () => fetchAnalytics(20) });
+
+  const decaySignal = analytics?.summary?.decay_signal;
 
   const navItems = [
     { 
@@ -40,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       path: "/portfolio", 
       icon: Briefcase,
       badge: portfolio?.summary?.open_positions !== undefined 
-        ? `${portfolio.summary.open_positions}/${portfolio.summary.max_positions || 10}` 
+        ? `${portfolio.summary.open_positions}/${portfolio.summary.max_positions || 12}` 
         : null,
       badgeColor: "bg-slate-800 text-slate-300 border-slate-700"
     },
@@ -48,13 +51,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       name: "Alpha & Decay", 
       path: "/analytics", 
       icon: BarChart2,
-      badge: "α OK",
-      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+      badge: decaySignal ? (decaySignal === "HEALTHY" ? "α OK" : decaySignal) : "α OK",
+      badgeColor: decaySignal === "CRITICAL"
+        ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
+        : decaySignal === "WARNING"
+        ? "bg-amber-500/20 text-amber-300 border-amber-500/30"
+        : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
     },
   ];
 
-  const locked = health?.sha_locked && health?.tree_clean;
-  const shortSha = health?.authorized_sha ? health.authorized_sha.slice(0, 7) : "LOCKED";
+  const locked = Boolean(health?.sha_locked && health?.tree_clean);
+  const shortSha = health?.authorized_sha ? `#${health.authorized_sha.slice(0, 7)}` : "VERIFIED";
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#080c14] text-slate-100">
@@ -91,7 +98,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ) : (
               <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
             )}
-            <span>{locked ? `Git-SHA: ${shortSha} (LOCKED)` : "System Lock: Broken / Unverified"}</span>
+            <span>
+              {locked 
+                ? `Git-SHA: ${shortSha} (LOCKED)` 
+                : health?.current_sha 
+                ? `Git-SHA: #${health.current_sha.slice(0, 7)} (DIRTY TREE)` 
+                : "System Lock: Broken / Unverified"}
+            </span>
           </div>
 
           {/* EOD Pipeline Status */}

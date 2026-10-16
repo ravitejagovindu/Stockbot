@@ -112,7 +112,7 @@ export default function RegimeBanner() {
                 {sessionsDone} / {sessionsReq} Sessions
               </p>
               <p className="text-[11px] text-slate-400 mt-0.5">
-                {active ? "Requires 3 consecutive days" : "Full criteria met"}
+                {active ? `Requires ${sessionsReq} consecutive sessions` : "Full criteria met"}
               </p>
             </div>
 
@@ -143,11 +143,14 @@ export default function RegimeBanner() {
                 active ? "text-rose-400" : "text-emerald-400"
               )}
             >
-              {sessionsDone} of {sessionsReq} Days {active ? "" : "(QUALIFIED)"}
+              {sessionsDone} of {sessionsReq} Sessions {active ? "" : "(QUALIFIED)"}
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div 
+            className="grid gap-2" 
+            style={{ gridTemplateColumns: `repeat(${sessionsReq}, minmax(0, 1fr))` }}
+          >
             {Array.from({ length: sessionsReq }).map((_, i) => (
               <div
                 key={i}
@@ -162,7 +165,7 @@ export default function RegimeBanner() {
           </div>
 
           <p className="text-[11px] text-slate-400 leading-tight">
-            Must sustain Nifty &gt; 50-SMA and VIX &lt; 18 for 3 consecutive closes before generating tickets.
+            Must sustain Nifty &gt; 50-SMA and VIX &lt; 18 for {sessionsReq} consecutive closes before generating tickets.
           </p>
         </div>
       </div>

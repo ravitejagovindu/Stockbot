@@ -17,7 +17,8 @@ export default function HeatGauge({ label, value, max, formatAsPct = false }: He
 
   // If it's the positions gauge:
   if (isPositions) {
-    const slots = Array.from({ length: max || 10 }, (_, i) => i + 1);
+    const totalSlots = max || 12;
+    const slots = Array.from({ length: totalSlots }, (_, i) => i + 1);
     return (
       <div className="glass-card border border-slate-800 rounded-2xl p-5 space-y-4">
         <div className="flex items-center justify-between">
@@ -25,7 +26,7 @@ export default function HeatGauge({ label, value, max, formatAsPct = false }: He
             {label}
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-            {value} / {max} USED
+            {value} / {totalSlots} USED
           </span>
         </div>
         <div>
@@ -35,10 +36,13 @@ export default function HeatGauge({ label, value, max, formatAsPct = false }: He
             </span>
             <span className="text-xs text-slate-400 font-mono">/ {displayMax} Active Positions</span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">Max 15% capital per single sector</p>
+          <p className="text-xs text-slate-400 mt-1">1% Max Risk per position allocation</p>
         </div>
         {/* Discrete Slot Blocks */}
-        <div className="grid grid-cols-10 gap-1.5 pt-2">
+        <div 
+          className="grid gap-1.5 pt-2" 
+          style={{ gridTemplateColumns: `repeat(${totalSlots}, minmax(0, 1fr))` }}
+        >
           {slots.map((slotNum) => {
             const isFilled = slotNum <= value;
             return (
@@ -105,7 +109,11 @@ export default function HeatGauge({ label, value, max, formatAsPct = false }: He
             )}
             style={{ width: `${pct}%` }}
           />
-          <div className="absolute top-0 bottom-0 left-[66%] w-0.5 bg-amber-500" title="10% Caution Notch" />
+          <div 
+            className="absolute top-0 bottom-0 w-0.5 bg-amber-500 z-10" 
+            style={{ left: `${Math.min(95, Math.round((10 / (max || 15)) * 100))}%` }} 
+            title="10.0% Risk Warning Threshold" 
+          />
         </div>
       </div>
     </div>

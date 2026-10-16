@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchPortfolio } from "../api";
+import { fetchPortfolio, type PortfolioSummary } from "../api";
 import RegimeBanner from "../components/regime/RegimeBanner";
 import KillSwitchGauge from "../components/regime/KillSwitchGauge";
 import HeatGauge from "../components/portfolio/HeatGauge";
@@ -34,10 +34,11 @@ export default function Dashboard() {
     );
   }
 
-  const { summary = {}, sector_performance = [] } = portfolio || {};
-  const accountEquity = summary?.account_equity || 1000000;
-  const peakEquity = summary?.peak_equity || accountEquity;
-  const drawdownPct = summary?.current_drawdown_pct || 0.0;
+  const summary: PortfolioSummary = portfolio?.summary || {};
+  const sector_performance = portfolio?.sector_performance || [];
+  const accountEquity = summary?.account_equity || summary?.total_equity || 1000000;
+  const peakEquity = summary?.peak_equity ?? null;
+  const drawdownPct = summary?.current_drawdown_pct ?? null;
   const capitalDeployedPct = summary?.capital_deployed_pct || 0.0;
   const pendingExits = summary?.pending_manual_exits || [];
   const earningsAlerts = summary?.earnings_alerts || [];
@@ -99,11 +100,17 @@ export default function Dashboard() {
               ₹{accountEquity.toLocaleString("en-IN")}
             </p>
             <div className="flex items-center space-x-2 mt-1 text-xs text-slate-400 font-mono">
-              <span>Peak: ₹{peakEquity.toLocaleString("en-IN")}</span>
-              <span>•</span>
-              <span className={drawdownPct > 0 ? "text-rose-400" : "text-emerald-400"}>
-                Drawdown: {drawdownPct.toFixed(1)}%
-              </span>
+              {peakEquity ? (
+                <>
+                  <span>Peak: ₹{peakEquity.toLocaleString("en-IN")}</span>
+                  <span>•</span>
+                  <span className={drawdownPct && drawdownPct > 0 ? "text-rose-400" : "text-emerald-400"}>
+                    Drawdown: {drawdownPct ? `${drawdownPct.toFixed(1)}%` : "0.0%"}
+                  </span>
+                </>
+              ) : (
+                <span className="text-slate-400">Peak Ledger: Tracking Active</span>
+              )}
             </div>
           </div>
           <div className="space-y-1.5 pt-2">
@@ -134,7 +141,7 @@ export default function Dashboard() {
         <HeatGauge 
           label="Portfolio Slots" 
           value={summary?.open_positions || 0} 
-          max={summary?.max_positions || 10} 
+          max={summary?.max_positions || 12} 
         />
       </div>
 

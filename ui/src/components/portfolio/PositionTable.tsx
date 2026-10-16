@@ -25,19 +25,19 @@ export default function PositionTable({ positions = [] }: { positions: any[] }) 
 
   const getDaysHeldDisplay = (pos: any) => {
     const days = pos.days_held || 0;
-    const maxDays = 15;
+    const maxDays = 20;
     const pct = Math.min(100, (days / maxDays) * 100);
     const isTargetHit = pos.position_state !== "INITIAL_RISK";
 
     return (
       <div className="space-y-1 w-28 font-mono">
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-300">Day {days} / {maxDays}</span>
+          <span className="text-slate-300">Session {days} / {maxDays}</span>
           {isTargetHit ? (
             <span className="text-emerald-400 text-[10px]">&gt; 1:1 Hit</span>
           ) : (
-            <span className={clsx("text-[10px]", days >= 12 ? "text-rose-400" : "text-slate-400")}>
-              {maxDays - days}d left
+            <span className={clsx("text-[10px]", days >= 16 ? "text-rose-400" : "text-slate-400")}>
+              {maxDays - days}s left
             </span>
           )}
         </div>
@@ -45,7 +45,7 @@ export default function PositionTable({ positions = [] }: { positions: any[] }) 
           <div
             className={clsx(
               "h-1.5 rounded-full transition-all",
-              isTargetHit ? "bg-emerald-400" : days >= 12 ? "bg-rose-500" : "bg-blue-500"
+              isTargetHit ? "bg-emerald-400" : days >= 16 ? "bg-rose-500" : "bg-blue-500"
             )}
             style={{ width: `${pct}%` }}
           />
@@ -75,7 +75,7 @@ export default function PositionTable({ positions = [] }: { positions: any[] }) 
               <th className="py-3 px-4">Stop Loss (Ratchet)</th>
               <th className="py-3 px-4">Unrealized P&L</th>
               <th className="py-3 px-4">State</th>
-              <th className="py-3 px-4">Time Decay (15d)</th>
+              <th className="py-3 px-4">Time Decay (20s)</th>
               <th className="py-3 px-4">Surveillance Alert</th>
               <th className="py-3 px-4 text-right">Manual Action</th>
             </tr>
@@ -166,13 +166,16 @@ export default function PositionTable({ positions = [] }: { positions: any[] }) 
                     {/* Surveillance Alert */}
                     <td className="py-4 px-4">
                       {pos.earnings_alert ? (
-                        <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono text-[11px] flex items-center gap-1 w-fit">
+                        <span 
+                          className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono text-[11px] flex items-center gap-1 w-fit"
+                          title="Results within 7 sessions. Operator discretion advised."
+                        >
                           <AlertTriangle className="w-3 h-3 text-amber-400" />
-                          <span>Earnings in {pos.next_earnings_date ? new Date(pos.next_earnings_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "Soon"}</span>
+                          <span>Earnings Alert (&lt;7s)</span>
                         </span>
                       ) : (
                         <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono text-[11px]">
-                          Clean (&gt;30d)
+                          Clean (&gt;7s)
                         </span>
                       )}
                     </td>

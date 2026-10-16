@@ -6,6 +6,7 @@ export interface HealthResponse {
   sha_locked: boolean;
   tree_clean: boolean;
   authorized_sha: string | null;
+  current_sha?: string | null;
   last_pipeline_run: any;
 }
 
@@ -62,14 +63,64 @@ export interface WatchlistResponse {
   blocked: any[];
 }
 
+export interface PortfolioSummary {
+  open_positions?: number;
+  max_positions?: number;
+  total_equity?: number;
+  account_equity?: number;
+  cash?: number;
+  invested_capital?: number;
+  unrealized_pnl?: number;
+  total_realized_pnl?: number;
+  total_risk_pct?: number;
+  max_risk_pct?: number;
+  max_sector_pct?: number;
+  peak_equity?: number;
+  current_drawdown_pct?: number;
+  capital_deployed_pct?: number;
+  pending_manual_exits?: string[] | any[];
+  earnings_alerts?: string[] | any[];
+}
+
+export interface Position {
+  id: number;
+  symbol: string;
+  shares: number;
+  entry_price: number;
+  current_price: number;
+  initial_stop_loss: number;
+  live_stop_loss: number;
+  days_held: number;
+  earnings_alert: boolean;
+  sector?: string;
+  entry_date?: string;
+  unrealized_pnl?: number;
+  unrealized_pnl_pct?: number;
+  active_stop?: string;
+}
+
 export interface PortfolioResponse {
-  positions: any[];
-  summary: any;
+  positions: Position[];
+  summary: PortfolioSummary;
   sector_performance?: any[];
 }
 
+export interface AnalyticsSummary {
+  total_trades?: number;
+  win_rate?: number;
+  avg_win?: number;
+  avg_loss?: number;
+  expectancy?: number;
+  projected_rr_avg?: number;
+  avg_projected_rr?: number;
+  realized_rr_avg?: number;
+  avg_realized_rr?: number;
+  decay_ratio?: number;
+  decay_signal?: "HEALTHY" | "MONITOR" | "WARNING" | "CRITICAL" | string;
+}
+
 export interface AnalyticsResponse {
-  summary: any;
+  summary: AnalyticsSummary;
   trades: any[];
 }
 

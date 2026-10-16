@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAnalytics } from "../api";
+import { fetchAnalytics, type AnalyticsSummary } from "../api";
 import DecayIndicator from "../components/analytics/DecayIndicator";
 import RRScatterPlot from "../components/analytics/RRScatterPlot";
 import { FolderArchive } from "lucide-react";
@@ -27,7 +27,8 @@ export default function Analytics() {
     );
   }
 
-  const { summary = {}, trades = [] } = analytics || {};
+  const summary: AnalyticsSummary = analytics?.summary || {};
+  const trades = analytics?.trades || [];
   const totalTrades = summary.total_trades || trades.length || 0;
   const winRate = summary.win_rate !== undefined ? (summary.win_rate * 100).toFixed(1) : "0.0";
   const avgProjRr = summary.avg_projected_rr ? summary.avg_projected_rr.toFixed(2) : "1.50";
