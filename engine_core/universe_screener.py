@@ -390,6 +390,9 @@ class UniverseScreener:
         Returns the percentile cutoff value (e.g., the 65th percentile return
         for top-35% requirement), or ``None`` if insufficient data.
         """
+        if self._rs_top_pct <= 0:
+            return None
+
         lookback = self._rs_lookback
         returns = []
         for sym in symbols:

@@ -8,7 +8,7 @@ universe:
   min_listing_age_trading_days: 252 # Minimum listing history in trading days
   volume_breakout_multiplier: 0    # Gate 6: set to 0 to disable; >0 requires today's volume >= Nx avg volume
   relative_strength_lookback_days: 63  # Gate 7: 3-month (63 trading days) price return lookback
-  relative_strength_top_pct: 40    # Gate 7: stock must rank in top 40% of universe by 3-month return [tuned to 40%]
+  relative_strength_top_pct: 0    # Gate 7: set to 0 to disable (matches backtest Pass 1)
 
 macro:
   nifty_kill_sma_period: 200       # Nifty50 below this SMA triggers kill switch
