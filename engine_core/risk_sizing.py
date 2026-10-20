@@ -131,6 +131,7 @@ class RiskAndSizingEngine:
         )
         self._max_loss_pct: float = float(risk["max_loss_pct_per_trade"])  # e.g. 1.0
         self._min_rr: float = float(risk["min_rr_ratio"])  # e.g. 1.5
+        self._max_rr_cap: float = float(risk.get("max_rr_cap", 0) or 0)
         self._max_positions: int = int(risk["max_concurrent_positions"])
         self._max_positions_bull: int = int(
             risk.get("max_concurrent_positions_bull", self._max_positions)
@@ -322,6 +323,25 @@ class RiskAndSizingEngine:
                 projected_rr=projected_rr,
                 blocked=True,
                 block_reason=f"RR_TOO_LOW({projected_rr:.2f}<{self._min_rr})",
+                sector=sector,
+            )
+
+        if self._max_rr_cap and projected_rr > self._max_rr_cap:
+            return TradeSetup(
+                symbol=symbol,
+                eval_date=eval_date,
+                entry_price=entry_price,
+                live_stop_loss=live_stop_loss,
+                stop_a=stop_a,
+                stop_b=stop_b,
+                initial_resistance_target=resistance_target,
+                shares=0,
+                position_value=0.0,
+                risk_amount=0.0,
+                risk_pct_of_equity=0.0,
+                projected_rr=projected_rr,
+                blocked=True,
+                block_reason=f"RR_ABOVE_CAP({projected_rr:.2f}>{self._max_rr_cap})",
                 sector=sector,
             )
 

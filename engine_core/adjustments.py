@@ -45,6 +45,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 
 from engine_core.indicators import sma
@@ -156,16 +157,57 @@ def compute_cumulative_factor(
     return cumulative
 
 
+def _as_date(d):
+    """datetime.date passthrough; datetime/Timestamp -> date."""
+    return d.date() if hasattr(d, "date") and callable(getattr(d, "date")) else d
+
+
+def _action_factor(action: dict) -> float:
+    """Price factor for ONE action (SPLIT/BONUS). Other types -> 1.0."""
+    t = (action.get("action_type") or "").upper()
+    num, den = action.get("ratio_numerator"), action.get("ratio_denominator")
+    if t == "SPLIT":
+        if not num or not den:
+            raise ValueError(f"SPLIT missing ratio: num={num} den={den}")
+        return num / den
+    if t == "BONUS":
+        if num is None or den is None:
+            raise ValueError(f"BONUS missing ratio: num={num} den={den}")
+        return den / (den + num)
+    return 1.0
+
+
+def compute_row_factors(index, corporate_actions: list[dict], as_of_date: date) -> pd.Series:
+    """factor[d] = product of f(action) over actions where ex_date <= as_of_date AND d < ex_date.
+
+    Meaning: history is expressed in the price basis in force on as_of_date.
+    Bars before an ex-date are scaled; the ex-date bar and later bars are not.
+    Actions after as_of_date are unknown yet and ignored (point-in-time safe).
+    """
+    dates = [_as_date(d) for d in index]
+    factors = np.ones(len(dates), dtype="float64")
+    for a in corporate_actions:
+        ex = a["ex_date"]
+        if isinstance(ex, str):
+            ex = date.fromisoformat(ex)
+        ex = _as_date(ex)
+        if ex > as_of_date:
+            continue  # future event, not known yet
+        f = _action_factor(a)
+        if f == 1.0:
+            continue
+        mask = np.fromiter((d < ex for d in dates), dtype=bool, count=len(dates))
+        factors[mask] *= f
+    return pd.Series(factors, index=index)
+
+
 def get_adjusted_series(
     raw_ohlcv: pd.DataFrame,
     corporate_actions: list[dict],
     as_of_date: date,
 ) -> pd.DataFrame:
-    """Apply backward price adjustment to a raw OHLCV DataFrame in-memory.
-
-    Prices in ``raw_ohlcv`` that are **on or before** ``as_of_date`` are
-    multiplied by the cumulative adjustment factor derived from all corporate
-    actions that occurred **after** ``as_of_date``.
+    """Per-row backward price adjustment. Returns open_adj/high_adj/low_adj/close_adj.
+    Volume is NOT returned — always use raw_ohlcv.volume_raw for ADTV computation.
 
     Parameters
     ----------
@@ -188,28 +230,16 @@ def get_adjusted_series(
         ``open_adj``, ``high_adj``, ``low_adj``, ``close_adj``.
         Volume is excluded — callers must always use ``raw_ohlcv.volume_raw``
         directly for ADTV computation.
-
-    Notes
-    -----
-    All rows in ``raw_ohlcv`` receive the *same* factor.  A more granular
-    per-action slice would be needed only if we stored per-row dates and
-    needed to adjust across multiple events within the DataFrame's range.
-    For the use-case here (adjust the full lookback window as of today),
-    the single cumulative factor is correct.
     """
-    # Never mutate the caller's DataFrame
-    adj = raw_ohlcv.copy(deep=False)
-
-    factor = compute_cumulative_factor(corporate_actions, as_of_date)
-
+    f = compute_row_factors(raw_ohlcv.index, corporate_actions, as_of_date)
     return pd.DataFrame(
         {
-            "open_adj": adj["open_raw"] * factor,
-            "high_adj": adj["high_raw"] * factor,
-            "low_adj": adj["low_raw"] * factor,
-            "close_adj": adj["close_raw"] * factor,
+            "open_adj": raw_ohlcv["open_raw"] * f,
+            "high_adj": raw_ohlcv["high_raw"] * f,
+            "low_adj": raw_ohlcv["low_raw"] * f,
+            "close_adj": raw_ohlcv["close_raw"] * f,
         },
-        index=adj.index,
+        index=raw_ohlcv.index,
     )
 
 

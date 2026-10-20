@@ -168,7 +168,7 @@ class PositionLifecycleManager:
 
         ratchet = config.get("profit_ratchet", {})
         self._ratchet_enabled: bool = bool(ratchet.get("enabled", False))
-        self._ratchet_enabled_regimes: Optional[list[str]] = ratchet.get("enabled_regimes")
+        self._ratchet_active_in_bull: bool = bool(ratchet.get("active_in_bull", False))
         self._ratchet_rungs: list = sorted(
             ratchet.get("rungs", []),
             key=lambda x: float(x["trigger_rr"])
@@ -679,11 +679,8 @@ class PositionLifecycleManager:
             live_stop = max(live_stop, candidate_stop)
 
         # Apply Step-Lock Profit Ratchet floor across active states
-        ratchet_active = self._ratchet_enabled
-        if ratchet_active and self._ratchet_enabled_regimes is not None and eval_date is not None:
-            is_bull = self._is_bull_regime(eval_date)
-            if is_bull and "bull_run" not in self._ratchet_enabled_regimes:
-                ratchet_active = False
+        is_bull = self._is_bull_regime(eval_date) if eval_date is not None else False
+        ratchet_active = self._ratchet_enabled and (self._ratchet_active_in_bull or not is_bull)
 
         if (
             ratchet_active

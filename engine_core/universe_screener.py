@@ -131,7 +131,9 @@ class UniverseScreener:
     # Public API
     # ------------------------------------------------------------------
 
-    def screen_all(self, eval_date: date) -> list[ScreeningResult]:
+    def screen_all(
+        self, eval_date: date, apply_event_gates: bool = True
+    ) -> list[ScreeningResult]:
         """Screen every symbol present in the data lake for ``eval_date``.
 
         The full universe is derived from distinct symbols that have at least
@@ -143,6 +145,9 @@ class UniverseScreener:
         eval_date:
             Evaluation date (today's date in the live runner; a historical
             date in the back-tester).
+        apply_event_gates:
+            Whether to enforce ASM/GSM surveillance and binary event gates.
+            Set to False in naive backtest passes.
 
         Returns
         -------
@@ -156,14 +161,19 @@ class UniverseScreener:
         )
         # Pre-compute universe-wide RS threshold once (avoids N²  DB queries)
         self._rs_threshold_return = self._compute_rs_threshold(symbols, eval_date)
-        results = [self.screen_single(sym, eval_date) for sym in symbols]
+        results = [
+            self.screen_single(sym, eval_date, apply_event_gates=apply_event_gates)
+            for sym in symbols
+        ]
         passed = sum(1 for r in results if r.passed)
         logger.info(
             "[UniverseScreener] %d/%d symbols passed all gates.", passed, len(symbols)
         )
         return results
 
-    def screen_single(self, symbol: str, eval_date: date) -> ScreeningResult:
+    def screen_single(
+        self, symbol: str, eval_date: date, apply_event_gates: bool = True
+    ) -> ScreeningResult:
         """Screen one symbol through all five gates.
 
         Gates are applied in order; the first failure short-circuits remaining
@@ -175,6 +185,9 @@ class UniverseScreener:
             NSE ticker symbol to evaluate.
         eval_date:
             Point-in-time evaluation date.
+        apply_event_gates:
+            Whether to enforce ASM/GSM surveillance and binary event gates.
+            Set to False in naive backtest passes.
 
         Returns
         -------
@@ -295,37 +308,39 @@ class UniverseScreener:
         # -------------------------------------------------------------------
         # Gate 4 — Not in ASM/GSM
         # -------------------------------------------------------------------
-        is_under_asm_gsm = self._is_under_surveillance(symbol)
-        if is_under_asm_gsm:
-            return ScreeningResult(
-                symbol=symbol,
-                passed=False,
-                rejection_reason="UNDER_ASM_GSM_SURVEILLANCE",
-                market_cap_cr=market_cap_cr,
-                adtv_cr=adtv_cr,
-                listing_age_days=listing_age_days,
-                is_under_asm_gsm=True,
-                days_to_next_event=None,
-            )
+        if apply_event_gates:
+            is_under_asm_gsm = self._is_under_surveillance(symbol)
+            if is_under_asm_gsm:
+                return ScreeningResult(
+                    symbol=symbol,
+                    passed=False,
+                    rejection_reason="UNDER_ASM_GSM_SURVEILLANCE",
+                    market_cap_cr=market_cap_cr,
+                    adtv_cr=adtv_cr,
+                    listing_age_days=listing_age_days,
+                    is_under_asm_gsm=True,
+                    days_to_next_event=None,
+                )
 
         # -------------------------------------------------------------------
         # Gate 5 — No earnings/corp action within binary_event_block_days
         # -------------------------------------------------------------------
-        days_to_next_event = self._days_to_next_event(symbol, eval_date)
-        if (
-            days_to_next_event is not None
-            and days_to_next_event <= self._binary_event_block_days
-        ):
-            return ScreeningResult(
-                symbol=symbol,
-                passed=False,
-                rejection_reason=f"BINARY_EVENT_TOO_CLOSE({days_to_next_event}d)",
-                market_cap_cr=market_cap_cr,
-                adtv_cr=adtv_cr,
-                listing_age_days=listing_age_days,
-                is_under_asm_gsm=False,
-                days_to_next_event=days_to_next_event,
-            )
+        if apply_event_gates:
+            days_to_next_event = self._days_to_next_event(symbol, eval_date)
+            if (
+                days_to_next_event is not None
+                and days_to_next_event <= self._binary_event_block_days
+            ):
+                return ScreeningResult(
+                    symbol=symbol,
+                    passed=False,
+                    rejection_reason=f"BINARY_EVENT_TOO_CLOSE({days_to_next_event}d)",
+                    market_cap_cr=market_cap_cr,
+                    adtv_cr=adtv_cr,
+                    listing_age_days=listing_age_days,
+                    is_under_asm_gsm=False,
+                    days_to_next_event=days_to_next_event,
+                )
 
         # -------------------------------------------------------------------
         # Gate 6 — Volume Breakout: today's volume >= multiplier × 20-day avg volume

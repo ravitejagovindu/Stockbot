@@ -106,14 +106,10 @@ class EODPipeline:
                     logger.warning(f"[PIPELINE] ⚠️ EARNINGS ALERT: {update.symbol}")
 
             # ── Step 4: New setup screening (only if kill switch OFF) ──────────
-            bull_sma_period = int(self.config.get("macro", {}).get("bull_entry_sma_period", 0))
-            is_bull_correction = False
-            if not regime_state.kill_switch_active and bull_sma_period > 0:
-                if regime_state.nifty_close is not None and regime_state.nifty_sma200 is not None:
-                    if regime_state.nifty_close > regime_state.nifty_sma200:
-                        nifty_sma50 = self._fetch_nifty_sma(eval_date, bull_sma_period)
-                        if nifty_sma50 is not None and regime_state.nifty_close < nifty_sma50:
-                            is_bull_correction = True
+            from engine_core.regime_gates import bull_correction_active
+            sma_n = int(self.config.get("macro", {}).get("bull_entry_sma_period", 0))
+            is_bull_correction = bool(sma_n > 0 and not regime_state.kill_switch_active and bull_correction_active(
+                regime_state.nifty_close, regime_state.nifty_sma200, self._fetch_nifty_sma(eval_date, sma_n)))
 
             if not regime_state.kill_switch_active and not is_bull_correction:
                 new_setups = self._run_screening(eval_date, results)
@@ -260,6 +256,8 @@ class EODPipeline:
         account_equity = get_live_equity(self.session, fallback_equity)
         sizing_engine = RiskAndSizingEngine(config=self.config)
         candidate_dicts = self._build_candidate_dicts(passed_symbols, eval_date)
+        from engine_core.entry_filters import apply_entry_filters
+        candidate_dicts = apply_entry_filters(candidate_dicts, self.config)
         setups = sizing_engine.compute_all(
             candidates=candidate_dicts,
             eval_date=eval_date,
@@ -279,68 +277,16 @@ class EODPipeline:
 
     def _build_candidate_dicts(self, symbols: list[str], eval_date: date) -> list[dict]:
         """Pre-fetch OHLCV and corporate actions for candidate symbols."""
-        from data.db.models import MarketDataLake, CorporateActionsLog
-        from engine_core.adjustments import get_adjusted_series
-        from sqlalchemy import select
-        import pandas as pd
-        lookback = self.config.get("data", {}).get("resistance_lookback_days", 252) + 30
-        result = []
-        for sym in symbols:
-            rows = self.session.execute(
-                select(
-                    MarketDataLake.trade_date,
-                    MarketDataLake.open_raw,
-                    MarketDataLake.high_raw,
-                    MarketDataLake.low_raw,
-                    MarketDataLake.close_raw,
-                    MarketDataLake.volume_raw,
-                )
-                .where(MarketDataLake.symbol == sym)
-                .where(MarketDataLake.trade_date <= eval_date)
-                .order_by(MarketDataLake.trade_date.desc())
-                .limit(lookback)
-            ).all()
-            if not rows:
-                continue
-            rows = list(reversed(rows))
-            df = pd.DataFrame(
-                rows,
-                columns=["trade_date", "open_raw", "high_raw", "low_raw", "close_raw", "volume_raw"]
-            ).set_index("trade_date")
-            corp_rows = self.session.execute(
-                select(CorporateActionsLog)
-                .where(CorporateActionsLog.symbol == sym)
-                .order_by(CorporateActionsLog.ex_date)
-            ).scalars().all()
-            corp_actions = [
-                {"ex_date": c.ex_date, "action_type": c.action_type, "ratio_numerator": c.ratio_numerator, "ratio_denominator": c.ratio_denominator}
-                for c in corp_rows
-            ]
-            adj_df = get_adjusted_series(df, corp_actions, as_of_date=eval_date)
-            result.append({
-                "symbol": sym,
-                "raw_ohlcv": df,
-                "adjusted_ohlcv": adj_df,
-                "sector": None,
-                "corporate_actions": corp_actions,
-            })
-        return result
+        from engine_core.candidate_builder import build_candidate_dicts
+        return build_candidate_dicts(self.session, self.config, symbols, eval_date)
+
+
 
     def _fetch_nifty_sma(self, eval_date: date, period: int) -> Optional[float]:
         """Fetch Nifty 50 SMA for the specified period as of eval_date."""
-        from sqlalchemy import select, desc
-        from data.db.models import MarketDataLake
-        nifty_sym = self.config.get("data", {}).get("nifty_symbol", "NIFTY50_INDEX")
-        rows = self.session.execute(
-            select(MarketDataLake.close_raw)
-            .where(MarketDataLake.symbol == nifty_sym)
-            .where(MarketDataLake.trade_date <= eval_date)
-            .order_by(desc(MarketDataLake.trade_date))
-            .limit(period)
-        ).scalars().all()
-        if len(rows) < period:
-            return None
-        return float(sum(rows) / period)
+        from engine_core.regime_gates import nifty_sma as _nifty_sma
+        return _nifty_sma(self.session, self.config, eval_date, period)
+
 
     def _get_open_positions_for_heat_cap(self) -> list[dict]:
         """Returns open positions as plain dicts for heat cap calculation."""
@@ -353,8 +299,8 @@ class EODPipeline:
                 "shares": p.shares,
                 "entry_price": p.entry_price,
                 "live_stop_loss": p.live_stop_loss,
-                "risk_amount": p.shares * (p.entry_price - p.live_stop_loss),
-                "position_value": p.shares * p.entry_price,
+                "risk_amount": max(0.0, (getattr(p, "shares_remaining", None) or p.shares) * (p.entry_price - p.live_stop_loss)),
+                "position_value": (getattr(p, "shares_remaining", None) or p.shares) * p.entry_price,
             }
             for p in positions
         ]
