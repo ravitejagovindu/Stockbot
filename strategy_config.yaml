@@ -10,62 +10,118 @@ universe:
   relative_strength_lookback_days: 63  # Gate 7: 3-month (63 trading days) price return lookback
   relative_strength_top_pct: 0    # Gate 7: set to 0 to disable (matches backtest Pass 1)
 
+runtime:
+  mode: PAPER                      # PAPER | LIVE. THE ONLY SWITCH. Never infer mode from anything else.
+  paper_start_equity: 1000000      # INR - virtual starting capital for paper simulation
+
+execution:
+  entry_fill: NEXT_OPEN            # Signal at close T -> fill at open T+1
+  entry_slippage_pct: 0.10         # Slippage applied to entry fill
+  exit_slippage_pct: 0.10          # Slippage applied to exit fill
+  max_entry_gap_up_pct: 3.0        # Skip ticket if open > ticket_entry * (1 + 3%)
+  min_rr_at_fill: 1.5              # Re-check R:R at the actual fill price
+
+costs:
+  # VERIFIED rates (late-2024/2025 NSE delivery schedule). Confirm with your broker's contract note.
+  stt_buy_pct: 0.10                # STT on buy side (delivery)
+  stt_sell_pct: 0.10               # STT on sell side (delivery)
+  brokerage_per_order_inr: 0.0     # Set to your broker's delivery brokerage (0 for Zerodha delivery)
+  exchange_txn_pct: 0.00297        # NSE exchange transaction charge
+  sebi_fee_pct: 0.0001             # SEBI turnover fee
+  stamp_duty_buy_pct: 0.015        # Stamp duty on buy side only
+  gst_pct: 18.0                    # GST on brokerage + exchange + SEBI fees
+  dp_charge_per_sell_inr: 15.34    # Depository (CDSL/NSDL) charge per sell transaction
+  stcg_tax_pct: 20.0               # Short-term capital gains tax (verify for your status)
+
 macro:
   nifty_kill_sma_period: 200       # Nifty50 below this SMA triggers kill switch
   bull_entry_sma_period: 50        # In bull regime, Nifty must be > this SMA to take new entries
   vix_kill_threshold: 22.0         # India VIX above this triggers kill switch
-  nifty_reentry_sma_period: 20     # Nifty50 must be above this SMA for re-entry [restored to aggressive 20 SMA]
-  vix_reentry_threshold: 20.0      # India VIX must be below this for re-entry [restored to aggressive 20.0]
+  nifty_reentry_sma_period: 20     # Nifty50 must be above this SMA for re-entry
+  vix_reentry_threshold: 20.0      # India VIX must be below this for re-entry
   reentry_consecutive_sessions: 3  # Consecutive sessions required to deactivate kill switch
 
 risk:
   atr_period: 14                   # ATR lookback period (Wilder's smoothing)
-  atr_stop_multiplier: 2.0         # Stop A = Entry - (2.0 × ATR14)
+  atr_stop_multiplier: 2.0         # Stop A = Entry - (2.0 x ATR14)
   donchian_period: 30              # Donchian channel period for Stop B
   trailing_stop_atr_period: 14     # ATR period for trailing stop
-  trailing_stop_atr_multiplier: 2.5 # Trailing stop = Highest High - (2.5 × ATR14) [default for healthy/bull regimes]
-  trailing_stop_atr_multiplier_kill_switch: 1.5 # Tightened trailing stop (1.5 × ATR14) when macro kill switch is active
-  max_loss_pct_per_trade: 1.0      # Max loss per trade as % of total account equity [tuned to 1.0% for max DD control]
-  min_rr_ratio: 1.5                # Minimum Reward:Risk ratio [restored to 1.5]
-  max_concurrent_positions: 12     # Hard cap on open positions [default in sideways/neutral market]
-  max_concurrent_positions_bull: 12 # Cap on open positions in confirmed bull regime [set to 12]
-  max_total_portfolio_risk_pct: 15.0 # Hard cap on total equity at risk [raised to 15%]
+  trailing_stop_atr_multiplier: 2.5 # Trailing stop = Highest High - (2.5 x ATR14)
+  trailing_stop_atr_multiplier_kill_switch: 1.5 # Tightened trailing stop when macro kill switch is active
+  max_loss_pct_per_trade: 1.0      # Max loss per trade as % of total account equity
+  min_rr_ratio: 1.5                # Minimum Reward:Risk ratio
+  max_concurrent_positions: 12     # Hard cap on open positions
+  max_concurrent_positions_bull: 12 # Cap on open positions in confirmed bull regime
+  max_total_portfolio_risk_pct: 15.0 # Hard cap on total equity at risk
   max_sector_exposure_pct: 15.0    # Max exposure in any single sector as % of allocated capital
+  max_rr_cap: 6.0                  # Block R:R above this - almost always a data artefact (split corruption)
+
+entry_filters:
+  trend_filter_enabled: true       # Require: close > SMA(fast) and SMA(fast) > SMA(slow)
+  trend_fast_sma: 50               # Fast SMA period for trend filter
+  trend_slow_sma: 200              # Slow SMA period for trend filter
+  breakout_required: true          # Require: close >= highest high of the prior N sessions
+  breakout_lookback: 20            # Lookback for breakout confirmation (20-day high)
+  rs_lookback_days: 63             # Used only for deterministic RS ranking (not as a gate)
 
 trade_management:
-  time_decay_sessions: 20          # Days in INITIAL_RISK before exit [restored to 20 trading days / 1 month]
+  time_decay_sessions: 20          # Days in INITIAL_RISK before flagging for manual exit
   binary_event_block_days: 14      # Block new entries if earnings/corp action within N calendar days
   earnings_alert_days: 7           # Show EARNINGS_ALERT on open positions N days before event
 
+earnings:
+  known_ahead_days: 7              # Backtest may only "know" an earnings date this many days ahead
+
 data:
   eod_source: "bhavcopy"           # Options: "bhavcopy" or "kite"
-  adtv_sma_period: 20              # SMA period for ADTV calculation (must use raw volume × raw close)
+  adtv_sma_period: 20              # SMA period for ADTV calculation (must use raw volume x raw close)
   resistance_lookback_days: 252    # Lookback for identifying first major resistance (52-week high)
   nifty_symbol: "NIFTY50_INDEX"   # Symbol key used in market_data_lake
   vix_symbol: "INDIA_VIX"         # Symbol key used in market_data_lake
 
+gates:
+  # Backtest pass criteria - set BEFORE seeing results. Do not loosen after seeing numbers.
+  max_drawdown_pct: 15.0           # Strategy equity curve max drawdown must be < 15%
+  min_alpha_after_tax_pct: -2.0    # After-tax CAGR must exceed after-tax Nifty CAGR by >= -2% (owner D3)
+  min_expectancy_r: 0.15           # Average net R per closed trade must be >= 0.15
+  min_profit_factor: 1.3           # Gross wins / gross losses must be >= 1.3
+  min_trades: 40                   # Minimum closed trades required for a window to be valid
+  ltcg_tax_pct: 12.5               # Nifty buy-and-hold taxed once at end (LTCG; verify for your status)
+  risk_free_pct: 6.5               # Risk-free rate for Sharpe ratio computation
+
 backtest:
   regimes:
-    - name: "sideways_inflation"
+    - name: "window_2020_2021"
+      role: TUNE
       start: "2020-01-01"
       end: "2021-12-31"
-    - name: "bull_run"
+    - name: "window_2022_2026"
+      role: TUNE
       start: "2022-01-01"
       end: "2026-09-30"
-  initial_equity: 1000000          # ₹10 lakhs starting capital for backtest simulation
-  pass_criteria:
-    max_drawdown_pct: 15.0         # Strict less-than: must be < 15%
-    must_outperform_nifty: true    # Risk-adjusted return must beat Nifty 50 benchmark
-    allowed_underperform_pct: 1.0  # If must_outperform is true, alpha can be negative up to this %
-    include_tax_drag: true         # Account for estimated STCG/LTCG, STT, slippage
-    estimated_slippage_pct: 0.1    # 0.1% slippage per trade (buy + sell)
-    estimated_stt_pct: 0.025       # STT on sell side
+    # TEST window: untouched out-of-sample. Run only after TUNE windows are frozen with --freeze.
+    - name: "window_2015_2019"
+      role: TEST
+      start: "2015-01-01"
+      end: "2019-12-31"
+  initial_equity: 1000000          # INR starting capital for backtest simulation
+
+paper_criteria:
+  # Paper run pass criteria - evaluated by scripts/paper_report.py
+  # Pass condition: (>= 90 calendar days) OR (>= 60 closed trades) - whichever comes first (owner D4)
+  min_days: 90                     # Minimum calendar days of paper trading
+  min_closed_trades: 60            # Minimum closed trades - OR condition with min_days
+  max_expectancy_gap_r: 0.25       # Paper expectancy must be within 0.25R of backtest
+  max_win_rate_gap_pts: 12.0       # Paper win rate within 12 percentage points of backtest
+  min_profit_factor: 1.2           # Paper profit factor >= 1.2
+  max_drawdown_pct: 12.0           # Paper max drawdown < 12%
+  max_skipped_ticket_rate: 0.40    # Skipped tickets must be < 40% of all tickets
 
 parabolic_stop:
   enabled: true
-  acceleration_threshold_atr: 3.0   # If stock moves up this many ATR multiples within the lookback window, go parabolic
+  acceleration_threshold_atr: 3.0   # Parabolic if stock moves up this many ATRs within lookback
   acceleration_lookback_days: 5
-  parabolic_atr_multiplier: 1.0     # When parabolic, tighten trailing stop from default to this multiplier
+  parabolic_atr_multiplier: 1.0     # Tighter multiplier when parabolic is active
 
 partial_profit:
   enabled: true
@@ -75,8 +131,7 @@ partial_profit:
 
 profit_ratchet:
   enabled: true
-  enabled_regimes:
-    - "sideways_inflation"         # Active in mean-reverting regimes; disabled in bull to let runners trail freely
+  active_in_bull: false            # Ratchet OFF in confirmed bull (let runners trail freely)
   rungs:
     - trigger_rr: 1.0
       lock_rr: 0.0      # At +1.0R, stop moves to Breakeven (+0R)
