@@ -195,7 +195,7 @@ class RegimeFilter:
         )
 
         # Step 4: Apply state machine logic
-        prev_state = self._load_previous_state()
+        prev_state = self._load_previous_state(before_date=eval_date)
         new_state = self._apply_logic(
             prev_state=prev_state,
             nifty_close=nifty_close,
@@ -276,13 +276,14 @@ class RegimeFilter:
             name=symbol,
         )
 
-    def _load_previous_state(self) -> Optional[RegimeStateModel]:
-        """Load the most recent row from ``regime_state`` table."""
+    def _load_previous_state(self, before_date: Optional[date] = None) -> Optional[RegimeStateModel]:
+        """Load the most recent row from ``regime_state`` table on or before `before_date` (exclusive)."""
+        q = select(RegimeStateModel)
+        if before_date is not None:
+            q = q.where(RegimeStateModel.eval_date < before_date)
         return (
             self._session.execute(
-                select(RegimeStateModel)
-                .order_by(desc(RegimeStateModel.eval_date))
-                .limit(1)
+                q.order_by(desc(RegimeStateModel.eval_date)).limit(1)
             )
             .scalars()
             .first()

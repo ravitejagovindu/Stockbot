@@ -625,24 +625,20 @@ class RiskAndSizingEngine:
             )
 
         # Gate C: sector exposure
-        if sector:
+        if sector and account_equity > 0:
             sector_positions = [
                 p for p in current_positions if p.get("sector") == sector
             ]
-            total_allocated = sum(
-                p.get("position_value", 0.0) for p in current_positions
-            ) + position_value  # include the new position in the denominator
             sector_capital = sum(
                 p.get("position_value", 0.0) for p in sector_positions
             ) + position_value
 
-            if total_allocated > 0:
-                sector_pct = sector_capital / total_allocated * 100.0
-                if sector_pct > self._max_sector_pct:
-                    return (
-                        f"BLOCKED_BY_RISK(sector_{sector}:{sector_pct:.1f}%"
-                        f">{self._max_sector_pct}%)"
-                    )
+            sector_pct = sector_capital / account_equity * 100.0
+            if sector_pct > self._max_sector_pct:
+                return (
+                    f"BLOCKED_BY_RISK(sector_{sector}:{sector_pct:.1f}%"
+                    f">{self._max_sector_pct}%)"
+                )
 
         return None  # All gates passed
 
