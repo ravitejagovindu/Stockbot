@@ -1,0 +1,34 @@
+{
+  "evaluated_at": "2026-10-21T03:52:26+00:00",
+  "passed": false,
+  "metrics": {
+    "days_count": 5,
+    "n_closed_trades": 0,
+    "expectancy_r": 0.0,
+    "baseline_expectancy_r": 0.0,
+    "expectancy_gap_r": 0.0,
+    "win_rate_pct": 0.0,
+    "baseline_win_rate_pct": 0.0,
+    "win_rate_gap_pts": 0.0,
+    "profit_factor": 0.0,
+    "max_drawdown_pct": 0.0,
+    "skipped_ticket_rate": 0.0
+  },
+  "checks": {
+    "duration_or_trades": false,
+    "expectancy_gap": true,
+    "win_rate_gap": true,
+    "profit_factor": false,
+    "max_drawdown": true,
+    "skipped_ticket_rate": true
+  },
+  "thresholds": {
+    "min_days": 90,
+    "min_closed_trades": 60,
+    "max_expectancy_gap_r": 0.25,
+    "max_win_rate_gap_pts": 12.0,
+    "min_profit_factor": 1.2,
+    "max_drawdown_pct": 12.0,
+    "max_skipped_ticket_rate": 0.4
+  }
+}
