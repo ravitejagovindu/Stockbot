@@ -33,7 +33,7 @@ def get_watchlist(run_date: date = Query(default=None, description="Date to fetc
             text("""
                 SELECT * FROM daily_watchlist
                 WHERE run_date = :rd
-                ORDER BY projected_rr DESC
+                ORDER BY id ASC
             """),
             {"rd": str(run_date)}
         ).fetchall()
@@ -43,6 +43,7 @@ def get_watchlist(run_date: date = Query(default=None, description="Date to fetc
 
     for r in rows:
         item = {
+            "id": r.id,
             "symbol": r.symbol,
             "run_date": str(r.run_date),
             "entry_price": r.entry_price,
@@ -59,6 +60,9 @@ def get_watchlist(run_date: date = Query(default=None, description="Date to fetc
             "sector": r.sector,
             "blocked": r.blocked,
             "block_reason": r.block_reason,
+            "execution_status": getattr(r, "execution_status", "PENDING"),
+            "execution_note": getattr(r, "execution_note", None),
+            "position_id": getattr(r, "position_id", None),
         }
         if r.blocked:
             blocked.append(item)

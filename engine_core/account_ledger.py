@@ -25,9 +25,10 @@ def get_live_equity(session, fallback_equity: float) -> float:
         .where(AccountLedger.transaction_type.in_(['DEPOSIT', 'WITHDRAWAL']))
     ).scalar() or 0.0
 
-    # Sum realized PnL from closed trades
+    # Sum realized PnL from closed LIVE trades (never leak PAPER trades into live equity)
     pnl_sum = session.execute(
         select(func.sum(TradeAnalyticsLog.pnl_gross))
+        .where(TradeAnalyticsLog.mode == 'LIVE')
     ).scalar() or 0.0
 
     return float(ledger_sum + pnl_sum)

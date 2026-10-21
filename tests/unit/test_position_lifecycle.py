@@ -46,15 +46,38 @@ def session():
     engine.dispose()
 
 
-def _config(time_decay=15, earnings_alert=7, atr_period=14, trailing_mult=2.0):
+def _config(time_decay=15, earnings_alert=7, atr_period=14, trailing_mult=2.0, mode="PAPER"):
     return {
+        "runtime": {
+            "mode": mode,
+            "paper_start_equity": 1_000_000.0,
+        },
         "risk": {
             "atr_period": atr_period,
             "trailing_stop_atr_multiplier": trailing_mult,
+            "trailing_stop_atr_multiplier_kill_switch": 2.0,
+            "max_loss_pct_per_trade": 1.0,
         },
         "trade_management": {
             "time_decay_sessions": time_decay,
             "earnings_alert_days": earnings_alert,
+        },
+        "costs": {
+            "stt_buy_pct": 0.1,
+            "stt_sell_pct": 0.1,
+            "brokerage_per_order_inr": 0.0,
+            "exchange_txn_pct": 0.00297,
+            "sebi_fee_pct": 0.0001,
+            "stamp_duty_buy_pct": 0.015,
+            "gst_pct": 18.0,
+            "dp_charge_per_sell_inr": 15.34,
+            "stcg_tax_pct": 20.0,
+        },
+        "execution": {
+            "exit_slippage_pct": 0.0,
+            "entry_slippage_pct": 0.1,
+            "max_entry_gap_up_pct": 3.0,
+            "min_rr_at_fill": 1.5,
         },
     }
 
@@ -72,6 +95,7 @@ def _add_position(
     state="INITIAL_RISK",
     live_stop=90.0,
     sector=None,
+    mode="PAPER",
 ) -> int:
     """Insert an ActivePosition and return its ID."""
     pos = ActivePosition(
@@ -79,6 +103,8 @@ def _add_position(
         entry_date=entry_date,
         entry_price=entry_price,
         shares=shares,
+        original_shares=shares,
+        shares_remaining=shares,
         initial_stop_loss=initial_stop,
         live_stop_loss=live_stop,
         initial_resistance_target=initial_resistance,
@@ -91,6 +117,7 @@ def _add_position(
         account_equity_at_entry=100_000.0,
         stop_a_at_entry=initial_stop,
         stop_b_at_entry=initial_stop,
+        mode=mode,
     )
     session.add(pos)
     session.flush()
@@ -194,7 +221,7 @@ class TestInitialRiskGraduation:
 class TestTimedecayPendingManualExit:
 
     def test_no_graduation_in_15_days_triggers_pending(self, session):
-        """Never hitting 1:1 in 15 sessions must trigger automated exit as TIME_DECAY."""
+        """Never hitting 1:1 in 15 sessions flags time-decay, then exits at next open."""
         symbol = "DECAYTEST"
         _add_many_ohlcv(session, symbol, date(2023, 12, 1), n=30,
                         high=105.0, low=95.0, close=100.0)
@@ -210,9 +237,18 @@ class TestTimedecayPendingManualExit:
         )
         mgr = PositionLifecycleManager(_config(time_decay=15), session)
         update = mgr.process_single(pos_id, eval_date)
-        assert update.new_state == PositionState.CLOSED
-        assert "AUTOMATED_EXIT_TIME_DECAY" in update.flags
+        assert update.new_state == PositionState.PENDING_MANUAL_EXIT
+        assert "TIME_DECAY_FLAGGED" in update.flags
         assert "STATE_CHANGED" in update.flags
+        assert session.get(ActivePosition, pos_id) is not None
+
+        # Next session (day 16): exits at open
+        next_date = date(2024, 1, 17)
+        _add_ohlcv(session, symbol, next_date, high=102.0, low=99.0, close=100.0, open_=101.0)
+        update2 = mgr.process_single(pos_id, next_date)
+        assert update2.new_state == PositionState.CLOSED
+        assert "TIME_DECAY_EXIT" in update2.flags
+        assert "POSITION_CLOSED" in update2.flags
         assert session.get(ActivePosition, pos_id) is None
 
     def test_hits_1r_on_day_14_not_flagged_as_pending(self, session):
@@ -240,7 +276,7 @@ class TestTimedecayPendingManualExit:
         assert update.new_state != PositionState.CLOSED
 
     def test_exactly_on_day_15_triggers_pending_if_no_graduation(self, session):
-        """Day 15 exactly is the trigger boundary — must auto-exit on day 15."""
+        """Day 15 exactly is the trigger boundary — must flag on day 15 and exit next open."""
         symbol = "EXACT15"
         _add_many_ohlcv(session, symbol, date(2023, 12, 1), n=30,
                         high=105.0, low=95.0, close=100.0)
@@ -257,8 +293,15 @@ class TestTimedecayPendingManualExit:
         mgr = PositionLifecycleManager(_config(time_decay=15), session)
         update = mgr.process_single(pos_id, eval_date)
         assert update.new_days_held == 15
-        assert update.new_state == PositionState.CLOSED
-        assert "AUTOMATED_EXIT_TIME_DECAY" in update.flags
+        assert update.new_state == PositionState.PENDING_MANUAL_EXIT
+        assert "TIME_DECAY_FLAGGED" in update.flags
+
+        # Next session: exits at open
+        next_date = date(2024, 1, 17)
+        _add_ohlcv(session, symbol, next_date, high=102.0, low=98.0, close=100.0, open_=99.0)
+        update2 = mgr.process_single(pos_id, next_date)
+        assert update2.new_state == PositionState.CLOSED
+        assert "TIME_DECAY_EXIT" in update2.flags
         assert session.get(ActivePosition, pos_id) is None
 
     def test_stop_loss_hit_triggers_automated_exit(self, session):
@@ -280,7 +323,8 @@ class TestTimedecayPendingManualExit:
         update = mgr.process_single(pos_id, eval_date)
 
         assert update.new_state == PositionState.CLOSED
-        assert "AUTOMATED_EXIT_STOP_HIT" in update.flags
+        assert "STOP_HIT" in update.flags
+        assert "POSITION_CLOSED" in update.flags
         assert session.get(ActivePosition, pos_id) is None
 
 
@@ -587,7 +631,7 @@ class TestProfitRatchet:
         cfg = _config()
         cfg["profit_ratchet"] = {
             "enabled": True,
-            "enabled_regimes": ["sideways_inflation"],  # Not active in bull
+            "active_in_bull": False,  # Not active in bull
             "rungs": [
                 {"trigger_rr": 1.0, "lock_rr": 0.0},
                 {"trigger_rr": 2.0, "lock_rr": 1.0},

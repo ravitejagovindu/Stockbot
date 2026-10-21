@@ -32,7 +32,10 @@ import pandas as pd
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
-from data.db.models import ActivePosition, TradeAnalyticsLog, RegimeState
+from data.db.models import ActivePosition, TradeAnalyticsLog, RegimeState, MarketDataLake
+from engine_core.costs import CostModel
+from engine_core.trade_metrics import trades_from_log, metrics_from_trades
+from engine_core.mode import current_mode
 
 logger = logging.getLogger(__name__)
 
@@ -45,11 +48,22 @@ class AnalyticsLoop:
     session:
         Active SQLAlchemy session.  Reads from ``active_positions`` and
         ``regime_state``; writes to ``trade_analytics_log`` (append-only).
+    config:
+        Optional strategy config dict.
     """
 
-    def __init__(self, session: Session) -> None:
-        """Initialise with an active DB session."""
+    def __init__(self, session: Session, config: Optional[dict] = None) -> None:
+        """Initialise with an active DB session and strategy config."""
         self._session = session
+        if config is None:
+            try:
+                from config import load_config
+                self._config = load_config()
+            except Exception:
+                self._config = {"costs": {}, "runtime": {"mode": "LIVE"}}
+        else:
+            self._config = config
+        self._cost_model = CostModel.from_config(self._config)
 
     # ------------------------------------------------------------------
     # Public API
@@ -68,30 +82,6 @@ class AnalyticsLoop:
         realized metrics, and inserts a new row into ``trade_analytics_log``.
         It does **not** delete the position from ``active_positions`` — that
         is handled by ``PositionLifecycleManager.close_position``.
-
-        Parameters
-        ----------
-        position_id:
-            Primary key of the ``active_positions`` row.
-        exit_price:
-            Actual price at which the position was closed.
-        exit_date:
-            Calendar date of the exit.
-        exit_reason:
-            One of ``'MANUAL'``, ``'STOP_HIT'``, ``'TIME_DECAY'``,
-            ``'EARNINGS_EXIT'``.
-
-        Returns
-        -------
-        dict
-            The logged record (mirrors ``trade_analytics_log`` columns).
-
-        Raises
-        ------
-        ValueError
-            If the position ID is not found.
-        ZeroDivisionError
-            If ``entry_price == initial_stop_loss`` (invalid position data).
         """
         pos: Optional[ActivePosition] = self._session.get(ActivePosition, position_id)
         if pos is None:
@@ -107,9 +97,33 @@ class AnalyticsLoop:
             )
 
         # Core metrics
+        shares = pos.shares_remaining if pos.shares_remaining is not None else pos.shares
         realized_rr = (exit_price - pos.entry_price) / initial_risk_per_share
-        pnl_gross = (exit_price - pos.entry_price) * pos.shares
-        days_held = (exit_date - pos.entry_date).days
+        pnl_gross = (exit_price - pos.entry_price) * shares
+
+        # Days held in trading sessions
+        trading_days = None
+        try:
+            cnt = self._session.execute(
+                select(func.count(MarketDataLake.trade_date.distinct()))
+                .where(
+                    MarketDataLake.trade_date >= pos.entry_date,
+                    MarketDataLake.trade_date <= exit_date,
+                )
+            ).scalar()
+            if cnt and cnt > 0:
+                trading_days = int(cnt)
+        except Exception:
+            pass
+        days_held = trading_days if trading_days is not None else pos.days_held
+
+        # Cost and tax modeling
+        orig = pos.original_shares or pos.shares or shares
+        entry_cost_alloc = (pos.entry_costs or 0.0) * (shares / orig) if orig > 0 else 0.0
+        sell_cost = self._cost_model.sell_cost(exit_price * shares)
+        costs_total = sell_cost + entry_cost_alloc
+        pnl_net = pnl_gross - costs_total
+        tax_est = self._cost_model.tax_on_gain(pnl_net)
 
         # Regime at exit (best-effort lookup)
         regime_at_exit = self._get_regime_label(exit_date)
@@ -122,7 +136,7 @@ class AnalyticsLoop:
             exit_date=exit_date,
             entry_price=pos.entry_price,
             exit_price=exit_price,
-            shares=pos.shares,
+            shares=shares,
             initial_stop_loss=pos.initial_stop_loss,
             projected_rr=pos.projected_rr,
             realized_rr=realized_rr,
@@ -132,6 +146,11 @@ class AnalyticsLoop:
             regime_at_exit=regime_at_exit,
             sector=pos.sector,
             days_held=days_held,
+            mode=pos.mode,
+            costs_total=costs_total,
+            pnl_net=pnl_net,
+            tax_est=tax_est,
+            is_partial=False,
         )
         self._session.add(log_row)
         self._session.flush()
@@ -143,21 +162,26 @@ class AnalyticsLoop:
             "exit_date": exit_date.isoformat(),
             "entry_price": pos.entry_price,
             "exit_price": exit_price,
-            "shares": pos.shares,
+            "shares": shares,
             "projected_rr": pos.projected_rr,
             "realized_rr": round(realized_rr, 4),
             "pnl_gross": round(pnl_gross, 2),
+            "pnl_net": round(pnl_net, 2),
+            "costs_total": round(costs_total, 2),
+            "tax_est": round(tax_est, 2),
+            "mode": pos.mode,
             "exit_reason": exit_reason,
             "regime_at_exit": regime_at_exit,
             "days_held": days_held,
             "logged": True,
         }
         logger.info(
-            "[AnalyticsLoop] Closed %s: exit=%.2f | realized_rr=%.3f | pnl=%.2f",
+            "[AnalyticsLoop] Closed %s: exit=%.2f | realized_rr=%.3f | gross=%.2f | net=%.2f",
             pos.symbol,
             exit_price,
             realized_rr,
             pnl_gross,
+            pnl_net,
         )
         return record
 
@@ -181,6 +205,11 @@ class AnalyticsLoop:
             Decay report dictionary.  ``None`` values indicate insufficient
             data for a particular metric.
         """
+        mode = current_mode(self._config)
+        start_equity = float(self._config.get("runtime", {}).get("paper_start_equity", 1_000_000.0))
+        trade_df = trades_from_log(self._session, mode=mode)
+        metrics = metrics_from_trades(trade_df, start_equity=start_equity)
+
         rows = (
             self._session.execute(
                 select(
@@ -188,13 +217,14 @@ class AnalyticsLoop:
                     TradeAnalyticsLog.projected_rr,
                     TradeAnalyticsLog.realized_rr,
                 )
+                .where(TradeAnalyticsLog.mode == mode)
                 .order_by(TradeAnalyticsLog.exit_date)
             )
             .all()
         )
 
         if not rows:
-            return {
+            res = {
                 "avg_projected_rr": None,
                 "avg_realized_rr": None,
                 "decay_ratio": None,
@@ -203,6 +233,8 @@ class AnalyticsLoop:
                 "total_trades": 0,
                 "win_rate": None,
             }
+            res.update(metrics)
+            return res
 
         df = pd.DataFrame(
             [
@@ -226,7 +258,7 @@ class AnalyticsLoop:
         rolling_3m = self._rolling_decay(df, today, days=90)
         rolling_6m = self._rolling_decay(df, today, days=180)
 
-        return {
+        res = {
             "avg_projected_rr": round(avg_proj, 4),
             "avg_realized_rr": round(avg_real, 4),
             "decay_ratio": round(decay_ratio, 4) if decay_ratio is not None else None,
@@ -235,6 +267,8 @@ class AnalyticsLoop:
             "total_trades": total,
             "win_rate": round(win_rate, 4),
         }
+        res.update(metrics)
+        return res
 
     # ------------------------------------------------------------------
     # Private helpers

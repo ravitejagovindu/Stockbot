@@ -228,8 +228,8 @@ class TestDonchianHigh:
     """Tests for the rolling maximum (Donchian upper band)."""
 
     def test_known_value(self):
-        """donchian_high([100,120,110,115,105], period=3) last value should be 120.0."""
-        highs = make_series(100, 120, 110, 115, 105)
+        """donchian_high([100,110,105,115,120], period=3) last value should be 120.0."""
+        highs = make_series(100, 110, 105, 115, 120)
         result = donchian_high(highs, period=3)
         assert result.iloc[-1] == pytest.approx(120.0)
 

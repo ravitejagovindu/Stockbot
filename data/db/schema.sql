@@ -200,3 +200,14 @@ CREATE TABLE IF NOT EXISTS daily_watchlist (
     created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(run_date, symbol)
 );
+
+-- ==============================================================================
+-- Append-only enforcement triggers
+-- ==============================================================================
+
+CREATE TRIGGER IF NOT EXISTS trg_tal_no_update BEFORE UPDATE ON trade_analytics_log
+BEGIN SELECT RAISE(ABORT, 'trade_analytics_log is append-only'); END;
+
+CREATE TRIGGER IF NOT EXISTS trg_tal_no_delete BEFORE DELETE ON trade_analytics_log
+BEGIN SELECT RAISE(ABORT, 'trade_analytics_log is append-only'); END;
+

@@ -26,6 +26,49 @@ class ClosePositionRequest(BaseModel):
         return v
 
 
+class OpenPositionRequest(BaseModel):
+    watchlist_id: int
+    fill_price: float = Field(gt=0, description="Fill price in ₹")
+    shares: int = Field(gt=0, description="Number of shares bought")
+    fill_date: date = Field(description="Date the position was filled")
+
+
+@router.post("/open")
+def open_position_endpoint(req: OpenPositionRequest):
+    """LIVE only. Records a trade you ALREADY executed in your broker terminal. Sends nothing to any broker."""
+    from config import load_config
+    from engine_core.costs import CostModel
+    from engine_core.mode import current_mode
+    from engine_core.position_service import open_position
+    from data.db.models import DailyWatchlist
+
+    cfg = load_config()
+    if current_mode(cfg) != "LIVE":
+        raise HTTPException(400, "Manual open is LIVE-only. PAPER positions open automatically.")
+
+    with get_session() as session:
+        t = session.get(DailyWatchlist, req.watchlist_id)
+        if t is None or t.blocked or t.execution_status != "PENDING":
+            raise HTTPException(409, "Ticket not found, blocked, or already actioned")
+
+        equity = t.risk_amount / (t.risk_pct_of_equity / 100.0) if t.risk_pct_of_equity > 0 else 0.0
+        risk_ps = req.fill_price - t.live_stop_loss
+        rr = (t.initial_resistance_target - req.fill_price) / risk_ps if risk_ps > 0 else 0.0
+        pos = open_position(
+            session,
+            mode="LIVE",
+            ticket=t,
+            fill_date=req.fill_date,
+            fill_price=req.fill_price,
+            shares=req.shares,
+            equity=equity,
+            rr_at_fill=rr,
+            fill_source="BROKER_ENTERED",
+            costs=CostModel.from_config(cfg),
+        )
+        return {"success": True, "position_id": pos.id}
+
+
 @router.post("/close")
 def close_position(req: ClosePositionRequest):
     """
@@ -34,9 +77,18 @@ def close_position(req: ClosePositionRequest):
     This endpoint is called after the user has manually executed the exit
     in their Kite terminal. The engine records the trade for analytics.
     """
+    from config import load_config
+    from engine_core.mode import current_mode
+
+    cfg = load_config()
+    if current_mode(cfg) == "PAPER":
+        raise HTTPException(400, "PAPER positions close automatically")
+
     with get_session() as session:
         from engine_core.analytics_loop import AnalyticsLoop
-        loop = AnalyticsLoop(session=session)
+        from data.db.models import ActivePosition
+
+        loop = AnalyticsLoop(session=session, config=cfg)
 
         try:
             record = loop.record_closed_trade(
@@ -45,6 +97,10 @@ def close_position(req: ClosePositionRequest):
                 exit_date=req.exit_date,
                 exit_reason=req.exit_reason,
             )
+            pos = session.get(ActivePosition, req.position_id)
+            if pos:
+                session.delete(pos)
+                session.flush()
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
 

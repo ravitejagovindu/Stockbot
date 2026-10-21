@@ -87,10 +87,7 @@ def db_session():
     schema_path = Path(__file__).resolve().parents[1] / "data" / "db" / "schema.sql"
     sql = schema_path.read_text(encoding="utf-8")
     with engine.connect() as conn:
-        for stmt in sql.split(";"):
-            if stmt.strip():
-                conn.execute(text(stmt.strip()))
-        conn.commit()
+        conn.connection.dbapi_connection.executescript(sql)
 
     Session = sessionmaker(bind=engine)
     session = Session()

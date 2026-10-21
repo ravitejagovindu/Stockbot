@@ -87,6 +87,14 @@ class EODPipeline:
             else:
                 logger.info(f"[PIPELINE] Regime: ACTIVE (Nifty: {regime_state.nifty_close:.0f}, VIX: {regime_state.vix_close:.1f})")
 
+            # ── Step 2.5: Paper Trader (PAPER mode only) ──────────────────────
+            from engine_core.mode import current_mode
+            mode = current_mode(self.config)
+            if mode == "PAPER":
+                from live_runner.paper_trader import expire_stale_tickets, open_pending_tickets
+                expire_stale_tickets(self.session, eval_date)
+                results["paper_fills"] = open_pending_tickets(self.session, self.config, eval_date)
+
             # ── Step 3: Position lifecycle (always runs) ───────────────────────
             from engine_core.position_lifecycle import PositionLifecycleManager
             plm = PositionLifecycleManager(config=self.config, session=self.session)
@@ -248,12 +256,14 @@ class EODPipeline:
             return []
 
         # Get current open positions for heat cap evaluation
-        current_positions = self._get_open_positions_for_heat_cap()
+        from engine_core.mode import current_mode
+        mode = current_mode(self.config)
+        current_positions = self._get_open_positions_for_heat_cap(mode)
 
         # Size and gate candidates
-        from engine_core.account_ledger import get_live_equity
+        from engine_core.equity import get_equity
         fallback_equity = float(os.getenv("ACCOUNT_EQUITY", "1000000"))
-        account_equity = get_live_equity(self.session, fallback_equity)
+        account_equity = get_equity(self.session, self.config, mode, fallback_equity)
         sizing_engine = RiskAndSizingEngine(config=self.config)
         candidate_dicts = self._build_candidate_dicts(passed_symbols, eval_date)
         from engine_core.entry_filters import apply_entry_filters
@@ -288,10 +298,13 @@ class EODPipeline:
         return _nifty_sma(self.session, self.config, eval_date, period)
 
 
-    def _get_open_positions_for_heat_cap(self) -> list[dict]:
+    def _get_open_positions_for_heat_cap(self, mode: Optional[str] = None) -> list[dict]:
         """Returns open positions as plain dicts for heat cap calculation."""
         from data.db.models import ActivePosition
-        positions = self.session.query(ActivePosition).all()
+        if mode is None:
+            from engine_core.mode import current_mode
+            mode = current_mode(self.config)
+        positions = self.session.query(ActivePosition).filter(ActivePosition.mode == mode).all()
         return [
             {
                 "symbol": p.symbol,
@@ -307,11 +320,13 @@ class EODPipeline:
 
     def _persist_watchlist(self, eval_date: date, setups: list) -> None:
         """Persist today's approved and blocked setups to daily_watchlist table."""
-        from sqlalchemy import text
         from data.db.models import DailyWatchlist
 
-        # Clear today's existing entries (re-run scenario)
-        self.session.query(DailyWatchlist).filter(DailyWatchlist.run_date == eval_date).delete()
+        # Clear today's pending entries (re-run scenario)
+        self.session.query(DailyWatchlist).filter(
+            DailyWatchlist.run_date == eval_date,
+            DailyWatchlist.execution_status == "PENDING",
+        ).delete()
 
         for setup in setups:
             entry = DailyWatchlist(
@@ -330,6 +345,7 @@ class EODPipeline:
                 sector=setup.sector,
                 blocked=setup.blocked,
                 block_reason=setup.block_reason,
+                execution_status="PENDING",
             )
             self.session.add(entry)
 

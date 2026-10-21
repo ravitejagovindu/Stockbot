@@ -2,6 +2,7 @@ import { apiClient } from "./client";
 
 export interface HealthResponse {
   status: string;
+  mode?: string;
   authorized: boolean;
   sha_locked: boolean;
   tree_clean: boolean;
@@ -159,5 +160,17 @@ export const fetchAnalytics = async (limit: number = 200): Promise<AnalyticsResp
 
 export const closePosition = async (req: ClosePositionRequest) => {
   const { data } = await apiClient.post("/positions/close", req);
+  return data;
+};
+
+export interface OpenPositionRequest {
+  watchlist_id: number;
+  fill_price: number;
+  shares: number;
+  fill_date: string;
+}
+
+export const openPosition = async (req: OpenPositionRequest) => {
+  const { data } = await apiClient.post("/positions/open", req);
   return data;
 };

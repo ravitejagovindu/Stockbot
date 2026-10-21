@@ -233,8 +233,8 @@ class TestReEntryHysteresis:
         # Build a fresh Nifty series with close > SMA50 for re-entry sessions
         # Use a series of values near 21000 (below SMA200 at 22000 but our
         # kill switch is already active, so only SMA50 matters for re-entry)
-        # SMA50 of first 50 bars at 20000 = 20000; close at 21000 > SMA50 ✓
-        reentry_base_nifty = 20000.0
+        # SMA50 of previous bars is ~22000; close at 23000 > SMA50 ✓
+        reentry_base_nifty = 23000.0
 
         # Sessions 1, 2, 3: add qualifying re-entry sessions
         for i, session_offset in enumerate([1, 2, 3]):
@@ -277,7 +277,7 @@ class TestReEntryHysteresis:
         rf = RegimeFilter(_make_config(), in_memory_session)
         rf.evaluate(act_date)
 
-        reentry_base = 20000.0
+        reentry_base = 23000.0
 
         # Session 1: qualifying
         d1 = act_date + timedelta(days=1)

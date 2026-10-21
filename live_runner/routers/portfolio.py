@@ -18,10 +18,13 @@ def get_portfolio():
     """
     cfg = load_config()
     risk_cfg = cfg["risk"]
+    from engine_core.mode import current_mode
+    mode = current_mode(cfg)
 
     with get_session() as session:
         positions = session.execute(
-            text("SELECT * FROM active_positions ORDER BY entry_date ASC")
+            text("SELECT * FROM active_positions WHERE mode = :mode ORDER BY entry_date ASC"),
+            {"mode": mode}
         ).fetchall()
 
     position_list = []
@@ -29,11 +32,11 @@ def get_portfolio():
     total_position_value = 0.0
     sector_exposure: dict[str, float] = {}
 
-    from engine_core.account_ledger import get_live_equity
+    from engine_core.equity import get_equity
     import os
     
     with get_session() as session:
-        account_equity = get_live_equity(session, float(os.getenv("ACCOUNT_EQUITY", "1000000")))
+        account_equity = get_equity(session, cfg, mode, float(os.getenv("ACCOUNT_EQUITY", "1000000")))
         
         symbols = [p.symbol for p in positions]
         latest_closes = {}

@@ -18,9 +18,17 @@ def health_check():
         last_run = guard.get_last_run()
 
     auth_info = read_authorized_info()
+    from config import load_config
+    from engine_core.mode import current_mode
+    try:
+        cfg = load_config()
+        mode = current_mode(cfg)
+    except Exception:
+        mode = "UNKNOWN"
 
     return {
         "status": "ok",
+        "mode": mode,
         "authorized": auth_info.get("authorized", False),
         "sha_locked": auth_info.get("sha_matches", False),
         "tree_clean": auth_info.get("tree_clean", False),
