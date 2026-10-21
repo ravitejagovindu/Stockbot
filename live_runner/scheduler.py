@@ -21,6 +21,15 @@ def run_eod_pipeline():
     today = date.today()
     logger.info(f"[SCHEDULER] Trigger fired. Evaluating runs up to {today}...")
 
+    # Step 4.3: Verify deployment lock before scheduled run
+    try:
+        from live_runner.git_lock import verify_git_lock
+        verify_git_lock()
+    except SystemExit as exc:
+        logger.error(f"[SCHEDULER] Deployment lock verification failed: {exc}")
+        _send_failure_alert(today, f"Deployment lock failed: {exc}")
+        return
+
     try:
         from data.db.connection import get_session
         from data.db.models import PipelineRunLog
