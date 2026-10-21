@@ -34,6 +34,7 @@ from data.db.models import (
     ASMGSMList,
     EarningsCalendar,
     MarketDataLake,
+    SecuritiesMaster,
     SharesOutstanding,
 )
 from engine_core.adjustments import compute_adtv, compute_market_cap
@@ -123,6 +124,8 @@ class UniverseScreener:
         self._rs_top_pct: float = float(uni.get("relative_strength_top_pct", 35))
 
         self._session = session
+        self._config = config
+        self._nifty_symbol = data_cfg.get("nifty_symbol", "NIFTY50_INDEX")
 
         # Cache for RS computation: built once per screen_all() call
         self._rs_threshold_return: Optional[float] = None
@@ -526,16 +529,53 @@ class UniverseScreener:
         ).set_index("trade_date")
 
     def _get_listing_age(self, symbol: str, eval_date: date) -> Optional[int]:
-        """Count the number of trading days the symbol has been in the data lake."""
-        count = (
-            self._session.execute(
-                select(func.count(MarketDataLake.id))
-                .where(MarketDataLake.symbol == symbol)
-                .where(MarketDataLake.trade_date <= eval_date)
-            )
-            .scalar()
-        )
-        return int(count) if count else None
+        """Compute the true listing age in trading days relative to the official NSE listing date.
+
+        Queries securities_master for the official exchange listing date. If absent, attempts
+        an on-demand fetch from the NSE Quote API and caches it.
+        """
+        sym = symbol.strip().upper()
+        # 1. Primary lookup from securities_master table
+        listing_date = self._session.execute(
+            select(SecuritiesMaster.listing_date).where(SecuritiesMaster.symbol == sym)
+        ).scalar()
+
+        # 2. Fallback: on-demand fetch if missing
+        if listing_date is None:
+            try:
+                from data.ingestion.securities_ingestor import fetch_and_save_symbol_listing_date
+                listing_date = fetch_and_save_symbol_listing_date(sym, session=self._session)
+            except Exception as e:
+                logger.warning(f"[SCREENER] Failed on-demand listing date fetch for {sym}: {e}")
+
+        # 3. Fallback to first MDL date if completely unavailable anywhere
+        if listing_date is None:
+            earliest_mdl = self._session.execute(
+                select(func.min(MarketDataLake.trade_date)).where(MarketDataLake.symbol == sym)
+            ).scalar()
+            if earliest_mdl is None:
+                return None
+            listing_date = earliest_mdl
+
+        # Compute age in calendar days
+        if eval_date < listing_date:
+            return 0  # not yet listed as of eval_date
+
+        cal_days = (eval_date - listing_date).days
+        # If listed more than 1.5 years ago (550 days), it's definitely seasoned (> 252 trading days)
+        if cal_days >= 550:
+            return 252 + (cal_days - 365)
+
+        # For newer listings (< 550 calendar days), calculate exact Nifty trading sessions since listing
+        nifty_sym = self._config.get("data", {}).get("nifty_symbol", "NIFTY50_INDEX")
+        trading_days = self._session.execute(
+            select(func.count(MarketDataLake.id))
+            .where(MarketDataLake.symbol == nifty_sym)
+            .where(MarketDataLake.trade_date >= listing_date)
+            .where(MarketDataLake.trade_date <= eval_date)
+        ).scalar()
+
+        return int(trading_days) if trading_days is not None else int(cal_days * (252 / 365.25))
 
     def _is_under_surveillance(self, symbol: str) -> bool:
         """Return ``True`` if the symbol appears in the ASM/GSM list."""
