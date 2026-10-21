@@ -170,3 +170,40 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
     assert res2["checks"]["duration_or_trades"] is True
     assert res2["metrics"]["n_closed_trades"] == 65
     assert res2["metrics"]["days_count"] < 90
+
+
+def test_live_drawdown_guardrail_triggers(monkeypatch):
+    from config import load_config
+    from live_runner.pipeline import EODPipeline
+    mock_session = MagicMock()
+    pipeline = EODPipeline(mock_session)
+    cfg = load_config()
+    cfg["runtime"]["mode"] = "LIVE"
+    cfg["live_guardrails"] = {"max_drawdown_pct": 8.0}
+    pipeline.config = cfg
+
+    # Simulate 10% drawdown (peak: 1M, current: 900k)
+    monkeypatch.setattr(pipeline, "_live_equity_peak", lambda: 1_000_000.0)
+    monkeypatch.setattr(pipeline, "_live_equity", lambda: 900_000.0)
+    monkeypatch.setattr(pipeline, "_run_ingestion", lambda d: None)
+    monkeypatch.setattr(pipeline, "_assert_data_freshness", lambda d: None)
+    monkeypatch.setattr("engine_core.preflight.assert_preflight_spot_check", lambda: True)
+
+    mock_regime = MagicMock()
+    mock_regime.kill_switch_active = False
+    mock_regime.nifty_close = 20000.0
+    mock_regime.nifty_sma200 = 19000.0
+    mock_regime.vix_close = 15.0
+    monkeypatch.setattr("engine_core.regime_filter.RegimeFilter.evaluate", lambda self, d: mock_regime)
+    monkeypatch.setattr("engine_core.position_lifecycle.PositionLifecycleManager.process_all", lambda self, d, **kw: [])
+
+    # Idempotency guard mock
+    with patch("live_runner.pipeline.IdempotencyGuard") as mock_guard_cls:
+        guard_inst = MagicMock()
+        guard_inst.acquire.return_value = True
+        mock_guard_cls.return_value = guard_inst
+
+        res = pipeline.run(date(2026, 10, 21))
+        assert res.get("paused") == "LIVE_DRAWDOWN_GUARD"
+        guard_inst.complete.assert_called_once()
+

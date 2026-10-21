@@ -118,6 +118,19 @@ class EODPipeline:
                     logger.warning(f"[PIPELINE] ⚠️ EARNINGS ALERT: {update.symbol}")
 
             # ── Step 4: New setup screening (only if kill switch OFF) ──────────
+            guard_cfg = self.config.get("live_guardrails", {})
+            if mode == "LIVE" and guard_cfg:
+                peak = self._live_equity_peak()
+                eq = self._live_equity()
+                max_dd_limit = float(guard_cfg.get("max_drawdown_pct", 8.0))
+                if peak > 0 and (peak - eq) / peak * 100.0 >= max_dd_limit:
+                    logger.warning(
+                        f"[PIPELINE] ⚠️ LIVE DRAWDOWN GUARD TRIGGERED (Current DD: {(peak - eq) / peak * 100.0:.2f}% >= {max_dd_limit}%) — pausing new setups."
+                    )
+                    results["paused"] = "LIVE_DRAWDOWN_GUARD"
+                    guard.complete(eval_date, results)
+                    return results
+
             from engine_core.regime_gates import bull_correction_active
             sma_n = int(self.config.get("macro", {}).get("bull_entry_sma_period", 0))
             is_bull_correction = bool(sma_n > 0 and not regime_state.kill_switch_active and bull_correction_active(
@@ -128,7 +141,7 @@ class EODPipeline:
                 self._persist_watchlist(eval_date, new_setups)
             elif is_bull_correction:
                 logger.info(
-                    f"[PIPELINE] Market in bull intermediate correction (Nifty < SMA{bull_sma_period}) — pausing new setups."
+                    f"[PIPELINE] Market in bull intermediate correction (Nifty < SMA{sma_n}) — pausing new setups."
                 )
             else:
                 logger.info("[PIPELINE] Kill switch active — skipping new setup screening.")
@@ -355,3 +368,27 @@ class EODPipeline:
 
         self.session.flush()
         logger.info(f"[PIPELINE] Watchlist persisted for {eval_date}: {len(setups)} entries.")
+
+    def _live_equity(self) -> float:
+        """Fetch current live account equity from ledger or fallback."""
+        from engine_core.account_ledger import get_live_equity
+        fallback = float(os.getenv("ACCOUNT_EQUITY", "1000000.0"))
+        return get_live_equity(self.session, fallback)
+
+    def _live_equity_peak(self) -> float:
+        """Compute all-time peak live equity from cumulative net PnL and ledger."""
+        eq = self._live_equity()
+        from sqlalchemy import text
+        rows = self.session.execute(
+            text("SELECT pnl_net FROM trade_analytics_log WHERE mode='LIVE' ORDER BY exit_date ASC")
+        ).scalars().all()
+        if not rows:
+            return eq
+        fallback = float(os.getenv("ACCOUNT_EQUITY", "1000000.0"))
+        cum = fallback
+        peak = cum
+        for pnl in rows:
+            cum += float(pnl or 0.0)
+            if cum > peak:
+                peak = cum
+        return max(peak, eq)
