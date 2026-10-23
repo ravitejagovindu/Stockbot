@@ -31,7 +31,7 @@ costs:
   stamp_duty_buy_pct: 0.015        # Stamp duty on buy side only
   gst_pct: 18.0                    # GST on brokerage + exchange + SEBI fees
   dp_charge_per_sell_inr: 15.34    # Depository (CDSL/NSDL) charge per sell transaction
-  stcg_tax_pct: 20.0               # Short-term capital gains tax (verify for your status)
+  stcg_tax_pct: 0.0                # Short-term capital gains tax (verify for your status)
 
 macro:
   nifty_kill_sma_period: 200       # Nifty50 below this SMA triggers kill switch
@@ -86,7 +86,7 @@ gates:
   min_expectancy_r: 0.15           # Average net R per closed trade must be >= 0.15
   min_profit_factor: 1.3           # Gross wins / gross losses must be >= 1.3
   min_trades: 40                   # Minimum closed trades required for a window to be valid
-  ltcg_tax_pct: 12.5               # Nifty buy-and-hold taxed once at end (LTCG; verify for your status)
+  ltcg_tax_pct: 0.0                # Nifty buy-and-hold taxed once at end (set to 0.0 for pre-tax comparison)
   risk_free_pct: 6.5               # Risk-free rate for Sharpe ratio computation
 
 backtest:

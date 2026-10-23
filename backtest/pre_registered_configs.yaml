@@ -1,0 +1,183 @@
+# backtest/pre_registered_configs.yaml — Formally Pre-Registered Tuning Configurations
+# Pre-registered prior to running simulations, as required by the Reviewer Protocol.
+# Trials Budget: Exactly 6 candidate configurations + 1 baseline reference. No second grid round allowed.
+
+metadata:
+  created_at: "2026-10-23T12:15:00+05:30"
+  status: "PRE_REGISTERED_LOCKED"
+  description: >
+    Factorial 2x3 grid testing Relative Strength percentile ranking (Top 40% vs Top 30%)
+    across three overlay levels (Baseline Gap <= 3.0%, Tighter Gap <= 1.5%, Tighter Gap <= 1.5% + Market Breadth >= 50%).
+    Top 40% and Top 30% are selected to protect against trade-count starvation in W1 (which had only 39 baseline trades).
+
+definitions:
+  relative_strength:
+    universe: "Screened liquid universe on date T passing Gates 1-3 (Market Cap > Rs. 5000cr, 20-day ADTV > Rs. 25cr, Listing Age > 252 trading days), excluding index symbols and ASM/GSM."
+    lookback_sessions: 63  # Approximately 3 calendar months
+    formula: "close_adj[T] / close_adj[T - 63] - 1.0"
+    tie_handling: "Deterministic secondary sort by symbol ascending ('symbol' ASC)."
+    percentile_implementation: "Candidate pool on date T is filtered to keep ceil(N * percentile / 100) top ranked symbols."
+  
+  market_breadth:
+    universe: "Screened liquid universe on date T passing Gates 1-3."
+    timing: "Evaluated at prior close T (fully known prior to NEXT_OPEN entry execution at T+1)."
+    formula: "Percentage of stocks in the screened universe with close_raw[T] > SMA50[T]."
+    threshold_pct: 50.0  # Gate active: require breadth >= 50.0% to allow new entries
+  
+  random_baseline:
+    universe: "Liquid universe on date T with daily turnover (close_raw * volume_raw) >= Rs. 10cr."
+    draws: 1000
+    seed: 42
+    matching: "Drawn with replacement matched to the 151 unique actual entry dates."
+    entry_fill: "Evaluated at close of date T."
+    sizing_risk: "Live stop set to min(Stop A [2.0 * ATR14], Stop B [Donchian 30-day low])."
+    lifecycle_exits: "Identical bar-by-bar advance_one_bar() simulation: Initial Stop, Breakeven at +1.0R, Trailing ATR, Parabolic Trailing, and 20-session Time Decay."
+
+selection_criteria:
+  trade_volume_gates:
+    min_pooled_trades: 80
+    min_trades_per_window: 20
+  
+  statistical_significance_gates:
+    stricter_confidence_interval: 99.0  # 99% cluster-bootstrap lower bound of Net Expectancy must be > 0.0R
+    skill_vs_drift_test: "Cluster-bootstrap one-sided p-value vs matched-random baseline < 0.00833 (Bonferroni-corrected for 6 configs: alpha = 0.05 / 6) on pooled 2020-2026."
+  
+  plateau_definition:
+    rule: "The winning configuration must sit on a stable plateau: every neighboring config in the adjacency graph must achieve a net expectancy that drops by <= 25% from the winner's net expectancy and remains strictly positive (> 0.0R)."
+    adjacency_graph:
+      CFG-01: ["CFG-02", "CFG-04"]
+      CFG-02: ["CFG-01", "CFG-03", "CFG-05"]
+      CFG-03: ["CFG-02", "CFG-06"]
+      CFG-04: ["CFG-01", "CFG-05"]
+      CFG-05: ["CFG-02", "CFG-04", "CFG-06"]
+      CFG-06: ["CFG-03", "CFG-05"]
+
+  alpha_and_benchmark_rules:
+    pre_tax_cagr_rule: "Strategy pre-tax CAGR must be >= Nifty 50 Buy-and-Hold pre-tax CAGR over the identical window."
+    return_over_drawdown_rule: "Strategy Return-over-Drawdown (CAGR / |Max Drawdown|) must be >= 1.5x Nifty 50 Return-over-Drawdown."
+    fallback_outperformance_rule: "Strategy must beat the Nifty-with-Kill-Switch fallback: Strategy Sharpe >= Fallback Sharpe + 0.20, and Strategy CAGR > Fallback CAGR."
+
+  official_strategy_gates:
+    min_trades: 40  # Required for the 5-year TEST window
+    max_drawdown_pct: 15.0
+    min_profit_factor: 1.30
+    min_net_expectancy_r: 0.15
+
+step5_test_prerequisites:
+  bootstrap_lower_bound_gt_zero: true
+  beat_matched_random_baseline: true
+  compliance_applied: true
+  single_selected_config_only: true
+
+configs:
+  - id: "CFG-00"
+    role: "REFERENCE_BASELINE"
+    name: "Baseline Unfiltered Breakout"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: true
+      breakout_lookback: 20
+      rs_rank_percentile: null          # 100% of breakout candidates allowed
+      market_breadth_min_pct: null      # No market breadth filter
+    execution:
+      max_entry_gap_up_pct: 3.0         # Exactly matches strategy_config.yaml baseline
+    reproducibility_assertion:
+      w1_trades: 39
+      w1_net_pnl: 229083
+      w1_net_expectancy_r: 0.547
+      w2_trades: 159
+      w2_net_pnl: -164616
+      w2_net_expectancy_r: -0.104
+    description: "Current baseline: 50>200 SMA trend, 20-day high breakout confirmation, max gap 3.0%."
+
+  - id: "CFG-01"
+    role: "CANDIDATE"
+    name: "RS Top 40% Rank"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: true
+      breakout_lookback: 20
+      rs_rank_percentile: 40            # Top 40% RS rank
+      market_breadth_min_pct: null
+    execution:
+      max_entry_gap_up_pct: 3.0
+    description: "Relative Strength filter: top 40% percentile within the screened universe, standard gap 3.0%."
+
+  - id: "CFG-02"
+    role: "CANDIDATE"
+    name: "RS Top 40% Rank + Tighter Gap (<= 1.5%)"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: true
+      breakout_lookback: 20
+      rs_rank_percentile: 40
+      market_breadth_min_pct: null
+    execution:
+      max_entry_gap_up_pct: 1.5         # Tighter gap cap
+    description: "Top 40% RS rank with tighter opening gap-up limit (<= 1.5%) to eliminate morning exhaustion traps."
+
+  - id: "CFG-03"
+    role: "CANDIDATE"
+    name: "RS Top 40% Rank + Tighter Gap + Market Breadth (>= 50%)"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: true
+      breakout_lookback: 20
+      rs_rank_percentile: 40
+      market_breadth_min_pct: 50.0      # At least 50% of stocks above SMA50
+    execution:
+      max_entry_gap_up_pct: 1.5
+    description: "Top 40% RS rank, gap <= 1.5%, plus market breadth overlay requiring >= 50% of stocks > 50-day SMA."
+
+  - id: "CFG-04"
+    role: "CANDIDATE"
+    name: "RS Top 30% Rank"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: true
+      breakout_lookback: 20
+      rs_rank_percentile: 30            # Top 30% RS rank
+      market_breadth_min_pct: null
+    execution:
+      max_entry_gap_up_pct: 3.0
+    description: "Higher conviction relative strength filter: top 30% percentile within the screened universe, standard gap 3.0%."
+
+  - id: "CFG-05"
+    role: "CANDIDATE"
+    name: "RS Top 30% Rank + Tighter Gap (<= 1.5%)"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: true
+      breakout_lookback: 20
+      rs_rank_percentile: 30
+      market_breadth_min_pct: null
+    execution:
+      max_entry_gap_up_pct: 1.5
+    description: "Top 30% RS rank combined with tighter gap-up limit (<= 1.5%)."
+
+  - id: "CFG-06"
+    role: "CANDIDATE"
+    name: "RS Top 30% Rank + Tighter Gap + Market Breadth (>= 50%)"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: true
+      breakout_lookback: 20
+      rs_rank_percentile: 30
+      market_breadth_min_pct: 50.0
+    execution:
+      max_entry_gap_up_pct: 1.5
+    description: "Top 30% RS rank, gap <= 1.5%, plus market breadth overlay (>= 50% stocks > 50 SMA)."

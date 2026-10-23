@@ -160,6 +160,7 @@ class Simulator:
                     "gross": 0.0,
                     "costs": buy_cost,
                     "last_close": plan.fill_price,
+                    "lowest_low": bar.low,
                     "st": PosState(
                         entry_price=plan.fill_price,
                         initial_stop=t.live_stop_loss,
@@ -177,6 +178,8 @@ class Simulator:
                 if info is None:
                     continue
                 bar, atr14, ref, _ = info
+                p["lowest_low"] = min(p.get("lowest_low", p["st"].entry_price), bar.low)
+                prev_state = p["st"].state
                 res = advance_one_bar(
                     p["st"],
                     bar,
@@ -192,6 +195,10 @@ class Simulator:
                     p["costs"] += sell
                 if res.closed:
                     net = p["gross"] - p["costs"]
+                    one_r = p["st"].entry_price - p["st"].initial_stop
+                    final_exit_reason = res.exits[-1].reason if res.exits else "UNKNOWN"
+                    tot_proceeds = p["gross"] + p["orig"] * p["st"].entry_price
+                    avg_exit_price = tot_proceeds / p["orig"] if p["orig"] > 0 else p["st"].entry_price
                     trades.append(
                         {
                             "position_id": p["id"],
@@ -201,6 +208,14 @@ class Simulator:
                             "entry_price": p["st"].entry_price,
                             "stop": p["st"].initial_stop,
                             "shares": p["orig"],
+                            "exit_price": avg_exit_price,
+                            "exit_reason": final_exit_reason,
+                            "exit_state": prev_state,
+                            "highest_high": p["st"].highest_high,
+                            "lowest_low": p.get("lowest_low", p["st"].entry_price),
+                            "mfe_r": (p["st"].highest_high - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
+                            "mae_r": (p["st"].entry_price - p.get("lowest_low", p["st"].entry_price)) / one_r if one_r > 0 else 0.0,
+                            "realized_r": (avg_exit_price - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
                             "pnl_gross": p["gross"],
                             "costs": p["costs"],
                             "pnl_net": net,
@@ -255,6 +270,9 @@ class Simulator:
                     p["gross"] += (exit_price - p["st"].entry_price) * rem_shares
                     p["costs"] += sell
                     net = p["gross"] - p["costs"]
+                    one_r = p["st"].entry_price - p["st"].initial_stop
+                    tot_proceeds = p["gross"] + p["orig"] * p["st"].entry_price
+                    avg_exit_price = tot_proceeds / p["orig"] if p["orig"] > 0 else p["st"].entry_price
                     trades.append(
                         {
                             "position_id": p["id"],
@@ -264,6 +282,14 @@ class Simulator:
                             "entry_price": p["st"].entry_price,
                             "stop": p["st"].initial_stop,
                             "shares": p["orig"],
+                            "exit_price": avg_exit_price,
+                            "exit_reason": "END_OF_WINDOW",
+                            "exit_state": p["st"].state,
+                            "highest_high": p["st"].highest_high,
+                            "lowest_low": p.get("lowest_low", p["st"].entry_price),
+                            "mfe_r": (p["st"].highest_high - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
+                            "mae_r": (p["st"].entry_price - p.get("lowest_low", p["st"].entry_price)) / one_r if one_r > 0 else 0.0,
+                            "realized_r": (avg_exit_price - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
                             "pnl_gross": p["gross"],
                             "costs": p["costs"],
                             "pnl_net": net,
@@ -281,6 +307,14 @@ class Simulator:
             "entry_price",
             "stop",
             "shares",
+            "exit_price",
+            "exit_reason",
+            "exit_state",
+            "highest_high",
+            "lowest_low",
+            "mfe_r",
+            "mae_r",
+            "realized_r",
             "pnl_gross",
             "costs",
             "pnl_net",
