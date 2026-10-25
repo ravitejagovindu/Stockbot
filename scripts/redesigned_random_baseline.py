@@ -162,9 +162,10 @@ def run_apples_to_apples_random_baseline(
     cfg: dict,
     n_draws_target: int = 1000,
     seed: int = 42,
+    force_rerun: bool = False,
 ) -> pd.DataFrame:
     csv_path = OUTPUT_DIR / "apples_to_apples_random_trades.csv"
-    if csv_path.exists():
+    if csv_path.exists() and not force_rerun:
         logger.info(f"Loading existing random baseline trades from {csv_path}...")
         df_rand = pd.read_csv(csv_path)
         df_rand["entry_date"] = pd.to_datetime(df_rand["entry_date"]).dt.date
@@ -285,23 +286,38 @@ def run_apples_to_apples_random_baseline(
                 if one_r_fill <= 0 or shares <= 0:
                     continue
 
-                # Forward simulation
-                fwd_bars = s.execute(
+                # Forward simulation to natural lifecycle termination (no artificial 45-day cap)
+                window_end = date(2021, 12, 31) if ed < date(2022, 1, 1) else date(2026, 10, 16)
+                all_sym_bars = s.execute(
                     select(MarketDataLake.trade_date, MarketDataLake.open_raw, MarketDataLake.high_raw,
                            MarketDataLake.low_raw, MarketDataLake.close_raw)
-                    .where(MarketDataLake.symbol == sym, MarketDataLake.trade_date >= ed)
+                    .where(MarketDataLake.symbol == sym, MarketDataLake.trade_date >= sd - timedelta(days=60),
+                           MarketDataLake.trade_date <= window_end)
                     .order_by(MarketDataLake.trade_date)
-                    .limit(45)
                 ).all()
 
-                if not fwd_bars:
+                if not all_sym_bars:
                     continue
 
-                # Forward returns from fill price at T+1, T+5, T+10, T+20 sessions after entry
-                fwd_1 = (float(fwd_bars[1].close_raw) / fill_price - 1.0) * 100.0 if len(fwd_bars) > 1 else np.nan
-                fwd_5 = (float(fwd_bars[5].close_raw) / fill_price - 1.0) * 100.0 if len(fwd_bars) > 5 else np.nan
-                fwd_10 = (float(fwd_bars[10].close_raw) / fill_price - 1.0) * 100.0 if len(fwd_bars) > 10 else np.nan
-                fwd_20 = (float(fwd_bars[20].close_raw) / fill_price - 1.0) * 100.0 if len(fwd_bars) > 20 else np.nan
+                df_sym = pd.DataFrame(
+                    [{"trade_date": _to_date(b.trade_date), "open": float(b.open_raw), "high": float(b.high_raw),
+                      "low": float(b.low_raw), "close": float(b.close_raw)} for b in all_sym_bars]
+                ).set_index("trade_date")
+
+                if len(df_sym) < atr_period:
+                    continue
+
+                s_atr = atr(df_sym["high"], df_sym["low"], df_sym["close"], period=atr_period)
+                fwd_df = df_sym.loc[df_sym.index >= ed]
+                if fwd_df.empty:
+                    continue
+
+                # Forward returns from fill price at T+1, T+5, T+10, T+20 sessions after entry (trade_date > ed)
+                fwd_closes = list(fwd_df["close"].iloc[1:])
+                fwd_1 = (fwd_closes[0] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 1 else np.nan
+                fwd_5 = (fwd_closes[4] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 5 else np.nan
+                fwd_10 = (fwd_closes[9] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 10 else np.nan
+                fwd_20 = (fwd_closes[19] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 20 else np.nan
 
                 pos = PosState(
                     entry_price=fill_price,
@@ -314,12 +330,13 @@ def run_apples_to_apples_random_baseline(
 
                 closed = False
                 exit_price = fill_price
-                exit_reason = "OPEN"
+                exit_reason = "END_OF_WINDOW"
                 days_held = 0
 
-                for b_idx, fb in enumerate(fwd_bars):
-                    bar = Bar(float(fb.open_raw), float(fb.high_raw), float(fb.low_raw), float(fb.close_raw))
-                    b_ctx = BarCtx(atr_val, False, True, None)
+                for d_bar, row_bar in fwd_df.iterrows():
+                    bar = Bar(row_bar["open"], row_bar["high"], row_bar["low"], row_bar["close"])
+                    bar_atr = float(s_atr.loc[d_bar]) if d_bar in s_atr.index and pd.notna(s_atr.loc[d_bar]) else atr_val
+                    b_ctx = BarCtx(bar_atr, False, True, None)
                     res = advance_one_bar(pos, bar, b_ctx, rules, slip_exit)
                     pos = res.pos
                     days_held = pos.days_held
@@ -330,7 +347,8 @@ def run_apples_to_apples_random_baseline(
                         break
 
                 if not closed:
-                    exit_price = float(fwd_bars[-1].close_raw) * (1.0 - slip_exit / 100.0)
+                    exit_price = float(fwd_df.iloc[-1]["close"]) * (1.0 - slip_exit / 100.0)
+                    days_held = len(fwd_df)
 
                 buy_cost = costs.buy_cost(fill_price * shares)
                 sell_cost = costs.sell_cost(exit_price * shares)
@@ -471,7 +489,7 @@ def main():
     cfg = load_config()
     with get_session() as s:
         df_w1, df_w2, df_all = load_actual_trades(s)
-    rand_df = run_apples_to_apples_random_baseline(df_all, cfg, n_draws_target=1000, seed=42)
+    rand_df = run_apples_to_apples_random_baseline(df_all, cfg, n_draws_target=1000, seed=42, force_rerun=True)
     compute_trade_level_paired_statistics(df_all, rand_df)
 
 

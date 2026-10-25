@@ -16,7 +16,9 @@ from engine_core.sector_map import sector_for
 from engine_core.entry_filters import (
     passes_trend_filter,
     passes_breakout,
+    passes_pullback,
     rs_return,
+    apply_rs_rank_percentile,
     apply_entry_filters,
 )
 from engine_core.regime_gates import is_bull, bull_correction_active
@@ -114,6 +116,93 @@ def test_apply_entry_filters_ranking():
     # Highest RS return must come first -> BBB (+50%) then AAA (+10%)
     assert ranked[0]["symbol"] == "BBB"
     assert ranked[1]["symbol"] == "AAA"
+
+
+def test_passes_pullback():
+    # 20 bars of 100.0 -> SMA20 is 100.0
+    prices = [100.0] * 19
+    # In range: 101.0 is between 98.0 and 103.0
+    s_in = pd.Series(prices + [101.0])
+    assert passes_pullback(s_in, period=20, lower_tol=0.98, upper_tol=1.03) is True
+
+    # Upper bound breach: 104.0 > 103.0
+    s_too_high = pd.Series(prices + [104.0])
+    assert passes_pullback(s_too_high, period=20, lower_tol=0.98, upper_tol=1.03) is False
+
+    # Lower bound breach: 97.0 < 98.0
+    s_too_low = pd.Series(prices + [97.0])
+    assert passes_pullback(s_too_low, period=20, lower_tol=0.98, upper_tol=1.03) is False
+
+    # Insufficient length: 15 bars
+    s_short = pd.Series([100.0] * 15)
+    assert passes_pullback(s_short, period=20) is False
+
+
+def test_apply_rs_rank_percentile():
+    cands = [{"symbol": f"SYM_{i}", "rs_3m": 10.0 - i} for i in range(10)]
+    # Top 30% of 10 -> 3 candidates
+    top30 = apply_rs_rank_percentile(cands, 30.0)
+    assert len(top30) == 3
+    assert [c["symbol"] for c in top30] == ["SYM_0", "SYM_1", "SYM_2"]
+
+    # Top 40% of 10 -> 4 candidates
+    top40 = apply_rs_rank_percentile(cands, 40.0)
+    assert len(top40) == 4
+
+    # Top 50% of 10 -> 5 candidates
+    top50 = apply_rs_rank_percentile(cands, 50.0)
+    assert len(top50) == 5
+
+    # None or >= 100 -> all 10 candidates
+    assert len(apply_rs_rank_percentile(cands, None)) == 10
+    assert len(apply_rs_rank_percentile(cands, 100.0)) == 10
+
+
+def test_apply_entry_filters_pullback_and_percentile():
+    cfg = {
+        "entry_filters": {
+            "trend_filter_enabled": True,
+            "trend_fast_sma": 5,
+            "trend_slow_sma": 10,
+            "breakout_required": False,
+            "pullback_required": True,
+            "pullback_sma_period": 5,
+            "pullback_tolerance_lower": 0.98,
+            "pullback_tolerance_upper": 1.03,
+            "rs_lookback_days": 3,
+            "rs_rank_percentile": 50,
+        }
+    }
+    # Create 3 candidates:
+    # SYM1: In trend, in pullback band, high RS
+    # SYM2: In trend, in pullback band, lower RS
+    # SYM3: In trend, but price blown out way above SMA5 (fails pullback)
+    dates = [date(2024, 1, 1) + timedelta(days=i) for i in range(12)]
+    
+    # SYM1: SMA5 = (98 + 99 + 99.5 + 100 + 102.5) / 5 = 99.8 -> 102.5 / 99.8 = 1.027 (within [0.98, 1.03])
+    # 3-day RS: 102.5 / 99.0 - 1 = +3.54%
+    p1 = [80.0, 82.0, 85.0, 88.0, 91.0, 94.0, 98.0, 99.0, 99.5, 100.0, 102.5]
+    df1 = pd.DataFrame({"close_adj": p1, "high_adj": p1}, index=dates[:len(p1)])
+    
+    # SYM2: SMA5 = (95 + 96 + 97 + 97.5 + 98) / 5 = 96.7 -> 98 / 96.7 = 1.013 (within [0.98, 1.03])
+    # 3-day RS: 98.0 / 97.0 - 1 = +1.03%
+    p2 = [85.0, 86.0, 87.0, 88.0, 90.0, 92.0, 95.0, 96.0, 97.0, 97.5, 98.0]
+    df2 = pd.DataFrame({"close_adj": p2, "high_adj": p2}, index=dates[:len(p2)])
+
+    # SYM3: huge spike today (120 vs SMA5 ~ 100 -> 1.20 > 1.03, fails pullback)
+    p3 = [80.0, 82.0, 85.0, 88.0, 91.0, 94.0, 97.0, 98.0, 99.0, 100.0, 120.0]
+    df3 = pd.DataFrame({"close_adj": p3, "high_adj": p3}, index=dates[:len(p3)])
+
+    cands = [
+        {"symbol": "SYM1", "adjusted_ohlcv": df1},
+        {"symbol": "SYM2", "adjusted_ohlcv": df2},
+        {"symbol": "SYM3", "adjusted_ohlcv": df3},
+    ]
+    passed = apply_entry_filters(cands, cfg)
+    # SYM3 should be rejected by pullback gate
+    # Top 50% of the 2 surviving candidates (SYM1, SYM2) -> max(1, int(2 * 0.5)) = 1 candidate
+    assert len(passed) == 1
+    assert passed[0]["symbol"] == "SYM1"
 
 
 # ---------------------------------------------------------------------------

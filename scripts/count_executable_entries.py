@@ -25,7 +25,7 @@ from data.db.connection import get_session
 from data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
 from engine_core.costs import CostModel
-from engine_core.entry_filters import passes_breakout, passes_trend_filter, rs_return
+from engine_core.entry_filters import apply_entry_filters, passes_breakout, passes_trend_filter, rs_return
 from engine_core.indicators import atr, donchian_low, donchian_high
 from engine_core.lifecycle_rules import (
     Bar,
@@ -193,7 +193,6 @@ def count_executable_entries_for_config(base_cfg: dict, config_id: str, cfg_over
         all_syms = session.execute(
             select(MarketDataLake.symbol)
             .where(MarketDataLake.trade_date == d)
-            .where((MarketDataLake.close_raw * MarketDataLake.volume_raw) >= 10000000)
             .where(MarketDataLake.symbol.notin_(["NIFTY50_INDEX", "INDIA_VIX"]))
         ).scalars().all()
 
@@ -212,43 +211,9 @@ def count_executable_entries_for_config(base_cfg: dict, config_id: str, cfg_over
         if not cands_raw:
             continue
 
-        # Filter candidates based on configuration rules
-        ef = cfg.get("entry_filters", {})
-        breakout_req = ef.get("breakout_required", True)
-        pullback_req = ef.get("pullback_required", False)
-        rs_pct = ef.get("rs_rank_percentile", None)
-        fast_sma = int(ef.get("trend_fast_sma", 50))
-        slow_sma = int(ef.get("trend_slow_sma", 200))
-        lb = int(ef.get("breakout_lookback", 20))
-        rs_lb = int(ef.get("rs_lookback_days", 63))
-
-        filtered_cands = []
-        for c in cands_raw:
-            adj = c["adjusted_ohlcv"]
-            cl, hi = adj["close_adj"], adj["high_adj"]
-            if not passes_trend_filter(cl, fast_sma, slow_sma):
-                continue
-            if breakout_req and not passes_breakout(cl, hi, lb):
-                continue
-            if pullback_req:
-                # Pullback to 20-day SMA: close within 2% of 20-day SMA or below 10-day high
-                sma20 = cl.rolling(20).mean().iloc[-1]
-                if cl.iloc[-1] > sma20 * 1.03:
-                    continue
-            d_c = dict(c)
-            d_c["rs_3m"] = rs_return(cl, rs_lb)
-            filtered_cands.append(d_c)
-
+        filtered_cands = apply_entry_filters(cands_raw, cfg)
         if not filtered_cands:
             continue
-
-        # Rank by RS
-        filtered_cands.sort(key=lambda c: (-c["rs_3m"] if pd.notna(c["rs_3m"]) else 1e9, c["symbol"]))
-
-        # Apply RS percentile cutoff
-        if rs_pct is not None and rs_pct > 0:
-            k = max(1, int(round(len(filtered_cands) * (rs_pct / 100.0))))
-            filtered_cands = filtered_cands[:k]
 
         setups = sizer.compute_all(
             candidates=filtered_cands,
@@ -283,28 +248,28 @@ def main():
             "entry_filters": {"breakout_required": True, "pullback_required": False, "rs_rank_percentile": None},
             "execution": {"max_entry_gap_up_pct": 3.0}
         }),
-        ("CFG-01", "Breakout + RS Top 40% (Gap 3.0%)", {
-            "entry_filters": {"breakout_required": True, "pullback_required": False, "rs_rank_percentile": 40},
-            "execution": {"max_entry_gap_up_pct": 3.0}
-        }),
-        ("CFG-02", "Breakout + RS Top 40% + Tight Gap (1.5%)", {
-            "entry_filters": {"breakout_required": True, "pullback_required": False, "rs_rank_percentile": 40},
+        ("CFG-01", "Trend Continuation (RS Top 50%, Gap 1.5%)", {
+            "entry_filters": {"breakout_required": False, "pullback_required": False, "rs_rank_percentile": 50},
             "execution": {"max_entry_gap_up_pct": 1.5}
         }),
-        ("CFG-03", "Breakout + RS Top 30% + Tight Gap (1.5%)", {
-            "entry_filters": {"breakout_required": True, "pullback_required": False, "rs_rank_percentile": 30},
-            "execution": {"max_entry_gap_up_pct": 1.5}
-        }),
-        ("CFG-04", "Trend Continuation (No Breakout, RS Top 40%, Gap 1.5%)", {
+        ("CFG-02", "Trend Continuation (RS Top 40%, Gap 1.5%)", {
             "entry_filters": {"breakout_required": False, "pullback_required": False, "rs_rank_percentile": 40},
             "execution": {"max_entry_gap_up_pct": 1.5}
         }),
-        ("CFG-05", "Trend Continuation (No Breakout, RS Top 30%, Gap 1.5%)", {
+        ("CFG-03", "Trend Continuation (RS Top 30%, Gap 1.5%)", {
             "entry_filters": {"breakout_required": False, "pullback_required": False, "rs_rank_percentile": 30},
             "execution": {"max_entry_gap_up_pct": 1.5}
         }),
-        ("CFG-06", "Pullback Entry (Trend + RS Top 40% + Pullback to SMA20, Gap 1.5%)", {
-            "entry_filters": {"breakout_required": False, "pullback_required": True, "rs_rank_percentile": 40},
+        ("CFG-04", "Pullback to SMA20 (RS Top 50%, Gap 1.5%)", {
+            "entry_filters": {"breakout_required": False, "pullback_required": True, "rs_rank_percentile": 50, "pullback_sma_period": 20, "pullback_tolerance_lower": 0.98, "pullback_tolerance_upper": 1.03},
+            "execution": {"max_entry_gap_up_pct": 1.5}
+        }),
+        ("CFG-05", "Pullback to SMA20 (RS Top 40%, Gap 1.5%)", {
+            "entry_filters": {"breakout_required": False, "pullback_required": True, "rs_rank_percentile": 40, "pullback_sma_period": 20, "pullback_tolerance_lower": 0.98, "pullback_tolerance_upper": 1.03},
+            "execution": {"max_entry_gap_up_pct": 1.5}
+        }),
+        ("CFG-06", "Pullback to SMA20 (RS Top 30%, Gap 1.5%)", {
+            "entry_filters": {"breakout_required": False, "pullback_required": True, "rs_rank_percentile": 30, "pullback_sma_period": 20, "pullback_tolerance_lower": 0.98, "pullback_tolerance_upper": 1.03},
             "execution": {"max_entry_gap_up_pct": 1.5}
         }),
     ]

@@ -3,13 +3,14 @@
 # Trials Budget: Exactly 6 candidate configurations + 1 baseline reference. No second grid round allowed.
 
 metadata:
-  created_at: "2026-10-24T08:45:00+05:30"
+  created_at: "2026-10-24T18:40:00+05:30"
   status: "PRE_REGISTERED_LOCKED"
   description: >
-    Factorial grid testing Breakout vs. Trend Continuation (No Breakout) vs. Pullback triggers
-    under Relative Strength percentile ranking (Top 40% vs Top 30%) and Opening Gap limits (3.0% vs 1.5%).
-    Informed by empirical tuning window findings (where trend picks without breakout beat breakout entries at T+20),
-    with the 2015-2019 TEST window strictly preserved and untouched.
+    Factorial grid testing Trend Continuation (No Breakout) vs. Pullback to SMA20 triggers
+    under Relative Strength percentile ranking (Top 50% vs Top 40% vs Top 30%) and Opening Gap limit (1.5%).
+    Justified by trade-count feasibility (breakouts combined with RS cuts suffer severe trade starvation in W1,
+    yielding only 12 trades and violating the 20-trade floor) and testing whether entering on consolidations/pullbacks
+    below 52-week highs avoids buying the exhaustion top of breakouts. The 2015-2019 TEST window is strictly preserved and untouched.
 
 definitions:
   forward_returns:
@@ -22,13 +23,21 @@ definitions:
     formula: "close_adj[T] / close_adj[T - 63] - 1.0"
     tie_handling: "Deterministic secondary sort by symbol ascending ('symbol' ASC)."
     percentile_implementation: "Candidate pool on date T is filtered to keep ceil(N * percentile / 100) top ranked symbols."
-  
+
+  pullback_trigger:
+    trend_condition: "close_adj[T] > sma50_adj[T] > sma200_adj[T]"
+    sma_period: 20
+    band_lower: 0.98
+    band_upper: 1.03
+    formula: "band_lower * sma20_adj[T] <= close_adj[T] <= band_upper * sma20_adj[T]"
+    rationale: "Identifies stocks in established primary uptrends that are consolidating within 3% of the 20-day SMA, allowing entry with structural support and positive R:R to prior 52-week resistance."
+
   market_breadth:
     universe: "Screened liquid universe on date T passing Gates 1-3."
     timing: "Evaluated at prior close T (fully known prior to NEXT_OPEN entry execution at T+1)."
     formula: "Percentage of stocks in the screened universe with close_adj[T] > sma50_adj[T]."
     threshold_pct: 50.0  # Reference baseline threshold
-  
+
   random_baseline:
     universe: "Exact screened universe on signal date T passing Gates 1-3 and Trend Filter (close_adj > sma50 > sma200)."
     draws: 1000
@@ -42,20 +51,20 @@ selection_criteria:
   trade_volume_gates:
     min_pooled_trades: 80
     min_trades_per_window: 20
-  
+
   statistical_significance_gates:
     stricter_confidence_interval: 99.0  # 99% cluster-bootstrap lower bound of Net Expectancy must be > 0.0R
     skill_vs_drift_test: "Cluster-bootstrap one-sided p-value vs matched-random baseline < 0.00833 (Bonferroni-corrected for 6 configs: alpha = 0.05 / 6) on pooled 2020-2026."
-  
+
   plateau_definition:
     rule: "The winning configuration must sit on a stable plateau: every neighboring config in the adjacency graph must achieve a net expectancy that drops by <= 25% from the winner's net expectancy and remains strictly positive (> 0.0R)."
     adjacency_graph:
       CFG-01: ["CFG-02", "CFG-04"]
-      CFG-02: ["CFG-01", "CFG-03", "CFG-04"]
-      CFG-03: ["CFG-02", "CFG-05"]
-      CFG-04: ["CFG-01", "CFG-02", "CFG-05", "CFG-06"]
-      CFG-05: ["CFG-03", "CFG-04", "CFG-06"]
-      CFG-06: ["CFG-04", "CFG-05"]
+      CFG-02: ["CFG-01", "CFG-03", "CFG-05"]
+      CFG-03: ["CFG-02", "CFG-06"]
+      CFG-04: ["CFG-01", "CFG-05"]
+      CFG-05: ["CFG-04", "CFG-06", "CFG-02"]
+      CFG-06: ["CFG-05", "CFG-03"]
 
   alpha_and_benchmark_rules:
     boolean_rule: >
@@ -107,87 +116,93 @@ configs:
 
   - id: "CFG-01"
     role: "CANDIDATE"
-    name: "Breakout + RS Top 40% Rank"
+    name: "Trend Continuation (RS Top 50%, Gap <= 1.5%)"
     entry_filters:
       trend_filter_enabled: true
       trend_fast_sma: 50
       trend_slow_sma: 200
-      breakout_required: true
+      breakout_required: false          # No breakout trigger
       pullback_required: false
-      breakout_lookback: 20
-      rs_rank_percentile: 40            # Top 40% RS rank
+      rs_rank_percentile: 50            # Top 50% RS rank
     execution:
-      max_entry_gap_up_pct: 3.0
-    description: "Relative Strength filter on 20-day breakouts: top 40% percentile within screened universe, standard gap 3.0%."
+      max_entry_gap_up_pct: 1.5
+    description: "Broad trend continuation: uptrending stocks (close > sma50 > sma200) in top 50% RS without breakout trigger, gap <= 1.5%."
 
   - id: "CFG-02"
     role: "CANDIDATE"
-    name: "Breakout + RS Top 40% Rank + Tighter Gap (<= 1.5%)"
+    name: "Trend Continuation (RS Top 40%, Gap <= 1.5%)"
     entry_filters:
       trend_filter_enabled: true
       trend_fast_sma: 50
       trend_slow_sma: 200
-      breakout_required: true
+      breakout_required: false          # No breakout trigger
       pullback_required: false
-      breakout_lookback: 20
-      rs_rank_percentile: 40
+      rs_rank_percentile: 40            # Top 40% RS rank
     execution:
-      max_entry_gap_up_pct: 1.5         # Tighter gap cap
-    description: "Top 40% RS breakouts with tighter opening gap-up limit (<= 1.5%) to eliminate exhaustion traps."
+      max_entry_gap_up_pct: 1.5
+    description: "Moderate trend continuation: uptrending stocks (close > sma50 > sma200) in top 40% RS without breakout trigger, gap <= 1.5%."
 
   - id: "CFG-03"
     role: "CANDIDATE"
-    name: "Breakout + RS Top 30% Rank + Tighter Gap (<= 1.5%)"
+    name: "Trend Continuation (RS Top 30%, Gap <= 1.5%)"
     entry_filters:
       trend_filter_enabled: true
       trend_fast_sma: 50
       trend_slow_sma: 200
-      breakout_required: true
+      breakout_required: false          # No breakout trigger
       pullback_required: false
-      breakout_lookback: 20
-      rs_rank_percentile: 30
+      rs_rank_percentile: 30            # Top 30% RS rank
     execution:
       max_entry_gap_up_pct: 1.5
-    description: "High-conviction top 30% RS breakouts with tighter gap limit (<= 1.5%)."
+    description: "High conviction trend continuation: uptrending stocks (close > sma50 > sma200) in top 30% RS without breakout trigger, gap <= 1.5%."
 
   - id: "CFG-04"
     role: "CANDIDATE"
-    name: "Trend Continuation (No Breakout, RS Top 40%, Gap <= 1.5%)"
-    entry_filters:
-      trend_filter_enabled: true
-      trend_fast_sma: 50
-      trend_slow_sma: 200
-      breakout_required: false          # No breakout trigger
-      pullback_required: false
-      rs_rank_percentile: 40
-    execution:
-      max_entry_gap_up_pct: 1.5
-    description: "Trend continuation entry: buy uptrending stocks (50>200 SMA) in top 40% RS without breakout trigger."
-
-  - id: "CFG-05"
-    role: "CANDIDATE"
-    name: "Trend Continuation (No Breakout, RS Top 30%, Gap <= 1.5%)"
-    entry_filters:
-      trend_filter_enabled: true
-      trend_fast_sma: 50
-      trend_slow_sma: 200
-      breakout_required: false          # No breakout trigger
-      pullback_required: false
-      rs_rank_percentile: 30
-    execution:
-      max_entry_gap_up_pct: 1.5
-    description: "High conviction trend continuation: top 30% RS uptrending stocks without breakout trigger."
-
-  - id: "CFG-06"
-    role: "CANDIDATE"
-    name: "Pullback in Uptrend (RS Top 40%, Pullback to SMA20, Gap <= 1.5%)"
+    name: "Pullback to SMA20 (RS Top 50%, Gap <= 1.5%)"
     entry_filters:
       trend_filter_enabled: true
       trend_fast_sma: 50
       trend_slow_sma: 200
       breakout_required: false
-      pullback_required: true           # Pullback near 20-day SMA in confirmed uptrend
+      pullback_required: true           # Pullback to 20-day SMA in confirmed uptrend
+      pullback_sma_period: 20
+      pullback_tolerance_lower: 0.98
+      pullback_tolerance_upper: 1.03
+      rs_rank_percentile: 50
+    execution:
+      max_entry_gap_up_pct: 1.5
+    description: "Broad pullback entry: top 50% RS stocks in 50>200 uptrend pulling back within [0.98, 1.03] of 20-day SMA, gap <= 1.5%."
+
+  - id: "CFG-05"
+    role: "CANDIDATE"
+    name: "Pullback to SMA20 (RS Top 40%, Gap <= 1.5%)"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: false
+      pullback_required: true           # Pullback to 20-day SMA in confirmed uptrend
+      pullback_sma_period: 20
+      pullback_tolerance_lower: 0.98
+      pullback_tolerance_upper: 1.03
       rs_rank_percentile: 40
     execution:
       max_entry_gap_up_pct: 1.5
-    description: "Pullback entry: top 40% RS stocks in 50>200 uptrend pulling back near 20-day SMA, maintaining RR >= 1.5 to 52w high."
+    description: "Moderate pullback entry: top 40% RS stocks in 50>200 uptrend pulling back within [0.98, 1.03] of 20-day SMA, gap <= 1.5%."
+
+  - id: "CFG-06"
+    role: "CANDIDATE"
+    name: "Pullback to SMA20 (RS Top 30%, Gap <= 1.5%)"
+    entry_filters:
+      trend_filter_enabled: true
+      trend_fast_sma: 50
+      trend_slow_sma: 200
+      breakout_required: false
+      pullback_required: true           # Pullback to 20-day SMA in confirmed uptrend
+      pullback_sma_period: 20
+      pullback_tolerance_lower: 0.98
+      pullback_tolerance_upper: 1.03
+      rs_rank_percentile: 30
+    execution:
+      max_entry_gap_up_pct: 1.5
+    description: "High conviction pullback entry: top 30% RS stocks in 50>200 uptrend pulling back within [0.98, 1.03] of 20-day SMA, gap <= 1.5%."
