@@ -42,6 +42,8 @@ from engine_core.lifecycle_rules import (
     parabolic_ref_close,
     plan_entry_fill,
 )
+from engine_core.regime_filter import RegimeFilter
+from engine_core.regime_gates import is_bull
 from engine_core.universe_screener import UniverseScreener
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -56,6 +58,19 @@ def _to_date(d) -> date:
     if isinstance(d, str):
         return date.fromisoformat(d)
     return d
+
+
+def trimmed_mean(arr, proportion_to_cut: float = 0.05) -> float:
+    """Compute trimmed mean cutting proportion_to_cut from each tail."""
+    clean = np.asarray(arr)[~np.isnan(arr)]
+    if len(clean) == 0:
+        return float("nan")
+    vals = np.sort(clean)
+    n = len(vals)
+    k = int(n * proportion_to_cut)
+    if k > 0 and 2 * k < n:
+        return float(np.mean(vals[k:-k]))
+    return float(np.mean(vals))
 
 
 def load_actual_trades(session) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -209,6 +224,17 @@ def run_apples_to_apples_random_baseline(
         unique_signal_dates = sorted(set(entry_to_signal_date.values()))
         pools = build_screened_trend_pools(cfg, unique_signal_dates, s)
 
+        # Pre-compute true macro regime state (kill switch and bull) for all trading sessions
+        logger.info("Pre-computing macro regime state for all trading sessions...")
+        regime = RegimeFilter(cfg, s)
+        daily_regime = {}
+        for d in t_days:
+            rs = regime.evaluate(d)
+            ks = bool(rs.kill_switch_active)
+            bull = is_bull(ks, rs.nifty_close, rs.nifty_sma200)
+            daily_regime[d] = (ks, bull)
+        logger.info(f"Pre-computed macro regime for {len(daily_regime)} sessions.")
+
         # 2. Simulate random entries matched to entry dates
         # Draw roughly (n_draws_target / len(actual_trades)) draws per actual trade
         draws_per_trade = max(5, int(round(n_draws_target / len(actual_trades))))
@@ -329,32 +355,40 @@ def run_apples_to_apples_random_baseline(
                 )
 
                 closed = False
-                exit_price = fill_price
                 exit_reason = "END_OF_WINDOW"
                 days_held = 0
+                trade_gross = 0.0
+                trade_sell_costs = 0.0
 
                 for d_bar, row_bar in fwd_df.iterrows():
                     bar = Bar(row_bar["open"], row_bar["high"], row_bar["low"], row_bar["close"])
                     bar_atr = float(s_atr.loc[d_bar]) if d_bar in s_atr.index and pd.notna(s_atr.loc[d_bar]) else atr_val
-                    b_ctx = BarCtx(bar_atr, False, True, None)
+                    ks, bull = daily_regime.get(d_bar, (False, True))
+                    ref = parabolic_ref_close(list(df_sym.loc[:d_bar, "close"]), rules.parabolic_lookback)
+                    b_ctx = BarCtx(bar_atr, ks, bull, ref)
                     res = advance_one_bar(pos, bar, b_ctx, rules, slip_exit)
                     pos = res.pos
                     days_held = pos.days_held
+
+                    for e in res.exits:
+                        trade_gross += (e.price - fill_price) * e.shares
+                        trade_sell_costs += costs.sell_cost(e.price * e.shares)
+
                     if res.closed:
                         closed = True
-                        exit_price = res.exits[-1].price if res.exits else bar.close
                         exit_reason = res.exits[-1].reason if res.exits else "STOP_HIT"
                         break
 
-                if not closed:
+                if not closed and pos.shares_remaining > 0:
                     exit_price = float(fwd_df.iloc[-1]["close"]) * (1.0 - slip_exit / 100.0)
                     days_held = len(fwd_df)
+                    rem_shares = pos.shares_remaining
+                    trade_gross += (exit_price - fill_price) * rem_shares
+                    trade_sell_costs += costs.sell_cost(exit_price * rem_shares)
 
                 buy_cost = costs.buy_cost(fill_price * shares)
-                sell_cost = costs.sell_cost(exit_price * shares)
-                gross_pnl = (exit_price - fill_price) * shares
-                net_pnl = gross_pnl - (buy_cost + sell_cost)
-                gross_r = gross_pnl / (shares * one_r_fill)
+                net_pnl = trade_gross - (buy_cost + trade_sell_costs)
+                gross_r = trade_gross / (shares * one_r_fill)
                 net_r = net_pnl / (shares * one_r_fill)
 
                 successful_draws += 1
@@ -394,6 +428,7 @@ def compute_trade_level_paired_statistics(actual_df: pd.DataFrame, rand_df: pd.D
         "ret_20": "mean",
         "gross_r": "mean",
         "net_r": "mean",
+        "days_held": "mean",
     }).rename(columns=lambda c: f"rand_{c}")
 
     merged = actual_df.merge(rand_means, left_on="unique_trade_id", right_index=True, how="inner")
@@ -462,8 +497,16 @@ def compute_trade_level_paired_statistics(actual_df: pd.DataFrame, rand_df: pd.D
         rand_gross_r = sub["rand_gross_r"].mean()
         rand_net_r = sub["rand_net_r"].mean()
 
+        act_net_med = sub["net_r"].median()
+        rand_net_med = sub["rand_net_r"].median()
+        act_net_trim = trimmed_mean(sub["net_r"].values, 0.05)
+        rand_net_trim = trimmed_mean(sub["rand_net_r"].values, 0.05)
+
         diff_net_r = sub["net_r"] - sub["rand_net_r"]
         m_diff_net = diff_net_r.mean()
+        med_diff_net = diff_net_r.median()
+        trim_diff_net = trimmed_mean(diff_net_r.values, 0.05)
+
         se_trade_net = diff_net_r.std() / np.sqrt(n_trades)
         t_net = m_diff_net / se_trade_net if se_trade_net > 0 else 0.0
 
@@ -478,11 +521,19 @@ def compute_trade_level_paired_statistics(actual_df: pd.DataFrame, rand_df: pd.D
         t_clust_net = m_diff_net / se_clust_net if se_clust_net > 0 else 0.0
         p_one_sided_skill = np.mean(boot_diff_net <= 0.0)
 
-        print(f"\nExpectancy Comparison:")
-        print(f"  Actual:         Gross {act_gross_r:+.3f}R | Net {act_net_r:+.3f}R")
-        print(f"  Matched Random: Gross {rand_gross_r:+.3f}R | Net {rand_net_r:+.3f}R")
-        print(f"  Paired Net Diff: {m_diff_net:+.3f}R (Trade-level t = {t_net:+.2f}, Date-Clustered t = {t_clust_net:+.2f})")
-        print(f"  Skill vs Drift (H0: Actual Net <= Random Net): One-sided p-value = {p_one_sided_skill:.4f}")
+        # Holding duration statistics
+        act_days = sub["days_held"]
+        rand_days = sub["rand_days_held"]
+
+        print(f"\nExpectancy Comparison (Mean, Median, 5% Trimmed Mean):")
+        print(f"  Actual:         Gross {act_gross_r:+.3f}R | Net Mean {act_net_r:+.3f}R | Net Median {act_net_med:+.3f}R | Net 5% Trimmed {act_net_trim:+.3f}R")
+        print(f"  Matched Random: Gross {rand_gross_r:+.3f}R | Net Mean {rand_net_r:+.3f}R | Net Median {rand_net_med:+.3f}R | Net 5% Trimmed {rand_net_trim:+.3f}R")
+        print(f"  Paired Net Diff: Mean {m_diff_net:+.3f}R | Median {med_diff_net:+.3f}R | 5% Trimmed {trim_diff_net:+.3f}R")
+        print(f"  Trade-level t = {t_net:+.2f} | Date-Clustered t = {t_clust_net:+.2f} | Skill vs Drift p-value = {p_one_sided_skill:.4f}")
+
+        print(f"\nHolding Duration Statistics:")
+        print(f"  Actual:         Mean {act_days.mean():.1f} d | Median {act_days.median():.0f} d | 90th %ile {np.percentile(act_days, 90):.0f} d | Max {act_days.max():.0f} d | Held > 85d: {(act_days > 85).sum()}/{n_trades}")
+        print(f"  Matched Random: Mean {rand_days.mean():.1f} d | Median {rand_days.median():.0f} d | 90th %ile {np.percentile(rand_days, 90):.0f} d | Max {rand_days.max():.0f} d | Held > 85d: {(rand_days > 85).sum()}/{n_trades}")
 
 
 def main():

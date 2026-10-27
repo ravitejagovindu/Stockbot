@@ -32,6 +32,7 @@ from config import load_config
 from data.db.connection import get_session
 from data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
+from engine_core.costs import CostModel
 from engine_core.entry_filters import apply_entry_filters
 from engine_core.indicators import atr
 from engine_core.lifecycle_rules import (
@@ -60,6 +61,36 @@ def _to_date(d) -> date:
     if isinstance(d, str):
         return date.fromisoformat(d)
     return d
+
+
+def _bar(session, cfg: dict, rules: LifecycleRules, sym: str, dt: date):
+    """Retrieve bar, rolling ATR, parabolic reference, and corporate action flag matching Simulator."""
+    c = build_candidate_dicts(session, cfg, [sym], dt)
+    if not c:
+        return None
+    adj = c[0]["adjusted_ohlcv"]
+    if dt not in adj.index:
+        return None
+    a = atr(
+        adj["high_adj"],
+        adj["low_adj"],
+        adj["close_adj"],
+        period=int(cfg["risk"]["atr_period"]),
+    )
+    r = adj.loc[dt]
+    if isinstance(r, pd.DataFrame):
+        r = r.iloc[-1]
+    atr_val = (
+        float(a.loc[dt])
+        if (dt in a.index and pd.notna(a.loc[dt]))
+        else (float(a.iloc[-1]) if pd.notna(a.iloc[-1]) else 0.0)
+    )
+    return (
+        Bar(float(r.open_adj), float(r.high_adj), float(r.low_adj), float(r.close_adj)),
+        atr_val,
+        parabolic_ref_close(list(adj["close_adj"]), rules.parabolic_lookback),
+        any(_to_date(x.get("ex_date")) == dt for x in c[0]["corporate_actions"]),
+    )
 
 
 def main():
@@ -125,6 +156,7 @@ def main():
                 "desc": desc,
                 "cfg": cfg,
                 "rules": LifecycleRules.from_config(cfg),
+                "costs": CostModel.from_config(cfg),
                 "sizer": RiskAndSizingEngine(cfg),
                 "cash": 1_000_000.0,
                 "open_pos": {},
@@ -152,161 +184,161 @@ def main():
                 })
             return out
 
-        # Single chronological pass over all trading days
-        for day_idx, d in enumerate(days):
-            if (day_idx + 1) % 100 == 0 or day_idx == len(days) - 1:
-                logger.info(f"Processing day {day_idx + 1}/{len(days)}: {d}...")
+        windows = [
+            ("W1", date(2020, 1, 1), date(2021, 12, 31)),
+            ("W2", date(2022, 1, 1), date(2026, 10, 16)),
+        ]
 
-            win = "W1" if d < date(2022, 1, 1) else "W2"
-            rs = regime.evaluate(d)
-            ks = bool(rs.kill_switch_active)
-            bull = is_bull(ks, rs.nifty_close, rs.nifty_sma200)
-            nsma = nifty_sma(session, base_cfg, d, sma_n) if sma_n else None
-            is_correction = bool(sma_n and bull_correction_active(rs.nifty_close, rs.nifty_sma200, nsma))
-            macro_blocked = ks or is_correction
+        # Execute each window independently (clean initial portfolio & 10L cash, matching Simulator)
+        for win, win_start, win_end in windows:
+            logger.info(f"\n--- Simulating Attrition Funnel for {win} ({win_start} to {win_end}) ---")
+            win_days = [d for d in days if win_start <= d <= win_end]
 
-            # -------------------------------------------------------------
-            # Step 1: Execute yesterday's pending orders at today's open
-            # -------------------------------------------------------------
+            # Reset state for each config at the start of each window
             for cid, st in cfg_states.items():
-                ex = st["cfg"]["execution"]
-                risk_pct = float(st["cfg"]["risk"]["max_loss_pct_per_trade"])
-                eq_now = st["cash"] + sum(p["st"].shares_remaining * p["last_close"] for p in st["open_pos"].values())
-
-                for t in st["pending"]:
-                    c = build_candidate_dicts(session, st["cfg"], [t.symbol], d)
-                    if not c or t.symbol in st["open_pos"]:
-                        continue
-                    adj = c[0]["adjusted_ohlcv"]
-                    if d not in adj.index:
-                        continue
-                    row = adj.loc[d]
-                    if isinstance(row, pd.DataFrame):
-                        row = row.iloc[-1]
-                    open_p = float(row.open_adj)
-
-                    plan = plan_entry_fill(
-                        ticket_entry=t.entry_price,
-                        stop=t.live_stop_loss,
-                        target=t.initial_resistance_target,
-                        next_open=open_p,
-                        equity=eq_now,
-                        risk_pct=risk_pct,
-                        slippage_pct=float(ex["entry_slippage_pct"]),
-                        max_gap_up_pct=float(ex["max_entry_gap_up_pct"]),
-                        min_rr=float(ex["min_rr_at_fill"]),
-                        cash=st["cash"],
-                    )
-                    if not plan.ok:
-                        continue
-
-                    # Order passed opening gap and R:R at fill
-                    st["counts"][win]["gap_ok"] += 1
-
-                    if plan.shares > 0 and st["cash"] >= plan.fill_price * plan.shares:
-                        st["cash"] -= plan.fill_price * plan.shares
-                        st["open_pos"][t.symbol] = {
-                            "sector": t.sector,
-                            "entry_date": d,
-                            "orig": plan.shares,
-                            "last_close": plan.fill_price,
-                            "st": PosState(
-                                entry_price=plan.fill_price,
-                                initial_stop=t.live_stop_loss,
-                                live_stop=t.live_stop_loss,
-                                target=t.initial_resistance_target,
-                                highest_high=plan.fill_price,
-                                shares_remaining=plan.shares,
-                            ),
-                        }
-                        st["counts"][win]["fills"] += 1
-                        st["fills_list"].append({"symbol": t.symbol, "entry_date": d, "window": win})
-
+                st["cash"] = 1_000_000.0
+                st["open_pos"] = {}
                 st["pending"] = []
 
-            # -------------------------------------------------------------
-            # Step 2: Advance open positions with today's bar
-            # -------------------------------------------------------------
-            for cid, st in cfg_states.items():
-                ex = st["cfg"]["execution"]
-                for sym, p in list(st["open_pos"].items()):
-                    c = build_candidate_dicts(session, st["cfg"], [sym], d)
-                    if not c:
-                        continue
-                    adj = c[0]["adjusted_ohlcv"]
-                    if d not in adj.index:
-                        continue
-                    r = adj.loc[d]
-                    if isinstance(r, pd.DataFrame):
-                        r = r.iloc[-1]
-                    bar = Bar(float(r.open_adj), float(r.high_adj), float(r.low_adj), float(r.close_adj))
-                    atr_s = atr(adj["high_adj"], adj["low_adj"], adj["close_adj"], period=int(st["cfg"]["risk"]["atr_period"]))
-                    atr_v = float(atr_s.loc[d]) if (d in atr_s.index and pd.notna(atr_s.loc[d])) else 0.0
-                    ref = parabolic_ref_close(list(adj["close_adj"]), st["rules"].parabolic_lookback)
+            for day_idx, d in enumerate(win_days):
+                if (day_idx + 1) % 100 == 0 or day_idx == len(win_days) - 1:
+                    logger.info(f"[{win}] Processing session {day_idx + 1}/{len(win_days)}: {d}...")
 
-                    res = advance_one_bar(p["st"], bar, BarCtx(atr_v, ks, bull, ref), st["rules"], float(ex["exit_slippage_pct"]))
-                    p["st"], p["last_close"] = res.pos, bar.close
-                    if res.closed:
-                        exit_p = res.exits[-1].price if res.exits else bar.close
-                        st["cash"] += exit_p * p["orig"]
-                        del st["open_pos"][sym]
+                rs = regime.evaluate(d)
+                ks = bool(rs.kill_switch_active)
+                bull = is_bull(ks, rs.nifty_close, rs.nifty_sma200)
+                nsma = nifty_sma(session, base_cfg, d, sma_n) if sma_n else None
+                is_correction = bool(sma_n and bull_correction_active(rs.nifty_close, rs.nifty_sma200, nsma))
+                macro_blocked = ks or is_correction
 
-            # -------------------------------------------------------------
-            # Step 3: Screen today's universe once
-            # -------------------------------------------------------------
-            all_syms = session.execute(
-                select(MarketDataLake.symbol)
-                .where(MarketDataLake.trade_date == d)
-                .where(MarketDataLake.symbol.notin_(["NIFTY50_INDEX", "INDIA_VIX"]))
-            ).scalars().all()
+                # -------------------------------------------------------------
+                # Step 1: Fill yesterday's pending tickets at today's open
+                # -------------------------------------------------------------
+                for cid, st in cfg_states.items():
+                    ex = st["cfg"]["execution"]
+                    risk_pct = float(st["cfg"]["risk"]["max_loss_pct_per_trade"])
+                    eq_now = st["cash"] + sum(p["st"].shares_remaining * p["last_close"] for p in st["open_pos"].values())
 
-            passed_screener = []
-            for sym in all_syms:
-                if screener.screen_single(sym, d, apply_event_gates=False).passed:
-                    passed_screener.append(sym)
+                    for t in st["pending"]:
+                        info = _bar(session, st["cfg"], st["rules"], t.symbol, d)
+                        if info is None or t.symbol in st["open_pos"]:
+                            continue
+                        bar, _, _, has_ca = info
+                        if has_ca:
+                            continue
 
-            if not passed_screener:
-                continue
+                        plan = plan_entry_fill(
+                            ticket_entry=t.entry_price,
+                            stop=t.live_stop_loss,
+                            target=t.initial_resistance_target,
+                            next_open=bar.open,
+                            equity=eq_now,
+                            risk_pct=risk_pct,
+                            slippage_pct=float(ex["entry_slippage_pct"]),
+                            max_gap_up_pct=float(ex["max_entry_gap_up_pct"]),
+                            min_rr=float(ex["min_rr_at_fill"]),
+                            cash=st["cash"],
+                        )
+                        if not plan.ok:
+                            continue
 
-            cands_raw = build_candidate_dicts(session, base_cfg, passed_screener, d)
-            if not cands_raw:
-                continue
+                        # Order passed opening gap and R:R at fill
+                        st["counts"][win]["gap_ok"] += 1
 
-            # -------------------------------------------------------------
-            # Step 4: Evaluate funnel for each config
-            # -------------------------------------------------------------
-            for cid, st in cfg_states.items():
-                st["counts"][win]["screened"] += len(passed_screener)
+                        buy_cost = st["costs"].buy_cost(plan.fill_price * plan.shares)
+                        if plan.shares > 0 and st["cash"] >= plan.fill_price * plan.shares + buy_cost:
+                            st["cash"] -= plan.fill_price * plan.shares + buy_cost
+                            st["open_pos"][t.symbol] = {
+                                "sector": t.sector,
+                                "entry_date": d,
+                                "orig": plan.shares,
+                                "last_close": plan.fill_price,
+                                "st": PosState(
+                                    entry_price=plan.fill_price,
+                                    initial_stop=t.live_stop_loss,
+                                    live_stop=t.live_stop_loss,
+                                    target=t.initial_resistance_target,
+                                    highest_high=plan.fill_price,
+                                    shares_remaining=plan.shares,
+                                ),
+                            }
+                            st["counts"][win]["fills"] += 1
+                            st["fills_list"].append({"symbol": t.symbol, "entry_date": d, "window": win})
 
-                # Filter candidates through config's rules
-                filtered = apply_entry_filters(cands_raw, st["cfg"])
-                st["counts"][win]["signals"] += len(filtered)
+                    st["pending"] = []
 
-                if macro_blocked:
-                    # Signals blocked by regime
+                # -------------------------------------------------------------
+                # Step 2: Advance open positions with today's bar
+                # -------------------------------------------------------------
+                for cid, st in cfg_states.items():
+                    ex = st["cfg"]["execution"]
+                    for sym, p in list(st["open_pos"].items()):
+                        info = _bar(session, st["cfg"], st["rules"], sym, d)
+                        if info is None:
+                            continue
+                        bar, atr_v, ref, _ = info
+                        res = advance_one_bar(p["st"], bar, BarCtx(atr_v, ks, bull, ref), st["rules"], float(ex["exit_slippage_pct"]))
+                        p["st"], p["last_close"] = res.pos, bar.close
+
+                        for e in res.exits:
+                            sell = st["costs"].sell_cost(e.price * e.shares)
+                            st["cash"] += e.price * e.shares - sell
+
+                        if res.closed:
+                            del st["open_pos"][sym]
+
+                # -------------------------------------------------------------
+                # Step 3: Screen today's universe once
+                # -------------------------------------------------------------
+                all_syms = screener._get_all_symbols(d)
+                passed_screener = [
+                    sym for sym in all_syms
+                    if sym not in ("NIFTY50_INDEX", "INDIA_VIX")
+                    and screener.screen_single(sym, d, apply_event_gates=False).passed
+                ]
+
+                if not passed_screener:
                     continue
 
-                st["counts"][win]["regime_ok"] += len(filtered)
+                cands_raw = build_candidate_dicts(session, base_cfg, passed_screener, d)
+                if not cands_raw:
+                    continue
 
-                # Evaluate risk sizing & R:R gate
-                eq = st["cash"] + sum(p["st"].shares_remaining * p["last_close"] for p in st["open_pos"].values())
-                setups = st["sizer"].compute_all(
-                    candidates=filtered,
-                    eval_date=d,
-                    account_equity=eq,
-                    current_positions=_heat_view(st["open_pos"]),
-                    session=session,
-                    is_bull_regime=bull,
-                )
+                # -------------------------------------------------------------
+                # Step 4: Evaluate funnel for each config
+                # -------------------------------------------------------------
+                for cid, st in cfg_states.items():
+                    st["counts"][win]["screened"] += len(passed_screener)
 
-                for setup in setups:
-                    if setup.block_reason and ("RR_TOO_LOW" in setup.block_reason or "RR_ABOVE_CAP" in setup.block_reason):
+                    # Exclude symbols already held in open positions (matching Simulator)
+                    avail_cands = [c for c in cands_raw if c["symbol"] not in st["open_pos"]]
+                    filtered = apply_entry_filters(avail_cands, st["cfg"])
+                    st["counts"][win]["signals"] += len(filtered)
+
+                    if macro_blocked:
                         continue
-                    st["counts"][win]["rr_ok"] += 1
 
-                    if not setup.blocked:
-                        st["counts"][win]["capacity_ok"] += 1
-                        st["pending"].append(setup)
+                    st["counts"][win]["regime_ok"] += len(filtered)
+
+                    # Evaluate risk sizing & R:R gate
+                    eq = st["cash"] + sum(p["st"].shares_remaining * p["last_close"] for p in st["open_pos"].values())
+                    setups = st["sizer"].compute_all(
+                        candidates=filtered,
+                        eval_date=d,
+                        account_equity=eq,
+                        current_positions=_heat_view(st["open_pos"]),
+                        session=session,
+                        is_bull_regime=bull,
+                    )
+
+                    for setup in setups:
+                        if setup.block_reason and ("RR_TOO_LOW" in setup.block_reason or "RR_ABOVE_CAP" in setup.block_reason):
+                            continue
+                        st["counts"][win]["rr_ok"] += 1
+
+                        if not setup.blocked:
+                            st["counts"][win]["capacity_ok"] += 1
+                            st["pending"].append(setup)
 
     # -------------------------------------------------------------
     # Collate and Output Funnel Results

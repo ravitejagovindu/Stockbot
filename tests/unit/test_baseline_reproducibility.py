@@ -6,6 +6,7 @@ both via active execution of Simulator and across the verified full backtest dat
 from __future__ import annotations
 
 from datetime import date
+import hashlib
 from pathlib import Path
 import sys
 import pandas as pd
@@ -22,6 +23,10 @@ from engine_core.candidate_builder import build_candidate_dicts
 from engine_core.entry_filters import apply_entry_filters
 
 OUTPUT_DIR = ROOT / "backtest" / "outputs"
+
+# Cryptographic SHA-256 checksums of frozen baseline trade artifacts
+W1_SHA256 = "66e9aec15eb43b051dd2c73b917e5674dd8d762652dc5bed8bac81a7a341d041"
+W2_SHA256 = "34e87890c90adc6cf3cab8e1a7af9b90b688516af39c26ca2058cba79407d96e"
 
 
 def test_simulator_and_funnel_agreement():
@@ -55,9 +60,13 @@ def test_simulator_and_funnel_agreement():
 
 
 def test_cfg00_window1_reproducibility():
-    """Verify Window 1 (2020-2021) baseline trade counts, P&L, and net expectancy."""
+    """Verify Window 1 (2020-2021) baseline trade counts, P&L, net expectancy, and SHA-256 hash."""
     w1_path = OUTPUT_DIR / "trades_pass1_window_2020_2021.csv"
     assert w1_path.exists(), f"Missing baseline W1 CSV: {w1_path}"
+
+    with open(w1_path, "rb") as f:
+        actual_hash = hashlib.sha256(f.read()).hexdigest()
+    assert actual_hash == W1_SHA256, f"W1 CSV checksum mismatch: {actual_hash} != {W1_SHA256}"
 
     df = pd.read_csv(w1_path)
     trades_count = len(df)
@@ -72,9 +81,13 @@ def test_cfg00_window1_reproducibility():
 
 
 def test_cfg00_window2_reproducibility():
-    """Verify Window 2 (2022-2026) baseline trade counts, P&L, and net expectancy."""
+    """Verify Window 2 (2022-2026) baseline trade counts, P&L, net expectancy, and SHA-256 hash."""
     w2_path = OUTPUT_DIR / "trades_pass1_window_2022_2026.csv"
     assert w2_path.exists(), f"Missing baseline W2 CSV: {w2_path}"
+
+    with open(w2_path, "rb") as f:
+        actual_hash = hashlib.sha256(f.read()).hexdigest()
+    assert actual_hash == W2_SHA256, f"W2 CSV checksum mismatch: {actual_hash} != {W2_SHA256}"
 
     df = pd.read_csv(w2_path)
     trades_count = len(df)
@@ -99,3 +112,28 @@ def test_cfg00_pooled_reproducibility():
     one_r = pooled["entry_price"] - pooled["stop"]
     net_r = (pooled["pnl_net"] / (pooled["shares"] * one_r)).mean()
     assert round(net_r, 3) == 0.024
+
+
+@pytest.mark.slow
+def test_active_simulator_mini_window_jan_feb_2020():
+    """Actively execute Simulator over Jan-Feb 2020 and verify known trades reproduction."""
+    cfg = load_config()
+    with get_session() as s:
+        sim = Simulator(cfg, s)
+        res = sim.run(start=date(2020, 1, 1), end=date(2020, 2, 29), initial_equity=1_000_000.0)
+
+    trades = res.trades
+    assert len(trades) >= 1, f"Expected at least 1 trade in Jan-Feb 2020, got {len(trades)}"
+    escorts_trades = trades[trades["symbol"] == "ESCORTS"]
+    assert len(escorts_trades) == 1, "ESCORTS must be executed in Jan-Feb 2020"
+
+    esc = escorts_trades.iloc[0]
+    _as_date = lambda d: d.date() if hasattr(d, "date") and callable(getattr(d, "date")) else (date.fromisoformat(str(d)) if isinstance(d, str) else d)
+    assert _as_date(esc["entry_date"]) == date(2020, 1, 15), f"ESCORTS entry date must be 2020-01-15, got {esc['entry_date']}"
+    assert _as_date(esc["exit_date"]) == date(2020, 2, 20), f"ESCORTS exit date must be 2020-02-20, got {esc['exit_date']}"
+    assert int(esc["shares"]) == 144, f"ESCORTS shares must be 144, got {esc['shares']}"
+    assert round(float(esc["entry_price"]), 2) == 643.40, f"ESCORTS entry price mismatch: {esc['entry_price']}"
+    assert esc["exit_reason"] == "STOP_HIT", f"ESCORTS exit reason must be STOP_HIT, got {esc['exit_reason']}"
+    assert esc["exit_state"] == "TRAILING_ATR", f"ESCORTS exit state must be TRAILING_ATR, got {esc['exit_state']}"
+    assert round(float(esc["pnl_net"])) == 22569, f"ESCORTS net PnL mismatch: {esc['pnl_net']}"
+    assert round(float(esc["realized_r"]), 3) == 2.295, f"ESCORTS realized R mismatch: {esc['realized_r']}"

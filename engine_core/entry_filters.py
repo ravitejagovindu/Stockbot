@@ -5,6 +5,9 @@ candidate selection logic in both environments.
 """
 from __future__ import annotations
 
+import math
+
+import numpy as np
 import pandas as pd
 
 
@@ -56,21 +59,41 @@ def rs_return(close: pd.Series, lookback: int) -> float:
     return float(close.iloc[-1] / close.iloc[-(lookback + 1)] - 1.0) if len(close) > lookback else float("nan")
 
 
-def apply_rs_rank_percentile(cands: list, percentile: float | None) -> list:
-    """Filter candidates to keep only the top `percentile`% by rs_3m.
+def compute_universe_rs_cutoff(cands: list, percentile: float | None, lookback: int = 63) -> float | None:
+    """Compute the RS return threshold for the top `percentile`% of the screened universe.
 
+    For example, for percentile=30.0 (top 30%), returns the 70th percentile of universe RS returns.
+    Returns None if percentile is None or >= 100.0, or if insufficient candidates.
+    """
+    if percentile is None or percentile >= 100.0 or not cands:
+        return None
+    rs_vals = []
+    for c in cands:
+        adj = c.get("adjusted_ohlcv")
+        if adj is not None and "close_adj" in adj:
+            r = rs_return(adj["close_adj"], lookback)
+            if pd.notna(r):
+                rs_vals.append(r)
+    if not rs_vals:
+        return None
+    return float(np.percentile(rs_vals, 100.0 - float(percentile)))
+
+
+def apply_rs_rank_percentile(cands: list, percentile: float | None) -> list:
+    """Filter candidate list to keep only the top `percentile`% by rs_3m.
+
+    Uses mathematical ceil: keeps ceil(len(cands) * percentile / 100) candidates.
     If percentile is None or >= 100.0, returns all candidates.
     Candidates must be pre-sorted descending by rs_3m (with secondary sort by symbol ASC).
-    At least 1 candidate is kept if cands is non-empty.
     """
     if percentile is None or percentile >= 100.0 or not cands:
         return cands
-    cutoff_count = max(1, int(len(cands) * (percentile / 100.0)))
+    cutoff_count = int(math.ceil(len(cands) * (percentile / 100.0)))
     return cands[:cutoff_count]
 
 
 def apply_entry_filters(cands: list, cfg: dict) -> list:
-    """Filter by trend + breakout/pullback, rank by RS descending, and optionally cut by percentile.
+    """Filter by trend + breakout/pullback, and universe Relative Strength percentile.
 
     Same function used in live pipeline AND backtest simulator to guarantee
     identical candidate selection.
@@ -78,9 +101,8 @@ def apply_entry_filters(cands: list, cfg: dict) -> list:
     Parameters
     ----------
     cands:
-        List of candidate dicts.  Each must have an ``adjusted_ohlcv`` key
-        containing a DataFrame with ``close_adj`` and ``high_adj`` columns,
-        and a ``symbol`` key.
+        List of candidate dicts built from the screened liquid universe (Gates 1-3).
+        Each candidate dict must contain ``adjusted_ohlcv`` and ``symbol``.
     cfg:
         Full strategy config dict.
 
@@ -90,6 +112,12 @@ def apply_entry_filters(cands: list, cfg: dict) -> list:
         Filtered and ranked candidates (each augmented with an ``rs_3m`` key).
     """
     ef = cfg.get("entry_filters", {})
+    rs_lookback = int(ef.get("rs_lookback_days", 63))
+    pct = ef.get("rs_rank_percentile")
+
+    # Compute universe RS cutoff across screened liquid universe
+    cutoff_rs = compute_universe_rs_cutoff(cands, float(pct) if pct is not None else None, rs_lookback)
+
     kept = []
     for c in cands:
         adj = c["adjusted_ohlcv"]
@@ -106,15 +134,17 @@ def apply_entry_filters(cands: list, cfg: dict) -> list:
                 float(ef.get("pullback_tolerance_lower", 0.98)),
                 float(ef.get("pullback_tolerance_upper", 1.03))):
             continue
+
         d = dict(c)
-        d["rs_3m"] = rs_return(close, int(ef.get("rs_lookback_days", 63)))
+        d["rs_3m"] = rs_return(close, rs_lookback)
+
+        # Enforce universe RS percentile cutoff
+        if cutoff_rs is not None and (pd.isna(d["rs_3m"]) or d["rs_3m"] < cutoff_rs):
+            continue
+
         kept.append(d)
 
     # Deterministic secondary sort: rs_3m descending, symbol ascending
     kept.sort(key=lambda c: (-c["rs_3m"] if pd.notna(c["rs_3m"]) else 1e9, c["symbol"]))
-
-    pct = ef.get("rs_rank_percentile")
-    if pct is not None:
-        kept = apply_rs_rank_percentile(kept, float(pct))
 
     return kept
