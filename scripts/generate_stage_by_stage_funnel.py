@@ -162,8 +162,8 @@ def main():
                 "open_pos": {},
                 "pending": [],
                 "counts": {
-                    "W1": {"screened": 0, "signals": 0, "regime_ok": 0, "rr_ok": 0, "capacity_ok": 0, "gap_ok": 0, "fills": 0},
-                    "W2": {"screened": 0, "signals": 0, "regime_ok": 0, "rr_ok": 0, "capacity_ok": 0, "gap_ok": 0, "fills": 0},
+                    "W1": {"screened": 0, "signals": 0, "regime_ok": 0, "rr_ok": 0, "capacity_ok": 0, "gap_ok": 0, "dropped_cash": 0, "fills": 0},
+                    "W2": {"screened": 0, "signals": 0, "regime_ok": 0, "rr_ok": 0, "capacity_ok": 0, "gap_ok": 0, "dropped_cash": 0, "fills": 0},
                 },
                 "fills_list": [],
             }
@@ -264,6 +264,8 @@ def main():
                             }
                             st["counts"][win]["fills"] += 1
                             st["fills_list"].append({"symbol": t.symbol, "entry_date": d, "window": win})
+                        else:
+                            st["counts"][win]["dropped_cash"] += 1
 
                     st["pending"] = []
 
@@ -355,6 +357,7 @@ def main():
                 s4 = c["W1"]["rr_ok"] + c["W2"]["rr_ok"]
                 s5 = c["W1"]["capacity_ok"] + c["W2"]["capacity_ok"]
                 s6 = c["W1"]["gap_ok"] + c["W2"]["gap_ok"]
+                d_cash = c["W1"]["dropped_cash"] + c["W2"]["dropped_cash"]
                 s7 = c["W1"]["fills"] + c["W2"]["fills"]
             else:
                 s1 = c[win]["screened"]
@@ -363,6 +366,7 @@ def main():
                 s4 = c[win]["rr_ok"]
                 s5 = c[win]["capacity_ok"]
                 s6 = c[win]["gap_ok"]
+                d_cash = c[win]["dropped_cash"]
                 s7 = c[win]["fills"]
 
             conv = (s7 / s2 * 100.0) if s2 > 0 else 0.0
@@ -381,6 +385,7 @@ def main():
                 "dropped_capacity": s4 - s5,
                 "stage6_gap_and_fill_approved": s6,
                 "dropped_gap_and_rr_fill": s5 - s6,
+                "dropped_insufficient_cash": d_cash,
                 "stage7_executed_fills": s7,
                 "conversion_rate_pct": round(conv, 2),
             })
@@ -395,7 +400,7 @@ def main():
     print("="*110)
     summary_cols = [
         "config_id", "window", "stage2_strategy_signals", "dropped_regime", "dropped_rr",
-        "dropped_capacity", "dropped_gap_and_rr_fill", "stage7_executed_fills", "conversion_rate_pct"
+        "dropped_capacity", "dropped_gap_and_rr_fill", "dropped_insufficient_cash", "stage7_executed_fills", "conversion_rate_pct"
     ]
     print(df_funnel[summary_cols].to_string(index=False))
 

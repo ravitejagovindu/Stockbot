@@ -1,0 +1,24 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.5, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\ravit\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: F:\Projects\Ravi\StockBot
+configfile: pytest.ini
+plugins: anyio-4.15.1, hypothesis-6.168.3, platformdirs-4.12.2, asyncio-1.4.0, cov-7.1.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/unit/test_baseline_reproducibility.py::test_simulator_and_funnel_agreement PASSED
+tests/unit/test_baseline_reproducibility.py::test_cfg00_window1_reproducibility PASSED
+tests/unit/test_baseline_reproducibility.py::test_cfg00_window2_reproducibility PASSED
+tests/unit/test_baseline_reproducibility.py::test_cfg00_pooled_reproducibility PASSED
+tests/unit/test_baseline_reproducibility.py::test_active_simulator_mini_window_jan_feb_2020 
+[VERIFIED] Active Simulator Mini-Window Jan-Feb 2020:
+  Executed Trades: 1
+  Trade 1: ESCORTS | Entry: 2020-01-15 @ Rs. 643.40 (144 shares)
+  Exit:    2020-02-20 @ Rs. 801.94 (reason: STOP_HIT, state: TRAILING_ATR)
+  P&L:     Net Rs. +22,569 | Realized R: +2.295R
+  Result:  100% exact reproduction of known ESCORTS trade confirmed.
+PASSED
+
+======================== 5 passed in 580.29s (0:09:40) ========================

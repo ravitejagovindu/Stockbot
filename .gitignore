@@ -28,6 +28,7 @@ backtest/outputs/audit.json
 # Logs
 logs/
 *.log
+!tests/unit/test_baseline_reproducibility.log
 
 # Node / React
 ui/node_modules/

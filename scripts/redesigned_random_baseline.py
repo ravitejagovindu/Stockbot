@@ -178,8 +178,9 @@ def run_apples_to_apples_random_baseline(
     n_draws_target: int = 1000,
     seed: int = 42,
     force_rerun: bool = False,
+    output_filename: str = "apples_to_apples_random_trades.csv",
 ) -> pd.DataFrame:
-    csv_path = OUTPUT_DIR / "apples_to_apples_random_trades.csv"
+    csv_path = OUTPUT_DIR / output_filename
     if csv_path.exists() and not force_rerun:
         logger.info(f"Loading existing random baseline trades from {csv_path}...")
         df_rand = pd.read_csv(csv_path)
@@ -410,9 +411,30 @@ def run_apples_to_apples_random_baseline(
                 })
 
     df_rand = pd.DataFrame(random_results)
-    df_rand.to_csv(OUTPUT_DIR / "apples_to_apples_random_trades.csv", index=False)
-    logger.info(f"Simulated {len(df_rand)} exact apples-to-apples random trades (saved to {OUTPUT_DIR / 'apples_to_apples_random_trades.csv'}).")
+    df_rand.to_csv(csv_path, index=False)
+    logger.info(f"Simulated {len(df_rand)} exact apples-to-apples random trades (saved to {csv_path}).")
     return df_rand
+
+
+def generate_matched_random_baseline(
+    actual_trades: pd.DataFrame,
+    cfg: dict,
+    config_id: str,
+    n_draws_per_trade: int = 5,
+    seed: int = 42,
+    force_rerun: bool = False,
+) -> pd.DataFrame:
+    """Generate or load matched random baseline for an arbitrary configuration's trades."""
+    target_draws = max(500, len(actual_trades) * n_draws_per_trade)
+    out_name = f"apples_to_apples_random_trades_{config_id}.csv" if config_id != "CFG-00" else "apples_to_apples_random_trades.csv"
+    return run_apples_to_apples_random_baseline(
+        actual_trades=actual_trades,
+        cfg=cfg,
+        n_draws_target=target_draws,
+        seed=seed,
+        force_rerun=force_rerun,
+        output_filename=out_name,
+    )
 
 
 def compute_trade_level_paired_statistics(actual_df: pd.DataFrame, rand_df: pd.DataFrame):
@@ -521,26 +543,41 @@ def compute_trade_level_paired_statistics(actual_df: pd.DataFrame, rand_df: pd.D
         t_clust_net = m_diff_net / se_clust_net if se_clust_net > 0 else 0.0
         p_one_sided_skill = np.mean(boot_diff_net <= 0.0)
 
+        # Raw draw-level metrics (Basis B: unaggregated draws)
+        sub_raw = rand_df if win_tag == "Pooled" else rand_df[rand_df["window"] == win_tag]
+        raw_gross_r = sub_raw["gross_r"].mean()
+        raw_net_r = sub_raw["net_r"].mean()
+        raw_net_med = sub_raw["net_r"].median()
+        raw_net_trim = trimmed_mean(sub_raw["net_r"].values, 0.05)
+        raw_days = sub_raw["days_held"]
+        raw_days_gt85 = int((raw_days > 85).sum())
+        raw_r_gt85 = float(sub_raw[raw_days > 85]["net_r"].mean()) if raw_days_gt85 > 0 else float("nan")
+
         # Holding duration statistics
         act_days = sub["days_held"]
         rand_days = sub["rand_days_held"]
 
-        print(f"\nExpectancy Comparison (Mean, Median, 5% Trimmed Mean):")
-        print(f"  Actual:         Gross {act_gross_r:+.3f}R | Net Mean {act_net_r:+.3f}R | Net Median {act_net_med:+.3f}R | Net 5% Trimmed {act_net_trim:+.3f}R")
-        print(f"  Matched Random: Gross {rand_gross_r:+.3f}R | Net Mean {rand_net_r:+.3f}R | Net Median {rand_net_med:+.3f}R | Net 5% Trimmed {rand_net_trim:+.3f}R")
-        print(f"  Paired Net Diff: Mean {m_diff_net:+.3f}R | Median {med_diff_net:+.3f}R | 5% Trimmed {trim_diff_net:+.3f}R")
-        print(f"  Trade-level t = {t_net:+.2f} | Date-Clustered t = {t_clust_net:+.2f} | Skill vs Drift p-value = {p_one_sided_skill:.4f}")
+        print(f"\nExpectancy Comparison:")
+        print(f"  Actual Trades (N={n_trades}):")
+        print(f"    Gross Mean {act_gross_r:+.3f}R | Net Mean {act_net_r:+.3f}R | Net Median {act_net_med:+.3f}R | Net 5% Trimmed {act_net_trim:+.3f}R")
+        print(f"  Basis A: Trade-Level Averaged Random (N={n_trades} trade-averaged pairs):")
+        print(f"    Gross Mean {rand_gross_r:+.3f}R | Net Mean {rand_net_r:+.3f}R | Net Median {rand_net_med:+.3f}R | Net 5% Trimmed {rand_net_trim:+.3f}R")
+        print(f"    Paired Diff: Mean {m_diff_net:+.3f}R | Median {med_diff_net:+.3f}R | 5% Trimmed {trim_diff_net:+.3f}R")
+        print(f"    Trade t = {t_net:+.2f} | Clustered t = {t_clust_net:+.2f} | Skill vs Drift p = {p_one_sided_skill:.4f}")
+        print(f"  Basis B: Raw Draw-Level Random (N={len(sub_raw)} individual draws):")
+        print(f"    Gross Mean {raw_gross_r:+.3f}R | Net Mean {raw_net_r:+.3f}R | Net Median {raw_net_med:+.3f}R | Net 5% Trimmed {raw_net_trim:+.3f}R")
 
         print(f"\nHolding Duration Statistics:")
-        print(f"  Actual:         Mean {act_days.mean():.1f} d | Median {act_days.median():.0f} d | 90th %ile {np.percentile(act_days, 90):.0f} d | Max {act_days.max():.0f} d | Held > 85d: {(act_days > 85).sum()}/{n_trades}")
-        print(f"  Matched Random: Mean {rand_days.mean():.1f} d | Median {rand_days.median():.0f} d | 90th %ile {np.percentile(rand_days, 90):.0f} d | Max {rand_days.max():.0f} d | Held > 85d: {(rand_days > 85).sum()}/{n_trades}")
+        print(f"  Actual Trades:                   Mean {act_days.mean():.1f} d | Median {act_days.median():.0f} d | Max {act_days.max():.0f} d | Held > 85d: {(act_days > 85).sum()}/{n_trades}")
+        print(f"  Basis A (Trade-Averaged Random): Mean {rand_days.mean():.1f} d | Median {rand_days.median():.0f} d | Max {rand_days.max():.1f} d | Held > 85d: {(rand_days > 85).sum()}/{n_trades}")
+        print(f"  Basis B (Raw Draws Random):      Mean {raw_days.mean():.1f} d | Median {raw_days.median():.0f} d | Max {raw_days.max():.0f} d | Held > 85d: {raw_days_gt85}/{len(sub_raw)} (Avg R: {raw_r_gt85:+.2f}R)")
 
 
 def main():
     cfg = load_config()
     with get_session() as s:
         df_w1, df_w2, df_all = load_actual_trades(s)
-    rand_df = run_apples_to_apples_random_baseline(df_all, cfg, n_draws_target=1000, seed=42, force_rerun=True)
+    rand_df = run_apples_to_apples_random_baseline(df_all, cfg, n_draws_target=1000, seed=42, force_rerun=False)
     compute_trade_level_paired_statistics(df_all, rand_df)
 
 

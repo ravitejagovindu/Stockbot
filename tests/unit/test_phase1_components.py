@@ -18,6 +18,7 @@ from engine_core.entry_filters import (
     passes_breakout,
     passes_pullback,
     rs_return,
+    compute_universe_rs_cutoff,
     apply_rs_rank_percentile,
     apply_entry_filters,
 )
@@ -138,22 +139,36 @@ def test_passes_pullback():
     assert passes_pullback(s_short, period=20) is False
 
 
-def test_apply_rs_rank_percentile():
+def test_compute_universe_rs_cutoff():
+    dates = [date(2024, 1, 1) + timedelta(days=i) for i in range(70)]
+    cands = []
+    for i in range(10):
+        base = 100.0
+        end = 100.0 * (1.0 + i * 0.10)
+        s = pd.Series([base] * 64 + [end] * 6, index=dates)
+        cands.append({"symbol": f"SYM_{i}", "adjusted_ohlcv": pd.DataFrame({"close_adj": s}, index=dates)})
+
+    cutoff_top30 = compute_universe_rs_cutoff(cands, 30.0, lookback=63)
+    assert cutoff_top30 is not None
+    assert round(cutoff_top30, 2) == 0.63
+
+    assert compute_universe_rs_cutoff(cands, None) is None
+    assert compute_universe_rs_cutoff(cands, 100.0) is None
+
+
+def test_apply_rs_rank_percentile_deprecated():
     cands = [{"symbol": f"SYM_{i}", "rs_3m": 10.0 - i} for i in range(10)]
-    # Top 30% of 10 -> 3 candidates
-    top30 = apply_rs_rank_percentile(cands, 30.0)
+    with pytest.deprecated_call():
+        top30 = apply_rs_rank_percentile(cands, 30.0)
     assert len(top30) == 3
     assert [c["symbol"] for c in top30] == ["SYM_0", "SYM_1", "SYM_2"]
 
-    # Top 40% of 10 -> 4 candidates
     top40 = apply_rs_rank_percentile(cands, 40.0)
     assert len(top40) == 4
 
-    # Top 50% of 10 -> 5 candidates
     top50 = apply_rs_rank_percentile(cands, 50.0)
     assert len(top50) == 5
 
-    # None or >= 100 -> all 10 candidates
     assert len(apply_rs_rank_percentile(cands, None)) == 10
     assert len(apply_rs_rank_percentile(cands, 100.0)) == 10
 

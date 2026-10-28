@@ -6,6 +6,7 @@ candidate selection logic in both environments.
 from __future__ import annotations
 
 import math
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -80,12 +81,24 @@ def compute_universe_rs_cutoff(cands: list, percentile: float | None, lookback: 
 
 
 def apply_rs_rank_percentile(cands: list, percentile: float | None) -> list:
-    """Filter candidate list to keep only the top `percentile`% by rs_3m.
+    """[DEPRECATED] Legacy candidate-pool relative strength rank filter.
+
+    .. deprecated:: Phase2-Audit
+       Use :func:`compute_universe_rs_cutoff` instead. Production strategy execution
+       computes the RS cutoff across the entire screened liquid universe (Gates 1-3)
+       prior to candidate technical filtering to prevent thin-day distortion.
+       This function operates on post-filter candidate lists and is retained only
+       for backwards compatibility with legacy unit tests.
 
     Uses mathematical ceil: keeps ceil(len(cands) * percentile / 100) candidates.
     If percentile is None or >= 100.0, returns all candidates.
     Candidates must be pre-sorted descending by rs_3m (with secondary sort by symbol ASC).
     """
+    warnings.warn(
+        "apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     if percentile is None or percentile >= 100.0 or not cands:
         return cands
     cutoff_count = int(math.ceil(len(cands) * (percentile / 100.0)))
