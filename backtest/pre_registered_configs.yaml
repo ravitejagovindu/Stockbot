@@ -55,15 +55,41 @@ selection_criteria:
 
   statistical_significance_gates:
     stricter_confidence_interval: 99.0  # 99% cluster-bootstrap lower bound of Net Expectancy must be > 0.0R
-    skill_vs_drift_test: "Westfall-Young Stepdown Max-T Studentized Block Bootstrap: Resamples calendar weeks simultaneously across all 6 candidate configurations and the matched-random baseline (B = 10,000 replications). Family-Wise Error Rate (FWER) controlled at alpha = 0.05, replacing overly conservative Bonferroni correction to account for cross-sectional and temporal correlation across configs."
+    skill_vs_drift_test: >
+      Westfall-Young Stepdown Max-T Studentized Block Bootstrap: Resamples 4-week non-overlapping
+      blocks simultaneously across all 6 candidate configurations and the matched-random baseline
+      (B = 10,000 replications). Family-Wise Error Rate (FWER) controlled at alpha = 0.05.
+      Rationale for block bootstrap over i.i.d. weekly resampling: the strategy weekly R-sum series
+      exhibits lag-1 autocorrelation of ~0.215-0.237; i.i.d. resampling produced FWER of 2.0% at
+      zero autocorrelation and 18.7% at rho=0.4. Four-week blocks cover the observed autocorrelation
+      horizon while retaining ~25+ effective blocks for W1+W2 combined.
     bootstrap_specification:
       method: "Westfall-Young Stepdown Max-T Studentized Block Bootstrap"
-      resampling_unit: "Calendar weeks (Monday through Friday trade clusters)"
+      resampling_unit: "4-week non-overlapping blocks (pre-registered; approximately one calendar month)"
+      block_size: 4
+      sensitivity_block_sizes: [2, 4, 8]  # Pre-registered sensitivity runs; must be qualitatively consistent
       num_replications: 10000
       fwer_alpha: 0.05
       null_hypothesis: "H0_k: E[R_candidate_k - R_random] <= 0 for k in {1..6}"
-      test_statistic: "Studentized paired t-statistic t_k = mean(D_k) / SE(D_k), where D_k,w is the weekly net R advantage over matched random"
-      joint_distribution: "Simultaneous single draw of calendar week indices applied across all 6 configurations and random baseline in each replication b"
+      test_statistic: >
+        Studentized paired t-statistic t_k = mean(D_k) / SE(D_k), where D_k,w is the WEEKLY SUM of
+        net-R advantage of strategy over matched random trades (NOT per-trade expectancy).
+        D_k,w = sum(net_r_actual, week w) - sum(net_r_random_means, week w).
+      joint_distribution: >
+        Simultaneous single draw of block-start indices applied jointly across all 6 configurations
+        and random baseline in each replication b, preserving cross-sectional correlation and
+        satisfying the subset-pivotality condition required for Westfall-Young stepdown validity.
+      holding_time_basis: >
+        Raw individual draws (N=987 draws for CFG-00). Max holding: 278 sessions W1, 235 sessions W2.
+        17 draws exceed 85 sessions, averaging +2.53R. The previously reported 102/71 max holding
+        was a maximum of 5-draw averages per trade, NOT raw draws — raw draws are the correct basis.
+      power_estimates_for_300_trade_candidate:
+        at_true_edge_plus_0_10R: "~40% power"
+        at_true_edge_plus_0_15R: "~75% power"
+        at_true_edge_plus_0_20R: "~95% power"
+      absolute_edge_gate: >
+        Pooled expectancy must reach >= +0.15R. Matched random baseline expectancy is approximately
+        -0.01R, so the strategy must show approximately +0.16R over random to clear the gate.
 
   plateau_definition:
     rule: "The winning configuration must sit on a stable plateau: every neighboring config in the adjacency graph must achieve a net expectancy that drops by <= 25% from the winner's net expectancy and remains strictly positive (> 0.0R)."
@@ -87,6 +113,34 @@ selection_criteria:
     max_drawdown_pct: 15.0
     min_profit_factor: 1.30
     min_net_expectancy_r: 0.15
+
+selection_automation:
+  description: >
+    All selection gates are applied mechanically by scripts/select_candidate.py with no manual
+    discretion allowed.  The script writes a committed decision file and an append-only trial
+    ledger to reduce human judgment bias.
+  script: "scripts/select_candidate.py"
+  outputs:
+    decision_file: "backtest/outputs/selection_decision.json"  # Committed; contains gate results + reasons
+    trial_ledger: "backtest/outputs/trial_ledger.csv"          # Append-only audit log; committed
+  gate_sequence:
+    - gate: 1
+      name: "Trade Volume Floors"
+      rule: "pooled_trades >= 80 AND trades_W1 >= 20 AND trades_W2 >= 20"
+    - gate: 2
+      name: "99% Bootstrap CI Lower Bound"
+      rule: "bootstrap_99pct_lower_bound_net_expectancy_r > 0.0"
+    - gate: 3
+      name: "Max-T FWER Significance"
+      rule: "fwer_adjusted_p_value <= 0.05 (Westfall-Young Stepdown Max-T, block_size=4)"
+    - gate: 4
+      name: "Plateau Check"
+      rule: >
+        Every neighbor in pre-registered adjacency graph achieves net_expectancy >= 0.75 *
+        winner_net_expectancy AND net_expectancy > 0.0R
+    - gate: 5
+      name: "Official Strategy Gates"
+      rule: "max_drawdown_pct <= 15.0 AND profit_factor >= 1.30 AND pooled_trades >= 80 AND net_expectancy_r >= 0.15"
 
 step5_test_prerequisites:
   bootstrap_lower_bound_gt_zero: true
