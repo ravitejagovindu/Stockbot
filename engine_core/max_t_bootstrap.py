@@ -3,7 +3,7 @@ engine_core/max_t_bootstrap.py — Westfall-Young Stepdown Max-T Studentized Blo
 ========================================================================================
 Implements the pre-registered multiple testing procedure for candidate trading strategies.
 Controls the Family-Wise Error Rate (FWER <= 0.05) across K correlated configurations
-by jointly resampling 4-week non-overlapping blocks and studentizing test statistics.
+by jointly resampling 4-week circular blocks and studentizing test statistics.
 
 Pre-registration amendment (Round 2 review): Independent (i.i.d.) weekly resampling
 produced an empirical FWER of 2.0% at zero autocorrelation and 18.7% at lag-1 rho = 0.4
@@ -12,10 +12,13 @@ autocorrelation of ~0.215-0.237; candidates with more overlapping trades are wor
 The real baseline paired series shows little autocorrelation (lag-1 ~0.08 in W2), but
 the strategy side dominates the difference series.
 
-Fix: pre-registered block_size = 4 weeks (approximately one calendar month), which
-covers the observed autocorrelation horizon.  Sensitivity runs with block sizes
-[2, 4, 8] are also pre-registered.  All resampling is done jointly across K configs
-per replication to preserve cross-sectional correlation.
+Fix: pre-registered block_size = 4 weeks (approximately one calendar month) with
+circular wrapping (modulo W), which covers the observed autocorrelation horizon and
+gives every week a uniform marginal probability of appearing in any resampled draw.
+Sensitivity runs with block sizes [2, 4, 8] are also pre-registered; a candidate
+must achieve FWER significance at BOTH block_size=4 AND block_size=8 to pass Gate 3.
+All resampling is done jointly across K configs per replication to preserve
+cross-sectional correlation.
 
 References:
 - Westfall, P. H., & Young, S. S. (1993). Resampling-based multiple testing: Examples
@@ -23,15 +26,16 @@ References:
 - White, H. (2000). A reality check for data snooping. Econometrica, 68(5), 1097-1126.
 - Romano, J. P., & Wolf, M. (2005). Stepwise multiple testing as formalized data snooping.
   Econometrica, 73(4), 1237-1282.
-- Politis, D. N., & Romano, J. P. (1994). The stationary bootstrap. JASA, 89(428),
-  1303-1313.
+- Politis, D. N., & Romano, J. P. (1992). A circular block-resampling procedure for
+  stationary data. In R. LePage & L. Billard (Eds.), Exploring the limits of bootstrap
+  (pp. 263-270). Wiley.
 """
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass
 from datetime import date
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
@@ -108,14 +112,106 @@ def build_weekly_paired_series(
     return act_wk - rnd_wk
 
 
-def _block_resample(rng: np.random.Generator, W: int, block_size: int, B: int) -> np.ndarray:
-    """Draw B bootstrap samples of length W using non-overlapping block resampling.
+def build_weekly_actual_series(
+    actual_trades_df: pd.DataFrame,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+) -> pd.Series:
+    """Aggregate actual trade-level net-R into calendar-week sums.
 
-    Each bootstrap draw samples ceil(W / block_size) non-overlapping block start indices
-    uniformly from {0, block_size, 2*block_size, ...} with replacement, concatenates
-    the blocks, clips any tail overflow to [0, W-1], then truncates to exactly W weeks.
-    The same index matrix is applied jointly across all K configurations per replication,
-    preserving cross-sectional correlation and satisfying subset-pivotality.
+    Returns a pd.Series indexed by ISO calendar week strings (e.g. "2020-W03"),
+    containing the weekly SUM of net_r for the candidate strategy only.
+    Weeks with no trades are filled with 0.0.
+
+    This series is used for Gate 2: the 99% block-bootstrap CI lower bound on
+    the candidate's OWN absolute weekly net-R must be > 0.0R.
+
+    IMPORTANT: This is DISTINCT from build_weekly_paired_series(), which computes
+    D_{k,w} = actual_weekly_R - random_weekly_R (the paired advantage used in
+    Gate 3's Max-T test).  Gate 2 tests whether the strategy is profitable in
+    absolute terms; Gate 3 tests whether it beats a matched random baseline.
+    """
+    act = actual_trades_df.copy()
+    act["entry_date"] = pd.to_datetime(act["entry_date"]).dt.date
+    if start_date:
+        act = act[act["entry_date"] >= start_date]
+    if end_date:
+        act = act[act["entry_date"] <= end_date]
+
+    if act.empty:
+        return pd.Series(dtype=float)
+
+    act["week"] = act["entry_date"].apply(assign_calendar_week)
+
+    all_dates = pd.Series(act["entry_date"])
+    min_date = all_dates.min()
+    max_date = all_dates.max()
+    full_weeks = sorted(set(pd.date_range(min_date, max_date, freq="W-MON").map(assign_calendar_week)))
+
+    return act.groupby("week")["net_r"].sum().reindex(full_weeks, fill_value=0.0)
+
+
+def compute_block_bootstrap_ci(
+    weekly_r: pd.Series,
+    block_size: int = 4,
+    B: int = 2000,
+    alpha_ci: float = 0.01,
+    seed: Optional[int] = 42,
+) -> Tuple[float, float]:
+    """Compute a block-bootstrap confidence interval for the mean weekly net-R.
+
+    Uses the same circular block resampling as the Max-T test (block_size=4 by
+    default, circular wrap via modulo W) so the CI correctly accounts for the
+    autocorrelation structure of the weekly return series.
+
+    Parameters
+    ----------
+    weekly_r:
+        pd.Series of weekly net-R values (weekly sums of trade net-R), with
+        zero-filled weeks.  Produced by build_weekly_actual_series().
+    block_size:
+        Circular block size for resampling (pre-registered: 4).
+    B:
+        Number of bootstrap replications (default: 2000).
+    alpha_ci:
+        Total alpha for the confidence interval (default: 0.01 → 99% CI).
+        Lower tail: alpha_ci/2 = 0.5%, upper tail: 1 − alpha_ci/2 = 99.5%.
+    seed:
+        Random seed for reproducibility.
+
+    Returns
+    -------
+    (lower, upper) : Tuple[float, float]
+        99% block-bootstrap CI of the mean weekly net-R.
+        Gate 2 passes if lower > 0.0.
+    """
+    X = weekly_r.dropna().values.astype(np.float64)
+    W = len(X)
+    if W < max(4, block_size):
+        return (float("nan"), float("nan"))
+
+    rng = np.random.default_rng(seed)
+    idx = _block_resample(rng, W, block_size, B)  # shape (B, W)
+    boot_means = np.mean(X[idx], axis=1)           # shape (B,)
+
+    lower = float(np.percentile(boot_means, 100 * alpha_ci / 2))
+    upper = float(np.percentile(boot_means, 100 * (1 - alpha_ci / 2)))
+    return (lower, upper)
+
+
+def _block_resample(rng: np.random.Generator, W: int, block_size: int, B: int) -> np.ndarray:
+    """Draw B bootstrap samples of length W using circular block resampling.
+
+    Each bootstrap draw samples ceil(W / block_size) block start indices uniformly
+    from {0, block_size, 2*block_size, ...} with replacement, expands each start into
+    a block of `block_size` consecutive indices, and wraps any overflow modulo W
+    (circular block bootstrap).  Wrap-around ensures every week is equally likely to
+    appear, eliminating the ~2x over-sampling of the final week that occurs when
+    overflowed indices are clipped.
+
+    The same index matrix is applied jointly across all K configurations per
+    replication, preserving cross-sectional correlation and satisfying subset-
+    pivotality.
 
     Parameters
     ----------
@@ -131,7 +227,7 @@ def _block_resample(rng: np.random.Generator, W: int, block_size: int, B: int) -
     Returns
     -------
     idx : np.ndarray of shape (B, W), dtype int64
-        Row i contains the week indices for replication i.
+        Row i contains the week indices (in [0, W-1]) for replication i.
     """
     if block_size <= 0:
         raise ValueError(f"block_size must be >= 1, got {block_size}")
@@ -151,9 +247,10 @@ def _block_resample(rng: np.random.Generator, W: int, block_size: int, B: int) -
     # Broadcasting: (B, n_blocks_needed, block_size)
     indices_full = chosen_starts[:, :, np.newaxis] + offsets[np.newaxis, np.newaxis, :]
 
-    # Flatten blocks and clip overflow (tail block may reach W or beyond)
+    # Flatten blocks, then wrap overflow circularly so every week is equally likely.
+    # (Clipping would make the last week ~2x as likely as every other week.)
     idx_flat = indices_full.reshape(B, n_blocks_needed * block_size)
-    idx_flat = np.clip(idx_flat, 0, W - 1)
+    idx_flat = idx_flat % W  # circular wrap — uniform marginal distribution
 
     # Truncate to exactly W weeks
     return idx_flat[:, :W]
@@ -284,8 +381,12 @@ class WestfallYoungMaxTBootstrap:
         # Cap at 1.0
         p_adjusted_sorted = np.minimum(p_adjusted_sorted, 1.0)
 
-        # 4. 99% bootstrap confidence interval of the mean for each config
-        ci_idx = rng.integers(0, W, size=(2000, W))
+        # 4. 99% block-bootstrap CI of the mean paired advantage D_{k,w} for each config.
+        # Note: This CI is on the PAIRED ADVANTAGE (strategy minus random), used for
+        # reporting context alongside Gate 3.  Gate 2 uses a SEPARATE CI computed on the
+        # candidate's own absolute weekly net-R via compute_block_bootstrap_ci(), NOT this.
+        # Both CIs use the same circular block resampling (block_size parameter).
+        ci_idx = _block_resample(rng, W, block_size, 2000)  # was: rng.integers(0, W, …)
         ci_means = np.mean(X[ci_idx, :], axis=1)   # shape (2000, K)
         ci_99_lower = np.percentile(ci_means, 0.5, axis=0)
         ci_99_upper = np.percentile(ci_means, 99.5, axis=0)

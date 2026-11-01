@@ -91,12 +91,33 @@ def run_single_config(
     w1_path = OUTPUT_DIR / f"trades_{cid}_window_2020_2021.csv"
     w2_path = OUTPUT_DIR / f"trades_{cid}_window_2022_2026.csv"
     pooled_path = OUTPUT_DIR / f"trades_{cid}_pooled.csv"
+    candidate_path = OUTPUT_DIR / f"trades_candidate_{cid}.csv"
 
     df_w1.to_csv(w1_path, index=False)
     df_w2.to_csv(w2_path, index=False)
     df_pooled.to_csv(pooled_path, index=False)
+    df_pooled.to_csv(candidate_path, index=False)
 
-    logger.info(f"[{cid}] Completed: W1={len(df_w1)} trades, W2={len(df_w2)} trades, Pooled={len(df_pooled)} trades.")
+    # Save window-level equity curves from simulator (required for Gate 5 drawdown evaluation)
+    res_w1.equity.to_csv(OUTPUT_DIR / f"equity_{cid}_window_2020_2021.csv")
+    res_w2.equity.to_csv(OUTPUT_DIR / f"equity_{cid}_window_2022_2026.csv")
+
+    def _calc_max_dd_pct(eq: pd.Series) -> float:
+        if eq is None or len(eq) < 2:
+            return 0.0
+        cm = eq.cummax()
+        valid = cm > 0
+        if not valid.any():
+            return 0.0
+        return float(((cm[valid] - eq[valid]) / cm[valid]).max() * 100.0)
+
+    w1_dd = _calc_max_dd_pct(res_w1.equity)
+    w2_dd = _calc_max_dd_pct(res_w2.equity)
+
+    logger.info(
+        f"[{cid}] Completed: W1={len(df_w1)} trades (DD={w1_dd:.2f}%), "
+        f"W2={len(df_w2)} trades (DD={w2_dd:.2f}%), Pooled={len(df_pooled)} trades."
+    )
     return {
         "config_id": cid,
         "name": config_entry.get("name", cid),
@@ -109,6 +130,9 @@ def run_single_config(
         "w1_r": float(df_w1["realized_r"].mean()) if not df_w1.empty else 0.0,
         "w2_r": float(df_w2["realized_r"].mean()) if not df_w2.empty else 0.0,
         "pooled_r": float(df_pooled["realized_r"].mean()) if not df_pooled.empty else 0.0,
+        "w1_max_dd_pct": w1_dd,
+        "w2_max_dd_pct": w2_dd,
+        "max_dd_pct": max(w1_dd, w2_dd),
     }
 
 

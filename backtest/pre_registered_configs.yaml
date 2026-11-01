@@ -54,20 +54,26 @@ selection_criteria:
     min_trades_per_window: 20
 
   statistical_significance_gates:
-    stricter_confidence_interval: 99.0  # 99% cluster-bootstrap lower bound of Net Expectancy must be > 0.0R
+    stricter_confidence_interval: 99.0  # 99% circular block-bootstrap CI (block_size=4) of candidate's own weekly Net-R must be > 0.0R
     skill_vs_drift_test: >
-      Westfall-Young Stepdown Max-T Studentized Block Bootstrap: Resamples 4-week non-overlapping
-      blocks simultaneously across all 6 candidate configurations and the matched-random baseline
-      (B = 10,000 replications). Family-Wise Error Rate (FWER) controlled at alpha = 0.05.
-      Rationale for block bootstrap over i.i.d. weekly resampling: the strategy weekly R-sum series
-      exhibits lag-1 autocorrelation of ~0.215-0.237; i.i.d. resampling produced FWER of 2.0% at
-      zero autocorrelation and 18.7% at rho=0.4. Four-week blocks cover the observed autocorrelation
-      horizon while retaining ~25+ effective blocks for W1+W2 combined.
+      Westfall-Young Stepdown Max-T Studentized Circular Block Bootstrap: Resamples 4-week circular
+      blocks (with modulo W wrap; Politis & Romano, 1992) simultaneously across all 6 candidate
+      configurations and the matched-random baseline (B = 10,000 replications). Family-Wise Error Rate (FWER)
+      threshold alpha = 0.05.
+      Rationale for block bootstrap over i.i.d. weekly resampling: the strategy's weekly R-sum series exhibits
+      lag-1 autocorrelation of ~0.215-0.237; i.i.d. resampling produced FWER of 2.0% at zero autocorrelation
+      and 18.7% at rho=0.4 (against 5% nominal). In empirical simulations with rho=0.4, 4-week blocks achieve
+      ~12.5% FWER; to ensure rigorous error control across autocorrelation structures, candidates are
+      pre-registered to require FWER significance at BOTH block_size=4 AND block_size=8 (numeric requirement:
+      adjusted p-value <= 0.05 at both block sizes, replacing qualitative consistency). The real paired weekly
+      advantage series exhibits low autocorrelation (lag-1 ~+0.08 in W2, -0.03 pooled), making dual-block
+      significance robust against false discoveries.
     bootstrap_specification:
-      method: "Westfall-Young Stepdown Max-T Studentized Block Bootstrap"
-      resampling_unit: "4-week non-overlapping blocks (pre-registered; approximately one calendar month)"
+      method: "Westfall-Young Stepdown Max-T Studentized Circular Block Bootstrap (Politis & Romano, 1992)"
+      resampling_unit: "4-week circular blocks with modulo W wrap (eliminating edge oversampling bias)"
       block_size: 4
-      sensitivity_block_sizes: [2, 4, 8]  # Pre-registered sensitivity runs; must be qualitatively consistent
+      required_block_sizes: [4, 8]  # Pre-registered requirement: candidate must achieve FWER significance (p <= 0.05) at BOTH block sizes
+      sensitivity_block_sizes: [2, 4, 8]
       num_replications: 10000
       fwer_alpha: 0.05
       null_hypothesis: "H0_k: E[R_candidate_k - R_random] <= 0 for k in {1..6}"
@@ -92,7 +98,7 @@ selection_criteria:
         -0.01R, so the strategy must show approximately +0.16R over random to clear the gate.
 
   plateau_definition:
-    rule: "The winning configuration must sit on a stable plateau: every neighboring config in the adjacency graph must achieve a net expectancy that drops by <= 25% from the winner's net expectancy and remains strictly positive (> 0.0R)."
+    rule: "The winning configuration must sit on a stable plateau: every neighboring config in the adjacency graph must achieve a net expectancy that drops by <= 25% from the winner's net expectancy and remains strictly positive (> 0.0R). Only the single highest-expectancy finalist emerging from Gate 3 is tested; if it fails the plateau test, the selection terminates with 'NO CANDIDATE SELECTED' (no fallback to the next candidate)."
     adjacency_graph:
       CFG-01: ["CFG-02", "CFG-04"]
       CFG-02: ["CFG-01", "CFG-03", "CFG-05"]
@@ -110,15 +116,16 @@ selection_criteria:
 
   official_strategy_gates:
     min_trades: 40  # Required for the 5-year TEST window
-    max_drawdown_pct: 15.0
+    max_drawdown_pct: 15.0  # Maximum peak-to-trough equity-curve drawdown per window from simulator
     min_profit_factor: 1.30
     min_net_expectancy_r: 0.15
 
 selection_automation:
   description: >
     All selection gates are applied mechanically by scripts/select_candidate.py with no manual
-    discretion allowed.  The script writes a committed decision file and an append-only trial
-    ledger to reduce human judgment bias.
+    discretion allowed. The script writes a committed decision file and an append-only trial
+    ledger to eliminate human judgment bias. Only the single top-expectancy finalist passing Gate 3
+    is plateau-tested (Gate 4); there is strictly no fallback to lower-expectancy candidates if it fails.
   script: "scripts/select_candidate.py"
   outputs:
     decision_file: "backtest/outputs/selection_decision.json"  # Committed; contains gate results + reasons
@@ -128,19 +135,20 @@ selection_automation:
       name: "Trade Volume Floors"
       rule: "pooled_trades >= 80 AND trades_W1 >= 20 AND trades_W2 >= 20"
     - gate: 2
-      name: "99% Bootstrap CI Lower Bound"
-      rule: "bootstrap_99pct_lower_bound_net_expectancy_r > 0.0"
+      name: "99% Block Bootstrap CI Lower Bound"
+      rule: "99% circular block-bootstrap CI (block_size=4) of candidate's OWN absolute weekly net-R lower bound > 0.0R (computed directly on candidate trades, decoupled from random baseline)"
     - gate: 3
-      name: "Max-T FWER Significance"
-      rule: "fwer_adjusted_p_value <= 0.05 (Westfall-Young Stepdown Max-T, block_size=4)"
+      name: "Max-T FWER Significance (Dual Block Size)"
+      rule: "fwer_adjusted_p_value <= 0.05 at BOTH block_size=4 AND block_size=8 (Westfall-Young Stepdown Max-T with circular block resampling)"
     - gate: 4
-      name: "Plateau Check"
+      name: "Plateau Check (Top Finalist Only, No Fallback)"
       rule: >
-        Every neighbor in pre-registered adjacency graph achieves net_expectancy >= 0.75 *
-        winner_net_expectancy AND net_expectancy > 0.0R
+        Applied strictly to the single highest-expectancy finalist passing Gate 3: every neighbor in
+        the pre-registered adjacency graph must achieve net_expectancy >= 0.75 * winner_net_expectancy
+        AND net_expectancy > 0.0R. If it fails, outcome is 'NO CANDIDATE SELECTED' (no fallback).
     - gate: 5
       name: "Official Strategy Gates"
-      rule: "max_drawdown_pct <= 15.0 AND profit_factor >= 1.30 AND pooled_trades >= 80 AND net_expectancy_r >= 0.15"
+      rule: "max_drawdown_pct <= 15.0 (per-window simulator equity-curve drawdown) AND profit_factor >= 1.30 AND pooled_trades >= 80 AND net_expectancy_r >= 0.15"
 
 step5_test_prerequisites:
   bootstrap_lower_bound_gt_zero: true

@@ -7,10 +7,13 @@ discretion from the selection process.
 
 Gate sequence (must match pre_registered_configs.yaml selection_automation.gate_sequence):
   Gate 1: Trade volume floors (pooled >= 80, W1 >= 20, W2 >= 20)
-  Gate 2: 99% bootstrap CI lower bound of net expectancy > 0.0R
-  Gate 3: Max-T FWER-adjusted p-value <= 0.05 (4-week block bootstrap, B=10000)
+  Gate 2: 99% BLOCK-bootstrap CI lower bound of candidate's own absolute weekly net-R > 0.0R
+           (block_size=4, circular wrap — uses compute_block_bootstrap_ci() on actual trades only,
+           NOT the paired-advantage CI from the Max-T output)
+  Gate 3: Max-T FWER-adjusted p-value <= 0.05 at BOTH block_size=4 AND block_size=8
   Gate 4: Plateau check — every neighbor in adjacency graph has expectancy >= 75% of winner AND > 0.0R
-  Gate 5: Official strategy gates (max DD <= 15%, PF >= 1.30, net expectancy >= +0.15R)
+           (applied to the single highest-expectancy finalist only; no fallback if it fails)
+  Gate 5: Official strategy gates (max DD <= 15% of equity, PF >= 1.30, net expectancy >= +0.15R)
 
 Outputs (both must be committed):
   backtest/outputs/selection_decision.json   — decision with gate results per config
@@ -61,15 +64,16 @@ ADJACENCY_GRAPH: Dict[str, List[str]] = {
 # Pre-registered gate thresholds
 GATE_MIN_POOLED_TRADES = 80
 GATE_MIN_TRADES_PER_WINDOW = 20
-GATE_CI_LOWER_BOUND_GT = 0.0
-GATE_FWER_ALPHA = 0.05
-GATE_PLATEAU_RATIO = 0.75    # neighbor must be >= 75% of winner's expectancy
-GATE_MAX_DD_PCT = 15.0
-GATE_MIN_PF = 1.30
-GATE_MIN_EXPECTANCY_R = 0.15
+GATE_CI_LOWER_BOUND_GT = 0.0          # Gate 2: absolute net-R CI lower bound must exceed this
+GATE_FWER_ALPHA = 0.05                 # Gate 3: FWER threshold
+GATE_FWER_BLOCK_SIZES = [4, 8]        # Gate 3: must be significant at BOTH block sizes
+GATE_PLATEAU_RATIO = 0.75             # Gate 4: neighbor must be >= 75% of winner's expectancy
+GATE_MAX_DD_PCT = 15.0                 # Gate 5: max drawdown as % of equity
+GATE_MIN_PF = 1.30                     # Gate 5: profit factor
+GATE_MIN_EXPECTANCY_R = 0.15          # Gate 5: net expectancy in R
 
 BOOTSTRAP_REPLICATIONS = 10000
-BOOTSTRAP_BLOCK_SIZE = 4
+BOOTSTRAP_BLOCK_SIZE = 4              # Primary block size (Gate 3 also checks block_size=8)
 
 
 # ---------------------------------------------------------------------------
@@ -94,43 +98,150 @@ def _load_yaml(path: Path) -> dict:
 
 def _load_trades(config_id: str) -> Optional[pd.DataFrame]:
     """Load trade CSV for a candidate config. Returns None if file missing."""
-    path = OUTPUTS_DIR / f"trades_candidate_{config_id}.csv"
-    if not path.exists():
-        return None
-    return pd.read_csv(path)
+    for filename in (
+        f"trades_candidate_{config_id}.csv",
+        f"trades_{config_id}_pooled.csv",
+    ):
+        path = OUTPUTS_DIR / filename
+        if path.exists():
+            return pd.read_csv(path)
+    return None
 
 
 def _load_random_baseline(config_id: str) -> Optional[pd.DataFrame]:
     """Load matched random baseline CSV for a candidate config."""
-    path = OUTPUTS_DIR / f"apples_to_apples_random_trades_{config_id}.csv"
-    if not path.exists():
-        return None
-    return pd.read_csv(path)
+    for filename in (
+        f"apples_to_apples_random_trades_{config_id}.csv",
+        "apples_to_apples_random_trades.csv",
+    ):
+        path = OUTPUTS_DIR / filename
+        if path.exists():
+            return pd.read_csv(path)
+    return None
 
 
-def _compute_trade_stats(trades_df: pd.DataFrame) -> Dict[str, Any]:
-    """Compute per-window and pooled trade statistics."""
+def _load_equity(config_id: str, window: str) -> Optional[pd.Series]:
+    """Load daily equity series for a config and window from backtest outputs."""
+    window_suffixes = {
+        "W1": ["window_2020_2021", "2020_2021", "W1", "w1"],
+        "W2": ["window_2022_2026", "2022_2026", "W2", "w2"],
+    }
+    suffixes = window_suffixes.get(window, [window])
+    for sfx in suffixes:
+        for fname in (
+            f"equity_{config_id}_{sfx}.csv",
+            f"equity_candidate_{config_id}_{sfx}.csv",
+        ):
+            p = OUTPUTS_DIR / fname
+            if p.exists():
+                try:
+                    df = pd.read_csv(p, index_col=0)
+                    return df.iloc[:, 0].dropna()
+                except Exception:
+                    continue
+    return None
+
+
+def _compute_equity_drawdown_pct(equity: Optional[pd.Series]) -> float:
+    """Compute maximum peak-to-trough percentage drawdown from daily equity series."""
+    if equity is None or len(equity) < 2:
+        return float("nan")
+    s = pd.to_numeric(equity, errors="coerce").dropna()
+    if len(s) < 2:
+        return float("nan")
+    cummax = s.cummax()
+    valid = cummax > 0
+    if not valid.any():
+        return float("nan")
+    dd = (cummax[valid] - s[valid]) / cummax[valid] * 100.0
+    return float(dd.max()) if len(dd) else 0.0
+
+
+def _compute_gate2_ci(trades_df: pd.DataFrame) -> Tuple[float, float]:
+    """Gate 2: compute 99% block-bootstrap CI on the candidate's own absolute weekly net-R.
+
+    Uses build_weekly_actual_series() (actual trades only, no random baseline) and
+    compute_block_bootstrap_ci() (circular block_size=4, B=2000).
+
+    This is the PRE-REGISTERED Gate 2 quantity — NOT the paired-advantage CI that
+    comes out of the Max-T bootstrap (which is on D_{k,w} = actual - random).
+    Gate 2 and Gate 3 test different hypotheses:
+      Gate 2: Is the strategy profitable in absolute terms?  (lower CI of own net-R > 0)
+      Gate 3: Does it beat a matched random baseline?        (Max-T FWER p-value <= 0.05)
+    """
+    from engine_core.max_t_bootstrap import (
+        build_weekly_actual_series,
+        compute_block_bootstrap_ci,
+    )
+    try:
+        weekly_r = build_weekly_actual_series(trades_df)
+        if weekly_r.empty or len(weekly_r) < 4:
+            return (float("nan"), float("nan"))
+        return compute_block_bootstrap_ci(
+            weekly_r,
+            block_size=BOOTSTRAP_BLOCK_SIZE,
+            B=2000,
+            alpha_ci=0.01,   # 99% CI
+            seed=42,
+        )
+    except Exception as exc:
+        print(f"  [WARN] Gate 2 CI computation failed: {exc}")
+        return (float("nan"), float("nan"))
+
+
+def _compute_trade_stats(trades_df: pd.DataFrame, config_id: Optional[str] = None) -> Dict[str, Any]:
+    """Compute per-window and pooled trade statistics, including simulator equity drawdown."""
     stats: Dict[str, Any] = {}
     for col in ("window", "net_r"):
         if col not in trades_df.columns:
             return {"error": f"Missing column: {col}"}
 
     for window_label in ("W1", "W2"):
-        wdf = trades_df[trades_df["window"] == window_label]
+        wdf = trades_df[trades_df["window"].astype(str).str.startswith(window_label)]
         stats[f"trades_{window_label}"] = len(wdf)
-        stats[f"net_expectancy_r_{window_label}"] = float(wdf["net_r"].mean()) if len(wdf) else float("nan")
+        stats[f"net_expectancy_r_{window_label}"] = (
+            float(wdf["net_r"].mean()) if len(wdf) else float("nan")
+        )
+        if config_id:
+            eq = _load_equity(config_id, window_label)
+            stats[f"max_drawdown_pct_{window_label}"] = _compute_equity_drawdown_pct(eq)
+        else:
+            stats[f"max_drawdown_pct_{window_label}"] = float("nan")
 
     stats["trades_pooled"] = len(trades_df)
-    stats["net_expectancy_r_pooled"] = float(trades_df["net_r"].mean()) if len(trades_df) else float("nan")
+    stats["net_expectancy_r_pooled"] = (
+        float(trades_df["net_r"].mean()) if len(trades_df) else float("nan")
+    )
     stats["profit_factor"] = _profit_factor(trades_df["net_r"])
 
-    # Drawdown from equity curve
-    eq = trades_df["net_r"].cumsum()
-    running_max = eq.cummax()
-    dd = (eq - running_max)
-    stats["max_drawdown_r"] = float(dd.min()) if len(dd) else float("nan")
-    # Max DD as % of equity is approximated per-trade R (not absolute cash); report R-based DD
-    stats["max_drawdown_r_abs"] = float(abs(dd.min())) if len(dd) else float("nan")
+    # Determine window-level equity max drawdown percentage from the simulator
+    w1_dd = stats.get("max_drawdown_pct_W1", float("nan"))
+    w2_dd = stats.get("max_drawdown_pct_W2", float("nan"))
+    if not np.isnan(w1_dd) and not np.isnan(w2_dd):
+        stats["max_drawdown_pct"] = max(w1_dd, w2_dd)
+    elif not np.isnan(w1_dd):
+        stats["max_drawdown_pct"] = w1_dd
+    elif not np.isnan(w2_dd):
+        stats["max_drawdown_pct"] = w2_dd
+    else:
+        # Fallback if equity curves are not yet generated: compute approximate drawdown from trade P&L if available
+        if "pnl_net" in trades_df.columns and len(trades_df):
+            eq_curve = 1_000_000.0 + trades_df["pnl_net"].cumsum()
+            cm = eq_curve.cummax()
+            valid = cm > 0
+            stats["max_drawdown_pct"] = (
+                float(((cm[valid] - eq_curve[valid]) / cm[valid]).max() * 100.0)
+                if valid.any() else float("nan")
+            )
+        else:
+            stats["max_drawdown_pct"] = float("nan")
+
+    # Trade R-based drawdown for reference
+    eq_r = trades_df["net_r"].cumsum()
+    running_max_r = eq_r.cummax()
+    dd_r = eq_r - running_max_r
+    stats["max_drawdown_r"] = float(dd_r.min()) if len(dd_r) else float("nan")
+    stats["max_drawdown_r_abs"] = float(abs(dd_r.min())) if len(dd_r) else float("nan")
 
     return stats
 
@@ -145,8 +256,8 @@ def _profit_factor(net_r: pd.Series) -> float:
 
 def _bootstrap_ci_and_maxt(
     candidates: Dict[str, Tuple[pd.DataFrame, pd.DataFrame]],
-) -> Dict[str, Any]:
-    """Run block bootstrap for all candidates jointly. Returns per-config CI and p-values.
+) -> Dict[str, Dict[int, Any]]:
+    """Run block bootstrap for all candidates jointly at all pre-registered block sizes.
 
     Parameters
     ----------
@@ -155,7 +266,7 @@ def _bootstrap_ci_and_maxt(
 
     Returns
     -------
-    Dict mapping config_id to bootstrap result dict.
+    Dict mapping config_id to dict of block_size -> bootstrap result dict.
     """
     from engine_core.max_t_bootstrap import (
         WestfallYoungMaxTBootstrap,
@@ -186,22 +297,25 @@ def _bootstrap_ci_and_maxt(
         fwer_alpha=GATE_FWER_ALPHA,
         seed=42,
         block_size=BOOTSTRAP_BLOCK_SIZE,
+        sensitivity_block_sizes=GATE_FWER_BLOCK_SIZES,
     )
-    results: List[BootstrapResult] = bs.run()
+    sensitivity_results: Dict[int, List[BootstrapResult]] = bs.run_sensitivity()
 
-    return {
-        r.config_id: {
-            "observed_mean": r.observed_mean,
-            "standard_error": r.standard_error,
-            "observed_t": r.observed_t,
-            "unadjusted_p_value": r.unadjusted_p_value,
-            "adjusted_p_value": r.adjusted_p_value,
-            "fwer_significant": r.fwer_significant,
-            "ci_99_lower": r.confidence_interval_99_lower,
-            "ci_99_upper": r.confidence_interval_99_upper,
-        }
-        for r in results
-    }
+    output: Dict[str, Dict[int, Any]] = {cfg_id: {} for cfg_id in weekly_cols}
+    for bsize, results_list in sensitivity_results.items():
+        for r in results_list:
+            output[r.config_id][bsize] = {
+                "observed_mean": r.observed_mean,
+                "standard_error": r.standard_error,
+                "observed_t": r.observed_t,
+                "unadjusted_p_value": r.unadjusted_p_value,
+                "adjusted_p_value": r.adjusted_p_value,
+                "fwer_significant": r.fwer_significant,
+                "ci_99_lower_paired": r.confidence_interval_99_lower,
+                "ci_99_upper_paired": r.confidence_interval_99_upper,
+            }
+
+    return output
 
 
 # ---------------------------------------------------------------------------
@@ -227,28 +341,39 @@ def gate1_volume_floors(stats: Dict[str, Any]) -> Tuple[bool, str]:
     return True, f"pooled={pooled}, W1={w1}, W2={w2}"
 
 
-def gate2_ci_lower_bound(bs_result: Dict[str, Any]) -> Tuple[bool, str]:
-    """Gate 2: 99% bootstrap CI lower bound > 0.0R."""
-    if not bs_result:
-        return False, "Bootstrap result unavailable"
-    lower = bs_result.get("ci_99_lower", float("nan"))
+def gate2_ci_lower_bound(ci: Tuple[float, float]) -> Tuple[bool, str]:
+    """Gate 2: 99% block-bootstrap CI lower bound of candidate's absolute net-R > 0.0R.
+
+    The CI is computed by _compute_gate2_ci() using the candidate's OWN actual weekly
+    net-R (not the paired advantage over random — that is Gate 3's domain).
+    """
+    lower, upper = ci
     if np.isnan(lower):
-        return False, "CI lower bound is NaN"
+        return False, "Block-bootstrap CI unavailable (insufficient data or computation error)"
     if lower <= GATE_CI_LOWER_BOUND_GT:
-        return False, f"99% CI lower bound {lower:.4f}R <= 0.0R"
-    return True, f"99% CI lower bound {lower:.4f}R > 0.0R"
+        return False, f"99% block CI lower bound {lower:.4f}R <= 0.0R (absolute net-R not reliably positive)"
+    return True, f"99% block CI lower bound {lower:.4f}R > 0.0R (absolute weekly net-R reliably positive)"
 
 
-def gate3_fwer_significance(bs_result: Dict[str, Any]) -> Tuple[bool, str]:
-    """Gate 3: Max-T FWER-adjusted p-value <= 0.05."""
-    if not bs_result:
+def gate3_fwer_significance(bs_by_block: Dict[int, Any]) -> Tuple[bool, str]:
+    """Gate 3: Max-T FWER-adjusted p-value <= 0.05 at BOTH block_size=4 AND block_size=8 (pre-registered)."""
+    if not bs_by_block:
         return False, "Bootstrap result unavailable"
-    adj_p = bs_result.get("adjusted_p_value", float("nan"))
-    if np.isnan(adj_p):
-        return False, "FWER adjusted p-value is NaN"
-    if adj_p > GATE_FWER_ALPHA:
-        return False, f"FWER adjusted p-value {adj_p:.4f} > {GATE_FWER_ALPHA}"
-    return True, f"FWER adjusted p-value {adj_p:.4f} <= {GATE_FWER_ALPHA}"
+    failures = []
+    details = []
+    for bsize in GATE_FWER_BLOCK_SIZES:
+        result = bs_by_block.get(bsize, {})
+        if not result:
+            failures.append(f"block_size={bsize}: no result")
+            continue
+        adj_p = result.get("adjusted_p_value", float("nan"))
+        sig = result.get("fwer_significant", False)
+        details.append(f"bs{bsize}: adj_p={adj_p:.4f}")
+        if np.isnan(adj_p) or not sig:
+            failures.append(f"block_size={bsize}: adj_p={adj_p:.4f} > {GATE_FWER_ALPHA}")
+    if failures:
+        return False, "Not FWER significant at all required block sizes: " + "; ".join(failures)
+    return True, f"FWER significant at both block sizes [{', '.join(details)}]"
 
 
 def gate4_plateau(winner_id: str, all_stats: Dict[str, Dict[str, Any]]) -> Tuple[bool, str]:
@@ -284,22 +409,29 @@ def gate4_plateau(winner_id: str, all_stats: Dict[str, Dict[str, Any]]) -> Tuple
 
 
 def gate5_strategy_gates(stats: Dict[str, Any]) -> Tuple[bool, str]:
-    """Gate 5: Official strategy gates."""
+    """Gate 5: Official strategy gates (Max DD <= 15.0%, PF >= 1.30, Expectancy >= +0.15R)."""
     reasons = []
-    dd_abs = stats.get("max_drawdown_r_abs", float("nan"))
+    max_dd_pct = stats.get("max_drawdown_pct", float("nan"))
     pf = stats.get("profit_factor", float("nan"))
     exp = stats.get("net_expectancy_r_pooled", float("nan"))
-    pooled = stats.get("trades_pooled", 0)
 
-    # Note: max_drawdown is in R units here (not % of equity); we check profit factor and expectancy
+    # Gate 5.1: Maximum equity-curve drawdown <= 15.0% (per-window from simulator)
+    if np.isnan(max_dd_pct):
+        reasons.append("max_drawdown_pct is NaN (equity curve unavailable)")
+    elif max_dd_pct > GATE_MAX_DD_PCT:
+        reasons.append(f"max_drawdown={max_dd_pct:.2f}% > {GATE_MAX_DD_PCT}%")
+
+    # Gate 5.2: Profit factor >= 1.30
     if np.isnan(pf) or pf < GATE_MIN_PF:
         reasons.append(f"profit_factor={pf:.3f} < {GATE_MIN_PF}")
+
+    # Gate 5.3: Net expectancy >= +0.15R
     if np.isnan(exp) or exp < GATE_MIN_EXPECTANCY_R:
         reasons.append(f"net_expectancy_r={exp:.4f}R < +{GATE_MIN_EXPECTANCY_R}R")
 
     if reasons:
         return False, "; ".join(reasons)
-    return True, f"PF={pf:.3f}, expectancy={exp:.4f}R"
+    return True, f"MaxDD={max_dd_pct:.2f}%, PF={pf:.3f}, expectancy={exp:.4f}R"
 
 
 # ---------------------------------------------------------------------------
@@ -347,9 +479,19 @@ def run_selection(dry_run: bool = False) -> Dict[str, Any]:
     all_stats: Dict[str, Dict[str, Any]] = {}
     for cfg_id in candidate_ids:
         if all_trades[cfg_id] is not None:
-            all_stats[cfg_id] = _compute_trade_stats(all_trades[cfg_id])
+            all_stats[cfg_id] = _compute_trade_stats(all_trades[cfg_id], config_id=cfg_id)
         else:
             all_stats[cfg_id] = {"error": "No trade data"}
+
+    # Gate 2: Compute 99% block-bootstrap CI on each candidate's own absolute weekly net-R.
+    # This runs BEFORE the Max-T bootstrap and requires only the actual trade CSV (no random).
+    # Gate 2 and Gate 3 are deliberately independent tests of different hypotheses.
+    gate2_cis: Dict[str, Tuple[float, float]] = {}
+    for cfg_id in candidate_ids:
+        if all_trades[cfg_id] is not None:
+            gate2_cis[cfg_id] = _compute_gate2_ci(all_trades[cfg_id])
+        else:
+            gate2_cis[cfg_id] = (float("nan"), float("nan"))
 
     # Run block bootstrap for all candidates jointly (only if data available)
     bootstrap_pairs = {
@@ -357,7 +499,7 @@ def run_selection(dry_run: bool = False) -> Dict[str, Any]:
         for cfg_id in candidate_ids
         if all_trades[cfg_id] is not None and all_random[cfg_id] is not None
     }
-    print(f"Running block bootstrap (B={BOOTSTRAP_REPLICATIONS}, block_size={BOOTSTRAP_BLOCK_SIZE}) ...")
+    print(f"Running block bootstrap (B={BOOTSTRAP_REPLICATIONS}, block_sizes={GATE_FWER_BLOCK_SIZES}) ...")
     if bootstrap_pairs:
         bootstrap_results = _bootstrap_ci_and_maxt(bootstrap_pairs)
     else:
@@ -380,8 +522,14 @@ def run_selection(dry_run: bool = False) -> Dict[str, Any]:
             gate_results[cfg_id] = g
             continue
 
-        passed, msg = gate2_ci_lower_bound(bs_r)
-        g["gate2_ci_lower_bound"] = {"passed": passed, "detail": msg}
+        # Gate 2: uses the separate block-CI on the candidate's own absolute net-R
+        passed, msg = gate2_ci_lower_bound(gate2_cis[cfg_id])
+        g["gate2_ci_lower_bound"] = {
+            "passed": passed,
+            "detail": msg,
+            "ci_99_lower": gate2_cis[cfg_id][0],
+            "ci_99_upper": gate2_cis[cfg_id][1],
+        }
         if not passed:
             g["eliminated_at_gate"] = 2
             g["elimination_reason"] = msg
@@ -448,14 +596,15 @@ def run_selection(dry_run: bool = False) -> Dict[str, Any]:
         "selection_reason": selection_reason,
         "pre_registered_gate_sequence": [
             "Gate 1: Trade volume floors (pooled>=80, W1>=20, W2>=20)",
-            "Gate 2: 99% CI lower bound > 0.0R",
-            "Gate 3: FWER adjusted p-value <= 0.05 (block_size=4)",
+            "Gate 2: 99% block CI of candidate's own weekly net-R > 0.0R (block_size=4)",
+            "Gate 3: FWER adjusted p-value <= 0.05 at both block_size=4 and block_size=8",
             "Gate 4: Plateau — every neighbor >= 75% winner expectancy AND > 0.0R",
             "Gate 5: Official gates (PF>=1.30, expectancy>=+0.15R)",
         ],
         "bootstrap_spec": {
             "method": "Westfall-Young Stepdown Max-T",
-            "block_size": BOOTSTRAP_BLOCK_SIZE,
+            "block_sizes": GATE_FWER_BLOCK_SIZES,
+            "primary_block_size": BOOTSTRAP_BLOCK_SIZE,
             "num_replications": BOOTSTRAP_REPLICATIONS,
             "fwer_alpha": GATE_FWER_ALPHA,
         },
@@ -470,31 +619,35 @@ def run_selection(dry_run: bool = False) -> Dict[str, Any]:
     }
 
     # Print summary table
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 84)
     print("GATE SUMMARY")
-    print("=" * 70)
-    header = f"{'Config':<10} {'Trades':>7} {'Exp(R)':>8} {'CI_lo':>8} {'adjP':>7} {'G1':>3} {'G2':>3} {'G3':>3} {'G4':>3} {'G5':>3} Result"
+    print("=" * 84)
+    header = f"{'Config':<10} {'Trades':>7} {'Exp(R)':>8} {'MaxDD%':>7} {'G2_CI':>8} {'adjP4':>7} {'adjP8':>7} {'G1':>3} {'G2':>3} {'G3':>3} {'G4':>3} {'G5':>3} Result"
     print(header)
-    print("-" * 70)
+    print("-" * 84)
     for cfg_id in candidate_ids:
         stats = all_stats.get(cfg_id, {})
         bs_r = bootstrap_results.get(cfg_id, {})
         gr = gate_results.get(cfg_id, {})
         trades_p = stats.get("trades_pooled", "?")
         exp = stats.get("net_expectancy_r_pooled", float("nan"))
-        ci_lo = bs_r.get("ci_99_lower", float("nan"))
-        adj_p = bs_r.get("adjusted_p_value", float("nan"))
+        max_dd = stats.get("max_drawdown_pct", float("nan"))
+        # Gate 2: show absolute net-R CI lower bound (from gate2_cis, not from Max-T output)
+        ci_lo = gate2_cis.get(cfg_id, (float("nan"), float("nan")))[0]
+        adj_p4 = bs_r.get(4, {}).get("adjusted_p_value", float("nan"))
+        adj_p8 = bs_r.get(8, {}).get("adjusted_p_value", float("nan"))
         g1 = "Y" if gr.get("gate1_volume_floors", {}).get("passed") else "N"
         g2 = "Y" if gr.get("gate2_ci_lower_bound", {}).get("passed") else ("?" if "gate2_ci_lower_bound" not in gr else "N")
         g3 = "Y" if gr.get("gate3_fwer", {}).get("passed") else ("?" if "gate3_fwer" not in gr else "N")
         g4 = "Y" if gr.get("gate4_plateau", {}).get("passed") else ("?" if "gate4_plateau" not in gr else "N")
         g5 = "Y" if gr.get("gate5_strategy", {}).get("passed") else ("?" if "gate5_strategy" not in gr else "N")
         result = "SELECTED" if cfg_id == selected_config else gr.get("elimination_reason", "")[:25]
+        dd_str = f"{max_dd:>6.2f}%" if not np.isnan(max_dd) else "   NaN%"
         print(
-            f"{cfg_id:<10} {str(trades_p):>7} {exp:>8.4f} {ci_lo:>8.4f} {adj_p:>7.4f} "
+            f"{cfg_id:<10} {str(trades_p):>7} {exp:>8.4f} {dd_str} {ci_lo:>8.4f} {adj_p4:>7.4f} {adj_p8:>7.4f} "
             f"{g1:>3} {g2:>3} {g3:>3} {g4:>3} {g5:>3} {result}"
         )
-    print("-" * 70)
+    print("-" * 84)
     if selected_config:
         print(f"\n>>> FINAL SELECTION: {selected_config}")
     else:
