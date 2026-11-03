@@ -200,14 +200,18 @@ def compute_block_bootstrap_ci(
 
 
 def _block_resample(rng: np.random.Generator, W: int, block_size: int, B: int) -> np.ndarray:
-    """Draw B bootstrap samples of length W using circular block resampling.
+    """Draw B bootstrap samples of length W using circular block resampling (Politis & Romano, 1992).
 
     Each bootstrap draw samples ceil(W / block_size) block start indices uniformly
-    from {0, block_size, 2*block_size, ...} with replacement, expands each start into
+    from ALL W positions {0, 1, ..., W - 1} with replacement, expands each start into
     a block of `block_size` consecutive indices, and wraps any overflow modulo W
-    (circular block bootstrap).  Wrap-around ensures every week is equally likely to
-    appear, eliminating the ~2x over-sampling of the final week that occurs when
-    overflowed indices are clipped.
+    (circular block bootstrap).
+
+    Because each block start S is drawn uniformly from {0, ..., W - 1}, each position
+    (S + j) % W within the block is identically distributed as Uniform(0, W - 1) for
+    every offset j. This guarantees exact marginal uniformity for all weeks regardless
+    of whether W is divisible by block_size (eliminating the ~2x edge bias that occurs
+    when starts are constrained to a fixed grid 0, b, 2b... on non-divisible series).
 
     The same index matrix is applied jointly across all K configurations per
     replication, preserving cross-sectional correlation and satisfying subset-
@@ -232,27 +236,20 @@ def _block_resample(rng: np.random.Generator, W: int, block_size: int, B: int) -
     if block_size <= 0:
         raise ValueError(f"block_size must be >= 1, got {block_size}")
 
-    # Non-overlapping block start positions: 0, block_size, 2*block_size, ...
-    starts = np.arange(0, W, block_size)
     n_blocks_needed = math.ceil(W / block_size)
 
-    # Sample block start indices uniformly with replacement: shape (B, n_blocks_needed)
-    chosen = rng.integers(0, len(starts), size=(B, n_blocks_needed))  # indices into starts[]
+    # Sample block start indices uniformly from ALL W positions: shape (B, n_blocks_needed)
+    chosen_starts = rng.integers(0, W, size=(B, n_blocks_needed))
 
-    # Expand each chosen start into a block of `block_size` consecutive indices.
-    # chosen_starts shape: (B, n_blocks_needed)
-    chosen_starts = starts[chosen]
-    # offsets shape: (block_size,)
+    # Offsets within each block: [0, 1, ..., block_size - 1]
     offsets = np.arange(block_size)
+
+    # Expand each start into a block of `block_size` consecutive indices, wrapping modulo W.
     # Broadcasting: (B, n_blocks_needed, block_size)
-    indices_full = chosen_starts[:, :, np.newaxis] + offsets[np.newaxis, np.newaxis, :]
+    indices_full = (chosen_starts[:, :, np.newaxis] + offsets[np.newaxis, np.newaxis, :]) % W
 
-    # Flatten blocks, then wrap overflow circularly so every week is equally likely.
-    # (Clipping would make the last week ~2x as likely as every other week.)
+    # Flatten to (B, n_blocks_needed * block_size) and truncate to exactly W weeks
     idx_flat = indices_full.reshape(B, n_blocks_needed * block_size)
-    idx_flat = idx_flat % W  # circular wrap — uniform marginal distribution
-
-    # Truncate to exactly W weeks
     return idx_flat[:, :W]
 
 

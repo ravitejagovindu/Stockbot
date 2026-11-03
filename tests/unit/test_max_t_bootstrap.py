@@ -65,6 +65,41 @@ def test_block_resample_uniform_marginal():
     )
 
 
+def test_block_resample_uniform_marginal_non_divisible_length():
+    """True circular block bootstrap with uniform starts must have uniform marginals on non-divisible W.
+
+    When W is not divisible by block_size (e.g. W=331, block_size=4, 331 % 4 = 3):
+    - A fixed-grid start approach (0, 4, 8, ..., 328) caused week 0 to appear in both
+      the first block [0, 1, 2, 3] and wrapped in the last block [328, 329, 330, 0],
+      giving week 0 a 2.00x over-sampling bias.
+    - True circular block bootstrap draws starts uniformly from all W positions {0..W-1},
+      ensuring every week (including week 0) has expected frequency exactly B.
+    """
+    rng = np.random.default_rng(777)
+    W, block_size, B = 331, 4, 20000
+    idx = _block_resample(rng, W, block_size, B)
+
+    counts = np.bincount(idx.ravel(), minlength=W)
+    expected = float(B)  # each week is drawn on average B times (B * W total draws / W weeks)
+
+    # Week 0 must be near expected frequency (not 2.00x)
+    week0_ratio = counts[0] / expected
+    assert 0.90 <= week0_ratio <= 1.10, (
+        f"Week 0 appeared {counts[0]} times; expected ~{expected:.0f} (ratio={week0_ratio:.4f}). "
+        f"True circular block bootstrap must eliminate the 2.00x week-0 oversampling bias."
+    )
+
+    # Across all 331 weeks, no week should deviate by more than 15% from expected
+    max_ratio = counts.max() / expected
+    min_ratio = counts.min() / expected
+    assert max_ratio < 1.15, (
+        f"Week {counts.argmax()} appeared {counts.max()} times; max_ratio={max_ratio:.4f} > 1.15"
+    )
+    assert min_ratio > 0.85, (
+        f"Week {counts.argmin()} appeared {counts.min()} times; min_ratio={min_ratio:.4f} < 0.85"
+    )
+
+
 def test_block_resample_different_from_iid():
     """Block resampling should produce a different distribution from i.i.d. sampling.
 
