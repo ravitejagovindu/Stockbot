@@ -1,0 +1,2 @@
+timestamp_utc,commit_sha,selected_config,selection_reason,CFG-01_gate_reached,CFG-02_gate_reached,CFG-03_gate_reached,CFG-04_gate_reached,CFG-05_gate_reached,CFG-06_gate_reached
+2026-11-05T03:25:25.744411+00:00,c3322fc2a850,NONE,No candidate passed all gates,2,2,2,2,2,2

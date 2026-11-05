@@ -1,0 +1,337 @@
+{
+  "generated_at": "2026-11-05T03:25:25.744411+00:00",
+  "commit_sha": "c3322fc2a850",
+  "selected_config": null,
+  "selection_reason": "No candidate passed all gates",
+  "pre_registered_gate_sequence": [
+    "Gate 1: Trade volume floors (pooled>=80, W1>=20, W2>=20)",
+    "Gate 2: 99% block CI of candidate's own weekly net-R > 0.0R (block_size=4)",
+    "Gate 3: FWER adjusted p-value <= 0.05 at both block_size=4 and block_size=8",
+    "Gate 4: Plateau \u2014 every neighbor >= 75% winner expectancy AND > 0.0R",
+    "Gate 5: Official gates (PF>=1.30, expectancy>=+0.15R)"
+  ],
+  "bootstrap_spec": {
+    "method": "Westfall-Young Stepdown Max-T",
+    "block_sizes": [
+      4,
+      8
+    ],
+    "primary_block_size": 4,
+    "num_replications": 10000,
+    "fwer_alpha": 0.05
+  },
+  "candidate_results": {
+    "CFG-01": {
+      "trade_stats": {
+        "trades_W1": 112,
+        "net_expectancy_r_W1": 0.14248390425910046,
+        "max_drawdown_pct_W1": 14.323927711999925,
+        "trades_W2": 396,
+        "net_expectancy_r_W2": 0.02622386351511587,
+        "max_drawdown_pct_W2": 34.79135727479278,
+        "trades_pooled": 508,
+        "net_expectancy_r_pooled": 0.05185599848229362,
+        "profit_factor": 1.1541934357908552,
+        "max_drawdown_pct": 34.79135727479278,
+        "max_drawdown_r": -40.29061947378001,
+        "max_drawdown_r_abs": 40.29061947378001
+      },
+      "bootstrap_result": {
+        "4": {
+          "observed_mean": 0.08109486515466743,
+          "standard_error": 0.0711969678900799,
+          "observed_t": 1.1390213313559754,
+          "unadjusted_p_value": 0.1304,
+          "adjusted_p_value": 0.3083,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.09084613518441736,
+          "ci_99_upper_paired": 0.2726870543723996
+        },
+        "8": {
+          "observed_mean": 0.08109486515466743,
+          "standard_error": 0.0711969678900799,
+          "observed_t": 1.1390213313559754,
+          "unadjusted_p_value": 0.144,
+          "adjusted_p_value": 0.2829,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.10767563020939924,
+          "ci_99_upper_paired": 0.298635780238615
+        }
+      },
+      "gate_evaluation": {
+        "gate1_volume_floors": {
+          "passed": true,
+          "detail": "pooled=508, W1=112, W2=396"
+        },
+        "gate2_ci_lower_bound": {
+          "passed": false,
+          "detail": "99% block CI lower bound -0.1716R <= 0.0R (absolute net-R not reliably positive)",
+          "ci_99_lower": -0.17164875216693778,
+          "ci_99_upper": 0.3377250244196924
+        },
+        "eliminated_at_gate": 2,
+        "elimination_reason": "99% block CI lower bound -0.1716R <= 0.0R (absolute net-R not reliably positive)"
+      }
+    },
+    "CFG-02": {
+      "trade_stats": {
+        "trades_W1": 108,
+        "net_expectancy_r_W1": 0.06055348170143855,
+        "max_drawdown_pct_W1": 13.561473526079308,
+        "trades_W2": 365,
+        "net_expectancy_r_W2": 0.03728374199785061,
+        "max_drawdown_pct_W2": 25.830049606550677,
+        "trades_pooled": 473,
+        "net_expectancy_r_pooled": 0.0425969172367248,
+        "profit_factor": 1.1183571729710189,
+        "max_drawdown_pct": 25.830049606550677,
+        "max_drawdown_r": -24.190206746424806,
+        "max_drawdown_r_abs": 24.190206746424806
+      },
+      "bootstrap_result": {
+        "4": {
+          "observed_mean": 0.06313977710819117,
+          "standard_error": 0.07594892272029997,
+          "observed_t": 0.8313452626671015,
+          "unadjusted_p_value": 0.1783,
+          "adjusted_p_value": 0.3705,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.10435208110096127,
+          "ci_99_upper_paired": 0.24659531005840338
+        },
+        "8": {
+          "observed_mean": 0.06313977710819117,
+          "standard_error": 0.07594892272029997,
+          "observed_t": 0.8313452626671015,
+          "unadjusted_p_value": 0.1632,
+          "adjusted_p_value": 0.3392,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.10312495343996653,
+          "ci_99_upper_paired": 0.2547869499874517
+        }
+      },
+      "gate_evaluation": {
+        "gate1_volume_floors": {
+          "passed": true,
+          "detail": "pooled=473, W1=108, W2=365"
+        },
+        "gate2_ci_lower_bound": {
+          "passed": false,
+          "detail": "99% block CI lower bound -0.1668R <= 0.0R (absolute net-R not reliably positive)",
+          "ci_99_lower": -0.16681077919507442,
+          "ci_99_upper": 0.28451838698811693
+        },
+        "eliminated_at_gate": 2,
+        "elimination_reason": "99% block CI lower bound -0.1668R <= 0.0R (absolute net-R not reliably positive)"
+      }
+    },
+    "CFG-03": {
+      "trade_stats": {
+        "trades_W1": 98,
+        "net_expectancy_r_W1": 0.05622761973688179,
+        "max_drawdown_pct_W1": 12.556651968055753,
+        "trades_W2": 310,
+        "net_expectancy_r_W2": 0.06626807543618424,
+        "max_drawdown_pct_W2": 23.734506353911755,
+        "trades_pooled": 408,
+        "net_expectancy_r_pooled": 0.06385639735154784,
+        "profit_factor": 1.1885977139339596,
+        "max_drawdown_pct": 23.734506353911755,
+        "max_drawdown_r": -20.79358354759318,
+        "max_drawdown_r_abs": 20.79358354759318
+      },
+      "bootstrap_result": {
+        "4": {
+          "observed_mean": 0.08025591701097577,
+          "standard_error": 0.07592258703599587,
+          "observed_t": 1.0570756364364324,
+          "unadjusted_p_value": 0.1176,
+          "adjusted_p_value": 0.3083,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.09459797859415786,
+          "ci_99_upper_paired": 0.26641460034118875
+        },
+        "8": {
+          "observed_mean": 0.08025591701097577,
+          "standard_error": 0.07592258703599587,
+          "observed_t": 1.0570756364364324,
+          "unadjusted_p_value": 0.0994,
+          "adjusted_p_value": 0.2829,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.08015162326066534,
+          "ci_99_upper_paired": 0.25380260386148046
+        }
+      },
+      "gate_evaluation": {
+        "gate1_volume_floors": {
+          "passed": true,
+          "detail": "pooled=408, W1=98, W2=310"
+        },
+        "gate2_ci_lower_bound": {
+          "passed": false,
+          "detail": "99% block CI lower bound -0.1218R <= 0.0R (absolute net-R not reliably positive)",
+          "ci_99_lower": -0.12180132386917804,
+          "ci_99_upper": 0.2903166535049152
+        },
+        "eliminated_at_gate": 2,
+        "elimination_reason": "99% block CI lower bound -0.1218R <= 0.0R (absolute net-R not reliably positive)"
+      }
+    },
+    "CFG-04": {
+      "trade_stats": {
+        "trades_W1": 85,
+        "net_expectancy_r_W1": 0.09217517464521702,
+        "max_drawdown_pct_W1": 13.574864261720753,
+        "trades_W2": 310,
+        "net_expectancy_r_W2": 0.028520873630004308,
+        "max_drawdown_pct_W2": 20.65874132216913,
+        "trades_pooled": 395,
+        "net_expectancy_r_pooled": 0.042218634607961464,
+        "profit_factor": 1.1095751251158799,
+        "max_drawdown_pct": 20.65874132216913,
+        "max_drawdown_r": -20.020501571762495,
+        "max_drawdown_r_abs": 20.020501571762495
+      },
+      "bootstrap_result": {
+        "4": {
+          "observed_mean": 0.05615848062874062,
+          "standard_error": 0.07391565211643482,
+          "observed_t": 0.7597643938834171,
+          "unadjusted_p_value": 0.2108,
+          "adjusted_p_value": 0.3705,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.12145560964573025,
+          "ci_99_upper_paired": 0.23495739779906807
+        },
+        "8": {
+          "observed_mean": 0.05615848062874062,
+          "standard_error": 0.07391565211643482,
+          "observed_t": 0.7597643938834171,
+          "unadjusted_p_value": 0.188,
+          "adjusted_p_value": 0.3392,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.10379536866832616,
+          "ci_99_upper_paired": 0.22878641254371507
+        }
+      },
+      "gate_evaluation": {
+        "gate1_volume_floors": {
+          "passed": true,
+          "detail": "pooled=395, W1=85, W2=310"
+        },
+        "gate2_ci_lower_bound": {
+          "passed": false,
+          "detail": "99% block CI lower bound -0.1451R <= 0.0R (absolute net-R not reliably positive)",
+          "ci_99_lower": -0.145126843605704,
+          "ci_99_upper": 0.2423290627450683
+        },
+        "eliminated_at_gate": 2,
+        "elimination_reason": "99% block CI lower bound -0.1451R <= 0.0R (absolute net-R not reliably positive)"
+      }
+    },
+    "CFG-05": {
+      "trade_stats": {
+        "trades_W1": 75,
+        "net_expectancy_r_W1": 0.07565160826154343,
+        "max_drawdown_pct_W1": 12.520329520549122,
+        "trades_W2": 267,
+        "net_expectancy_r_W2": -0.04339940698550288,
+        "max_drawdown_pct_W2": 27.56035434018509,
+        "trades_pooled": 342,
+        "net_expectancy_r_pooled": -0.017291728203255852,
+        "profit_factor": 0.9589693319160664,
+        "max_drawdown_pct": 27.56035434018509,
+        "max_drawdown_r": -26.936136196393853,
+        "max_drawdown_r_abs": 26.936136196393853
+      },
+      "bootstrap_result": {
+        "4": {
+          "observed_mean": -0.00932016202534136,
+          "standard_error": 0.07165672173472698,
+          "observed_t": -0.13006682136317343,
+          "unadjusted_p_value": 0.5514,
+          "adjusted_p_value": 0.6035,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.18980751770199833,
+          "ci_99_upper_paired": 0.1806151371742505
+        },
+        "8": {
+          "observed_mean": -0.00932016202534136,
+          "standard_error": 0.07165672173472698,
+          "observed_t": -0.13006682136317343,
+          "unadjusted_p_value": 0.5494,
+          "adjusted_p_value": 0.6045,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.17398079042212422,
+          "ci_99_upper_paired": 0.15938147567739538
+        }
+      },
+      "gate_evaluation": {
+        "gate1_volume_floors": {
+          "passed": true,
+          "detail": "pooled=342, W1=75, W2=267"
+        },
+        "gate2_ci_lower_bound": {
+          "passed": false,
+          "detail": "99% block CI lower bound -0.2107R <= 0.0R (absolute net-R not reliably positive)",
+          "ci_99_lower": -0.21067735755738892,
+          "ci_99_upper": 0.17224815448258848
+        },
+        "eliminated_at_gate": 2,
+        "elimination_reason": "99% block CI lower bound -0.2107R <= 0.0R (absolute net-R not reliably positive)"
+      }
+    },
+    "CFG-06": {
+      "trade_stats": {
+        "trades_W1": 59,
+        "net_expectancy_r_W1": 0.030226330499725083,
+        "max_drawdown_pct_W1": 11.130399094856502,
+        "trades_W2": 205,
+        "net_expectancy_r_W2": -0.02573895658962616,
+        "max_drawdown_pct_W2": 22.14521759940318,
+        "trades_pooled": 264,
+        "net_expectancy_r_pooled": -0.013231562884051452,
+        "profit_factor": 0.9674626906904177,
+        "max_drawdown_pct": 22.14521759940318,
+        "max_drawdown_r": -19.676149909914052,
+        "max_drawdown_r_abs": 19.676149909914052
+      },
+      "bootstrap_result": {
+        "4": {
+          "observed_mean": -0.002303818709040138,
+          "standard_error": 0.061161541406347664,
+          "observed_t": -0.03766776729405704,
+          "unadjusted_p_value": 0.5209,
+          "adjusted_p_value": 0.6035,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.15638200651143674,
+          "ci_99_upper_paired": 0.15623070371545827
+        },
+        "8": {
+          "observed_mean": -0.002303818709040138,
+          "standard_error": 0.061161541406347664,
+          "observed_t": -0.03766776729405704,
+          "unadjusted_p_value": 0.5093,
+          "adjusted_p_value": 0.6045,
+          "fwer_significant": false,
+          "ci_99_lower_paired": -0.1472956818263007,
+          "ci_99_upper_paired": 0.1313672554356683
+        }
+      },
+      "gate_evaluation": {
+        "gate1_volume_floors": {
+          "passed": true,
+          "detail": "pooled=264, W1=59, W2=205"
+        },
+        "gate2_ci_lower_bound": {
+          "passed": false,
+          "detail": "99% block CI lower bound -0.1534R <= 0.0R (absolute net-R not reliably positive)",
+          "ci_99_lower": -0.15335299250904252,
+          "ci_99_upper": 0.12788729367982762
+        },
+        "eliminated_at_gate": 2,
+        "elimination_reason": "99% block CI lower bound -0.1534R <= 0.0R (absolute net-R not reliably positive)"
+      }
+    }
+  }
+}
