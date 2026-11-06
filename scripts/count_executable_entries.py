@@ -66,7 +66,7 @@ def count_executable_entries_for_config(base_cfg: dict, config_id: str, cfg_over
             cfg[section][k] = v
 
     rules = LifecycleRules.from_config(cfg)
-    regime = RegimeFilter(cfg, session)
+    regime = RegimeFilter(cfg, session, persist=False)
     screener = UniverseScreener(cfg, session)
     sizer = RiskAndSizingEngine(cfg)
     ex = cfg["execution"]

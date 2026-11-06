@@ -65,10 +65,11 @@ def run_single_config(
     base_cfg: dict,
     session,
     initial_equity: float = 1_000_000.0,
+    allow_live_db: bool = False,
 ) -> dict:
     """Execute Simulator for a single candidate configuration across W1 and W2."""
     cfg = build_config_for(base_cfg, config_entry)
-    sim = Simulator(cfg, session)
+    sim = Simulator(cfg, session, allow_live_db=allow_live_db)
 
     w1_start, w1_end = date(2020, 1, 1), date(2021, 12, 31)
     w2_start, w2_end = date(2022, 1, 1), date(2026, 10, 16)
@@ -141,6 +142,8 @@ def main():
     parser.add_argument("--config", type=str, help="Specific config ID to run (e.g. CFG-01)")
     parser.add_argument("--all", action="store_true", help="Run all 6 candidate configurations")
     parser.add_argument("--list", action="store_true", help="List registered configurations")
+    parser.add_argument("--allow-live-db", action="store_true",
+                        help="Allow running on the live database file (query_only; nothing is written)")
     args = parser.parse_args()
 
     reg_data = load_registered_configs()
@@ -174,7 +177,7 @@ def main():
     with get_session() as s:
         for centry in target_configs:
             cid = centry["id"]
-            res = run_single_config(cid, centry, base_cfg, s)
+            res = run_single_config(cid, centry, base_cfg, s, allow_live_db=args.allow_live_db)
             results.append(res)
 
     print("\n" + "=" * 95)

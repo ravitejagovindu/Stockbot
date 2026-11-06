@@ -30,7 +30,7 @@ def count_all_signals():
     cfg = load_config()
     with get_session() as s:
         screener = UniverseScreener(cfg, s)
-        regime = RegimeFilter(cfg, s)
+        regime = RegimeFilter(cfg, s, persist=False)
         sma_n = int(cfg.get("macro", {}).get("bull_entry_sma_period", 0))
 
         days_raw = (

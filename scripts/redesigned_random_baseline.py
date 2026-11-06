@@ -228,7 +228,7 @@ def run_apples_to_apples_random_baseline(
 
         # Pre-compute true macro regime state (kill switch and bull) for all trading sessions
         logger.info("Pre-computing macro regime state for all trading sessions...")
-        regime = RegimeFilter(cfg, s)
+        regime = RegimeFilter(cfg, s, persist=False)
         daily_regime = {}
         for d in t_days:
             rs = regime.evaluate(d)

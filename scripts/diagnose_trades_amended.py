@@ -391,7 +391,7 @@ def run_nifty_with_kill_switch_baseline(
 ) -> Dict[str, any]:
     """Measure the exact fallback benchmark: Nifty 50 with macro Kill Switch."""
     with get_session() as s:
-        regime = RegimeFilter(cfg, s)
+        regime = RegimeFilter(cfg, s, persist=False)
         days_raw = (
             s.execute(
                 select(MarketDataLake.trade_date, MarketDataLake.close_raw)
@@ -417,7 +417,7 @@ def run_nifty_with_kill_switch_baseline(
     regime_states = []
 
     with get_session() as s:
-        regime = RegimeFilter(cfg, s)
+        regime = RegimeFilter(cfg, s, persist=False)
         for d, c in zip(dates, closes):
             rs = regime.evaluate(d)
             ks = bool(rs.kill_switch_active)

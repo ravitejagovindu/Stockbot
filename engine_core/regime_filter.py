@@ -30,6 +30,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from datetime import date
+from types import SimpleNamespace
 from typing import Optional
 
 import pandas as pd
@@ -112,8 +113,20 @@ class RegimeFilter:
         ``market_data_lake`` and writes to ``regime_state``.
     """
 
-    def __init__(self, config: dict, session: Session) -> None:
-        """Initialise with strategy config and an active DB session."""
+    def __init__(
+        self,
+        config: dict,
+        session: Session,
+        persist: bool = True,
+        seed_state: Optional[dict] = None,
+    ) -> None:
+        """Initialise with strategy config and an active DB session.
+
+        ``persist=False`` (used by every backtest/diagnostic script, F4) keeps the previous state in memory,
+        never reads or writes ``regime_state``, and starts from ``seed_state``
+        (``{"kill_switch_active": bool, "reentry_consecutive_count": int}``; default inactive/0).
+        Dates must then be evaluated in chronological order.
+        """
         macro = config["macro"]
         data_cfg = config.get("data", {})
 
@@ -129,6 +142,19 @@ class RegimeFilter:
         self._vix_symbol: str = data_cfg.get("vix_symbol", "INDIA_VIX")
 
         self._session = session
+        self._persist_enabled = bool(persist)
+        seed = seed_state or {}
+        self._mem_prev = SimpleNamespace(
+            kill_switch_active=bool(seed.get("kill_switch_active", False)),
+            reentry_consecutive_count=int(seed.get("reentry_consecutive_count", 0)),
+        )
+
+    def memory_state(self) -> dict:
+        """Current in-memory state (only meaningful when persist=False)."""
+        return {
+            "kill_switch_active": bool(self._mem_prev.kill_switch_active),
+            "reentry_consecutive_count": int(self._mem_prev.reentry_consecutive_count),
+        }
 
     # ------------------------------------------------------------------
     # Public API
@@ -278,6 +304,8 @@ class RegimeFilter:
 
     def _load_previous_state(self, before_date: Optional[date] = None) -> Optional[RegimeStateModel]:
         """Load the most recent row from ``regime_state`` table on or before `before_date` (exclusive)."""
+        if not self._persist_enabled:
+            return self._mem_prev
         q = select(RegimeStateModel)
         if before_date is not None:
             q = q.where(RegimeStateModel.eval_date < before_date)
@@ -404,6 +432,12 @@ class RegimeFilter:
 
     def _persist(self, state: RegimeState) -> None:
         """Upsert the computed state into ``regime_state`` (one row per date)."""
+        if not self._persist_enabled:
+            self._mem_prev = SimpleNamespace(
+                kill_switch_active=bool(state.kill_switch_active),
+                reentry_consecutive_count=int(state.reentry_consecutive_count),
+            )
+            return
         existing = (
             self._session.execute(
                 select(RegimeStateModel).where(

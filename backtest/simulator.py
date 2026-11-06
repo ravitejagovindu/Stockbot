@@ -6,7 +6,8 @@ from datetime import date
 from typing import Optional
 
 import pandas as pd
-from sqlalchemy import distinct, select
+from sqlalchemy import distinct, select, text
+from sqlalchemy.engine import make_url
 
 from data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
@@ -43,14 +44,48 @@ class SimResult:
     equity: pd.Series
     skipped: list = field(default_factory=list)
     compliance_applied: bool = False
+    regime_seed: dict = field(default_factory=dict)  # starting regime state of the run (value + derivation)
+
+
+REGIME_WARMUP_SESSIONS = 250  # sessions replayed (in memory) before the window to derive the starting regime state
+
+
+def _live_db_path():
+    """Absolute path of the live database file (from data.db.connection.DATABASE_URL), or None if not a file DB."""
+    import data.db.connection as conn
+    from pathlib import Path
+
+    url = make_url(conn.DATABASE_URL)
+    if not url.drivername.startswith("sqlite") or not url.database or url.database == ":memory:":
+        return None
+    return Path(url.database).resolve()
+
+
+def _session_db_path(session):
+    from pathlib import Path
+
+    try:
+        url = session.get_bind().url
+    except Exception:
+        return None
+    if not url.drivername.startswith("sqlite") or not url.database or url.database == ":memory:":
+        return None
+    return Path(url.database).resolve()
 
 
 class Simulator:
-    def __init__(self, config: dict, session):
+    def __init__(self, config: dict, session, allow_live_db: bool = False):
+        live, mine = _live_db_path(), _session_db_path(session)
+        self._on_live_db = bool(live is not None and mine is not None and live == mine)
+        if self._on_live_db and not allow_live_db:
+            raise RuntimeError(
+                f"Simulator refuses to run on the live database ({mine}). Use a copy, or pass allow_live_db=True "
+                "(--allow-live-db); the run then executes with PRAGMA query_only=ON so nothing can be written."
+            )
         self.cfg, self.s = config, session
         self.rules = LifecycleRules.from_config(config)
         self.costs = CostModel.from_config(config)
-        self.regime = RegimeFilter(config, session)
+        self.regime = RegimeFilter(config, session, persist=False)
         self.screener = UniverseScreener(config, session)
         self.sizer = RiskAndSizingEngine(config)
 
@@ -138,12 +173,61 @@ class Simulator:
             "days_held": st.days_held,
         }
 
+    def _derive_regime_seed(self, start_d: date, regime_seed: Optional[dict]) -> dict:
+        """Starting regime state of a run: explicit, or replayed in memory from REGIME_WARMUP_SESSIONS before start."""
+        if regime_seed is not None:
+            seed = {
+                "kill_switch_active": bool(regime_seed.get("kill_switch_active", False)),
+                "reentry_consecutive_count": int(regime_seed.get("reentry_consecutive_count", 0)),
+            }
+            seed["derivation"] = "explicit (caller supplied)"
+            return seed
+        prior = (
+            self.s.execute(
+                select(MarketDataLake.trade_date)
+                .where(MarketDataLake.symbol == self.cfg.get("data", {}).get("nifty_symbol", "NIFTY50_INDEX"))
+                .where(MarketDataLake.trade_date < start_d)
+                .order_by(MarketDataLake.trade_date.desc())
+                .limit(REGIME_WARMUP_SESSIONS)
+            ).scalars().all()
+        )
+        prior = [_to_date(x) for x in reversed(prior)]
+        replay = RegimeFilter(self.cfg, self.s, persist=False)
+        used = 0
+        for d in prior:
+            try:
+                replay.evaluate(d)
+                used += 1
+            except RuntimeError:
+                continue
+        seed = replay.memory_state()
+        seed["derivation"] = (
+            f"warm-up replay in memory over {used} sessions before {start_d} (start inactive/0, "
+            f"max {REGIME_WARMUP_SESSIONS}); no database state used"
+        )
+        return seed
+
     # ---- main loop ------------------------------------------------------------
-    def run(self, start: date, end: date, initial_equity: float, exclusions=None) -> SimResult:
+    def run(self, start: date, end: date, initial_equity: float, exclusions=None,
+            regime_seed: Optional[dict] = None) -> SimResult:
+        if self._on_live_db:
+            self.s.execute(text("PRAGMA query_only=ON"))
+            try:
+                return self._run(start, end, initial_equity, exclusions, regime_seed)
+            finally:
+                self.s.execute(text("PRAGMA query_only=OFF"))
+        return self._run(start, end, initial_equity, exclusions, regime_seed)
+
+    def _run(self, start: date, end: date, initial_equity: float, exclusions, regime_seed) -> SimResult:
         cfg, ex = self.cfg, self.cfg["execution"]
         risk_pct = float(cfg["risk"]["max_loss_pct_per_trade"])
         sma_n = int(cfg.get("macro", {}).get("bull_entry_sma_period", 0))
         start_d, end_d = _to_date(start), _to_date(end)
+        seed = self._derive_regime_seed(start_d, regime_seed)
+        self.regime = RegimeFilter(
+            cfg, self.s, persist=False,
+            seed_state={k: seed[k] for k in ("kill_switch_active", "reentry_consecutive_count")},
+        )
         days_raw = (
             self.s.execute(
                 select(MarketDataLake.trade_date)
@@ -318,4 +402,5 @@ class Simulator:
             pd.Series(curve, dtype="float64"),
             skipped,
             compliance_applied=bool(exclusions and exclusions.applied),
+            regime_seed=seed,
         )

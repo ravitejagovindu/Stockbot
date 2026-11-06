@@ -33,7 +33,7 @@ def test_simulator_and_funnel_agreement():
     """Verify that Simulator and candidate screening/filtering agree on candidate selection."""
     cfg = load_config()
     with get_session() as s:
-        sim = Simulator(cfg, s)
+        sim = Simulator(cfg, s, allow_live_db=True)
         d = date(2020, 1, 14)  # Signal date for ESCORTS entry on 2020-01-15
 
         # Screening through UniverseScreener
@@ -119,7 +119,7 @@ def test_active_simulator_mini_window_jan_feb_2020():
     """Actively execute Simulator over Jan-Feb 2020 and verify known trades reproduction."""
     cfg = load_config()
     with get_session() as s:
-        sim = Simulator(cfg, s)
+        sim = Simulator(cfg, s, allow_live_db=True)
         res = sim.run(start=date(2020, 1, 1), end=date(2020, 2, 29), initial_equity=1_000_000.0)
 
     trades = res.trades

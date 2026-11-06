@@ -69,6 +69,8 @@ def main() -> None:
     parser.add_argument("--freeze", action="store_true", help="Freeze strategy_config.yaml SHA to outputs/FROZEN.sha")
     parser.add_argument("--test", action="store_true", help="Run only TEST windows (requires config matching FROZEN.sha)")
     parser.add_argument("--all", action="store_true", help="Run Pass 1, Pass 2, and Audit")
+    parser.add_argument("--allow-live-db", action="store_true",
+                        help="Allow running on the live database file (runs with PRAGMA query_only=ON; nothing is written)")
     args = parser.parse_args()
 
     config = load_config()
@@ -125,7 +127,7 @@ def main() -> None:
             name = regime["name"]
             s = date.fromisoformat(regime["start"])
             e = date.fromisoformat(regime["end"])
-            sim = Simulator(config, session)
+            sim = Simulator(config, session, allow_live_db=args.allow_live_db)
 
             if args.pass1:
                 print(f"\n--- Running Pass 1 (Naive) for {name} ({s} to {e}) ---")

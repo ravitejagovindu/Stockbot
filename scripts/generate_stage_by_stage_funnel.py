@@ -169,7 +169,7 @@ def main():
             }
 
         screener = UniverseScreener(base_cfg, session)
-        regime = RegimeFilter(base_cfg, session)
+        regime = RegimeFilter(base_cfg, session, persist=False)
         sma_n = int(base_cfg.get("macro", {}).get("bull_entry_sma_period", 0))
 
         def _heat_view(pos_dict: dict) -> list:
