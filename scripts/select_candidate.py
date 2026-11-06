@@ -96,6 +96,36 @@ def _load_yaml(path: Path) -> dict:
         return yaml.safe_load(f)
 
 
+R_COL = "net_r"          # explicit R column used by every gate (F1)
+GROSS_R_COL = "gross_r"  # must also be present so gross-vs-net mix-ups are detectable
+
+
+def require_r_columns(df: pd.DataFrame) -> None:
+    """Fail loudly unless explicit, distinct gross/net R columns are present (F1).
+
+    Raises ValueError if ``net_r`` or ``gross_r`` is missing (legacy CSVs carried an orphan ``net_r`` that
+    equalled the gross price-based R), or if ``net_r`` is identical to ``gross_r`` on rows with non-zero costs.
+    """
+    for col in (R_COL, GROSS_R_COL):
+        if col not in df.columns:
+            raise ValueError(
+                f"Trade file lacks explicit column '{col}'. Legacy files with an unexplained 'net_r' are refused; "
+                "regenerate with the Simulator or scripts/recompute_step3_net_r.py."
+            )
+    if "costs" in df.columns:
+        paid = df[df["costs"] > 0]
+        if len(paid) and np.allclose(paid[R_COL].values, paid[GROSS_R_COL].values, rtol=0, atol=1e-12):
+            raise ValueError("net_r is identical to gross_r on rows with non-zero costs: net R is not net of costs.")
+
+
+def configure_outputs(outputs_dir: Path) -> None:
+    """Point all input/output paths at ``outputs_dir`` (used for recomputed/alternate result folders)."""
+    global OUTPUTS_DIR, DECISION_FILE, TRIAL_LEDGER
+    OUTPUTS_DIR = Path(outputs_dir)
+    DECISION_FILE = OUTPUTS_DIR / "selection_decision.json"
+    TRIAL_LEDGER = OUTPUTS_DIR / "trial_ledger.csv"
+
+
 def _load_trades(config_id: str) -> Optional[pd.DataFrame]:
     """Load trade CSV for a candidate config. Returns None if file missing."""
     for filename in (
@@ -104,7 +134,9 @@ def _load_trades(config_id: str) -> Optional[pd.DataFrame]:
     ):
         path = OUTPUTS_DIR / filename
         if path.exists():
-            return pd.read_csv(path)
+            df = pd.read_csv(path)
+            require_r_columns(df)
+            return df
     return None
 
 
@@ -438,7 +470,7 @@ def gate5_strategy_gates(stats: Dict[str, Any]) -> Tuple[bool, str]:
 # Main selection logic
 # ---------------------------------------------------------------------------
 
-def run_selection(dry_run: bool = False) -> Dict[str, Any]:
+def run_selection(dry_run: bool = False, no_ledger: bool = False) -> Dict[str, Any]:
     """Run all pre-registered gates and determine the selected candidate."""
 
     print("=" * 70)
@@ -664,6 +696,10 @@ def run_selection(dry_run: bool = False) -> Dict[str, Any]:
         json.dump(decision, f, indent=2, default=str)
     print(f"Decision written to: {DECISION_FILE}")
 
+    if no_ledger:
+        print("[NO-LEDGER] Trial ledger NOT updated (alternate/recomputed output folder).")
+        return decision
+
     # Append to trial ledger
     ledger_exists = TRIAL_LEDGER.exists()
     with open(TRIAL_LEDGER, "a", newline="", encoding="utf-8") as f:
@@ -695,8 +731,14 @@ def main() -> None:
         action="store_true",
         help="Compute selection without writing decision file or ledger.",
     )
+    parser.add_argument("--outputs-dir", type=str, default=None,
+                        help="Read inputs from / write decision to this folder instead of backtest/outputs.")
+    parser.add_argument("--no-ledger", action="store_true",
+                        help="Do not append to the trial ledger (use for recomputed/diagnostic folders).")
     args = parser.parse_args()
-    run_selection(dry_run=args.dry_run)
+    if args.outputs_dir:
+        configure_outputs(Path(args.outputs_dir))
+    run_selection(dry_run=args.dry_run, no_ledger=args.no_ledger)
 
 
 if __name__ == "__main__":

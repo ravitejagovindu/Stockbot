@@ -54,6 +54,11 @@ class BootstrapResult:
     confidence_interval_99_upper: float
 
 
+def _require_col(df: pd.DataFrame, col: str, what: str) -> None:
+    if col not in df.columns:
+        raise ValueError(f"{what} lacks required R column '{col}' (explicit column name; no silent fallback).")
+
+
 def assign_calendar_week(d: Union[date, str, pd.Timestamp]) -> str:
     """Return ISO calendar week string YYYY-Www for a given date."""
     if isinstance(d, str):
@@ -69,6 +74,7 @@ def build_weekly_paired_series(
     random_trades_df: pd.DataFrame,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
+    r_col: str = "net_r",
 ) -> pd.Series:
     """Aggregate trade-level net R returns into calendar-week paired net R advantages.
 
@@ -80,6 +86,8 @@ def build_weekly_paired_series(
     Test statistic clarification (pre-registered): D_w is the WEEKLY SUM of net-R
     advantage of the strategy over its matched random baseline — NOT per-trade expectancy.
     """
+    _require_col(actual_trades_df, r_col, "actual trades")
+    _require_col(random_trades_df, r_col, "random baseline trades")
     act = actual_trades_df.copy()
     act["entry_date"] = pd.to_datetime(act["entry_date"]).dt.date
     if start_date:
@@ -95,7 +103,7 @@ def build_weekly_paired_series(
         rnd = rnd[rnd["entry_date"] <= end_date]
 
     # Map matched trade IDs to their average random net_r
-    rnd_trade_means = rnd.groupby(["matched_trade_id", "entry_date"])["net_r"].mean().reset_index()
+    rnd_trade_means = rnd.groupby(["matched_trade_id", "entry_date"])[r_col].mean().reset_index()
 
     act["week"] = act["entry_date"].apply(assign_calendar_week)
     rnd_trade_means["week"] = rnd_trade_means["entry_date"].apply(assign_calendar_week)
@@ -106,8 +114,8 @@ def build_weekly_paired_series(
     max_date = all_dates.max()
     full_weeks = sorted(set(pd.date_range(min_date, max_date, freq="W-MON").map(assign_calendar_week)))
 
-    act_wk = act.groupby("week")["net_r"].sum().reindex(full_weeks, fill_value=0.0)
-    rnd_wk = rnd_trade_means.groupby("week")["net_r"].sum().reindex(full_weeks, fill_value=0.0)
+    act_wk = act.groupby("week")[r_col].sum().reindex(full_weeks, fill_value=0.0)
+    rnd_wk = rnd_trade_means.groupby("week")[r_col].sum().reindex(full_weeks, fill_value=0.0)
 
     return act_wk - rnd_wk
 
@@ -116,6 +124,7 @@ def build_weekly_actual_series(
     actual_trades_df: pd.DataFrame,
     start_date: Optional[date] = None,
     end_date: Optional[date] = None,
+    r_col: str = "net_r",
 ) -> pd.Series:
     """Aggregate actual trade-level net-R into calendar-week sums.
 
@@ -131,6 +140,7 @@ def build_weekly_actual_series(
     Gate 3's Max-T test).  Gate 2 tests whether the strategy is profitable in
     absolute terms; Gate 3 tests whether it beats a matched random baseline.
     """
+    _require_col(actual_trades_df, r_col, "actual trades")
     act = actual_trades_df.copy()
     act["entry_date"] = pd.to_datetime(act["entry_date"]).dt.date
     if start_date:
@@ -148,7 +158,7 @@ def build_weekly_actual_series(
     max_date = all_dates.max()
     full_weeks = sorted(set(pd.date_range(min_date, max_date, freq="W-MON").map(assign_calendar_week)))
 
-    return act.groupby("week")["net_r"].sum().reindex(full_weeks, fill_value=0.0)
+    return act.groupby("week")[r_col].sum().reindex(full_weeks, fill_value=0.0)
 
 
 def compute_block_bootstrap_ci(

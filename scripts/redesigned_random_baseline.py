@@ -44,6 +44,7 @@ from engine_core.lifecycle_rules import (
 )
 from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import is_bull
+from engine_core.trade_metrics import add_r_columns, compute_trade_r
 from engine_core.universe_screener import UniverseScreener
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -81,12 +82,12 @@ def load_actual_trades(session) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFram
     df_w1["window"] = "W1 (2020-21)"
     df_w2["window"] = "W2 (2022-26)"
     df_all = pd.concat([df_w1, df_w2], ignore_index=True)
+    # R columns come from the single definition in engine_core.trade_metrics (F1).
+    df_w1, df_w2, df_all = (add_r_columns(d) for d in (df_w1, df_w2, df_all))
     for df in [df_w1, df_w2, df_all]:
         df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date
         df["exit_date"] = pd.to_datetime(df["exit_date"]).dt.date
         df["one_r"] = df["entry_price"] - df["stop"]
-        df["gross_r"] = df["pnl_gross"] / (df["shares"] * df["one_r"])
-        df["net_r"] = df["pnl_net"] / (df["shares"] * df["one_r"])
         df["unique_trade_id"] = df["window"].astype(str) + "_" + df["position_id"].astype(str)
 
     # Compute actual trade forward returns from fill price on sessions AFTER entry (trade_date > ed)
@@ -389,8 +390,9 @@ def run_apples_to_apples_random_baseline(
 
                 buy_cost = costs.buy_cost(fill_price * shares)
                 net_pnl = trade_gross - (buy_cost + trade_sell_costs)
-                gross_r = trade_gross / (shares * one_r_fill)
-                net_r = net_pnl / (shares * one_r_fill)
+                r_metrics = compute_trade_r(entry_price=fill_price, stop=live_stop, shares_initial=shares,
+                                            pnl_gross=trade_gross, pnl_net=net_pnl)
+                gross_r, net_r = r_metrics["gross_r"], r_metrics["net_r"]
 
                 successful_draws += 1
                 random_results.append({

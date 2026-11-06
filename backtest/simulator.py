@@ -25,6 +25,7 @@ from engine_core.lifecycle_rules import (
 from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import bull_correction_active, is_bull, nifty_sma
 from engine_core.risk_sizing import RiskAndSizingEngine
+from engine_core.trade_metrics import compute_trade_r
 from engine_core.universe_screener import UniverseScreener
 
 
@@ -98,6 +99,45 @@ class Simulator:
             )
         return out
 
+    def _trade_row(self, sym: str, p: dict, exit_date: date, exit_reason: str, exit_state: str) -> dict:
+        """One closed-position output row. R metrics come from engine_core.trade_metrics.compute_trade_r
+        (R base = initial risk in INR recorded at entry; see that module for partial-exit handling)."""
+        st = p["st"]
+        net = p["gross"] - p["costs"]
+        tax = self.costs.tax_on_gain(net)
+        one_r = st.entry_price - st.initial_stop
+        tot_proceeds = p["gross"] + p["orig"] * st.entry_price
+        avg_exit_price = tot_proceeds / p["orig"] if p["orig"] > 0 else st.entry_price
+        lowest = p.get("lowest_low", st.entry_price)
+        r = compute_trade_r(entry_price=st.entry_price, stop=st.initial_stop, shares_initial=p["orig"],
+                            pnl_gross=p["gross"], pnl_net=net, tax_est=tax, risk_inr=p.get("risk_inr"))
+        return {
+            "position_id": p["id"],
+            "symbol": sym,
+            "entry_date": p["entry_date"],
+            "exit_date": exit_date,
+            "entry_price": st.entry_price,
+            "stop": st.initial_stop,
+            "shares": p["orig"],
+            "exit_price": avg_exit_price,
+            "exit_reason": exit_reason,
+            "exit_state": exit_state,
+            "highest_high": st.highest_high,
+            "lowest_low": lowest,
+            "mfe_r": (st.highest_high - st.entry_price) / one_r if one_r > 0 else 0.0,
+            "mae_r": (st.entry_price - lowest) / one_r if one_r > 0 else 0.0,
+            "risk_inr": r["risk_inr"],
+            "gross_r": r["gross_r"],
+            "net_r": r["net_r"],
+            "net_r_after_tax": r["net_r_after_tax"],
+            "realized_r": r["gross_r"],  # DEPRECATED alias of gross_r (kept for old scripts)
+            "pnl_gross": p["gross"],
+            "costs": p["costs"],
+            "pnl_net": net,
+            "tax_est": tax,
+            "days_held": st.days_held,
+        }
+
     # ---- main loop ------------------------------------------------------------
     def run(self, start: date, end: date, initial_equity: float, exclusions=None) -> SimResult:
         cfg, ex = self.cfg, self.cfg["execution"]
@@ -157,6 +197,7 @@ class Simulator:
                     "entry_date": d,
                     "orig": plan.shares,
                     "entry_costs": buy_cost,
+                    "risk_inr": plan.shares * (plan.fill_price - t.live_stop_loss),
                     "gross": 0.0,
                     "costs": buy_cost,
                     "last_close": plan.fill_price,
@@ -194,35 +235,8 @@ class Simulator:
                     p["gross"] += (e.price - p["st"].entry_price) * e.shares
                     p["costs"] += sell
                 if res.closed:
-                    net = p["gross"] - p["costs"]
-                    one_r = p["st"].entry_price - p["st"].initial_stop
                     final_exit_reason = res.exits[-1].reason if res.exits else "UNKNOWN"
-                    tot_proceeds = p["gross"] + p["orig"] * p["st"].entry_price
-                    avg_exit_price = tot_proceeds / p["orig"] if p["orig"] > 0 else p["st"].entry_price
-                    trades.append(
-                        {
-                            "position_id": p["id"],
-                            "symbol": sym,
-                            "entry_date": p["entry_date"],
-                            "exit_date": d,
-                            "entry_price": p["st"].entry_price,
-                            "stop": p["st"].initial_stop,
-                            "shares": p["orig"],
-                            "exit_price": avg_exit_price,
-                            "exit_reason": final_exit_reason,
-                            "exit_state": prev_state,
-                            "highest_high": p["st"].highest_high,
-                            "lowest_low": p.get("lowest_low", p["st"].entry_price),
-                            "mfe_r": (p["st"].highest_high - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
-                            "mae_r": (p["st"].entry_price - p.get("lowest_low", p["st"].entry_price)) / one_r if one_r > 0 else 0.0,
-                            "realized_r": (avg_exit_price - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
-                            "pnl_gross": p["gross"],
-                            "costs": p["costs"],
-                            "pnl_net": net,
-                            "tax_est": self.costs.tax_on_gain(net),
-                            "days_held": p["st"].days_held,
-                        }
-                    )
+                    trades.append(self._trade_row(sym, p, d, final_exit_reason, prev_state))
                     del open_pos[sym]
 
             # 3) mark to market
@@ -269,34 +283,7 @@ class Simulator:
                     cash += exit_price * rem_shares - sell
                     p["gross"] += (exit_price - p["st"].entry_price) * rem_shares
                     p["costs"] += sell
-                    net = p["gross"] - p["costs"]
-                    one_r = p["st"].entry_price - p["st"].initial_stop
-                    tot_proceeds = p["gross"] + p["orig"] * p["st"].entry_price
-                    avg_exit_price = tot_proceeds / p["orig"] if p["orig"] > 0 else p["st"].entry_price
-                    trades.append(
-                        {
-                            "position_id": p["id"],
-                            "symbol": sym,
-                            "entry_date": p["entry_date"],
-                            "exit_date": last_d,
-                            "entry_price": p["st"].entry_price,
-                            "stop": p["st"].initial_stop,
-                            "shares": p["orig"],
-                            "exit_price": avg_exit_price,
-                            "exit_reason": "END_OF_WINDOW",
-                            "exit_state": p["st"].state,
-                            "highest_high": p["st"].highest_high,
-                            "lowest_low": p.get("lowest_low", p["st"].entry_price),
-                            "mfe_r": (p["st"].highest_high - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
-                            "mae_r": (p["st"].entry_price - p.get("lowest_low", p["st"].entry_price)) / one_r if one_r > 0 else 0.0,
-                            "realized_r": (avg_exit_price - p["st"].entry_price) / one_r if one_r > 0 else 0.0,
-                            "pnl_gross": p["gross"],
-                            "costs": p["costs"],
-                            "pnl_net": net,
-                            "tax_est": self.costs.tax_on_gain(net),
-                            "days_held": p["st"].days_held,
-                        }
-                    )
+                    trades.append(self._trade_row(sym, p, last_d, "END_OF_WINDOW", p["st"].state))
             open_pos.clear()
 
         cols = [
@@ -314,6 +301,10 @@ class Simulator:
             "lowest_low",
             "mfe_r",
             "mae_r",
+            "risk_inr",
+            "gross_r",
+            "net_r",
+            "net_r_after_tax",
             "realized_r",
             "pnl_gross",
             "costs",
