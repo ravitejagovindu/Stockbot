@@ -1,0 +1,2 @@
+timestamp_utc,commit_sha,outputs_dir,mode,selected_config,gate_reached_json
+2026-11-06T10:34:36.933179+00:00,ab1abcaa3922,backtest\outputs_recomputed_net,no-ledger diagnostic,NONE,"{""CFG-01"": 2, ""CFG-02"": 2, ""CFG-03"": 2, ""CFG-04"": 2, ""CFG-05"": 2, ""CFG-06"": 2}"

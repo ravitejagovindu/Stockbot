@@ -277,3 +277,27 @@ configs:
     execution:
       max_entry_gap_up_pct: 1.5
     description: "High conviction pullback entry: top 30% RS stocks in 50>200 uptrend pulling back within [0.98, 1.03] of 20-day SMA, gap <= 1.5%."
+
+# ---------------------------------------------------------------------------------------------------------------
+# AMENDMENTS (append-only, dated). The text above is NOT edited; amendments state how the executable specification
+# differs from the original wording. Each amendment is made BEFORE any new selection run and is covered by the hash
+# lock registered in backtest/outputs/trial_ledger.csv (REGISTRATION row).
+# ---------------------------------------------------------------------------------------------------------------
+amendments:
+  - id: "AMD-001"
+    date: "2026-11-06"
+    made_before_any_new_selection_run: true
+    last_selection_run_before_amendment: "2026-11-05T03:25:25+00:00 (commit c3322fc2a850): NO CANDIDATE SELECTED"
+    subject: "Random-baseline draw rule and baseline implementation"
+    original_text: "definitions.random_baseline: 'draws: 1000 ... Trade-by-trade matched to all 198 actual entry dates.'"
+    actual_rule: >
+      For each candidate configuration the baseline draws ~max(5, round(max(500, 5 x n_trades) / n_trades)) random
+      entries per actual trade (i.e. at least 5 per trade, about 5 x n_trades draws in total, minimum 500), matched on
+      the actual trade's entry date. The 1000-draw / 198-trade wording applied to CFG-00 only.
+    implementation_changes: >
+      (F6) The baseline now uses the Simulator's own adjusted per-session price path, the same RiskAndSizingEngine
+      setup and R:R gating, the same fill/exit lifecycle and corporate-action rebasing, and the single R definition in
+      engine_core.trade_metrics. Window dates come from strategy_config.yaml (TUNE windows only); no hard-coded dates.
+    data_note: >
+      All Step 3 numbers produced before 2026-11-06 were computed on Yahoo-adjusted prices and with a gross-R column
+      mislabelled net_r; they must not be quoted as evidence for or against any strategy.

@@ -1,0 +1,39 @@
+"""F2 — NSE corporate-action subject parser: ratios follow the engine_core.adjustments convention."""
+from __future__ import annotations
+
+import pytest
+
+from data.ingestion.nse_corporate_actions_history import parse_subject
+from engine_core.adjustments import action_factor
+
+
+def _factors(subject):
+    return [(a["action_type"], action_factor({"action_type": a["action_type"], "ratio_numerator": a["num"],
+                                              "ratio_denominator": a["den"]})) for a in parse_subject(subject)
+            if a["action_type"] in ("SPLIT", "BONUS")]
+
+
+@pytest.mark.parametrize("subject,expected", [
+    (" Bonus 1:1", [("BONUS", 0.5)]),
+    ("Bonus 4:1", [("BONUS", 0.2)]),
+    ("Face Value Split (Sub-Division) - From Rs 10/- Per Share To Re 1/- Per Share", [("SPLIT", 0.1)]),
+    ("Face Value Split (Sub-Division) - From Rs 2/- Per Share To Re 1/- Per Share", [("SPLIT", 0.5)]),
+    ("Face Value Split From Rs.10/- To Rs.2/-", [("SPLIT", 0.2)]),
+    (" Bonus 1:1/Face Value Split (Sub-Division) - From Rs 10/- Per Share To Rs 2/- Per Share",
+     [("SPLIT", 0.2), ("BONUS", 0.5)]),
+    ("Annual General Meeting/ Dividend - Rs 29.50/- Per Share And Bonus 1:1", [("BONUS", 0.5)]),
+    ("Bonus 2:5", [("BONUS", 5 / 7)]),
+])
+def test_split_and_bonus_factors(subject, expected):
+    got = _factors(subject)
+    assert sorted(g[0] for g in got) == sorted(e[0] for e in expected)
+    for (t, f), (t2, f2) in zip(sorted(got), sorted(expected)):
+        assert f == pytest.approx(f2)
+
+
+def test_other_types():
+    assert [a["action_type"] for a in parse_subject("Demerger")] == ["DEMERGER"]
+    assert parse_subject("Rights 1:15 @ Premium Rs 1247")[0]["action_type"] == "RIGHTS"
+    assert parse_subject("Interim Dividend - Rs 7 Per Share")[0]["action_type"] == "DIVIDEND"
+    assert parse_subject("Annual General Meeting") == []
+    assert parse_subject("Bonus issue details awaited")[0]["action_type"] == "OTHER"

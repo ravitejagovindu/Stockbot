@@ -173,6 +173,15 @@ def build_screened_trend_pools(cfg: dict, signal_dates: List[date], session) -> 
     return pools
 
 
+def tune_windows(cfg: dict) -> list[tuple[str, date, date]]:
+    """Backtest windows come from strategy_config.yaml (TUNE role only — the TEST window is never touched here)."""
+    out = []
+    for r in cfg.get("backtest", {}).get("regimes", []):
+        if r.get("role", "TUNE") == "TUNE":
+            out.append((r["name"], date.fromisoformat(str(r["start"])), date.fromisoformat(str(r["end"]))))
+    return out
+
+
 def run_apples_to_apples_random_baseline(
     actual_trades: pd.DataFrame,
     cfg: dict,
@@ -181,6 +190,12 @@ def run_apples_to_apples_random_baseline(
     force_rerun: bool = False,
     output_filename: str = "apples_to_apples_random_trades.csv",
 ) -> pd.DataFrame:
+    """Matched random baseline (F6): same signal-date universe, same sizer, same adjusted price path, same fill/exit
+    rules and the same R function as the Simulator (see backtest/path_sim.py). Dates come from the config windows."""
+    from backtest.path_sim import simulate_position_path
+    from backtest.simulator import Simulator
+    from engine_core.risk_sizing import RiskAndSizingEngine
+
     csv_path = OUTPUT_DIR / output_filename
     if csv_path.exists() and not force_rerun:
         logger.info(f"Loading existing random baseline trades from {csv_path}...")
@@ -193,25 +208,20 @@ def run_apples_to_apples_random_baseline(
 
     rules = LifecycleRules.from_config(cfg)
     costs = CostModel.from_config(cfg)
-    ex = cfg["execution"]
-    slip_entry = float(ex["entry_slippage_pct"])
-    slip_exit = float(ex["exit_slippage_pct"])
-    gap_cap = float(ex["max_entry_gap_up_pct"])
-    min_rr = float(ex["min_rr_at_fill"])
-    atr_period = int(cfg["risk"]["atr_period"])
-    atr_mult = float(cfg["risk"]["atr_stop_multiplier"])
-    donchian_p = int(cfg["risk"]["donchian_period"])
-    res_period = int(cfg["data"]["resistance_lookback_days"])
+    sizer = RiskAndSizingEngine(cfg)
+    windows = tune_windows(cfg)
+    if not windows:
+        raise RuntimeError("No TUNE windows in strategy_config.yaml backtest.regimes")
+    first_start = min(w[1] for w in windows)
+    last_end = max(w[2] for w in windows)
 
     with get_session() as s:
         # 1. Map each actual entry date to its prior trading session (signal date)
         unique_entry_dates = sorted(actual_trades["entry_date"].unique())
-        
-        # Get all market trading days around this period
         all_trading_days = s.execute(
             select(MarketDataLake.trade_date)
             .distinct()
-            .where(MarketDataLake.trade_date >= date(2019, 10, 1), MarketDataLake.trade_date <= date(2026, 10, 16))
+            .where(MarketDataLake.trade_date >= first_start - timedelta(days=120), MarketDataLake.trade_date <= last_end)
             .order_by(MarketDataLake.trade_date)
         ).scalars().all()
         t_days = [_to_date(d) for d in all_trading_days]
@@ -226,19 +236,27 @@ def run_apples_to_apples_random_baseline(
         unique_signal_dates = sorted(set(entry_to_signal_date.values()))
         pools = build_screened_trend_pools(cfg, unique_signal_dates, s)
 
-        # Pre-compute true macro regime state (kill switch and bull) for all trading sessions
-        logger.info("Pre-computing macro regime state for all trading sessions...")
-        regime = RegimeFilter(cfg, s, persist=False)
+        # Regime per window: in-memory, seeded exactly like Simulator.run (no database writes)
+        logger.info("Pre-computing macro regime state for every window session (in memory)...")
+        helper = Simulator.__new__(Simulator)
+        helper.cfg, helper.s = cfg, s
         daily_regime = {}
-        for d in t_days:
-            rs = regime.evaluate(d)
-            ks = bool(rs.kill_switch_active)
-            bull = is_bull(ks, rs.nifty_close, rs.nifty_sma200)
-            daily_regime[d] = (ks, bull)
+        for wname, w_start, w_end in windows:
+            seed_state = helper._derive_regime_seed(w_start, None)
+            regime = RegimeFilter(cfg, s, persist=False,
+                                  seed_state={k: seed_state[k] for k in ("kill_switch_active", "reentry_consecutive_count")})
+            for d in [x for x in t_days if w_start <= x <= w_end]:
+                rs = regime.evaluate(d)
+                ks = bool(rs.kill_switch_active)
+                daily_regime[d] = (ks, is_bull(ks, rs.nifty_close, rs.nifty_sma200))
         logger.info(f"Pre-computed macro regime for {len(daily_regime)} sessions.")
 
-        # 2. Simulate random entries matched to entry dates
-        # Draw roughly (n_draws_target / len(actual_trades)) draws per actual trade
+        def window_end_for(ed: date) -> date:
+            for _, w_start, w_end in windows:
+                if w_start <= ed <= w_end:
+                    return w_end
+            return last_end
+
         draws_per_trade = max(5, int(round(n_draws_target / len(actual_trades))))
         logger.info(f"Targeting ~{draws_per_trade} draws per actual trade across {len(actual_trades)} trades...")
 
@@ -248,152 +266,25 @@ def run_apples_to_apples_random_baseline(
             sd = entry_to_signal_date.get(ed)
             if not sd or not pools.get(sd):
                 continue
-
             available_syms = pools[sd]
-            # Try random picks for this trade until we get successful fills or exhaust attempts
-            successful_draws = 0
-            attempts = 0
+            successful_draws, attempts = 0, 0
             while successful_draws < draws_per_trade and attempts < max(150, len(available_syms) * 2):
                 attempts += 1
                 sym = random.choice(available_syms)
-
-                # Fetch candidate data on signal date sd
-                c = build_candidate_dicts(s, cfg, [sym], sd)
-                if not c:
+                cand = build_candidate_dicts(s, cfg, [sym], sd)
+                if not cand or sd not in cand[0]["adjusted_ohlcv"].index:
                     continue
-                adj = c[0]["adjusted_ohlcv"]
-                if sd not in adj.index:
+                # identical sizing / R:R gating as the real pipeline (no portfolio, 1M equity)
+                setup = sizer.compute_setup(
+                    symbol=sym, eval_date=sd, adjusted_ohlcv=cand[0]["adjusted_ohlcv"],
+                    raw_ohlcv=cand[0]["raw_ohlcv"], account_equity=1_000_000.0, current_positions=[],
+                    sector=cand[0]["sector"])
+                if setup.blocked:
                     continue
-
-                close_sd = float(adj.loc[sd]["close_adj"])
-                atr_s = atr(adj["high_adj"], adj["low_adj"], adj["close_adj"], period=atr_period)
-                atr_val = float(atr_s.loc[sd]) if sd in atr_s.index and pd.notna(atr_s.loc[sd]) else 0.0
-                if atr_val <= 0:
+                res = simulate_position_path(s, cfg, sym, setup, ed, window_end_for(ed), daily_regime,
+                                             equity=1_000_000.0, cash=1_000_000.0, rules=rules, costs=costs)
+                if not res["ok"] or res.get("excluded_ca"):
                     continue
-
-                stop_a = close_sd - atr_mult * atr_val
-                stop_b = float(donchian_low(adj["low_adj"], period=donchian_p).loc[sd])
-                live_stop = min(stop_a, stop_b)
-                one_r = close_sd - live_stop
-                if one_r <= 0:
-                    continue
-
-                target = float(donchian_high(adj["high_adj"], period=res_period).loc[sd])
-                if (target - close_sd) / one_r < 1.5:
-                    continue
-
-                # Check T+1 execution bar on entry date ed
-                ed_bar = s.execute(
-                    select(MarketDataLake.open_raw, MarketDataLake.high_raw, MarketDataLake.low_raw, MarketDataLake.close_raw)
-                    .where(MarketDataLake.symbol == sym, MarketDataLake.trade_date == ed)
-                ).first()
-                if not ed_bar:
-                    continue
-
-                open_ed = float(ed_bar[0])
-
-                # Apply exact plan_entry_fill rules
-                plan = plan_entry_fill(
-                    ticket_entry=close_sd,
-                    stop=live_stop,
-                    target=target,
-                    next_open=open_ed,
-                    equity=1_000_000.0,
-                    risk_pct=1.0,
-                    slippage_pct=slip_entry,
-                    max_gap_up_pct=gap_cap,
-                    min_rr=min_rr,
-                    cash=1_000_000.0,
-                )
-                if not plan.ok:
-                    continue
-
-                fill_price = plan.fill_price
-                shares = plan.shares
-                one_r_fill = fill_price - live_stop
-                if one_r_fill <= 0 or shares <= 0:
-                    continue
-
-                # Forward simulation to natural lifecycle termination (no artificial 45-day cap)
-                window_end = date(2021, 12, 31) if ed < date(2022, 1, 1) else date(2026, 10, 16)
-                all_sym_bars = s.execute(
-                    select(MarketDataLake.trade_date, MarketDataLake.open_raw, MarketDataLake.high_raw,
-                           MarketDataLake.low_raw, MarketDataLake.close_raw)
-                    .where(MarketDataLake.symbol == sym, MarketDataLake.trade_date >= sd - timedelta(days=60),
-                           MarketDataLake.trade_date <= window_end)
-                    .order_by(MarketDataLake.trade_date)
-                ).all()
-
-                if not all_sym_bars:
-                    continue
-
-                df_sym = pd.DataFrame(
-                    [{"trade_date": _to_date(b.trade_date), "open": float(b.open_raw), "high": float(b.high_raw),
-                      "low": float(b.low_raw), "close": float(b.close_raw)} for b in all_sym_bars]
-                ).set_index("trade_date")
-
-                if len(df_sym) < atr_period:
-                    continue
-
-                s_atr = atr(df_sym["high"], df_sym["low"], df_sym["close"], period=atr_period)
-                fwd_df = df_sym.loc[df_sym.index >= ed]
-                if fwd_df.empty:
-                    continue
-
-                # Forward returns from fill price at T+1, T+5, T+10, T+20 sessions after entry (trade_date > ed)
-                fwd_closes = list(fwd_df["close"].iloc[1:])
-                fwd_1 = (fwd_closes[0] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 1 else np.nan
-                fwd_5 = (fwd_closes[4] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 5 else np.nan
-                fwd_10 = (fwd_closes[9] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 10 else np.nan
-                fwd_20 = (fwd_closes[19] / fill_price - 1.0) * 100.0 if len(fwd_closes) >= 20 else np.nan
-
-                pos = PosState(
-                    entry_price=fill_price,
-                    initial_stop=live_stop,
-                    live_stop=live_stop,
-                    target=target,
-                    highest_high=fill_price,
-                    shares_remaining=shares,
-                )
-
-                closed = False
-                exit_reason = "END_OF_WINDOW"
-                days_held = 0
-                trade_gross = 0.0
-                trade_sell_costs = 0.0
-
-                for d_bar, row_bar in fwd_df.iterrows():
-                    bar = Bar(row_bar["open"], row_bar["high"], row_bar["low"], row_bar["close"])
-                    bar_atr = float(s_atr.loc[d_bar]) if d_bar in s_atr.index and pd.notna(s_atr.loc[d_bar]) else atr_val
-                    ks, bull = daily_regime.get(d_bar, (False, True))
-                    ref = parabolic_ref_close(list(df_sym.loc[:d_bar, "close"]), rules.parabolic_lookback)
-                    b_ctx = BarCtx(bar_atr, ks, bull, ref)
-                    res = advance_one_bar(pos, bar, b_ctx, rules, slip_exit)
-                    pos = res.pos
-                    days_held = pos.days_held
-
-                    for e in res.exits:
-                        trade_gross += (e.price - fill_price) * e.shares
-                        trade_sell_costs += costs.sell_cost(e.price * e.shares)
-
-                    if res.closed:
-                        closed = True
-                        exit_reason = res.exits[-1].reason if res.exits else "STOP_HIT"
-                        break
-
-                if not closed and pos.shares_remaining > 0:
-                    exit_price = float(fwd_df.iloc[-1]["close"]) * (1.0 - slip_exit / 100.0)
-                    days_held = len(fwd_df)
-                    rem_shares = pos.shares_remaining
-                    trade_gross += (exit_price - fill_price) * rem_shares
-                    trade_sell_costs += costs.sell_cost(exit_price * rem_shares)
-
-                buy_cost = costs.buy_cost(fill_price * shares)
-                net_pnl = trade_gross - (buy_cost + trade_sell_costs)
-                r_metrics = compute_trade_r(entry_price=fill_price, stop=live_stop, shares_initial=shares,
-                                            pnl_gross=trade_gross, pnl_net=net_pnl)
-                gross_r, net_r = r_metrics["gross_r"], r_metrics["net_r"]
-
                 successful_draws += 1
                 random_results.append({
                     "matched_trade_id": actual_trade["unique_trade_id"],
@@ -401,15 +292,19 @@ def run_apples_to_apples_random_baseline(
                     "entry_date": ed,
                     "signal_date": sd,
                     "window": actual_trade["window"],
-                    "fill_price": fill_price,
-                    "gross_r": gross_r,
-                    "net_r": net_r,
-                    "ret_1": fwd_1,
-                    "ret_5": fwd_5,
-                    "ret_10": fwd_10,
-                    "ret_20": fwd_20,
-                    "exit_reason": exit_reason,
-                    "days_held": days_held,
+                    "fill_price": res["fill_price"],
+                    "risk_inr": res["risk_inr"],
+                    "gross_r": res["gross_r"],
+                    "net_r": res["net_r"],
+                    "net_r_after_tax": res["net_r_after_tax"],
+                    "pnl_gross": res["pnl_gross"],
+                    "costs": res["costs"],
+                    "pnl_net": res["pnl_net"],
+                    "exit_reason": res["exit_reason"],
+                    "days_held": res["days_held"],
+                    # Diagnostic forward returns were computed from RAW closes (wrong across splits) and are not used
+                    # by any gate; kept as NaN so the paired-statistics printout still runs (F6).
+                    "ret_1": np.nan, "ret_5": np.nan, "ret_10": np.nan, "ret_20": np.nan,
                 })
 
     df_rand = pd.DataFrame(random_results)

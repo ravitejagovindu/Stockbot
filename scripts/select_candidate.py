@@ -73,6 +73,66 @@ GATE_MIN_PF = 1.30                     # Gate 5: profit factor
 GATE_MIN_EXPECTANCY_R = 0.15          # Gate 5: net expectancy in R
 
 BOOTSTRAP_REPLICATIONS = 10000
+
+# F6: the registry ledger (hash-chained, committed) is always backtest/outputs/trial_ledger.csv, even when a
+# diagnostic run reads/writes another outputs folder. Dry runs / alternate folders are logged in the exploratory log.
+REGISTRY_LEDGER = PROJECT_ROOT / "backtest" / "outputs" / "trial_ledger.csv"
+EXPLORATORY_LOG = PROJECT_ROOT / "backtest" / "outputs" / "trial_ledger_exploratory.csv"
+
+
+def gate_parameters() -> Dict[str, Any]:
+    """The pre-registered selection-gate parameters; their hash is stored in the REGISTRATION ledger row."""
+    return {
+        "min_pooled_trades": GATE_MIN_POOLED_TRADES, "min_trades_per_window": GATE_MIN_TRADES_PER_WINDOW,
+        "ci_lower_bound_gt": GATE_CI_LOWER_BOUND_GT, "fwer_alpha": GATE_FWER_ALPHA,
+        "fwer_block_sizes": GATE_FWER_BLOCK_SIZES, "plateau_ratio": GATE_PLATEAU_RATIO,
+        "max_dd_pct": GATE_MAX_DD_PCT, "min_pf": GATE_MIN_PF, "min_expectancy_r": GATE_MIN_EXPECTANCY_R,
+        "bootstrap_replications": BOOTSTRAP_REPLICATIONS, "bootstrap_block_size": BOOTSTRAP_BLOCK_SIZE,
+        "adjacency_graph": ADJACENCY_GRAPH, "r_column": "net_r",
+    }
+
+
+def _candidate_count() -> int:
+    return len([c for c in _load_yaml(PRE_REG_YAML).get("configs", []) if c.get("role") == "CANDIDATE"])
+
+
+def register(reason: str | None = None) -> None:
+    """Write the REGISTRATION row (YAML hash, gate hash, config budget). Re-registration needs an explicit reason."""
+    from engine_core import prereg_lock as pl
+
+    if REGISTRY_LEDGER.exists():
+        pl.upgrade_ledger(REGISTRY_LEDGER)
+        pl.verify_ledger(REGISTRY_LEDGER)
+        existing = pl.latest_registration(REGISTRY_LEDGER)
+        if existing and not reason:
+            raise pl.PreRegistrationError(
+                "a REGISTRATION row already exists; re-registering needs --reregister-reason (it is recorded).")
+    else:
+        REGISTRY_LEDGER.parent.mkdir(parents=True, exist_ok=True)
+        cids = [c["id"] for c in _load_yaml(PRE_REG_YAML).get("configs", []) if c.get("role") == "CANDIDATE"]
+        header = (["timestamp_utc", "commit_sha", "selected_config", "selection_reason"]
+                  + [f"{cid}_gate_reached" for cid in cids] + pl.EXTRA_COLUMNS)
+        with open(REGISTRY_LEDGER, "w", newline="", encoding="utf-8") as f:
+            csv.writer(f).writerow(header)
+    pl.append_row(REGISTRY_LEDGER, {
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(), "commit_sha": _git_head_sha(),
+        "selected_config": "N/A", "selection_reason": reason or "initial registration",
+        "row_type": "REGISTRATION", "yaml_sha256": pl.sha256_text_file(PRE_REG_YAML),
+        "gates_sha256": pl.gates_hash(gate_parameters()), "budget": _candidate_count(),
+    })
+    print(f"Registered: yaml={pl.sha256_text_file(PRE_REG_YAML)[:12]} gates={pl.gates_hash(gate_parameters())[:12]} "
+          f"budget={_candidate_count()}")
+
+
+def _log_exploratory(note: str, selected, gate_reached: dict) -> None:
+    """Dry-run / diagnostic-folder runs are still counted (F6)."""
+    new = not EXPLORATORY_LOG.exists()
+    with open(EXPLORATORY_LOG, "a", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        if new:
+            w.writerow(["timestamp_utc", "commit_sha", "outputs_dir", "mode", "selected_config", "gate_reached_json"])
+        w.writerow([datetime.now(timezone.utc).isoformat(), _git_head_sha(), str(OUTPUTS_DIR), note,
+                    selected or "NONE", json.dumps(gate_reached, sort_keys=True)])
 BOOTSTRAP_BLOCK_SIZE = 4              # Primary block size (Gate 3 also checks block_size=8)
 
 
@@ -492,6 +552,10 @@ def run_selection(dry_run: bool = False, no_ledger: bool = False) -> Dict[str, A
     ]
     print(f"\nPre-registered candidates: {candidate_ids}\n")
 
+    from engine_core import prereg_lock as _pl
+    reg = _pl.enforce(PRE_REG_YAML, REGISTRY_LEDGER, gate_parameters(), len(candidate_ids))
+    print(f"Pre-registration lock verified (yaml {reg['yaml_sha256'][:12]}, budget {reg['budget']}).")
+
     # Load trade data for all candidates
     all_trades: Dict[str, Optional[pd.DataFrame]] = {}
     all_random: Dict[str, Optional[pd.DataFrame]] = {}
@@ -691,8 +755,13 @@ def run_selection(dry_run: bool = False, no_ledger: bool = False) -> Dict[str, A
         print(f"\n>>> NO CANDIDATE SELECTED — {selection_reason}")
     print()
 
+    gate_reached_map = {
+        cid: gate_results.get(cid, {}).get("eliminated_at_gate", 5 if cid == selected_config else "?")
+        for cid in candidate_ids
+    }
     if dry_run:
-        print("[DRY RUN] Decision and ledger NOT written.")
+        _log_exploratory("dry-run", selected_config, gate_reached_map)
+        print("[DRY RUN] Decision and ledger NOT written (run recorded in trial_ledger_exploratory.csv).")
         return decision
 
     # Write decision file
@@ -702,23 +771,17 @@ def run_selection(dry_run: bool = False, no_ledger: bool = False) -> Dict[str, A
     print(f"Decision written to: {DECISION_FILE}")
 
     if no_ledger:
-        print("[NO-LEDGER] Trial ledger NOT updated (alternate/recomputed output folder).")
+        _log_exploratory("no-ledger diagnostic", selected_config, gate_reached_map)
+        print("[NO-LEDGER] Trial ledger NOT updated (recorded in trial_ledger_exploratory.csv).")
         return decision
 
-    # Append to trial ledger
-    ledger_exists = TRIAL_LEDGER.exists()
-    with open(TRIAL_LEDGER, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        if not ledger_exists:
-            writer.writerow([
-                "timestamp_utc", "commit_sha", "selected_config", "selection_reason",
-            ] + [f"{cid}_gate_reached" for cid in candidate_ids])
-        gate_reached = [
-            gate_results.get(cid, {}).get("eliminated_at_gate", 5 if cid == selected_config else "?")
-            for cid in candidate_ids
-        ]
-        writer.writerow([timestamp_utc, _git_head_sha(), selected_config or "NONE", selection_reason] + gate_reached)
-    print(f"Trial ledger updated: {TRIAL_LEDGER}")
+    # Append to the hash-chained trial ledger
+    row = {"timestamp_utc": timestamp_utc, "commit_sha": _git_head_sha(), "selected_config": selected_config or "NONE",
+           "selection_reason": selection_reason, "row_type": "SELECTION", "yaml_sha256": reg["yaml_sha256"],
+           "gates_sha256": reg["gates_sha256"], "budget": reg["budget"]}
+    row.update({f"{cid}_gate_reached": gate_reached_map[cid] for cid in candidate_ids})
+    _pl.append_row(REGISTRY_LEDGER, row)
+    print(f"Trial ledger updated: {REGISTRY_LEDGER}")
 
     return decision
 
@@ -740,7 +803,14 @@ def main() -> None:
                         help="Read inputs from / write decision to this folder instead of backtest/outputs.")
     parser.add_argument("--no-ledger", action="store_true",
                         help="Do not append to the trial ledger (use for recomputed/diagnostic folders).")
+    parser.add_argument("--register", action="store_true",
+                        help="Record the pre-registration hash (YAML + gate parameters + config budget) in the ledger.")
+    parser.add_argument("--reregister-reason", type=str, default=None,
+                        help="Required to register again after one exists; the reason is stored in the ledger.")
     args = parser.parse_args()
+    if args.register:
+        register(args.reregister_reason)
+        return
     if args.outputs_dir:
         configure_outputs(Path(args.outputs_dir))
     run_selection(dry_run=args.dry_run, no_ledger=args.no_ledger)

@@ -1,2 +1,3 @@
-timestamp_utc,commit_sha,selected_config,selection_reason,CFG-01_gate_reached,CFG-02_gate_reached,CFG-03_gate_reached,CFG-04_gate_reached,CFG-05_gate_reached,CFG-06_gate_reached
-2026-11-05T03:25:25.744411+00:00,c3322fc2a850,NONE,No candidate passed all gates,2,2,2,2,2,2
+timestamp_utc,commit_sha,selected_config,selection_reason,CFG-01_gate_reached,CFG-02_gate_reached,CFG-03_gate_reached,CFG-04_gate_reached,CFG-05_gate_reached,CFG-06_gate_reached,row_type,yaml_sha256,gates_sha256,budget,prev_hash,row_hash
+2026-11-05T03:25:25.744411+00:00,c3322fc2a850,NONE,No candidate passed all gates,2,2,2,2,2,2,LEGACY,,,,GENESIS,11199f2c6cd97f86d0597c12be93f4bd3c3a0352ca11f1547692a398046226ce
+2026-11-06T10:34:21.671413+00:00,ab1abcaa3922,N/A,initial registration,,,,,,,REGISTRATION,18931c4f9640c0cc7bde31310f3ce4e44e0409c7af93de51b19acf9b30cba4f4,5c040abd41530cddfaee85f12244fde8437927d94a7be28b39376044f454b715,6,11199f2c6cd97f86d0597c12be93f4bd3c3a0352ca11f1547692a398046226ce,869d1bd13d592ce635bed70c10081d6b2037a79272f64dabe21819a9152125d1

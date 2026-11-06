@@ -8,6 +8,8 @@ from sqlalchemy import select
 
 from data.db.models import CorporateActionsLog, MarketDataLake
 from engine_core.adjustments import get_adjusted_series
+from engine_core.indicators import atr
+from engine_core.lifecycle_rules import Bar, parabolic_ref_close
 from engine_core.sector_map import sector_for
 
 
@@ -67,3 +69,24 @@ def build_candidate_dicts(session, config: dict, symbols: list[str], eval_date: 
             "corporate_actions": corp,
         })
     return out
+
+
+def bar_context(adj: pd.DataFrame, d, atr_period: int, parabolic_lookback: int):
+    """Per-session inputs for ``advance_one_bar`` from an adjusted OHLC frame (as-of ``d``).
+
+    Shared by the Simulator and the random baseline (F6) so both use the identical adjusted price path.
+    Returns ``(Bar, atr_value, close_n_ago)`` or ``None`` if ``d`` is not in the frame.
+    """
+    dt = d.date() if hasattr(d, "date") and callable(getattr(d, "date")) else d
+    if dt not in adj.index:
+        return None
+    a = atr(adj["high_adj"], adj["low_adj"], adj["close_adj"], period=atr_period)
+    r = adj.loc[dt]
+    if isinstance(r, pd.DataFrame):
+        r = r.iloc[-1]
+    atr_val = (
+        float(a.loc[dt]) if (dt in a.index and pd.notna(a.loc[dt]))
+        else (float(a.iloc[-1]) if pd.notna(a.iloc[-1]) else 0.0)
+    )
+    bar = Bar(float(r.open_adj), float(r.high_adj), float(r.low_adj), float(r.close_adj))
+    return bar, atr_val, parabolic_ref_close(list(adj["close_adj"]), parabolic_lookback)
