@@ -56,7 +56,7 @@ See the analysis section appended by the team for interpretation and the recomme
 * Option A: fix the procedure for weekly entry statistics — use blocks at least as long as the hold (13–26 weeks). Preserves the current pipeline but leaves few effective blocks (W/b ~ 10–20) and sharply lower power.
 * Option B: tighten the pre-registered threshold (e.g. calibrated alpha so the dual rule has 5% size at the assumed rho/hold). Needs a stated dependence assumption that the data cannot confirm in advance; least preferred.
 
-For the old breakout family (holds mostly < 20 sessions, rho ~0.1–0.25 measured) the dual rule's true size is roughly 5–7%, so the earlier "no candidate" verdict is not undermined; the concern is the new 1–3-month family.
+For the old breakout family, using the lag-1 autocorrelation quoted in the pre-registration text (about 0.08–0.24; NOT re-measured here), the dual rule's size would be roughly 5–7%, so the earlier "no candidate" verdict (which only needed the test to be *not* significant) is not undermined; the concern is the new 1–3-month family.
 
 Nothing in `engine_core/max_t_bootstrap.py` was changed in F9 (only the test was made deterministic). Implementation of the chosen option, and its validation run, wait for the decision.
 
