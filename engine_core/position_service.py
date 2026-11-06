@@ -45,6 +45,7 @@ def open_position(
         mode=mode,
         fill_source=fill_source,
         entry_costs=costs.buy_cost(fill_price * shares),
+        risk_inr=shares * (fill_price - ticket.live_stop_loss),
     )
     session.add(pos)
     session.flush()

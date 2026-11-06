@@ -196,6 +196,30 @@ def advance_one_bar(pos: PosState, bar: Bar, ctx: BarCtx, rules: LifecycleRules,
     return BarResult(p, False, exits, flags)
 
 
+def rescale_for_action(pos: PosState, factor: float, ex_price: float):
+    """Rebase a position's price-denominated state for a split/bonus with price ``factor`` (<1 for splits/bonuses).
+
+    Prices (entry, stops, target, highest high) are multiplied by ``factor``; shares are divided by it and floored.
+    Returns ``(new_pos, fractional_shares)``; the fractional remainder is settled in cash by the caller at
+    ``ex_price``. R multiples (days_held, last_partial_rr, partial_count) are unchanged.
+    """
+    exact = pos.shares_remaining / factor
+    n = int(math.floor(exact + 1e-9))
+    frac = exact - n
+    if frac < 1e-9:
+        frac = 0.0
+    new = replace(
+        pos,
+        entry_price=pos.entry_price * factor,
+        initial_stop=pos.initial_stop * factor,
+        live_stop=pos.live_stop * factor,
+        target=pos.target * factor,
+        highest_high=pos.highest_high * factor,
+        shares_remaining=n,
+    )
+    return new, frac
+
+
 @dataclass(frozen=True)
 class EntryPlan:
     """Decision on whether/how to fill a ticket at the next open."""

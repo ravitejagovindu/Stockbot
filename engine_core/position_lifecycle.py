@@ -69,6 +69,7 @@ from engine_core.lifecycle_rules import (
     parabolic_ref_close,
 )
 from engine_core.costs import CostModel
+from engine_core.corporate_action_events import apply_actions_to_position, due_actions
 from engine_core.mode import current_mode
 
 logger = logging.getLogger(__name__)
@@ -287,8 +288,33 @@ class PositionLifecycleManager:
             last_partial_rr=pos.last_partial_exit_rr or 0.0,
             partial_count=pos.partial_exit_count or 0,
         )
+        # F3: rebase the position for any split/bonus whose ex-date fell inside the holding period
+        applied_keys = [k for k in (pos.applied_corp_actions or "").split(";") if k]
+        review_keys = [k for k in (pos.manual_review_ca or "").split(";") if k]
+        due = due_actions(corp_actions, pos.entry_date, eval_date, already=applied_keys + review_keys)
+        ca_flags: list[str] = []
+        if due:
+            ca = apply_actions_to_position(state, due, ex_price=bar.open)
+            state = ca.pos
+            if ca.total_factor != 1.0:
+                pos.entry_price *= ca.total_factor
+                pos.initial_stop_loss *= ca.total_factor
+                pos.stop_a_at_entry *= ca.total_factor
+                pos.stop_b_at_entry *= ca.total_factor
+                pos.initial_resistance_target *= ca.total_factor
+                pos.shares = int(round(pos.shares / ca.total_factor))
+                pos.original_shares = int(round((pos.original_shares or pos.shares) / ca.total_factor))
+                pos.shares_remaining = state.shares_remaining  # rebased share count must persist for later bars
+                ca_flags.append("CORP_ACTION_RESCALED")
+            pos.applied_corp_actions = ";".join(applied_keys + ca.applied)
+            if ca.review:
+                pos.manual_review_ca = ";".join(review_keys + ca.review)
+                ca_flags.append("MANUAL_REVIEW_CA")
+            if ca.fractional_shares and pos.mode == "PAPER":
+                pos.total_realized_pnl_partial = (pos.total_realized_pnl_partial or 0.0) + \
+                    ca.fractional_shares * (bar.open - state.entry_price)
         res = advance_one_bar(state, bar, ctx, self._rules, exit_slippage_pct=self._exit_slip)
-        new, flags = res.pos, list(res.flags)
+        new, flags = res.pos, list(res.flags) + ca_flags
         earnings_alert, next_earnings = self._check_earnings_alert(pos.symbol, eval_date)
         old_state = pos.position_state
 
@@ -433,6 +459,8 @@ class PositionLifecycleManager:
                 pnl_net=net,
                 tax_est=tax,
                 is_partial=(ex.reason == "PARTIAL_PROFIT"),
+                risk_inr=pos.risk_inr if pos.risk_inr is not None else (pos.original_shares or pos.shares) * one_r,
+                excluded_ca=bool(pos.manual_review_ca),
             )
         )
 

@@ -11,6 +11,7 @@ from sqlalchemy.engine import make_url
 
 from data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
+from engine_core.corporate_action_events import apply_actions_to_position, due_actions
 from engine_core.costs import CostModel
 from engine_core.entry_filters import apply_entry_filters
 from engine_core.indicators import atr
@@ -117,6 +118,7 @@ class Simulator:
             atr_val,
             parabolic_ref_close(list(adj["close_adj"]), self.rules.parabolic_lookback),
             any(_to_date(x.get("ex_date")) == dt for x in c[0]["corporate_actions"]),
+            c[0]["corporate_actions"],
         )
 
     @staticmethod
@@ -153,7 +155,7 @@ class Simulator:
             "exit_date": exit_date,
             "entry_price": st.entry_price,
             "stop": st.initial_stop,
-            "shares": p["orig"],
+            "shares": int(round(p["orig"])),
             "exit_price": avg_exit_price,
             "exit_reason": exit_reason,
             "exit_state": exit_state,
@@ -171,6 +173,9 @@ class Simulator:
             "pnl_net": net,
             "tax_est": tax,
             "days_held": st.days_held,
+            "excluded_ca": bool(p.get("excluded_ca", False)),
+            "ca_applied": ";".join(p.get("ca_applied", [])),
+            "ca_review": ";".join(p.get("ca_review", [])),
         }
 
     def _derive_regime_seed(self, start_d: date, regime_seed: Optional[dict]) -> dict:
@@ -253,7 +258,7 @@ class Simulator:
                 if info is None or t.symbol in open_pos:
                     skipped.append((d, t.symbol, "NO_BAR_OR_ALREADY_HELD"))
                     continue
-                bar, _, _, has_ca = info
+                bar, _, _, has_ca, _ = info
                 if has_ca:
                     skipped.append((d, t.symbol, "CORP_ACTION_ON_EXEC_DATE"))
                     continue
@@ -302,7 +307,24 @@ class Simulator:
                 info = self._bar(sym, d)
                 if info is None:
                     continue
-                bar, atr14, ref, _ = info
+                bar, atr14, ref, _, all_actions = info
+                # F3: rebase for splits/bonuses whose ex-date has been reached since the last processed bar
+                due = due_actions(all_actions, p["entry_date"], d, already=p.setdefault("ca_done", []))
+                if due:
+                    ca = apply_actions_to_position(p["st"], due, ex_price=bar.open)
+                    p["st"] = ca.pos
+                    p["ca_done"] = p["ca_done"] + ca.applied + ca.review
+                    if ca.review:
+                        p["excluded_ca"] = True
+                        p["ca_review"] = p.get("ca_review", []) + ca.review
+                    if ca.total_factor != 1.0:
+                        p["orig"] = p["orig"] / ca.total_factor
+                        p["lowest_low"] = p.get("lowest_low", p["st"].entry_price) * ca.total_factor
+                        p["ca_applied"] = p.get("ca_applied", []) + ca.applied
+                    if ca.fractional_shares:
+                        cash_in_lieu = ca.fractional_shares * bar.open
+                        cash += cash_in_lieu
+                        p["gross"] += ca.fractional_shares * (bar.open - p["st"].entry_price)
                 p["lowest_low"] = min(p.get("lowest_low", p["st"].entry_price), bar.low)
                 prev_state = p["st"].state
                 res = advance_one_bar(
@@ -395,6 +417,9 @@ class Simulator:
             "pnl_net",
             "tax_est",
             "days_held",
+            "excluded_ca",
+            "ca_applied",
+            "ca_review",
         ]
         trades_df = pd.DataFrame(trades, columns=cols) if trades else pd.DataFrame(columns=cols)
         return SimResult(

@@ -126,6 +126,9 @@ CREATE TABLE IF NOT EXISTS active_positions (
     stop_a_at_entry             REAL    NOT NULL,  -- ATR-based stop at entry (for audit)
     stop_b_at_entry             REAL    NOT NULL,  -- Donchian-based stop at entry (for audit)
     last_evaluated_date         DATE,              -- Date of last state machine evaluation
+    risk_inr                    REAL,              -- initial risk in INR, invariant under splits (F3)
+    applied_corp_actions        TEXT,              -- 'YYYY-MM-DD:TYPE;...' already rebased (F3)
+    manual_review_ca            TEXT,              -- unhandled corporate actions -> trade excluded (F3)
     created_at                  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at                  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(symbol, entry_date)
@@ -157,6 +160,8 @@ CREATE TABLE IF NOT EXISTS trade_analytics_log (
     regime_at_exit  TEXT,
     sector         TEXT,
     days_held      INTEGER,
+    risk_inr       REAL,                -- initial risk of the whole position (F1/F3)
+    excluded_ca    BOOLEAN NOT NULL DEFAULT 0,
     closed_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -143,6 +143,9 @@ class ActivePosition(Base):
     fill_source: Mapped[Optional[str]] = mapped_column(String(14))        # SIMULATED | BROKER_ENTERED
     entry_costs: Mapped[float] = mapped_column(Float, nullable=False, default=0.0, server_default="0")
     last_evaluated_date: Mapped[Optional[date]] = mapped_column(Date)
+    risk_inr: Mapped[Optional[float]] = mapped_column(Float)              # initial risk in INR; invariant under splits (F1/F3)
+    applied_corp_actions: Mapped[Optional[str]] = mapped_column(Text)     # "YYYY-MM-DD:TYPE;..." already rescaled (F3)
+    manual_review_ca: Mapped[Optional[str]] = mapped_column(String(200))  # unhandled action keys -> trade excluded (F3)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -175,6 +178,8 @@ class TradeAnalyticsLog(Base):
     regime_at_exit: Mapped[Optional[str]] = mapped_column(String(20))
     sector: Mapped[Optional[str]] = mapped_column(String(50))
     days_held: Mapped[Optional[int]] = mapped_column(Integer)
+    risk_inr: Mapped[Optional[float]] = mapped_column(Float)              # initial risk of the whole position (F1/F3)
+    excluded_ca: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="0")
     closed_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
 

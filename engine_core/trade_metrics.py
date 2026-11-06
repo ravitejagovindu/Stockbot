@@ -62,7 +62,7 @@ def trades_from_log(session, mode: str) -> pd.DataFrame:
     return pd.read_sql(
         text("""
             SELECT position_id, symbol, MIN(entry_date) AS entry_date, MAX(exit_date) AS exit_date,
-                   MIN(entry_price) AS entry_price, MIN(initial_stop_loss) AS stop, SUM(shares) AS shares,
+                   MIN(entry_price) AS entry_price, MIN(initial_stop_loss) AS stop, SUM(shares) AS shares, MAX(risk_inr) AS risk_inr, MAX(excluded_ca) AS excluded_ca,
                    SUM(pnl_gross) AS pnl_gross, SUM(costs_total) AS costs, SUM(pnl_net) AS pnl_net,
                    SUM(tax_est) AS tax_est, MAX(days_held) AS days_held
             FROM trade_analytics_log WHERE mode = :m GROUP BY position_id, symbol
@@ -85,6 +85,10 @@ def metrics_from_trades(df: pd.DataFrame, start_equity: float) -> dict:
     if df.empty:
         return {"n_trades": 0}
     t = df.sort_values("exit_date").copy()
+    if "excluded_ca" in t.columns:  # F3: trades touched by unhandled corporate actions are excluded from statistics
+        t = t[~t["excluded_ca"].astype(bool)]
+        if t.empty:
+            return {"n_trades": 0}
     t["net_after_tax"] = t["pnl_net"] - t["tax_est"]
     t["r_net"] = add_r_columns(t)["net_r"].values
     wins, losses = t[t["net_after_tax"] > 0], t[t["net_after_tax"] <= 0]

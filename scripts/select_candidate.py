@@ -136,6 +136,11 @@ def _load_trades(config_id: str) -> Optional[pd.DataFrame]:
         if path.exists():
             df = pd.read_csv(path)
             require_r_columns(df)
+            if "excluded_ca" in df.columns:  # F3: trades touched by unhandled corporate actions leave the statistics
+                n_ex = int(df["excluded_ca"].astype(bool).sum())
+                if n_ex:
+                    print(f"  [F3] {config_id}: excluding {n_ex} trade(s) flagged excluded_ca")
+                df = df[~df["excluded_ca"].astype(bool)].reset_index(drop=True)
             return df
     return None
 

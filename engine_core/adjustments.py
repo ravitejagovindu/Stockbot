@@ -177,6 +177,9 @@ def _action_factor(action: dict) -> float:
     return 1.0
 
 
+action_factor = _action_factor  # public name (used by corporate_action_events)
+
+
 def compute_row_factors(index, corporate_actions: list[dict], as_of_date: date) -> pd.Series:
     """factor[d] = product of f(action) over actions where ex_date <= as_of_date AND d < ex_date.
 
