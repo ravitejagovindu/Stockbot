@@ -70,8 +70,12 @@ def lock_env(tmp_path, monkeypatch):
     monkeypatch.setattr(sc, "PRE_REG_YAML", yml)
     monkeypatch.setattr(sc, "REGISTRY_LEDGER", ledger)
     monkeypatch.setattr(sc, "EXPLORATORY_LOG", tmp_path / "trial_ledger_exploratory.csv")
-    # legacy ledger as it exists in the repo today (one SELECTION row, no chain columns)
-    shutil.copy(Path("backtest/outputs/trial_ledger.csv"), ledger)
+    # synthetic copy of the ORIGINAL (pre-F6) ledger: one SELECTION row, no chain columns
+    ledger.write_text(
+        "timestamp_utc,commit_sha,selected_config,selection_reason,CFG-01_gate_reached,CFG-02_gate_reached,"
+        "CFG-03_gate_reached,CFG-04_gate_reached,CFG-05_gate_reached,CFG-06_gate_reached\n"
+        "2026-11-05T03:25:25.744411+00:00,c3322fc2a850,NONE,No candidate passed all gates,2,2,2,2,2,2\n",
+        encoding="utf-8")
     return sc, yml, ledger
 
 
