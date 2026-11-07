@@ -1,5 +1,7 @@
 # StockBot — Status and open points for the reviewer (updated 2026-11-07, after all GO steps)
 
+**Latest (after the reviewer's STOP A verdict): see `STOCKBOT_STOP_A_RESPONSE.md`** (revised tiers, events vs rows, post-adjustment scan, nine dispositions, two corrections). The open-points list below is superseded by section 7 of that file.
+
 Where to read the detail: `STOCKBOT_STEP1_RESULTS.md` (holiday copies, ISIN map), `STOCKBOT_STEP3_SWAP_REPORT.md` (swap, mapping, post-swap checks), `STOCKBOT_STEP4_6_REPORT.md` (evidence tiers, eligibility, verification list, open points), `STOCKBOT_PREREQUISITE_FIXES_REPORT.md` (all commits). Evidence files are in `docs/data_audit/`. Everything is pushed to `origin/master`; the working tree is clean.
 
 **State of the database:** the swap and the symbol mapping have run on the real `finsight.db`. `corporate_actions_log` is still empty (STOP A) and `shares_outstanding` is unchanged (F2b).
@@ -14,7 +16,7 @@ Where to read the detail: `STOCKBOT_STEP1_RESULTS.md` (holiday copies, ISIN map)
 | 4 Corporate-action fixes | **done**: parser fixes (two rounds, 16 tests failed before), evidence tiers (STRONG 427 / WEAK 327 / UNSUPPORTED 375 of 1,129 events), old-symbol queries already covered by the original dump, DVL window checked |
 | 5 Eligible symbols | **done**: 1,743 symbols pass the ₹25 crore gate (63 are ETFs/funds), 889 large moves triaged, 122 relevant, 9 for manual judgement |
 | 6 Verification list | **done**: 58/58 PASS, split+bonus-different-dates and relisted cases added |
-| STOP A | **reached** — waiting for the reviewer |
+| STOP A | **reached; reviewer asked for revised tiers, reconciliation, scan and dispositions: delivered in `STOCKBOT_STOP_A_RESPONSE.md`, waiting for approval of the load** |
 | 7 Load and integration tests | not started (after STOP A) |
 | STOP B, F2b, F9 study, AMD-002 | not started |
 
