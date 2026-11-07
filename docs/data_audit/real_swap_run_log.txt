@@ -1,0 +1,42 @@
+{
+ "changes": [
+  "market_data_lake.source",
+  "market_data_lake.loaded_at",
+  "market_data_lake.source_symbol",
+  "active_positions.risk_inr",
+  "active_positions.applied_corp_actions",
+  "active_positions.manual_review_ca",
+  "trade_analytics_log.risk_inr",
+  "trade_analytics_log.excluded_ca",
+  "corporate_actions_log: CHECK relaxed (+DEMERGER, OTHER), +source, loaded_at, evidence_tier, evidence"
+ ]
+}
+backup ok, sha256 d531af5d9301873ef5f10d2a03f5cc789c72b4c03e331c66f1fa162e3259016e
+{
+ "max_id_before": 5345875,
+ "archived": 2829905,
+ "inserted_window": 3110289,
+ "special_inserted": 8034,
+ "index_inserted": 51,
+ "untouched_checksums_equal": {
+  "pre2020": true,
+  "post_window": true,
+  "index_existing": true
+ },
+ "untouched_rows": {
+  "pre2020": 2483109,
+  "post_window": 29529,
+  "index_existing": 5736
+ }
+}
+{
+ "rows_before": 5634334,
+ "checksum_before": "bc636a6f2f8595759e1a67199b36368a5edf82491f9943155e5485b6215a3ac5",
+ "segments": 380,
+ "rows_relabelled": 353088,
+ "rows_after": 5634334,
+ "checksum_after": "bc636a6f2f8595759e1a67199b36368a5edf82491f9943155e5485b6215a3ac5"
+}
+F:\Projects\Ravi\StockBot\docs\data_audit\post_swap_report_real.md FAILS: none
+...                                                                      [100%]
+3 passed in 6.31s
