@@ -100,6 +100,20 @@ def parse_bhavcopy(df: pd.DataFrame, trade_date: date, source: str = "") -> pd.D
                 "prev_close", "isin", "series", "source"]]
 
 
+def extract_file_date(df: pd.DataFrame) -> Optional[date]:
+    """The trade date the file itself declares (DATE1 / TIMESTAMP / TradDt); None if absent or unparseable."""
+    cols = {str(c).strip().upper(): c for c in df.columns}
+    for key in ("DATE1", "TIMESTAMP", "TRADDT"):
+        if key in cols:
+            v = str(df[cols[key]].iloc[0]).strip()
+            for fmt in ("%d-%b-%Y", "%Y-%m-%d", "%d-%m-%Y"):
+                try:
+                    return datetime.strptime(v, fmt).date()
+                except ValueError:
+                    continue
+    return None
+
+
 def fetch_day(sess: requests.Session, d: date) -> tuple[Optional[pd.DataFrame], str, str]:
     """Return (parsed_df | None, status, url_or_note). status in OK / HOLIDAY_OR_MISSING / ERROR."""
     last_err = ""
@@ -124,6 +138,12 @@ def fetch_day(sess: requests.Session, d: date) -> tuple[Optional[pd.DataFrame], 
                     raw = pd.read_csv(z.open([n for n in z.namelist() if n.lower().endswith(".csv")][0]))
                 else:
                     raw = pd.read_csv(io.StringIO(r.text))
+                declared = extract_file_date(raw)
+                if declared != d:
+                    # NSE answers 200 with the PREVIOUS session's file on holidays (sec_bhavdata_full): never stamp
+                    # the requested date on it.  An unreadable date is treated the same way (cannot be verified).
+                    last_err = f"file declares {declared}, requested {d}: {url}"
+                    break
                 parsed = parse_bhavcopy(raw, d, source=url)
             except Exception as e:  # noqa: BLE001
                 last_err, all_404 = f"parse error: {e}", False
@@ -132,8 +152,8 @@ def fetch_day(sess: requests.Session, d: date) -> tuple[Optional[pd.DataFrame], 
                 last_err, all_404 = "no EQ rows", False
                 break
             return parsed, "OK", url
-    if all_404:
-        return None, "HOLIDAY_OR_MISSING", "all candidate URLs 404"
+    if all_404 or last_err.startswith("file declares"):
+        return None, "HOLIDAY_OR_MISSING", last_err or "all candidate URLs 404"
     return None, "ERROR", last_err
 
 
@@ -143,6 +163,8 @@ def main() -> None:
     ap.add_argument("--end", required=True)
     ap.add_argument("--db", default=str(ROOT / "finsight.db"))
     ap.add_argument("--sleep", type=float, default=0.4)
+    ap.add_argument("--all-days", action="store_true", help="also try Saturdays/Sundays (special sessions)")
+    ap.add_argument("--redo", help="comma-separated dates to re-fetch even if already logged")
     ap.add_argument("--retry-errors", action="store_true", help="re-fetch dates logged ERROR")
     args = ap.parse_args()
     start, end = date.fromisoformat(args.start), date.fromisoformat(args.end)
@@ -153,12 +175,13 @@ def main() -> None:
     done = {r[0] for r in con.execute(
         "select trade_date from bhavcopy_fetch_log where status in ('OK','HOLIDAY_OR_MISSING')"
         + ("" if args.retry_errors else " or status='ERROR'"))}
+    redo = set((args.redo or "").split(",")) - {""}
     sess = requests.Session()
     sess.headers.update(HEADERS)
     d, n_ok, n_hol, n_err = start, 0, 0, 0
     t0 = time.time()
     while d <= end:
-        if d.weekday() >= 5 or d.isoformat() in done:
+        if (d.weekday() >= 5 and not args.all_days) or (d.isoformat() in done and d.isoformat() not in redo):
             d += timedelta(days=1)
             continue
         df, status, info = fetch_day(sess, d)
@@ -172,6 +195,8 @@ def main() -> None:
             n_ok += 1
         else:
             with con:
+                if status == "HOLIDAY_OR_MISSING":  # a re-fetched date that is not a session must not keep stale rows
+                    con.execute("DELETE FROM market_data_lake_staging WHERE trade_date=?", (d.isoformat(),))
                 con.execute("INSERT OR REPLACE INTO bhavcopy_fetch_log VALUES (?,?,?,?,?,?)",
                             (d.isoformat(), status, 0, None, now, info))
             n_hol += status == "HOLIDAY_OR_MISSING"
