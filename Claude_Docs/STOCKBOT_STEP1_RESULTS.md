@@ -26,7 +26,7 @@ Pure suite after these commits: **249 passed**.
 
 **Cleaned staging counts** (rows / trading days): 2013 331,315 / 250 · 2014 325,090 / 244 · 2015 356,689 / 248 · 2016 370,662 / 247 · 2017 368,537 / 248 · 2018 367,880 / 246 · 2019 368,578 / 245 · 2020 379,782 / 252 · 2021 389,770 / 248 · 2022 438,894 / 248 · 2023 446,991 / 246 · 2024 467,396 / 249 · 2025 531,765 / 249 · 2026 (to 09-30) 455,691 / 185. Fetch log: 3,405 OK, 1,616 holiday/missing, 0 errors.
 
-**Pre-2020 comparison, updated.** Staging 2013–2019 is now the lake's 2,480,717 rows plus exactly **8,034 rows on five special sessions** that the lake lacks: 2013-05-11 and 2013-11-03 (2,357 rows), 2014-03-22 (1,278), 2015-02-28 (1,410), 2016-10-30 (1,516), 2019-10-27 (1,473). The 2019 gap of 8,903 rows therefore disappears completely: those six dates were holidays. **Decision for the reviewer: insert the 8,034 pre-2020 special-session rows (append-only) in the swap?** I propose yes; they are real sessions.
+**Pre-2020 comparison, updated.** Staging 2013–2019 is now the lake's 2,480,717 rows plus exactly **8,034 rows on six special sessions** that the lake lacks: 2013-05-11 and 2013-11-03 (2,357 rows), 2014-03-22 (1,278), 2015-02-28 (1,410), 2016-10-30 (1,516), 2019-10-27 (1,473). The 2019 gap of 8,903 rows therefore disappears completely: those six dates were holidays. **Decision for the reviewer: insert the 8,034 pre-2020 special-session rows (append-only) in the swap?** I propose yes; they are real sessions.
 
 ## 3. ISIN → canonical symbol map (Result 2, Option A)
 
