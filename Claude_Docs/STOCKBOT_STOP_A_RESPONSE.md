@@ -2,6 +2,16 @@
 
 Produced as asked: revised tiers, the events-vs-rows table, the post-adjustment scan, the nine dispositions. **Nothing is loaded into `corporate_actions_log`.** Commits: `41cf8a2` (tiers), `b1bcc1c` (rename-with-split rule), `45530b9` (refreshed analysis, dispositions, load plan, unadjusted-event list). Pure suite: 286 passed, 3 skipped. Detail files: `docs/data_audit/load_plan.md`, `manual_move_dispositions.csv`, `post_adjustment_large_moves.csv`, `data/reference/unadjusted_events.csv`, `data/reference/corporate_actions_evidence.csv`.
 
+## Status at a glance
+| Item | State |
+|---|---|
+| Swap, symbol mapping, post-swap checks (Step 3) | accepted by the reviewer |
+| Step 4 tiers, Step 5 eligibility, Step 6 verification list | done; tiers revised under the reviewer's rule (this file); verification list 58/58 PASS |
+| Revised tiers, events vs rows, post-adjustment scan, nine dispositions | done (sections 1-5) |
+| ETF exclusion (INF ISINs), listing-date rule | approved, not yet implemented (section 6); neither changes the load |
+| STOP A: load into `corporate_actions_log` | **waiting for the reviewer's approval; table still empty** |
+| Step 7, STOP B, F2b, F9 study, AMD-002 | not started |
+
 ## 0. Two corrections to my previous report (found while doing this work)
 1. **The large-move list was stale.** `unexplained_moves.csv` had been generated before the holiday-copy clean-up, so it still contained moves on 2024-01-22 and 2024-05-20 (dates that no longer exist in staging; the real data sits on the Saturday sessions 2024-01-20 and 2024-05-18). I regenerated it from the current staging and redid the triage. The reviewer's suspicion about PGIL, JYOTISTRUC and SCHNEIDER was right in spirit (section 5). Corrected numbers: 873 large moves (was 889), **119 relevant** (was 122). I also restored the STOP-1 comparison files (`staging_vs_lake_by_year.csv`, `factor_crosscheck.csv`, validation report), which the rerun would otherwise have overwritten with post-swap values.
 2. **Events were keyed to the wrong symbol in some cases.** The feed gives the company's *current* symbol; the prices before the ex-date can sit under another lake symbol when two names are separated by a gap and are not linked in the ISIN map (example: the 2016 split of SECURKLOUD; the prices on that date are under `8KMILES`, which is a gap-separated earlier name of the same company). An event stored under `SECURKLOUD` would never adjust the `8KMILES` history. The evidence file now carries `lake_symbol` = the lake symbol that holds the pre-ex-date prices; **the Step 7 load must write that as `symbol`** (feed symbol kept in `notes`). This removed 3 of the 21 residual unexplained moves after adjustment. **Please confirm this keying.**
@@ -77,3 +87,6 @@ Your hypothesis about a thin special-session print as the *previous close* did n
 2. Confirmation of the keying decision: `symbol` in `corporate_actions_log` = `lake_symbol` (symbol holding the pre-ex-date prices); feed symbol in the notes.
 3. The 46 unsupported events that have price data (33 with factor ≤ 0.8 and no matching step, 13 with factor above 0.8) stay `OTHER`. Those on ADTV-eligible names go on the unadjusted-event list (268 entries in total: 105 large rights, 83 demergers, 57 mergers, 21 unsupported price rows, 2 manual): OK?
 4. INDUSINDBK left provisional: accept or ask for more evidence?
+5. **Merge the notes of colliding `OTHER` rows** (20 rows would otherwise lose their note under `INSERT OR IGNORE`): OK to concatenate them before the load?
+6. **DOLPHIN 2024-04-15** (adjusted +1,240% over a 222-day gap, split confirmed by Yahoo at 0.1000): I will look at it manually before the load unless you say the Yahoo confirmation is enough.
+7. **Special sessions in the engine calendar (strategy specification, not the load):** three names re-enter the EQ series on a Saturday special-session print, and special sessions are thin. Whether the engine's calendar counts them as trading days is still open from your earlier note; I will raise it again in the specification.
