@@ -41,29 +41,9 @@ def test_get_listing_age_established_stock():
     assert age >= 252  # Must pass Gate 3 (>252 trading days)
 
 
-def test_get_listing_age_recent_ipo_blocked():
-    mock_session = MagicMock()
-    # Mock lookup returning listing date 2021-11-18 (Paytm)
-    mock_session.execute.return_value.scalar.side_effect = [
-        date(2021, 11, 18),  # SecuritiesMaster query
-        9,                   # Nifty trading days query
-    ]
-
-    cfg = {
-        "universe": {
-            "min_market_cap_cr": 5000,
-            "min_adtv_cr": 25,
-            "min_listing_age_trading_days": 252,
-        },
-        "trade_management": {"binary_event_block_days": 14},
-        "data": {"nifty_symbol": "NIFTY50_INDEX"},
-    }
-    screener = UniverseScreener(cfg, mock_session)
-
-    # 13 days after IPO (2021-12-01)
-    age = screener._get_listing_age("PAYTM", date(2021, 12, 1))
-    assert age == 9
-    assert age < 252  # Correctly blocked as IPO lockout
+# test_get_listing_age_recent_ipo_blocked (mock of the old master-date rule) was replaced by
+# tests/unit/test_universe_rules_f2.py::test_recent_listing_is_still_blocked, which runs on a real in-memory database
+# now that the listing date is derived from the first raw trading day (F2, reviewer-approved).
 
 
 def test_get_listing_age_unlisted_stock():

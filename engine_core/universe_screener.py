@@ -21,9 +21,11 @@ Design Principles
 """
 from __future__ import annotations
 
+import csv
 import logging
 from dataclasses import dataclass, field
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Optional
 
 import pandas as pd
@@ -43,6 +45,19 @@ logger = logging.getLogger(__name__)
 
 # Conversion constant: 1 crore = 10,000,000
 _CR = 1e7
+
+# ETFs / mutual-fund units carry ISINs starting "INF" (companies: "INE").  The list is built from the raw Bhavcopy ISINs by
+# scripts/f2_build_fund_symbols.py and is excluded from the equity universe (reviewer-approved, F2).
+FUND_SYMBOLS_FILE = Path(__file__).resolve().parents[1] / "data" / "reference" / "fund_etf_symbols.csv"
+
+
+def load_fund_symbols(path: Optional[Path] = None) -> set[str]:
+    """Symbols of ETFs / funds (INF-prefixed ISIN) to exclude from the equity universe; empty set if the file is absent."""
+    p = Path(path) if path else FUND_SYMBOLS_FILE
+    if not p.exists():
+        return set()
+    with open(p, newline="", encoding="utf-8") as f:
+        return {row["symbol"].strip().upper() for row in csv.DictReader(f) if row.get("symbol")}
 
 
 # ---------------------------------------------------------------------------
@@ -104,8 +119,13 @@ class UniverseScreener:
         Active SQLAlchemy session.  Read-only — no writes performed here.
     """
 
-    def __init__(self, config: dict, session: Session) -> None:
-        """Initialise with strategy config and a read-only DB session."""
+    def __init__(self, config: dict, session: Session, fund_symbols: Optional[set[str]] = None) -> None:
+        """Initialise with strategy config and a read-only DB session.
+
+        ``fund_symbols``: ETF/fund symbols excluded from the equity universe (default: ``data/reference/fund_etf_symbols.csv``).
+        """
+        self._fund_symbols: set[str] = load_fund_symbols() if fund_symbols is None else {x.upper() for x in fund_symbols}
+        self._lake_first_date: Optional[date] = None
         uni = config["universe"]
         tm = config["trade_management"]
         data_cfg = config.get("data", {})
@@ -203,6 +223,10 @@ class UniverseScreener:
         listing_age_days: Optional[int] = None
         is_under_asm_gsm: bool = False
         days_to_next_event: Optional[int] = None
+
+        if symbol.strip().upper() in self._fund_symbols:        # ETFs / funds are not part of the equity universe
+            return ScreeningResult(symbol=symbol, passed=False, rejection_reason="FUND_OR_ETF", market_cap_cr=None, adtv_cr=None,
+                                   listing_age_days=None, is_under_asm_gsm=False, days_to_next_event=None)
 
         # -------------------------------------------------------------------
         # Gate 1 — Market Cap > min_market_cap_cr
@@ -448,7 +472,7 @@ class UniverseScreener:
             .where(MarketDataLake.trade_date <= eval_date)
             .distinct()
         ).scalars().all()
-        return list(rows)
+        return [r for r in rows if r.upper() not in self._fund_symbols]
 
     def _get_latest_price_and_shares(
         self, symbol: str, eval_date: date
@@ -529,53 +553,47 @@ class UniverseScreener:
         ).set_index("trade_date")
 
     def _get_listing_age(self, symbol: str, eval_date: date) -> Optional[int]:
-        """Compute the true listing age in trading days relative to the official NSE listing date.
+        """Listing age in trading days, from the FIRST RAW TRADING DAY in the lake (F2, reviewer-approved).
 
-        Queries securities_master for the official exchange listing date. If absent, attempts
-        an on-demand fetch from the NSE Quote API and caches it.
+        ``securities_master.listing_date`` is not used when the symbol has lake rows: it holds placeholder dates (>= 2026-04) for many
+        names.  A symbol that already trades on the lake's first day is not a new listing (the data merely starts there) and counts as
+        seasoned.  Newer names: age = the number of the symbol's own sessions since its first row.  Only a symbol with no lake rows
+        falls back to ``securities_master`` (and the on-demand NSE fetch).
         """
         sym = symbol.strip().upper()
-        # 1. Primary lookup from securities_master table
+        first = self._session.execute(select(func.min(MarketDataLake.trade_date)).where(MarketDataLake.symbol == sym)).scalar()
+        if first is not None:
+            if self._lake_first_date is None:
+                self._lake_first_date = self._session.execute(select(func.min(MarketDataLake.trade_date))).scalar()
+            if eval_date < first:
+                return 0                                           # not yet trading as of eval_date
+            if self._lake_first_date is not None and first <= self._lake_first_date:
+                return 252 + max((eval_date - first).days - 365, 0)   # present on the lake's first day: already seasoned
+            cal_days = (eval_date - first).days
+            if cal_days >= 550:
+                return 252 + (cal_days - 365)
+            n = self._session.execute(
+                select(func.count(MarketDataLake.id)).where(MarketDataLake.symbol == sym)
+                .where(MarketDataLake.trade_date >= first).where(MarketDataLake.trade_date <= eval_date)
+            ).scalar()
+            return int(n) if n is not None else int(cal_days * (252 / 365.25))
+
+        # symbol not in the lake: official listing date from securities_master, then an on-demand NSE fetch
         listing_date = self._session.execute(
             select(SecuritiesMaster.listing_date).where(SecuritiesMaster.symbol == sym)
         ).scalar()
-
-        # 2. Fallback: on-demand fetch if missing
         if listing_date is None:
             try:
                 from data.ingestion.securities_ingestor import fetch_and_save_symbol_listing_date
                 listing_date = fetch_and_save_symbol_listing_date(sym, session=self._session)
             except Exception as e:
                 logger.warning(f"[SCREENER] Failed on-demand listing date fetch for {sym}: {e}")
-
-        # 3. Fallback to first MDL date if completely unavailable anywhere
         if listing_date is None:
-            earliest_mdl = self._session.execute(
-                select(func.min(MarketDataLake.trade_date)).where(MarketDataLake.symbol == sym)
-            ).scalar()
-            if earliest_mdl is None:
-                return None
-            listing_date = earliest_mdl
-
-        # Compute age in calendar days
+            return None
         if eval_date < listing_date:
-            return 0  # not yet listed as of eval_date
-
+            return 0
         cal_days = (eval_date - listing_date).days
-        # If listed more than 1.5 years ago (550 days), it's definitely seasoned (> 252 trading days)
-        if cal_days >= 550:
-            return 252 + (cal_days - 365)
-
-        # For newer listings (< 550 calendar days), calculate exact Nifty trading sessions since listing
-        nifty_sym = self._config.get("data", {}).get("nifty_symbol", "NIFTY50_INDEX")
-        trading_days = self._session.execute(
-            select(func.count(MarketDataLake.id))
-            .where(MarketDataLake.symbol == nifty_sym)
-            .where(MarketDataLake.trade_date >= listing_date)
-            .where(MarketDataLake.trade_date <= eval_date)
-        ).scalar()
-
-        return int(trading_days) if trading_days is not None else int(cal_days * (252 / 365.25))
+        return 252 + (cal_days - 365) if cal_days >= 550 else int(cal_days * (252 / 365.25))
 
     def _is_under_surveillance(self, symbol: str) -> bool:
         """Return ``True`` if the symbol appears in the ASM/GSM list."""
