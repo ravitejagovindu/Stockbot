@@ -4,6 +4,10 @@ STRONG       Yahoo-implied factor within 3% of the logged factor.
 WEAK         raw close-to-close ratio (best day pair within +-2 sessions of the ex-date) within 25% of the logged factor AND
              closer (in log terms) to the logged factor than to any other standard ratio, so a 1:1 bonus (0.5) is never
              accepted on a price move that looks like a 1:2 bonus (0.667).
+WEAK_DIRECTIONAL  (reviewer-approved) the feed states the ratio, Yahoo (where it exists) does not contradict it (its factor is within
+             25% of the logged one), the logged factor is <= 0.8, and adjusting improves the fit: the ex-date return after
+             adjustment is within +-25% of 1 and at most half the unadjusted move in log terms.  Typical case: a 1:2 bonus (0.667)
+             on a day the price also rose (observed 0.728).  Carries its own label so it can be filtered.
 UNSUPPORTED  anything else (including no price data): the event is stored as ``OTHER`` and is not price-moving.
 """
 from __future__ import annotations
@@ -14,6 +18,7 @@ from typing import Optional, Sequence
 STRONG_TOL = 0.03
 WEAK_TOL = 0.25
 WINDOW = 2
+DIRECTIONAL_MAX_FACTOR = 0.8
 
 
 # The factors that occur at least three times in the NSE feed (1,111 split/bonus ex-dates), plus "no change".  A dense set
@@ -44,6 +49,17 @@ def classify(f: float, raw_ratio: Optional[float], yahoo_factor: Optional[float]
               f"{'logged factor is' if closest else 'nearer standard ratio is ' + format(nearest, '.4f') + ', not'} the closest)")
     if near and closest:
         return "WEAK", "; ".join(ev)
+    # WEAK_DIRECTIONAL
+    yahoo_ok = yahoo_factor is None or yahoo_factor <= 0 or abs(yahoo_factor / f - 1) <= WEAK_TOL
+    after = raw_ratio / f
+    improves = abs(math.log(after)) <= 0.5 * abs(math.log(raw_ratio)) if raw_ratio != 1 else False
+    if f <= DIRECTIONAL_MAX_FACTOR and near and improves and yahoo_ok:
+        ev.append(f"directional: adjusting gives an ex-date return of {after:.4f} (unadjusted {raw_ratio:.4f})")
+        return "WEAK_DIRECTIONAL", "; ".join(ev)
+    if f > DIRECTIONAL_MAX_FACTOR and near and improves:
+        ev.append(f"factor {f:.3f} > {DIRECTIONAL_MAX_FACTOR}: cannot be verified by price")
+    elif near and improves and not yahoo_ok:
+        ev.append("Yahoo contradicts the logged factor")
     return "UNSUPPORTED", "; ".join(ev)
 
 

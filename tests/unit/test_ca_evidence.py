@@ -14,16 +14,16 @@ def test_strong_when_yahoo_factor_within_3pct():
 
 def test_weak_when_raw_ratio_is_close_and_nearest():
     assert classify(0.2, raw_ratio=0.21, yahoo_factor=None)[0] == "WEAK"
-    # 0.224 is as close to 0.25 (a 3:1 bonus) as to 0.2 (a 5:1 split): ambiguous, so not accepted on price alone (MARINE)
-    assert classify(0.2, raw_ratio=0.224, yahoo_factor=None)[0] == "UNSUPPORTED"
+    # 0.224 is as close to 0.25 (a 3:1 bonus) as to 0.2 (a 5:1 split): not plain WEAK, but adjusting clearly improves the fit (MARINE)
+    assert classify(0.2, raw_ratio=0.224, yahoo_factor=None)[0] == "WEAK_DIRECTIONAL"
     assert classify(0.5, raw_ratio=0.52, yahoo_factor=None)[0] == "WEAK"
 
 
 def test_one_to_one_bonus_is_not_confused_with_one_to_two():
-    # logged 1:1 bonus (0.5) but the price fell to 0.6 -> nearer to the 1:2 factor (0.667): unsupported
-    assert classify(0.5, raw_ratio=0.6, yahoo_factor=None)[0] == "UNSUPPORTED"
-    # logged 1:2 bonus (0.667) but the price halved -> unsupported
-    assert classify(2 / 3, raw_ratio=0.5, yahoo_factor=None)[0] == "UNSUPPORTED"
+    # logged 1:1 bonus (0.5) but the price fell only to 0.6, the nearest standard ratio: never plain WEAK
+    assert classify(0.5, raw_ratio=0.6, yahoo_factor=None)[0] == "WEAK_DIRECTIONAL"
+    # logged 1:2 bonus (0.667) but the price nearly halved (0.49): outside 25%, unsupported
+    assert classify(2 / 3, raw_ratio=0.49, yahoo_factor=None)[0] == "UNSUPPORTED"
     assert classify(2 / 3, raw_ratio=0.68, yahoo_factor=None)[0] == "WEAK"
 
 
@@ -46,3 +46,22 @@ def test_best_pair_searches_two_sessions_either_side():
     close2 = [100, 100, 100, 100, 100, 100, 50]         # step 3 sessions after the ex-date: outside the window
     r2, off2 = best_pair(dates, close2, ex_index=3, f=0.5)
     assert abs(r2 - 0.5) > 0.4
+
+
+# --- reviewer's WEAK_DIRECTIONAL rule: adjusting must at least halve the unadjusted move (log terms), within +-25%, f <= 0.8,
+#     Yahoo (where it exists) must not contradict -------------------------------------------------------------------------
+def test_weak_directional_accepts_ajantpharm_style_events():
+    assert classify(0.667, raw_ratio=0.728, yahoo_factor=None)[0] == "WEAK_DIRECTIONAL"      # AJANTPHARM 1:2 bonus
+    assert classify(0.2, raw_ratio=0.235, yahoo_factor=None)[0] == "WEAK_DIRECTIONAL"        # JKTYRE
+
+
+def test_weak_directional_needs_a_real_step_and_a_low_enough_factor():
+    assert classify(0.5, raw_ratio=1.016, yahoo_factor=None)[0] == "UNSUPPORTED"             # BBOX: no step at all
+    assert classify(0.1, raw_ratio=0.95, yahoo_factor=None)[0] == "UNSUPPORTED"              # MINDACORP
+    assert classify(0.9, raw_ratio=0.996, yahoo_factor=None)[0] == "UNSUPPORTED"             # factor above 0.8: cannot be verified by price
+    assert classify(0.833, raw_ratio=0.886, yahoo_factor=None)[0] == "UNSUPPORTED"
+
+
+def test_yahoo_that_shows_no_step_blocks_weak_directional():
+    assert classify(0.667, raw_ratio=0.728, yahoo_factor=1.0)[0] == "UNSUPPORTED"
+    assert classify(0.667, raw_ratio=0.728, yahoo_factor=0.70)[0] == "WEAK_DIRECTIONAL"      # Yahoo consistent (within 25%), not within 3%

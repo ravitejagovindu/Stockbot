@@ -64,10 +64,11 @@ def evidence_for(con, g: pd.DataFrame) -> dict:
         syms |= {r[0] for r in con.execute("select symbol from isin_symbol_map where isin=?", (isin,))}
     ph = ",".join("?" * len(syms))
     where, par = f"(isin = ? or symbol in ({ph}))", [isin or "-"] + sorted(syms)
-    px = pd.read_sql_query(f"select trade_date, close_raw, volume_raw from market_data_lake_staging where {where} "
+    px = pd.read_sql_query(f"select trade_date, close_raw, volume_raw, symbol from market_data_lake_staging where {where} "
                            f"and trade_date between date(?, '-14 day') and date(?, '+14 day') order by trade_date, volume_raw desc",
                            con, params=par + [ex, ex]).drop_duplicates("trade_date")
-    dates, close = list(px.trade_date), list(px.close_raw)
+    dates, close, tsym = list(px.trade_date), list(px.close_raw), list(px.symbol)
+    pre_sym = pre_date = None
     after = [i for i, d in enumerate(dates) if d >= ex]
     raw_ratio = off = None
     yf = None
@@ -78,17 +79,45 @@ def evidence_for(con, g: pd.DataFrame) -> dict:
         if off is not None:
             t = i0 + off
             pair = (dates[t - 1], dates[t])
+            pre_sym, pre_date = tsym[t - 1], dates[t - 1]
             if YAHOO_FROM <= dates[t] <= YAHOO_TO:
                 cs = canonical(con, isin, sym, ex)
                 a = {d: c for d, c in con.execute("select trade_date, close_raw from market_data_lake_yahoo_archive where symbol=? and trade_date in (?,?)",
                                                  (cs, *pair))}
                 if len(a) == 2:
                     yf = (a[pair[0]] / close[t - 1]) / (a[pair[1]] / close[t])
+    basis = "ex-date window (+-2 sessions)"
+    if raw_ratio is None:
+        # no EQ-series rows on both sides of the ex-date: if the stock re-enters EQ after a gap an unadjusted split would make a false
+        # step at re-entry, so use the ratio across the gap (last close before the ex-date vs first close on/after it)
+        pre = con.execute(f"select trade_date, close_raw from market_data_lake_staging where {where} and trade_date < ? "
+                          f"and trade_date >= date(?, '-800 day') order by trade_date desc, volume_raw desc limit 1", par + [ex, ex]).fetchone()
+        post = con.execute(f"select trade_date, close_raw from market_data_lake_staging where {where} and trade_date >= ? "
+                           f"and trade_date <= date(?, '+800 day') order by trade_date, volume_raw desc limit 1", par + [ex, ex]).fetchone()
+        if pre and post and pre[1] > 0 and post[1] > 0:
+            raw_ratio, off, pair = post[1] / pre[1], 0, (pre[0], post[0])
+            pre_sym, pre_date = con.execute(f"select symbol, trade_date from market_data_lake_staging where {where} and trade_date = ? limit 1", par + [pre[0]]).fetchone()
+            days = (pd.Timestamp(post[0]) - pd.Timestamp(pre[0])).days
+            basis = f"across the gap: last close {pre[0]} vs first close {post[0]} ({days} calendar days)"
+            if YAHOO_FROM <= post[0] and pre[0] <= YAHOO_TO:
+                cs = canonical(con, isin, sym, ex)
+                a = {d: c for d, c in con.execute("select trade_date, close_raw from market_data_lake_yahoo_archive where symbol=? and trade_date in (?,?)",
+                                                 (cs, *pair))}
+                if len(a) == 2:
+                    yf = (a[pair[0]] / pre[1]) / (a[pair[1]] / post[1])
     tier, ev = classify(f, raw_ratio, yf)
     if pair and off:
         ev += f"; price step found {off:+d} sessions from the ex-date ({pair[1]})"
-    return {"factor_logged": f, "raw_ratio": raw_ratio, "raw_offset": off, "step_date": pair[1] if pair else None,
-            "yahoo_factor": yf, "tier": tier, "evidence": ev}
+    if basis.startswith("across"):
+        ev += f"; basis: {basis}"
+    # the lake symbol that holds the PRE-ex-date prices (the history the event must adjust); the feed symbol is the company's CURRENT
+    # symbol and can differ (8KMILES -> SECURKLOUD with a gap between the names)
+    lake_sym = None
+    if pre_sym:
+        m = con.execute("select canonical_symbol from isin_symbol_map where symbol=? and first_date<=? and last_date>=? limit 1", (pre_sym, pre_date, pre_date)).fetchone()
+        lake_sym = m[0] if m else pre_sym
+    return {"lake_symbol": lake_sym, "factor_logged": f, "raw_ratio": raw_ratio, "raw_offset": off, "step_date": pair[1] if pair else None,
+            "yahoo_factor": yf, "tier": tier, "evidence": ev, "evidence_basis": basis if raw_ratio is not None else None}
 
 
 def main() -> int:
@@ -103,7 +132,7 @@ def main() -> int:
     for (sym, ex), g in px.groupby(["symbol", "ex_date"]):
         res[(sym, ex)] = evidence_for(con, g)
     out = ev.copy()
-    for k in ("factor_logged", "raw_ratio", "raw_offset", "step_date", "yahoo_factor", "tier", "evidence"):
+    for k in ("lake_symbol", "factor_logged", "raw_ratio", "raw_offset", "step_date", "yahoo_factor", "tier", "evidence", "evidence_basis"):
         out[k] = [res.get((r.symbol, r.ex_date), {}).get(k) if r.action_type in ("SPLIT", "BONUS") else None for r in out.itertuples()]
     out["tier"] = out["tier"].fillna("NOT_PRICE_MOVING")
     nod = out.evidence.fillna("").str.contains("no price data")
