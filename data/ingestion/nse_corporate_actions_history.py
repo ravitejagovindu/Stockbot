@@ -39,10 +39,10 @@ HEADERS = {
 }
 _NUM = r"([\d]+(?:\.[\d]+)?)"
 _RS = r"(?:rs\.?|re\.?|inr)?\s*"
-_SPLIT = re.compile(r"(?:split|sub-?\s*division)[^\d]*?(?:from\s*)?" + _RS + _NUM + r"[^\d]*?to\s*(?:face\s*value\s*)?" + _RS + _NUM, re.I)
+_SPLIT = re.compile(r"(?:split|splt|\bspl(?=[\s.\-\d])|sub-?\s*division)[^\d]*?(?:from\s*|frm\s*)?" + _RS + _NUM + r"[^\d]*?to\s*(?:face\s*value\s*)?" + _RS + _NUM, re.I)
 _NOT_SHARES = re.compile(r"debenture|preference|preferance|ncrps|ncps|redeemable|non-?\s*convertible", re.I)  # bonus debentures/preference shares do not move the price
-_BONUS = re.compile(r"bonus[^\d]{0,12}" + _NUM + r"\s*:\s*" + _NUM, re.I)
-_RIGHTS = re.compile(r"rights[^\d]{0,12}" + _NUM + r"\s*:\s*" + _NUM, re.I)
+_BONUS = re.compile(r"\b(?:bonus|bon)\b[^\d]{0,12}" + _NUM + r"\s*:\s*" + _NUM, re.I)
+_RIGHTS = re.compile(r"rights?(?:\s+issue)?[^\d]{0,12}" + _NUM + r"\s*:\s*" + _NUM, re.I)
 _DIV = re.compile(r"dividend|\bdiv\b", re.I)
 
 
@@ -72,7 +72,7 @@ def parse_subject(subject: str) -> list[dict]:
         out.append({"action_type": "MERGER", "num": None, "den": None, "note": s})
     if not out and _DIV.search(s):
         out.append({"action_type": "DIVIDEND", "num": None, "den": None, "note": s})
-    if not out and re.search(r"split|sub-?division|bonus|rights", low):  # incl. bonus debentures: no price effect
+    if not out and re.search(r"split|splt|\bspl\b|sub-?division|bonus|\bbon\b|rights?\b|consolidat|capital\s*reduction", low):  # incl. bonus debentures: no price effect
         out.append({"action_type": "OTHER", "num": None, "den": None, "note": "UNPARSED: " + s})
     if not out and re.search(r"buy\s*-?\s*back", low):
         out.append({"action_type": "OTHER", "num": None, "den": None, "note": s})

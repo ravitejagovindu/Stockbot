@@ -64,3 +64,26 @@ def test_bonus_and_split_with_face_value_wording():
     acts = {a["action_type"]: a for a in parse_subject("Bonus 1:1 / Face Value Split From 10/- To Face Value 2/-")}  # SHARONBIO
     assert (acts["SPLIT"]["num"], acts["SPLIT"]["den"]) == (2.0, 10.0)
     assert (acts["BONUS"]["num"], acts["BONUS"]["den"]) == (1.0, 1.0)
+
+
+# --- abbreviated NSE subjects that the parser used to drop silently (found while triaging large price moves) ---------------
+@pytest.mark.parametrize("subject,expected", [
+    ("Fv Splt Frm Rs 10 To Rs 2", [("SPLIT", 2.0, 10.0)]),
+    ("Fv Splt Frm Rs 10 To Re 1", [("SPLIT", 1.0, 10.0)]),
+    ("Fv Splt Frm Rs 2 To Re 1", [("SPLIT", 1.0, 2.0)]),
+    ("Bon 1:1/Fv Spl Rs.5tors.2", [("SPLIT", 2.0, 5.0), ("BONUS", 1.0, 1.0)]),
+    ("Bon 1:1/Fv Spl Rs.5tore.1", [("SPLIT", 1.0, 5.0), ("BONUS", 1.0, 1.0)]),
+    ("Fv Spl-Rs10tors5/Bon-2:1", [("SPLIT", 5.0, 10.0), ("BONUS", 2.0, 1.0)]),
+    ("Right Issue 1:15 @ Premium Of Rs 333 Per Share", [("RIGHTS", 1.0, 15.0)]),
+])
+def test_abbreviated_subjects_are_parsed(subject, expected):
+    got = sorted((a["action_type"], a["num"], a["den"]) for a in parse_subject(subject))
+    assert got == sorted(expected)
+
+
+@pytest.mark.parametrize("subject", ["Capital Reduction", "Capital Reduction Pursuant To Nclt Order",
+                                     "Consolidation Of Equity Shares From Re 1 Per Share To Rs 10 Per Share",
+                                     "Bon 1 Dvr : 20 Eq Shares"])
+def test_unreadable_capital_events_are_flagged_not_dropped(subject):
+    out = parse_subject(subject)
+    assert out and out[0]["action_type"] == "OTHER" and str(out[0]["note"]).startswith("UNPARSED")
