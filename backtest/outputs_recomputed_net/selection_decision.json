@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-06T10:18:30.345083+00:00",
-  "commit_sha": "be4295a717b4",
+  "generated_at": "2026-11-06T10:34:36.429568+00:00",
+  "commit_sha": "ab1abcaa3922",
   "selected_config": null,
   "selection_reason": "No candidate passed all gates",
   "pre_registered_gate_sequence": [

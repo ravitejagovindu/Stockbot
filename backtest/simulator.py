@@ -10,7 +10,7 @@ from sqlalchemy import distinct, select, text
 from sqlalchemy.engine import make_url
 
 from data.db.models import MarketDataLake
-from engine_core.candidate_builder import build_candidate_dicts
+from engine_core.candidate_builder import bar_context, build_candidate_dicts
 from engine_core.corporate_action_events import apply_actions_to_position, due_actions
 from engine_core.costs import CostModel
 from engine_core.entry_filters import apply_entry_filters
@@ -96,27 +96,14 @@ class Simulator:
         c = build_candidate_dicts(self.s, self.cfg, [sym], dt)
         if not c:
             return None
-        adj = c[0]["adjusted_ohlcv"]
-        if dt not in adj.index:
+        ctx = bar_context(c[0]["adjusted_ohlcv"], dt, int(self.cfg["risk"]["atr_period"]), self.rules.parabolic_lookback)
+        if ctx is None:
             return None
-        a = atr(
-            adj["high_adj"],
-            adj["low_adj"],
-            adj["close_adj"],
-            period=int(self.cfg["risk"]["atr_period"]),
-        )
-        r = adj.loc[dt]
-        if isinstance(r, pd.DataFrame):
-            r = r.iloc[-1]
-        atr_val = (
-            float(a.loc[dt])
-            if (dt in a.index and pd.notna(a.loc[dt]))
-            else (float(a.iloc[-1]) if pd.notna(a.iloc[-1]) else 0.0)
-        )
+        bar, atr_val, ref = ctx
         return (
-            Bar(float(r.open_adj), float(r.high_adj), float(r.low_adj), float(r.close_adj)),
+            bar,
             atr_val,
-            parabolic_ref_close(list(adj["close_adj"]), self.rules.parabolic_lookback),
+            ref,
             any(_to_date(x.get("ex_date")) == dt for x in c[0]["corporate_actions"]),
             c[0]["corporate_actions"],
         )
