@@ -1,0 +1,2 @@
+symbol,ex_date,action_type,feed_symbol,notes
+DVL,2025-08-01,DIVIDEND,DVL,feed_symbol=DVL; Dividend - Rs 5 Per Share

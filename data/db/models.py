@@ -49,6 +49,25 @@ class SharesOutstanding(Base):
     __table_args__ = (UniqueConstraint("symbol", "effective_date"),)
 
 
+class SharesOutstandingPIT(Base):
+    """Point-in-time shares outstanding derived (F2b) from the current issued size walked back through the corporate-action log.
+
+    One row per segment: ``shares_count`` holds from ``effective_date`` until the next row.  ``reliable`` is 0 for segments dated
+    before an event the log cannot adjust (merger, demerger, large rights, unsupported split/bonus): the derived count is not trusted there.
+    """
+    __tablename__ = "shares_outstanding_pit"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    symbol: Mapped[str] = mapped_column(String(20), nullable=False)
+    effective_date: Mapped[date] = mapped_column(Date, nullable=False)
+    shares_count: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    reliable: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    basis: Mapped[Optional[str]] = mapped_column(String(300))
+    derived_at: Mapped[Optional[str]] = mapped_column(String(40))
+
+    __table_args__ = (UniqueConstraint("symbol", "effective_date"),)
+
+
 class CorporateActionsLog(Base):
     """Corporate action events (splits, bonuses). Stored as events — NOT pre-applied."""
     __tablename__ = "corporate_actions_log"
