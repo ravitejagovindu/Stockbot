@@ -116,7 +116,13 @@ def test_cfg00_pooled_reproducibility():
 
 @pytest.mark.slow
 def test_active_simulator_mini_window_jan_feb_2020():
-    """Actively execute Simulator over Jan-Feb 2020 and verify known trades reproduction."""
+    """Actively execute Simulator over Jan-Feb 2020 and verify known trades reproduction.
+
+    Re-baselined 2026-11-07 after the F2 lake swap (reviewer-approved after investigation): the old expected values
+    (entry 2020-01-15 @ 643.40, 144 sh) came from a lake that spliced raw pre-2020 prices onto Yahoo dividend-adjusted
+    2020+ prices (every 2020 close ~4.5% low against the raw 20-day high of 636.3).  On raw prices ESCORTS closes
+    643.05 on 2020-01-09 (breakout, close > SMA50 633.6 > SMA200 606.6), so the fill is the 2020-01-10 open.
+    """
     cfg = load_config()
     with get_session() as s:
         sim = Simulator(cfg, s, allow_live_db=True)
@@ -129,13 +135,13 @@ def test_active_simulator_mini_window_jan_feb_2020():
 
     esc = escorts_trades.iloc[0]
     _as_date = lambda d: d.date() if hasattr(d, "date") and callable(getattr(d, "date")) else (date.fromisoformat(str(d)) if isinstance(d, str) else d)
-    assert _as_date(esc["entry_date"]) == date(2020, 1, 15), f"ESCORTS entry date must be 2020-01-15, got {esc['entry_date']}"
-    assert _as_date(esc["exit_date"]) == date(2020, 2, 20), f"ESCORTS exit date must be 2020-02-20, got {esc['exit_date']}"
-    assert int(esc["shares"]) == 144, f"ESCORTS shares must be 144, got {esc['shares']}"
-    assert round(float(esc["entry_price"]), 2) == 643.40, f"ESCORTS entry price mismatch: {esc['entry_price']}"
+    assert _as_date(esc["entry_date"]) == date(2020, 1, 10), f"ESCORTS entry date must be 2020-01-10, got {esc['entry_date']}"
+    assert _as_date(esc["exit_date"]) == date(2020, 1, 31), f"ESCORTS exit date must be 2020-01-31, got {esc['exit_date']}"
+    assert int(esc["shares"]) == 162, f"ESCORTS shares must be 162, got {esc['shares']}"
+    assert round(float(esc["entry_price"]), 2) == 646.45, f"ESCORTS entry price mismatch: {esc['entry_price']}"
     assert esc["exit_reason"] == "STOP_HIT", f"ESCORTS exit reason must be STOP_HIT, got {esc['exit_reason']}"
-    assert round(float(esc["pnl_net"])) == 22569, f"ESCORTS net PnL mismatch: {esc['pnl_net']}"
-    assert round(float(esc["realized_r"]), 3) == 2.295, f"ESCORTS realized R mismatch: {esc['realized_r']}"
+    assert round(float(esc["pnl_net"])) == 22844, f"ESCORTS net PnL mismatch: {esc['pnl_net']}"
+    assert round(float(esc["realized_r"]), 3) == 2.343, f"ESCORTS realized R mismatch: {esc['realized_r']}"
 
     print(f"\n[VERIFIED] Active Simulator Mini-Window Jan-Feb 2020:")
     print(f"  Executed Trades: {len(trades)}")
