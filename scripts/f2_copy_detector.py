@@ -30,8 +30,9 @@ def special_sessions() -> set[str]:
     return set(pd.read_csv(SPECIAL, comment="#")["date"].astype(str))
 
 
-def copy_dates(con: sqlite3.Connection, table: str, share: float = 0.9) -> pd.DataFrame:
-    dates = [r[0] for r in con.execute(f"select distinct trade_date from {table} order by 1")]
+def copy_dates(con: sqlite3.Connection, table: str, share: float = 0.9, lo: str = "0000", hi: str = "9999") -> pd.DataFrame:
+    # memory-light: one date pair at a time; lo/hi limit the range (the first date of the range is the baseline)
+    dates = [r[0] for r in con.execute(f"select distinct trade_date from {table} where trade_date between ? and ? order by 1", (lo, hi))]
     rows = []
     for prev, d in zip(dates, dates[1:]):
         n, eq = con.execute(
@@ -61,16 +62,21 @@ def main() -> int:
     ap.add_argument("--db", default=str(ROOT / "finsight.db"))
     ap.add_argument("--table", default="market_data_lake_staging")
     ap.add_argument("--share", type=float, default=0.9)
+    ap.add_argument("--from", dest="lo", default="0000")
+    ap.add_argument("--to", dest="hi", default="9999")
+    ap.add_argument("--no-calendar", action="store_true")
     a = ap.parse_args()
     con = sqlite3.connect(f"file:{a.db}?mode=ro", uri=True, timeout=60)
     con.execute("PRAGMA query_only=ON")
-    cd = copy_dates(con, a.table, a.share)
+    cd = copy_dates(con, a.table, a.share, a.lo, a.hi)
     OUT.mkdir(parents=True, exist_ok=True)
-    cd.to_csv(OUT / f"copy_detector_{a.table}.csv", index=False)
-    cal = calendar_check(con, a.table)
-    print(f"{a.table}: {len(cd)} copy dates")
+    cd.to_csv(OUT / f"copy_detector_{a.table}_{a.lo[:4]}_{a.hi[:4]}.csv", index=False)
+    print(f"{a.table} {a.lo}..{a.hi}: {len(cd)} copy dates")
     if len(cd):
         print(cd.to_string(index=False))
+    if a.no_calendar:
+        return 1 if len(cd) else 0
+    cal = calendar_check(con, a.table)
     print("Nifty starts:", cal["nifty_start"])
     print("dates in the table (from Nifty start) without a Nifty row and not special:", len(cal["dates_without_nifty_and_not_special"]),
           cal["dates_without_nifty_and_not_special"][:40])

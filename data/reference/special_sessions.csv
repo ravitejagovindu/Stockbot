@@ -1,0 +1,21 @@
+# Approved special trading sessions and known Nifty-series gaps (F2). kind: special_session = real exchange session on a
+# weekend/holiday (file's own date verified); nifty_gap = ordinary session for which the lake has no NIFTY50_INDEX row.
+date,kind,note
+2013-05-11,special_session,Saturday special session
+2013-11-03,special_session,Sunday Diwali Muhurat
+2014-03-22,special_session,Saturday special session
+2015-02-28,special_session,Saturday Budget day
+2016-10-30,special_session,Sunday Diwali Muhurat
+2019-10-27,special_session,Sunday Diwali Muhurat
+2020-02-01,special_session,Saturday Budget day
+2020-11-14,special_session,Saturday Diwali Muhurat
+2023-11-12,special_session,Sunday Diwali Muhurat
+2024-01-20,special_session,Saturday special session
+2024-03-02,special_session,Saturday special session
+2024-05-18,special_session,Saturday special session
+2025-02-01,special_session,Saturday Budget day
+2026-02-01,special_session,Sunday Budget day
+2015-12-01,nifty_gap,ordinary session; lake has no Nifty row
+2016-06-20,nifty_gap,ordinary session; lake has no Nifty row
+2018-01-16,nifty_gap,ordinary session; lake has no Nifty row
+2026-09-30,nifty_gap,ordinary session; lake has no Nifty row
