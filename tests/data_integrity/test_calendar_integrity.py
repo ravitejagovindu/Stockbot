@@ -3,7 +3,7 @@
 Slow (minutes: one pass over millions of rows), so they only run when STOCKBOT_DATA_TESTS=1 and the database has the
 relevant table; otherwise skipped (a clean clone has no database).  Run before and after any swap:
 
-    set STOCKBOT_DATA_TESTS=1 && py -3 -m pytest tests/data_integrity -q
+    set STOCKBOT_DATA_TESTS=1 && py -3 -m pytest tests/data_integrity -q   (STOCKBOT_DB=<path> to test another copy)
 """
 from __future__ import annotations
 
@@ -15,9 +15,11 @@ import pytest
 
 from scripts.f2_copy_detector import copy_dates, special_sessions
 
-DB = Path(__file__).resolve().parents[2] / "finsight.db"
-pytestmark = pytest.mark.skipif(os.environ.get("STOCKBOT_DATA_TESTS") != "1" or not DB.exists(),
-                                reason="needs STOCKBOT_DATA_TESTS=1 and the real database")
+DB = Path(os.environ.get("STOCKBOT_DB") or Path(__file__).resolve().parents[2] / "finsight.db")
+RUN = os.environ.get("STOCKBOT_DATA_TESTS") == "1"
+if RUN and not DB.exists():                       # asked for the data tests but there is nothing to test: fail loudly, never skip
+    raise RuntimeError(f"STOCKBOT_DATA_TESTS=1 but the database {DB} does not exist")
+pytestmark = pytest.mark.skipif(not RUN, reason="needs STOCKBOT_DATA_TESTS=1 and the real database")
 
 
 def _con():
