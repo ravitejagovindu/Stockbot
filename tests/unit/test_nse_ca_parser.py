@@ -23,6 +23,13 @@ def _factors(subject):
      [("SPLIT", 0.2), ("BONUS", 0.5)]),
     ("Annual General Meeting/ Dividend - Rs 29.50/- Per Share And Bonus 1:1", [("BONUS", 0.5)]),
     ("Bonus 2:5", [("BONUS", 5 / 7)]),
+    ("Face Value Split Rs.10/- To Re.1/- Per Share", [("SPLIT", 0.1)]),                  # no "From" (SBIN)
+    ("Fv Split Rs.10 To Rs.5", [("SPLIT", 0.5)]),                                         # M&M 2010
+    ("Bonus 1:1 And Face Value Split From Rs.10/- To Rs.5/-", [("SPLIT", 0.5), ("BONUS", 0.5)]),
+    ("Bonus 1 : 1", [("BONUS", 0.5)]),
+    ("Scheme Of Arrangement - Bonus Debentures 6:1", []),                                  # not a price-moving bonus
+    ("Scheme Of Arangement- Bonus - 1 Debenture For 1 Equity Share Held", []),
+    ("Bonus Preference Shares 21:1", []),
 ])
 def test_split_and_bonus_factors(subject, expected):
     got = _factors(subject)
