@@ -29,6 +29,19 @@ Pure test suite (everything except `tests/unit/test_baseline_reproducibility.py`
 | 7 | `ebef11d` | F9 | One sentence in `docs/MAXT_VALIDATION.md` softened (autocorrelation claim that was not measured). |
 | 8 | `4922a53` | F6 follow-up | `Simulator._bar` now calls the shared `candidate_builder.bar_context` (the refactor commit 4 depends on); refreshed `outputs_recomputed_net/selection_decision.json`. |
 | 9 | `bdd8b99` | F2 (staging only, **no swap**) | `data/ingestion/nse_corporate_actions_history.py` (NSE feed fetch + subject parser, not yet loaded into `corporate_actions_log`); raw dump `data/reference/nse_corporate_actions_raw.csv` (33,773 rows) with its done/failed logs and `f2_symbols.txt` (3,945 symbols); `data/reference/verified_corporate_actions.csv` (50-row verification list); `scripts/f2_validate_staging.py` (read-only); `docs/data_audit/` (validation report + 5 CSVs); parser regression tests. |
+| 10 | `5cb136a`, `486171b`, `3f347f5`, `dbbd761` | docs / evidence | Claude_Docs folder, pre-2020 lake-vs-staging comparison, clean-clone test log, Step 1 confirmations, backup decision. |
+| 11 | `4ae7091` | F2 ingester | Bhavcopy file accepted only if its own date equals the requested date (holiday copies); `--all-days`, `--redo`; 3 tests (2 failed before). |
+| 12 | `1fb7028` | F2 parser | NCRPS / preference-share bonus is NON_PRICE; "Split From x To Face Value y"; 5 tests failed before. |
+| 13 | `459dd77`, `0603e09`, `be278ba` | F2 map + calendar | ISIN to canonical-symbol map (334 pure rename / 12 demerger-merger / 53 other), copy detector, special sessions list, permanent calendar data test, Step 1 results. |
+| 14 | `0655254` | docs | Status and open points for the reviewer. |
+| 15 | `2b03a6e` | F2 | Volume-unit continuity check across the Bhavcopy format change (pass). |
+| 16 | `4f8f2a1` | F2 | Nifty/VIX gap fill into `index_gap_fill` (39 NSE index file rows, 12 Yahoo fallback rows). |
+| 17 | `a0c6fc7`, `ef46661` | F2 swap | `scripts/f2_swap.py` (schema, swap, symbol mapping as three transactions), post-swap checks, rehearsal and **real run**; data tests fail loudly without a database. Report: `STOCKBOT_STEP3_SWAP_REPORT.md`. |
+| 18 | `750015c` | F2 parser | Abbreviated subjects ("Fv Splt Frm", "Bon x:y", "Spl Rs.5tors.2", "Right Issue") were dropped silently; 11 tests failed before. |
+| 19 | `a050132` | F2 Step 4 | Evidence tiers for split/bonus events; 6 tests failed before. |
+| 20 | `63c2882` | F2 Step 5 | ADTV-eligible symbols, triage and dispositions of the large moves. |
+| 21 | `bebd08f` | F2 Step 6 | Verification list result columns (58/58 PASS). |
+| 22 | `4692d7b` | docs | Steps 4-6 report (`STOCKBOT_STEP4_6_REPORT.md`). |
 
 Not in git: `finsight.db` (ignored) including the new `market_data_lake_staging` and `bhavcopy_fetch_log` tables, and the backup `F:\Projects\Ravi\Backups\finsight_pre_F2_2026-11-06.db`. Working tree clean after commit 9. Pure suite at commit 9: **235 passed** (the 236 quoted above was counted before the last edits; not reconciled).
 
@@ -85,6 +98,8 @@ Not in git: `finsight.db` (ignored) including the new `market_data_lake_staging`
 5. **Test before/after.** Before: failed in the earlier run (`0.125 <= 0.12` false). After: 15 passed, deterministic.
 
 ## F2 / F2b — STOP-1 reached (raw prices staged and validated; nothing swapped)
+> **Superseded as of 2026-11-07 (later):** the swap and symbol mapping HAVE run on the real database (`STOCKBOT_STEP3_SWAP_REPORT.md`), and the open points below were answered by the reviewer and worked through (`STOCKBOT_STEP4_6_REPORT.md`). This section is kept as the STOP-1 record.
+
 Status date 2026-11-07. **No row of `market_data_lake`, `corporate_actions_log` or `shares_outstanding` has been changed.** Only two new tables exist in `finsight.db`: `market_data_lake_staging` and `bhavcopy_fetch_log`. Backup before any F2 work: `F:\Projects\Ravi\Backups\finsight_pre_F2_2026-11-06.db` (+ `.sha256`, integrity ok).
 
 1. **What was wrong (established).** The lake mixes three price bases: pre-2020 rows are raw, 2020-01-01 … 2026-09-xx rows are Yahoo split/bonus/dividend-adjusted, the last ~11 days are raw again. `shares_outstanding` holds *current* Yahoo share counts (source `yahoo_finance_current`, loaded 2026-10-02) stamped 2020-01-01. Both distort ADTV, market cap, gaps and adjustment factors.
