@@ -61,6 +61,11 @@ class CorporateActionsLog(Base):
     ratio_denominator: Mapped[Optional[float]] = mapped_column(Float)
     notes: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    # F2 provenance (added by scripts/f2_swap.py schema stage)
+    source: Mapped[Optional[str]] = mapped_column(Text)
+    loaded_at: Mapped[Optional[str]] = mapped_column(Text)
+    evidence_tier: Mapped[Optional[str]] = mapped_column(Text)
+    evidence: Mapped[Optional[str]] = mapped_column(Text)
 
     __table_args__ = (UniqueConstraint("symbol", "ex_date", "action_type"),)
 
