@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -33,7 +33,8 @@ def verify_row(session, r, expected_product: float) -> dict:
     ex = date.fromisoformat(r.ex_date)
     res = {"symbol": r.symbol, "ex_date": r.ex_date, "action_type": r.action_type, "category": r.category, "result": "FAIL", "note": ""}
     logs = session.execute(select(CorporateActionsLog).where(CorporateActionsLog.ex_date == ex)
-                           .where(CorporateActionsLog.notes.like(f"%feed_symbol={r.symbol};%"))).scalars().all()
+                           .where(or_(CorporateActionsLog.symbol == r.symbol,
+                                                 CorporateActionsLog.notes.like(f"%feed_symbol={r.symbol};%")))).scalars().all()
     mine = [c for c in logs if c.action_type == r.action_type]
     if not mine:
         res["note"] = "no log row of that type for this feed symbol and ex-date"

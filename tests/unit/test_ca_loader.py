@@ -107,3 +107,10 @@ def test_load_is_append_only_and_rolls_back_on_a_count_mismatch(db):
     assert rep["inserted"] == 2
     with pytest.raises(AssertionError):                         # second load of the same rows must not silently double or skip
         ld.load(db, res.rows)
+
+
+def test_verified_list_stores_per_row_factors_so_same_date_pairs_multiply_to_the_combined_factor():
+    import numpy as np, pandas as pd
+    v = pd.read_csv("data/reference/verified_corporate_actions.csv")
+    e = v[(v.symbol == "EASEMYTRIP") & (v.ex_date == "2022-11-21")]
+    assert sorted(e.expected_factor) == [0.25, 0.5] and np.isclose(np.prod(e.expected_factor), 0.125)
