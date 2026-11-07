@@ -39,8 +39,8 @@ HEADERS = {
 }
 _NUM = r"([\d]+(?:\.[\d]+)?)"
 _RS = r"(?:rs\.?|re\.?|inr)?\s*"
-_SPLIT = re.compile(r"(?:split|sub-?\s*division)[^\d]*?(?:from\s*)?" + _RS + _NUM + r"[^\d]*?to\s*" + _RS + _NUM, re.I)
-_NOT_SHARES = re.compile(r"debenture|preference|preferance", re.I)  # bonus debentures/preference shares do not move the price
+_SPLIT = re.compile(r"(?:split|sub-?\s*division)[^\d]*?(?:from\s*)?" + _RS + _NUM + r"[^\d]*?to\s*(?:face\s*value\s*)?" + _RS + _NUM, re.I)
+_NOT_SHARES = re.compile(r"debenture|preference|preferance|ncrps|ncps|redeemable|non-?\s*convertible", re.I)  # bonus debentures/preference shares do not move the price
 _BONUS = re.compile(r"bonus[^\d]{0,12}" + _NUM + r"\s*:\s*" + _NUM, re.I)
 _RIGHTS = re.compile(r"rights[^\d]{0,12}" + _NUM + r"\s*:\s*" + _NUM, re.I)
 _DIV = re.compile(r"dividend|\bdiv\b", re.I)
@@ -50,6 +50,9 @@ def parse_subject(subject: str) -> list[dict]:
     """Parse a free-text NSE subject into 0..n action dicts (action_type, num, den, note)."""
     s = (subject or "").strip()
     out: list[dict] = []
+    if _NOT_SHARES.search(s) and re.search(r"bonus|arrangement", s, re.I):
+        # bonus of debentures / (redeemable) preference shares (NCRPS) under a scheme: no effect on the equity price
+        return [{"action_type": "OTHER", "num": None, "den": None, "note": "NON_PRICE: " + s}]
     for m in _SPLIT.finditer(s):
         old_fv, new_fv = float(m.group(1)), float(m.group(2))
         if old_fv > 0 and new_fv > 0 and new_fv != old_fv:

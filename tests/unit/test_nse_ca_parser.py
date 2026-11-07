@@ -44,3 +44,23 @@ def test_other_types():
     assert parse_subject("Interim Dividend - Rs 7 Per Share")[0]["action_type"] == "DIVIDEND"
     assert parse_subject("Annual General Meeting") == []
     assert parse_subject("Bonus issue details awaited")[0]["action_type"] == "OTHER"
+
+
+# ---- Step 4 fixes (reviewer: fix the patterns behind TVSMOTOR / TVSHLTD / SIYSIL / RADIOCITY / SHARONBIO)
+@pytest.mark.parametrize("subject", [
+    "Scheme Of Arrangement - Bonus Ncrps 4:1",       # TVSMOTOR 2025-08-25
+    "Scheme Of Arrangement - Bonus Ncrps 46:1",      # TVSHLTD 2026-09-08
+    "Scheme Of Arrangement - Bonus Ncrps 1:10",      # RADIOCITY 2023-01-13
+    "Bonus Non-Convertible Redeemable Preference Shares 3:1",
+])
+def test_bonus_of_redeemable_preference_shares_is_not_price_moving(subject):
+    acts = parse_subject(subject)
+    assert [a["action_type"] for a in acts] == ["OTHER"]
+    assert acts[0]["note"].startswith("NON_PRICE:")
+    assert acts[0]["num"] is None and acts[0]["den"] is None
+
+
+def test_bonus_and_split_with_face_value_wording():
+    acts = {a["action_type"]: a for a in parse_subject("Bonus 1:1 / Face Value Split From 10/- To Face Value 2/-")}  # SHARONBIO
+    assert (acts["SPLIT"]["num"], acts["SPLIT"]["den"]) == (2.0, 10.0)
+    assert (acts["BONUS"]["num"], acts["BONUS"]["den"]) == (1.0, 1.0)
