@@ -9,10 +9,6 @@ import glob
 import pandas as pd
 from pathlib import Path
 import logging
-import sys
-
-# Ensure StockBot modules can be loaded
-sys.path.append(str(Path(__file__).resolve().parents[3]))
 
 from data.db.connection import engine
 
