@@ -1,0 +1,38 @@
+# Step 11 report — F10 gap fixes (A), F9 power study (B), F8 feasibility (C)
+
+Date 2026-11-08. No config, gate or budget changed. No strategy or universe design. AMD-002 and the six-config re-run not started. Stopped for review.
+
+## A. F10 gap fixes (one commit each)
+**A1 — baseline reproducibility is independent of the real database** (a463365, then fixes af76655 and 5d3ffb9).
+`tests/fixtures/mini_lake.py` builds a small deterministic lake (330 sessions, a rising Nifty, one stock with a breakout and a gap-down) in an in-memory database. `tests/unit/test_baseline_reproducibility.py` now runs the real `strategy_config.yaml` and the real Simulator on it and checks every number against arithmetic done by hand (signal close 176 on session 300; fill = session-301 open 177 x 1.001 = 177.177; 553 shares = floor(Rs10,000 / (177.177 - 159.115)); exit = stop x 0.999 on the gap-down session; P&L = shares x (exit - entry)). The frozen-CSV checksum tests are unchanged (they never used the database). The two database-dependent tests moved, with their re-baselined values, to `tests/data_integrity/test_baseline_real_db.py`, run only with `STOCKBOT_DATA_TESTS=1` (both pass, 101 s). A guard test (AST-based) fails if the unit file ever imports `get_session` or names the database file.
+**Process slip, disclosed:** my first guard test contained a vacuous `or True`; the commit that "fixed" it (af76655) left a syntax error and broke collection of that file; 5d3ffb9 repaired it. The file collected and passed again in the next commit, but af76655 itself had a failing test file, which breaks the no-failing-commit rule.
+
+**A2 — no network inside a backtest** (a9e057d).
+The on-demand NSE fetch was `run_backtest.py --scrape` (earnings and ASM/GSM scrapers called from inside the runner). It is removed; the scraper block now lives in `scripts/run_surveillance_scrapers.py` (not run). `backtest/no_network.py` patches `socket.connect/connect_ex/create_connection/getaddrinfo` and `Simulator.run` executes inside it, so any network use (requests, urllib, yfinance) raises `NetworkAccessError`. 4 tests: the guard blocks sockets, DNS, urllib and requests and restores afterwards; a network call made inside `Simulator.run` raises (this test **fails without the guard**, checked by reverting `simulator.py`; it uses a closed local port so nothing leaves the machine); `run_backtest.py` has no `--scrape` and no scraper import; no module in `backtest/` imports a network library.
+
+**A3 — other tests that silently depend on `finsight.db`.**
+Ran the whole suite with `DATABASE_URL` pointing at an empty database: **321 passed, 63 skipped, 0 failed** (30 s, down from about 14 minutes because the old baseline test was the slow one). The 63 skips are all the env-gated real-database tests: 58 verification rows plus 5 others in `tests/data_integrity` (`test_corporate_actions_real_db.py`, `test_calendar_integrity.py`, `test_baseline_real_db.py`). `finsight.db` was not modified by the run (mtime unchanged). A grep of `tests/` finds the database file or `get_session` only in those files and in the new unit guard. Limit of the check: a test that opened the database by a hard-coded path (not through `DATABASE_URL`) would not be caught by redirecting the URL; the grep found none. Result: **no other test silently depends on the real database.**
+
+## B. F9 power study (measurement only)
+Pre-registration `docs/F9_PREREGISTRATION.md` was committed (d4f8253, 07:53) before any result existed; one amendment (entry probability so the realised trade rate matches the baseline's, 1b3922f) was also made before any study result (only the trade-library summary existed). Method: 16,976 random-entry trades from the lake simulated with the engine's own lifecycle rules (library mean net +0.04 R, sd 0.81 R, mean hold 19 sessions) -> random-entry portfolios (12 positions max, 1% risk, realised 0.60 trades a week, 2.6 a month vs the baseline's ~0.64 and ~2.8) -> paired series against a matched random baseline -> the existing Westfall-Young step-down Max-T studentized circular block bootstrap, K = 6, B = 2,000, dual block rule (weekly blocks 4 and 8, monthly blocks 2 and 3). Size: 2,000 replications; power: 1,000 per cell. Full tables in `docs/F9_POWER_RESULTS.md`.
+
+| design | size (dual) | power at +0.05 R | +0.10 R | +0.15 R | +0.25 R | +0.50 R |
+|---|---|---|---|---|---|---|
+| weekly, 60 periods | 0.0580 | 0.027 | 0.031 | 0.085 | 0.212 | 0.644 |
+| weekly, 81 periods | 0.0555 | 0.024 | 0.061 | 0.110 | 0.253 | 0.800 |
+| monthly, 60 periods | 0.0625 | 0.060 | 0.139 | 0.319 | 0.718 | 0.998 |
+| monthly, 81 periods | 0.0630 | 0.070 | 0.155 | 0.371 | 0.786 | 0.999 |
+
+Size standard error at nominal 0.05 is 0.0049, so the pre-registered window is 0.0451-0.0549. Period SD of the paired return: weekly 0.86%, monthly 1.7-1.8%. The injected +0.10 R per trade moves the paired return by about +0.065% a week or +0.26-0.29% a month (measured).
+**Decision under the rule fixed in advance (size in window AND >= 80% power at +0.10 R): no design is acceptable.** Both conditions fail in every design: size is 0.0555-0.0630 (above the window, i.e. mildly over-rejecting; the weekly 81 value misses the window by 0.0006), and power at +0.10 R is 3-16%, far from 80%. The smallest edge on the grid with 80% power is +0.50 R per trade for three designs, and none on the grid for weekly 60 (monthly 81 reaches 79% at +0.25 R). No gate or alpha was changed. Monthly beats weekly on power by a factor of two to five, but not enough.
+Caveats (pre-registered): the dependence comes from random-entry portfolios, not a real strategy; the pool omits the market-cap gate (KI-001); the regime is a simplified Nifty/VIX rule.
+
+## C. F8 feasibility — `docs/F8_FEASIBILITY.md` (nothing loaded, nothing scraped)
+- **ASM/GSM history:** no endpoint gives history. `api/reportASM` and `api/reportGSM` answer from here but are current snapshots (a request dated 2020-01-01 returned the identical response; today 130 long-term + 49 short-term ASM and 76 GSM names). The history exists as NSE circular PDFs (static, downloadable, text and tables parse: tested on two), GSM from March 2017, but the circular index is dynamic and enumerating numbers would be scraping. Options: start a forward daily snapshot, follow the GSM circular chain from the FAQ's table, or use a file you supply. Blocks: Pass 2 compliant backtests.
+- **Earnings history:** obtainable. `api/corporates-financial-results` (INFY: 144 rows back to 2005, with the exchange broadcast timestamp) and `api/corporate-board-meetings` (date-ranged request works; intimation timestamp = "known ahead" date) both answered from here. About 40 minutes of requests for ~2,000 symbols; not run. Gaps: delisted/renamed symbols, filtering result meetings, format changes around 2019-20. The current scraper uses dividend ex-dates and cannot produce a valid earnings calendar. Blocks: Pass 2 compliant backtests.
+- Today `Exclusions.load` is fail-closed and `pending_asm_gsm_matches_*` are PENDING templates, so no Pass 2 backtest can run.
+
+## Decisions needed
+1. F9: no tested design meets the pre-registered rule. Do you want the study extended (a different dependence structure, more periods, a different test), or the result recorded as "the current test cannot be validated at 60-81 periods for edges of +0.10 R"? Nothing was changed or relaxed.
+2. F8: approve the time-boxed earnings collection from the two NSE APIs? ASM/GSM: can you supply a history file; otherwise start the forward snapshot and try the GSM circular chain?
+3. The 2,000-rep run took 18.5 minutes on 4 cores; re-running with other settings is cheap.
