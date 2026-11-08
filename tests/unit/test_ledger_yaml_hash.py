@@ -33,3 +33,17 @@ def test_the_exploratory_ledger_is_unchanged_and_has_no_chain():
     raw = (REC / "trial_ledger_exploratory.csv").read_bytes()
     assert hashlib.sha256(raw).hexdigest() == "090c1c178bc434a1fa0778a97aa94b5f0abe320f03513090cab0891f8dbe2049"
     assert b"row_hash" not in raw and b"prev_hash" not in raw                         # decision (e): a sha256 pin, never a chain
+
+
+def test_what_remains_of_the_old_outputs_is_what_the_ledger_and_the_decisions_need():
+    """Phase 10 deleted the stale outputs; the files the ledger or a reviewer decision refers to must still be there (docs/restructure/LEDGER_MANIFEST.md)."""
+    import csv as _csv
+    kept = ROOT / "backtest" / "outputs_recomputed_net"
+    assert len(list(kept.iterdir())) == 27 and (kept / "recompute_comparison.csv").exists() and (kept / "selection_decision.json").exists()
+    import subprocess
+    tracked = subprocess.run(["git", "ls-files", "backtest"], cwd=ROOT, capture_output=True, text=True).stdout.split()
+    assert [t for t in tracked if t.startswith("backtest/outputs/")] == ["backtest/outputs/selection_decision.json"] and not [t for t in tracked if "outputs_v1_stale" in t]
+    rows = list(_csv.DictReader(open(REC / "trial_ledger_exploratory.csv", encoding="utf-8", newline="")))
+    named = {Path(r["outputs_dir"].replace("\\", "/")).name for r in rows}
+    assert "outputs_recomputed_net" in named and all((ROOT / "backtest" / n).exists() for n in named if n.startswith("outputs"))      # every outputs folder the exploratory ledger names still exists
+    assert not [t for t in tracked if t.endswith(".py")]                                                                              # no code left in backtest/

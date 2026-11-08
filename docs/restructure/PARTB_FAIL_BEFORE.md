@@ -163,3 +163,4 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_shared_config.py::test_every_key_of_the_removed_yaml_has_a_documented_new_home | docs/restructure/CONFIG_KEYS.csv | a key left without a decided home | passes clean / FAILS mutated |
 | tests/unit/test_shared_config.py::test_the_regime_endpoint_constants_equal_the_frozen_macro_section | stockbot/live/api/regime.py | display constant differs from the frozen value | passes clean / FAILS mutated |
 | tests/unit/test_shared_config.py::test_the_config_dict_has_the_legacy_shape_and_the_shared_values | stockbot/config/dict_view.py | a legacy section name not mapped | passes clean / FAILS mutated |
+| tests/unit/test_ledger_yaml_hash.py::test_what_remains_of_the_old_outputs_is_what_the_ledger_and_the_decisions_need | backtest/ (a tracked .py file added) | code left in backtest/ | passes clean / FAILS with a tracked .py in backtest/ |
