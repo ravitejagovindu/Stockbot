@@ -23,6 +23,9 @@ BASIS = "added in Step 6 (deterministic pick from the evidence file)"
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    args = ap.parse_args()
     v = pd.read_csv(V)
     keep = [c for c in v.columns if c not in ("logged_factor", "observed_raw_ratio", "yahoo_factor", "tier", "result", "result_note")]
     v = v[keep]

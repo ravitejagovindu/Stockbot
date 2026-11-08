@@ -171,3 +171,19 @@ def test_command_line_exit_codes(tmp_path, lake, monkeypatch, capsys):
     assert eod_cli.main(["--date", DS[299].isoformat()]) == 0
     assert eod_cli.main(["--date", DS[299].isoformat(), "--mode", "LIVE"]) == 2 and "REFUSED" in capsys.readouterr().out
     assert eod_cli.main(["--date", "2031-01-02"]) == 2
+
+
+def test_api_routers_do_not_import_engine_internals():
+    """The (legacy, read/record-only) routers must not reach into the decision engine, the strategies, or the old engine_core."""
+    banned = ("stockbot.engine", "stockbot.strategies", "engine_core", "live_runner", "stockbot.backtest")
+    for f in sorted((ROOT / "stockbot" / "live" / "api").glob("*.py")):
+        tree = ast.parse(f.read_text(encoding="utf-8"))
+        for n in ast.walk(tree):
+            mods = [a.name for a in n.names] if isinstance(n, ast.Import) else ([n.module] if isinstance(n, ast.ImportFrom) and n.module else [])
+            for m in mods:
+                assert not any(m == b or m.startswith(b + ".") for b in banned), (f.name, m)
+
+
+def test_main_registers_no_order_or_engine_routes_and_the_scheduler_job_is_the_runner():
+    import inspect
+    assert "run_eod" in inspect.getsource(scheduler.run_eod_job) and "EODPipeline" not in Path(scheduler.__file__).read_text(encoding="utf-8")

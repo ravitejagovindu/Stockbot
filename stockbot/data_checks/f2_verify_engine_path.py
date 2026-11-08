@@ -85,7 +85,11 @@ def run(db: str) -> pd.DataFrame:
 
 
 def main() -> int:
-    db = sys.argv[1] if len(sys.argv) > 1 else str(ROOT / "finsight.db")
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    ap.add_argument("db", nargs="?", help="path of the database (default: finsight.db in the repository)")
+    args = ap.parse_args()
+    db = args.db or str(ROOT / "finsight.db")
     df = run(db)
     df.to_csv(OUT, index=False)
     print(df.groupby(["category", "result"]).size().unstack(fill_value=0).to_string())

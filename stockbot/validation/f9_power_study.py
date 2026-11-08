@@ -112,7 +112,11 @@ def run_task(args):
 
 
 def main() -> int:
-    quick = "--quick" in sys.argv
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    ap.add_argument("--quick", action="store_true", help="40 replications per cell instead of the full study")
+    args = ap.parse_args()
+    quick = args.quick
     tasks = []
     for freq in ("weekly", "monthly"):
         for n in (60, 81):

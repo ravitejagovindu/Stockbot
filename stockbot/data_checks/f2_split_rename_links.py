@@ -56,6 +56,9 @@ def find_links(con, events: pd.DataFrame, eligible_syms: set[str]) -> pd.DataFra
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    args = ap.parse_args()
     con = sqlite3.connect(f"file:{ROOT / 'finsight.db'}?mode=ro", uri=True, timeout=120)
     ev = pd.read_csv(ROOT / "data/reference/corporate_actions_evidence.csv")
     ev = ev[ev.action_type.isin(["SPLIT", "BONUS"])]

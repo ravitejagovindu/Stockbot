@@ -10,6 +10,9 @@ from stockbot.data_checks.preflight import assert_preflight_spot_check
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    args = ap.parse_args()
     try:
         assert_preflight_spot_check()
         print("OK: Pre-flight spot-checks passed.")

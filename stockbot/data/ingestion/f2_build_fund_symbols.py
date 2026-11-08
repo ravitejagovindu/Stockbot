@@ -12,6 +12,9 @@ ROOT = Path(__file__).resolve().parents[3]
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    args = ap.parse_args()
     con = sqlite3.connect(f"file:{ROOT / 'finsight.db'}?mode=ro", uri=True, timeout=120)
     st = pd.read_sql_query("select symbol, max(isin) isin from market_data_lake_staging where isin like 'INF%' group by symbol", con)
     sm = pd.read_sql_query("select symbol, isin from securities_master where isin like 'INF%'", con)

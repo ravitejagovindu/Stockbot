@@ -6,6 +6,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    args = ap.parse_args()
     con = sqlite3.connect(f"file:{ROOT / 'finsight.db'}?mode=ro", uri=True, timeout=120)
     act = pd.read_sql("select symbol, substr(trade_date,1,4) yr, count(*) n from market_data_lake group by 1,2", con)
     funds = set(pd.read_csv(ROOT / "data/reference/fund_etf_symbols.csv")["symbol"].str.upper())

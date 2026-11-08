@@ -6,6 +6,10 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    ap.add_argument("symbols", nargs="*", help="query symbols to list for external checking")
+    args = ap.parse_args()
     con = sqlite3.connect(f"file:{ROOT / 'finsight.db'}?mode=ro", uri=True, timeout=120)
     f = pd.read_sql("select query_symbol, to_date, substr(broadcast_ts,1,10) bc, consolidated from earnings_results_filing where broadcast_ts is not null and period='Quarterly'", con)
     b = pd.read_sql("select query_symbol, bm_date, substr(intimation_ts,1,10) it from earnings_board_meeting where is_results_meeting=1", con)
@@ -30,7 +34,7 @@ def main():
     print("intimation lead (days) quantiles, results meetings:", b.lead.quantile([.01, .05, .5, .95]).to_dict(), " share lead<0:", round((b.lead < 0).mean() * 100, 2), " share lead>=7:", round((b.lead >= 7).mean() * 100, 1))
     b["yr"] = b.bm_date.dt.year
     print(b.groupby("yr").lead.apply(lambda s: round((s >= 7).mean() * 100, 1)).to_string())
-    for s in sys.argv[1:]:
+    for s in args.symbols:
         print("\n==", s)
         print(pd.read_sql("select to_date, substr(broadcast_ts,1,16) broadcast, consolidated from earnings_results_filing where query_symbol=? and period='Quarterly' and broadcast_ts is not null order by to_date desc limit 6", con, params=(s,)).to_string(index=False))
         print(pd.read_sql("select bm_date, substr(intimation_ts,1,10) intimated, purpose from earnings_board_meeting where query_symbol=? and is_results_meeting=1 order by bm_date desc limit 4", con, params=(s,)).to_string(index=False))

@@ -132,3 +132,7 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_live_runner.py::test_scheduler_job_survives_a_refusal_and_runs_when_data_is_there | stockbot/live/runner.py | default mode is LIVE | passes clean / FAILS mutated |
 | tests/unit/test_live_runner.py::test_command_line_exit_codes | stockbot/live/eod_cli.py | refusal exit code changed | passes clean / FAILS mutated |
 | tests/unit/test_regulatory_barrier.py::test_no_broker_order_code | stockbot/live/runner.py | order-placement code in stockbot | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_api_routers_do_not_import_engine_internals | stockbot/live/api/regime.py | a router imports the decision engine | passes clean / FAILS mutated |
+| tests/unit/test_script_wrappers_help.py::test_help_answers_and_writes_nothing[earnings_coverage.py] | stockbot/data_checks/earnings_coverage.py | script without argparse: --help runs it (rewrites its outputs) | passes clean / FAILS mutated |
+| tests/unit/test_script_wrappers_help.py::test_help_answers_and_writes_nothing[f9_report.py] | stockbot/validation/f9_report.py | script without argparse: --help runs it (rewrites its output) | passes clean / FAILS mutated |
+| tests/unit/test_script_wrappers_help.py::test_help_answers_and_writes_nothing[check_all.py] | stockbot/data_checks/check_all.py | --help not answered by the parser (exit code/usage) | passes clean / FAILS mutated |

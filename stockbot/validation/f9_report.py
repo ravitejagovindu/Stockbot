@@ -4,6 +4,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    args = ap.parse_args()
     res = json.loads((ROOT / "data/f9/power_results.json").read_text())
     SIZE_LO, SIZE_HI, MIN_POWER, EDGE_OF_INTEREST = 0.05 - math.sqrt(0.05 * 0.95 / 2000), 0.05 + math.sqrt(0.05 * 0.95 / 2000), 0.80, 0.10
     cells = {(r["freq"], r["n_periods"], r["edge"]): r for r in res}

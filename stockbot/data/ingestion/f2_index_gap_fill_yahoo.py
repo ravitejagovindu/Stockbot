@@ -8,6 +8,9 @@ T = {"NIFTY50_INDEX": "^NSEI", "INDIA_VIX": "^INDIAVIX"}
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description=(__doc__ or "").strip().partition(chr(10))[0])
+    args = ap.parse_args()
     from stockbot.data.ingestion.f2_index_gap_fill import missing
     con = sqlite3.connect("finsight.db", timeout=60)
     miss = missing(con)
