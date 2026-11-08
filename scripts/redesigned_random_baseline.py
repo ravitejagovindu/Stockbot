@@ -44,7 +44,7 @@ from engine_core.lifecycle_rules import (
 )
 from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import is_bull
-from stockbot.validation.trade_metrics import add_r_columns, compute_trade_r
+from stockbot.risk.r_metrics import add_r_columns, compute_trade_r
 from engine_core.universe_screener import UniverseScreener
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

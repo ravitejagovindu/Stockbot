@@ -7,7 +7,7 @@ from datetime import date, timedelta
 import pandas as pd
 import pytest
 
-from stockbot.validation.trade_metrics import add_r_columns, compute_trade_r
+from stockbot.risk.r_metrics import add_r_columns, compute_trade_r
 
 
 def test_compute_trade_r_with_partial_exit_hand_computed():

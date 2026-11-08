@@ -24,7 +24,7 @@ ALLOWED = {
     "strategies": {"data"},
     "backtest": {"config", "data", "universe", "risk", "engine", "strategies"},
     "live": {"config", "data", "universe", "risk", "engine", "strategies"},          # never backtest
-    "validation": {"config", "data", "backtest"},                                  # never live
+    "validation": {"config", "data", "risk", "backtest"},                          # never live; risk: the R definitions (decision Q2)
     "data_checks": {"config", "data"},
 }
 NETWORK_LIBS = {"requests", "urllib", "urllib3", "yfinance", "httpx", "aiohttp", "http", "socket", "ftplib", "smtplib"}

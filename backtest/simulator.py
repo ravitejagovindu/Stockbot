@@ -27,7 +27,7 @@ from engine_core.lifecycle_rules import (
 from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import bull_correction_active, is_bull, nifty_sma
 from engine_core.risk_sizing import RiskAndSizingEngine
-from stockbot.validation.trade_metrics import compute_trade_r
+from stockbot.risk.r_metrics import compute_trade_r
 from stockbot.backtest.no_network import network_forbidden
 from engine_core.universe_screener import UniverseScreener
 

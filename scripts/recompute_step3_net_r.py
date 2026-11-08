@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from stockbot.validation.trade_metrics import add_r_columns  # noqa: E402
+from stockbot.risk.r_metrics import add_r_columns  # noqa: E402
 
 SRC = ROOT / "backtest" / "outputs"
 CFGS = [f"CFG-0{i}" for i in range(1, 7)]
