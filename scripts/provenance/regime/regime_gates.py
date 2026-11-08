@@ -1,4 +1,4 @@
-"""engine_core/regime_gates.py — stateless market-regime gate functions.
+"""scripts/provenance/regime/regime_gates.py — stateless market-regime gate functions.
 
 These replace window-name string checks (``bull_run``, ``sideways_inflation``,
 ``enabled_regimes``) with state-driven predicates that work identically

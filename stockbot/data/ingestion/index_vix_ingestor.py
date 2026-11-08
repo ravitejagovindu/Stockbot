@@ -64,7 +64,7 @@ class IndexVIXIngestor(BaseIngestor):
     Pulls Nifty 50 EOD close and India VIX close from Kite (with NSE fallback)
     and stores them in ``market_data_lake`` under synthetic symbol keys.
 
-    The macro regime filter (``engine_core/regime_filter.py``) reads from these
+    The macro regime filter (``scripts/provenance/regime/regime_filter.py``) reads from these
     rows via the configured symbol keys in ``strategy_config.yaml``.
 
     Args:

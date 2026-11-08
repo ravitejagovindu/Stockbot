@@ -40,6 +40,7 @@ GROUPS = {
     "live_helpers": [("engine_core.account_ledger", "stockbot.live.account_ledger"), ("engine_core.equity", "stockbot.live.equity"),
                      ("engine_core.position_service", "stockbot.live.position_service"), ("engine_core.analytics_loop", "stockbot.live.analytics_loop")],
     "paper_report": [("scripts.paper_report", "stockbot.live.paper_report")],
+    "regime_provenance": [("engine_core.regime_filter", "scripts.provenance.regime.regime_filter"), ("engine_core.regime_gates", "scripts.provenance.regime.regime_gates")],
     "validation_scripts": [(f"scripts.{m}", f"stockbot.validation.{m}") for m in ("validate_max_t", "f9_power_study", "f9_report")],
     "live": [("live_runner.idempotency", "stockbot.live.idempotency"), ("live_runner.main", "stockbot.live.main"), ("live_runner.scheduler", "stockbot.live.scheduler")]
             + [(f"live_runner.routers.{r}", f"stockbot.live.api.{r}") for r in ("analytics", "health", "ledger", "portfolio", "positions", "regime", "watchlist")],

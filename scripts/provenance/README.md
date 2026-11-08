@@ -18,6 +18,7 @@ Reports written before the move cite the OLD paths; use the table. Tag `pre-rest
 | `scripts/f9_trade_library.py` | `scripts/provenance/f9_trade_library.py` | builds `data/f9/trade_library.npz` with the old exit rules; regenerate through `engine.path` once a strategy's exit policy exists |
 | `data/db/migration_f3_corporate_actions.py`, `migration_phase2.py`, `migration_phase3_paper.py`, `migration_securities_master.py` | `scripts/provenance/migrations/` | schema migrations already applied to `finsight.db` |
 | `fix_blocker1_index_data.py`, `fix_blocker2_shares_outstanding.py` (repository root) | `scripts/provenance/` | one-off set-up of the index/VIX series and of the `shares_outstanding` snapshot behind KI-001 (moved in Phase 10) |
+| `engine_core/regime_filter.py`, `engine_core/regime_gates.py` | `scripts/provenance/regime/` | the old macro kill switch (Nifty below its 200-day SMA or VIX above 22, 3-session re-entry hysteresis) and the bull-regime helpers. NOT part of any run path and not an overlay yet (decision D1: the overlay interface exists with a dummy under tests/, the kill switch is not implemented). Kept with their tests (`tests/unit/test_regime_filter.py`, `test_phase1_components.py`) so the rule stays executable and specified until a strategy needs it (moved in Phase 10) |
 
 Scripts here that import `engine_core`, `data.db` or `live_runner` leave the tree in Phase 10 together with those modules; the reports that cite them then name the tag and commit.
 

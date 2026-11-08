@@ -2,7 +2,7 @@
 - stockbot/config/mode.py
 - stockbot/data/sector_map.py
 - engine_core/entry_filters.py
-- engine_core/regime_gates.py
+- scripts/provenance/regime/regime_gates.py
 - engine_core/universe_screener.py (apply_event_gates flag)
 - engine_core/risk_sizing.py (max_rr_cap)
 """
@@ -22,7 +22,7 @@ from engine_core.entry_filters import (
     apply_rs_rank_percentile,
     apply_entry_filters,
 )
-from engine_core.regime_gates import is_bull, bull_correction_active
+from scripts.provenance.regime.regime_gates import is_bull, bull_correction_active
 from engine_core.risk_sizing import RiskAndSizingEngine, TradeSetup
 from engine_core.universe_screener import UniverseScreener, ScreeningResult
 

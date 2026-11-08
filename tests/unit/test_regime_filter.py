@@ -1,5 +1,5 @@
 """
-Unit tests for engine_core.regime_filter.RegimeFilter.
+Unit tests for scripts.provenance.regime.regime_filter.RegimeFilter.
 
 Uses an in-memory SQLite database (via SQLAlchemy) and synthetic market data.
 No real DB, no network calls, no external dependencies.
@@ -26,7 +26,7 @@ from sqlalchemy.orm import sessionmaker
 
 from stockbot.data.db.connection import Base
 from stockbot.data.db.models import MarketDataLake, RegimeState as RegimeStateModel
-from engine_core.regime_filter import RegimeFilter, RegimeState
+from scripts.provenance.regime.regime_filter import RegimeFilter, RegimeState
 
 
 # ---------------------------------------------------------------------------
