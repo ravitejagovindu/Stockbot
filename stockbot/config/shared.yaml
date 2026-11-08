@@ -1,0 +1,77 @@
+# Shared configuration (restructure Phase 4): settings common to every strategy.
+# Every value is carried over UNCHANGED from strategy_config.yaml (tests/unit/test_shared_config.py compares them key by key).
+# NOT here: old-strategy keys (see docs/restructure/OLD_STRATEGY_REFERENCE.md) and the undecided macro-regime keys (Q4: macro.*,
+# risk.max_concurrent_positions_bull), which stay in strategy_config.yaml until Phase 6 Part A decides.
+# A strategy spec can NOT override anything in this file.
+
+runtime:
+  mode: PAPER                      # PAPER | LIVE. THE ONLY SWITCH.
+  paper_start_equity: 1000000
+
+data:
+  eod_source: "bhavcopy"
+  adtv_sma_period: 20              # ADTV uses raw volume x raw close
+  nifty_symbol: "NIFTY50_INDEX"
+  vix_symbol: "INDIA_VIX"
+
+execution:
+  entry_fill: NEXT_OPEN            # signal at close T -> fill at open T+1
+  entry_slippage_pct: 0.10
+  exit_slippage_pct: 0.10
+  max_entry_gap_up_pct: 3.0        # Q3: shared execution rule
+
+costs:
+  stt_buy_pct: 0.10
+  stt_sell_pct: 0.10
+  brokerage_per_order_inr: 0.0
+  exchange_txn_pct: 0.00297
+  sebi_fee_pct: 0.0001
+  stamp_duty_buy_pct: 0.015
+  gst_pct: 18.0
+  dp_charge_per_sell_inr: 15.34
+  stcg_tax_pct: 0.0                # stays 0.0
+
+portfolio_risk:
+  max_loss_pct_per_trade: 1.0
+  max_concurrent_positions: 12
+  max_total_portfolio_risk_pct: 15.0
+  max_sector_exposure_pct: 15.0
+
+universe:
+  min_market_cap_cr: 5000          # PARKED (KI-001): the replacement rule is not designed; value and gate unchanged
+  min_adtv_cr: 25
+  min_listing_age_trading_days: 252
+
+exclusions:
+  known_ahead_days: 7              # a meeting date counts as known only after its intimation timestamp
+
+live:
+  earnings_alert_days: 7
+
+backtest:
+  initial_equity: 1000000
+  regimes:
+    - {name: "window_2020_2021", role: TUNE, start: "2020-01-01", end: "2021-12-31"}
+    - {name: "window_2022_2026", role: TUNE, start: "2022-01-01", end: "2026-09-30"}
+    - {name: "window_2015_2019", role: TEST, start: "2015-01-01", end: "2019-12-31"}   # untouched out-of-sample window
+
+# Q11: validation pass criteria are the SAME for every strategy and cannot be overridden. Re-pre-registered in the strategy phase.
+# KI-002: min_trades 40 and a +0.15 R expectancy bar are not testable at the current trade rate (flag there; nothing changed now).
+validation_gates:
+  max_drawdown_pct: 15.0
+  min_alpha_after_tax_pct: -2.0
+  min_expectancy_r: 0.15
+  min_profit_factor: 1.3
+  min_trades: 40
+  ltcg_tax_pct: 0.0
+  risk_free_pct: 6.5
+
+# Q8: acceptance criteria for the paper run (live package); a strategy may not override them; revisited at pre-registration.
+paper_criteria:
+  min_days: 90
+  min_closed_trades: 60
+  max_expectancy_gap_r: 0.25
+  max_win_rate_gap_pts: 12.0
+  min_profit_factor: 1.2
+  max_drawdown_pct: 12.0
+  max_skipped_ticket_rate: 0.40

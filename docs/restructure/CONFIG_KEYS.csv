@@ -10,8 +10,8 @@ runtime.paper_start_equity,1000000,shared,config,
 execution.entry_fill,NEXT_OPEN,shared,config,signal at close T fills at open T+1
 execution.entry_slippage_pct,0.10,shared,config,
 execution.exit_slippage_pct,0.10,shared,config,
-execution.max_entry_gap_up_pct,3.0,undecided,config or strategy,Q3: skip rule at the fill; generic in form but its value was set for the old strategy
-execution.min_rr_at_fill,1.5,undecided,config or strategy,Q3: needs a target price; a strategy may not have one
+execution.max_entry_gap_up_pct,3.0,shared,config,Q3 decided: shared execution rule
+execution.min_rr_at_fill,1.5,old-strategy,strategy param (per-strategy),Q3 decided: per-strategy; value recorded in OLD_STRATEGY_REFERENCE
 costs.stt_buy_pct,0.10,shared,config,
 costs.stt_sell_pct,0.10,shared,config,
 costs.brokerage_per_order_inr,0.0,shared,config,
@@ -34,12 +34,12 @@ risk.trailing_stop_atr_period,14,old-strategy,old strategy spec,exit policy
 risk.trailing_stop_atr_multiplier,2.5,old-strategy,old strategy spec,exit policy
 risk.trailing_stop_atr_multiplier_kill_switch,1.5,old-strategy,old strategy spec,exit policy (also depends on the macro kill switch: Q4)
 risk.max_loss_pct_per_trade,1.0,shared,risk,risk per trade
-risk.min_rr_ratio,1.5,old-strategy,old strategy spec,R:R gate on the 52-week target (Q3)
+risk.min_rr_ratio,1.5,old-strategy,strategy param (per-strategy),Q3 decided: per-strategy; value recorded in OLD_STRATEGY_REFERENCE
 risk.max_concurrent_positions,12,shared,risk,hard cap
 risk.max_concurrent_positions_bull,12,undecided,risk,Q4: regime-dependent cap (same value as the normal cap today)
 risk.max_total_portfolio_risk_pct,15.0,shared,risk,heat cap
 risk.max_sector_exposure_pct,15.0,shared,risk,sector cap
-risk.max_rr_cap,6.0,old-strategy,old strategy spec,data-artefact guard on the old R:R (Q3)
+risk.max_rr_cap,6.0,old-strategy,strategy param (per-strategy),Q3 decided: per-strategy; value recorded in OLD_STRATEGY_REFERENCE
 entry_filters.trend_filter_enabled,true,old-strategy,old strategy spec,
 entry_filters.trend_fast_sma,50,old-strategy,old strategy spec,
 entry_filters.trend_slow_sma,200,old-strategy,old strategy spec,
@@ -47,7 +47,7 @@ entry_filters.breakout_required,true,old-strategy,old strategy spec,
 entry_filters.breakout_lookback,20,old-strategy,old strategy spec,
 entry_filters.rs_lookback_days,63,old-strategy,old strategy spec,
 trade_management.time_decay_sessions,20,old-strategy,old strategy spec,exit policy
-trade_management.binary_event_block_days,14,undecided,universe,Q10: event-proximity entry block (earnings/corporate action); generic in form
+trade_management.binary_event_block_days,14,old-strategy,strategy param (per-strategy),"Q10 decided: mechanism (event within N days, known as of date) is shared in universe/data; whether to block entries is a per-strategy parameter; value 14 recorded in OLD_STRATEGY_REFERENCE"
 trade_management.earnings_alert_days,7,shared,live,alert on open positions
 earnings.known_ahead_days,7,shared,universe,what a backtest may know about an earnings date (exclusions)
 data.eod_source,bhavcopy,shared,config,
@@ -55,22 +55,22 @@ data.adtv_sma_period,20,shared,config,
 data.resistance_lookback_days,252,old-strategy,old strategy spec,52-week target
 data.nifty_symbol,NIFTY50_INDEX,shared,config,
 data.vix_symbol,INDIA_VIX,shared,config,
-gates.max_drawdown_pct,15.0,undecided,strategy spec or validation,Q11: pass criteria set for the old strategy; values must not change
-gates.min_alpha_after_tax_pct,-2.0,undecided,strategy spec or validation,Q11
-gates.min_expectancy_r,0.15,undecided,strategy spec or validation,Q11
-gates.min_profit_factor,1.3,undecided,strategy spec or validation,Q11
-gates.min_trades,40,undecided,strategy spec or validation,Q11
-gates.ltcg_tax_pct,0.0,undecided,strategy spec or validation,Q11
-gates.risk_free_pct,6.5,undecided,strategy spec or validation,Q11
+gates.max_drawdown_pct,15.0,shared,validation_gates (shared config),"Q11 decided: shared validation config, the same for every strategy, never overridable; values unchanged; re-pre-registered in the strategy phase (KI-002: min trades 40 and +0.15R expectancy are not testable at the current trade rate)"
+gates.min_alpha_after_tax_pct,-2.0,shared,validation_gates (shared config),"Q11 decided: shared validation config, the same for every strategy, never overridable; values unchanged; re-pre-registered in the strategy phase (KI-002: min trades 40 and +0.15R expectancy are not testable at the current trade rate)"
+gates.min_expectancy_r,0.15,shared,validation_gates (shared config),"Q11 decided: shared validation config, the same for every strategy, never overridable; values unchanged; re-pre-registered in the strategy phase (KI-002: min trades 40 and +0.15R expectancy are not testable at the current trade rate)"
+gates.min_profit_factor,1.3,shared,validation_gates (shared config),"Q11 decided: shared validation config, the same for every strategy, never overridable; values unchanged; re-pre-registered in the strategy phase (KI-002: min trades 40 and +0.15R expectancy are not testable at the current trade rate)"
+gates.min_trades,40,shared,validation_gates (shared config),"Q11 decided: shared validation config, the same for every strategy, never overridable; values unchanged; re-pre-registered in the strategy phase (KI-002: min trades 40 and +0.15R expectancy are not testable at the current trade rate)"
+gates.ltcg_tax_pct,0.0,shared,validation_gates (shared config),"Q11 decided: shared validation config, the same for every strategy, never overridable; values unchanged; re-pre-registered in the strategy phase (KI-002: min trades 40 and +0.15R expectancy are not testable at the current trade rate)"
+gates.risk_free_pct,6.5,shared,validation_gates (shared config),"Q11 decided: shared validation config, the same for every strategy, never overridable; values unchanged; re-pre-registered in the strategy phase (KI-002: min trades 40 and +0.15R expectancy are not testable at the current trade rate)"
 backtest.regimes,3 windows (2 TUNE + 1 TEST),shared,config,window definitions; TEST window rules unchanged
 backtest.initial_equity,1000000,shared,config,
-paper_criteria.min_days,90,undecided,live or strategy spec,Q8
-paper_criteria.min_closed_trades,60,undecided,live or strategy spec,Q8
-paper_criteria.max_expectancy_gap_r,0.25,undecided,live or strategy spec,Q8
-paper_criteria.max_win_rate_gap_pts,12.0,undecided,live or strategy spec,Q8
-paper_criteria.min_profit_factor,1.2,undecided,live or strategy spec,Q8
-paper_criteria.max_drawdown_pct,12.0,undecided,live or strategy spec,Q8
-paper_criteria.max_skipped_ticket_rate,0.40,undecided,live or strategy spec,Q8
+paper_criteria.min_days,90,shared,"paper_criteria (shared config, live)","Q8 decided: shared, in the live package, values unchanged, not overridable by a strategy; revisited at pre-registration"
+paper_criteria.min_closed_trades,60,shared,"paper_criteria (shared config, live)","Q8 decided: shared, in the live package, values unchanged, not overridable by a strategy; revisited at pre-registration"
+paper_criteria.max_expectancy_gap_r,0.25,shared,"paper_criteria (shared config, live)","Q8 decided: shared, in the live package, values unchanged, not overridable by a strategy; revisited at pre-registration"
+paper_criteria.max_win_rate_gap_pts,12.0,shared,"paper_criteria (shared config, live)","Q8 decided: shared, in the live package, values unchanged, not overridable by a strategy; revisited at pre-registration"
+paper_criteria.min_profit_factor,1.2,shared,"paper_criteria (shared config, live)","Q8 decided: shared, in the live package, values unchanged, not overridable by a strategy; revisited at pre-registration"
+paper_criteria.max_drawdown_pct,12.0,shared,"paper_criteria (shared config, live)","Q8 decided: shared, in the live package, values unchanged, not overridable by a strategy; revisited at pre-registration"
+paper_criteria.max_skipped_ticket_rate,0.40,shared,"paper_criteria (shared config, live)","Q8 decided: shared, in the live package, values unchanged, not overridable by a strategy; revisited at pre-registration"
 parabolic_stop.enabled,true,old-strategy,old strategy spec,exit policy
 parabolic_stop.acceleration_threshold_atr,3.0,old-strategy,old strategy spec,exit policy
 parabolic_stop.acceleration_lookback_days,5,old-strategy,old strategy spec,exit policy
