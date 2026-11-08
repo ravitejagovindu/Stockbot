@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from sqlalchemy import text
 
 from stockbot.config.legacy_loader import load_config
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 router = APIRouter()
 
@@ -131,7 +131,7 @@ def get_portfolio():
 
     effective_max_positions = risk_cfg["max_concurrent_positions"]
     try:
-        from data.db.models import RegimeState as DBRegimeState
+        from stockbot.data.db.models import RegimeState as DBRegimeState
         from sqlalchemy import select
         with get_session() as session:
             latest_regime = session.execute(

@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from sqlalchemy import select, func
 import os
 
-from data.db.connection import get_session
-from data.db.models import AccountLedger, TradeAnalyticsLog
+from stockbot.data.db.connection import get_session
+from stockbot.data.db.models import AccountLedger, TradeAnalyticsLog
 from engine_core.account_ledger import get_live_equity
 
 router = APIRouter()

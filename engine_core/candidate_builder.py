@@ -6,7 +6,7 @@ from datetime import date
 import pandas as pd
 from sqlalchemy import select
 
-from data.db.models import CorporateActionsLog, MarketDataLake
+from stockbot.data.db.models import CorporateActionsLog, MarketDataLake
 from stockbot.data.adjustments import get_adjusted_series
 from stockbot.data.indicators import atr
 from engine_core.lifecycle_rules import Bar, parabolic_ref_close

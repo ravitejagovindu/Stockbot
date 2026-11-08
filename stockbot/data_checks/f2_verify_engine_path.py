@@ -20,7 +20,7 @@ import pandas as pd
 from sqlalchemy import func, or_, select
 
 ROOT = Path(__file__).resolve().parents[2]
-from data.db.models import CorporateActionsLog, MarketDataLake       # noqa: E402
+from stockbot.data.db.models import CorporateActionsLog, MarketDataLake       # noqa: E402
 from stockbot.data.adjustments import action_factor                    # noqa: E402
 from stockbot.data_checks.f2_engine_scan import engine_frames, session_for        # noqa: E402
 

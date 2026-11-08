@@ -32,7 +32,7 @@ import pandas as pd
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
-from data.db.models import ActivePosition, TradeAnalyticsLog, RegimeState, MarketDataLake
+from stockbot.data.db.models import ActivePosition, TradeAnalyticsLog, RegimeState, MarketDataLake
 from stockbot.risk.costs import CostModel
 from stockbot.validation.trade_metrics import trades_from_log, metrics_from_trades
 from stockbot.config.mode import current_mode

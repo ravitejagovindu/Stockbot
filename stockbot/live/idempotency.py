@@ -12,7 +12,7 @@ from datetime import date, datetime
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from data.db.models import PipelineRunLog
+from stockbot.data.db.models import PipelineRunLog
 
 logger = logging.getLogger(__name__)
 

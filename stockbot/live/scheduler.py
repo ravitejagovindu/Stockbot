@@ -22,8 +22,8 @@ def run_eod_pipeline():
     logger.info(f"[SCHEDULER] Trigger fired. Evaluating runs up to {today}...")
 
     try:
-        from data.db.connection import get_session
-        from data.db.models import PipelineRunLog
+        from stockbot.data.db.connection import get_session
+        from stockbot.data.db.models import PipelineRunLog
         from live_runner.pipeline import EODPipeline
         import yfinance as yf
         import pandas as pd

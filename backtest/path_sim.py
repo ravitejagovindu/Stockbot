@@ -14,7 +14,7 @@ from typing import Optional
 import pandas as pd
 from sqlalchemy import select
 
-from data.db.models import CorporateActionsLog, MarketDataLake
+from stockbot.data.db.models import CorporateActionsLog, MarketDataLake
 from stockbot.data.adjustments import get_adjusted_series
 from engine_core.candidate_builder import bar_context
 from stockbot.engine.corporate_action_events import apply_actions_to_position, due_actions

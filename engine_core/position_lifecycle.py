@@ -51,7 +51,7 @@ import pandas as pd
 from sqlalchemy import select, desc, func
 from sqlalchemy.orm import Session
 
-from data.db.models import (
+from stockbot.data.db.models import (
     ActivePosition,
     EarningsCalendar,
     MarketDataLake,
@@ -473,7 +473,7 @@ class PositionLifecycleManager:
         if self._session is None:
             return False
         try:
-            from data.db.models import RegimeState as DBRegimeState
+            from stockbot.data.db.models import RegimeState as DBRegimeState
             row = (
                 self._session.execute(
                     select(DBRegimeState.kill_switch_active)
@@ -493,7 +493,7 @@ class PositionLifecycleManager:
         if self._session is None:
             return False
         try:
-            from data.db.models import RegimeState as DBRegimeState
+            from stockbot.data.db.models import RegimeState as DBRegimeState
             row = (
                 self._session.execute(
                     select(

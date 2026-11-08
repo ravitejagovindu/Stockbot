@@ -1,5 +1,5 @@
 from sqlalchemy import select, func
-from data.db.models import AccountLedger, TradeAnalyticsLog
+from stockbot.data.db.models import AccountLedger, TradeAnalyticsLog
 import logging
 
 logger = logging.getLogger(__name__)

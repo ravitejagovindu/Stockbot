@@ -11,7 +11,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
-from data.db.connection import Base
+from stockbot.data.db.connection import Base
 
 
 class MarketDataLake(Base):

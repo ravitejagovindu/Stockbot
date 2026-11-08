@@ -47,7 +47,7 @@ def test_dataframe_and_scalar_agree():
 
 def _sim_fixture(session):
     """Same synthetic series as the sim-vs-live golden master (entry 102 on day 10, gap-stop on day 17)."""
-    from data.db.models import MarketDataLake, SharesOutstanding
+    from stockbot.data.db.models import MarketDataLake, SharesOutstanding
     from tests.integration.test_sim_vs_live_rules import _get_base_config
 
     cfg = _get_base_config()
@@ -78,7 +78,7 @@ def _sim_fixture(session):
 def session():
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
-    from data.db.connection import Base
+    from stockbot.data.db.connection import Base
     eng = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
     Base.metadata.create_all(eng)
     s = sessionmaker(bind=eng)()

@@ -19,7 +19,7 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 ROOT = Path(__file__).resolve().parents[2]
-from data.db.models import CorporateActionsLog, MarketDataLake       # noqa: E402
+from stockbot.data.db.models import CorporateActionsLog, MarketDataLake       # noqa: E402
 from stockbot.data.adjustments import get_adjusted_series              # noqa: E402
 from engine_core.candidate_builder import build_candidate_dicts      # noqa: E402
 

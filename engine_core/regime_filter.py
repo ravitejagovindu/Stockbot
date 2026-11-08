@@ -37,7 +37,7 @@ import pandas as pd
 from sqlalchemy import select, desc
 from sqlalchemy.orm import Session
 
-from data.db.models import (
+from stockbot.data.db.models import (
     MarketDataLake,
     RegimeState as RegimeStateModel,
 )

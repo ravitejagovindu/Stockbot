@@ -32,7 +32,7 @@ import pandas as pd
 from sqlalchemy import select, func, desc
 from sqlalchemy.orm import Session
 
-from data.db.models import (
+from stockbot.data.db.models import (
     ASMGSMList,
     EarningsCalendar,
     MarketDataLake,

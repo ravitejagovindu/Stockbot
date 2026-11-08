@@ -35,7 +35,7 @@ def test_a_network_call_inside_simulator_run_raises(monkeypatch):
 
     import backtest.simulator as simmod
     from stockbot.config.legacy_loader import load_config
-    from data.db.connection import Base
+    from stockbot.data.db.connection import Base
     from tests.fixtures import mini_lake
 
     eng = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})

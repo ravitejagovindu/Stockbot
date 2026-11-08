@@ -7,7 +7,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, field_validator
 
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 router = APIRouter()
 
@@ -40,7 +40,7 @@ def open_position_endpoint(req: OpenPositionRequest):
     from stockbot.risk.costs import CostModel
     from stockbot.config.mode import current_mode
     from engine_core.position_service import open_position
-    from data.db.models import DailyWatchlist
+    from stockbot.data.db.models import DailyWatchlist
 
     cfg = load_config()
     if current_mode(cfg) != "LIVE":
@@ -86,7 +86,7 @@ def close_position(req: ClosePositionRequest):
 
     with get_session() as session:
         from engine_core.analytics_loop import AnalyticsLoop
-        from data.db.models import ActivePosition
+        from stockbot.data.db.models import ActivePosition
 
         loop = AnalyticsLoop(session=session, config=cfg)
 

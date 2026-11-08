@@ -15,7 +15,7 @@ import time
 import yfinance as yf
 import pandas as pd
 from sqlalchemy import text
-from data.db.connection import engine
+from stockbot.data.db.connection import engine
 
 EFFECTIVE_DATE = "2020-01-01"
 BATCH_SIZE = 50  # Insert in batches

@@ -19,7 +19,7 @@ pytestmark = pytest.mark.skipif(not RUN, reason="needs STOCKBOT_DATA_TESTS=1 and
 
 from backtest.simulator import Simulator
 from stockbot.config.legacy_loader import load_config
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 from engine_core.candidate_builder import build_candidate_dicts
 from engine_core.entry_filters import apply_entry_filters
 

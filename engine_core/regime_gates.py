@@ -10,7 +10,7 @@ from typing import Optional
 
 from sqlalchemy import select, desc
 
-from data.db.models import MarketDataLake
+from stockbot.data.db.models import MarketDataLake
 
 
 def is_bull(kill_switch_active: bool, nifty_close: Optional[float], nifty_sma200: Optional[float]) -> bool:

@@ -4,7 +4,7 @@ Run once: python -m scripts.provenance.migrations.migration_phase3_paper
 Idempotent: safe to run multiple times; skips columns that already exist.
 """
 from sqlalchemy import text
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 
 ADDS = [

@@ -22,8 +22,8 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import desc, select, text
 
-from data.db.connection import get_session
-from data.db.models import MarketDataLake
+from stockbot.data.db.connection import get_session
+from stockbot.data.db.models import MarketDataLake
 from stockbot.data.sector_map import sector_for
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

@@ -21,7 +21,7 @@ if str(ROOT) not in sys.path:
 
 from backtest.simulator import Simulator
 from stockbot.config.legacy_loader import load_config
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("candidate_runner")

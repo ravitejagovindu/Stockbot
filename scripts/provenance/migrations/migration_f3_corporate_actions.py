@@ -42,6 +42,6 @@ def run_migration(engine) -> list[str]:
 
 
 if __name__ == "__main__":
-    from data.db.connection import engine
+    from stockbot.data.db.connection import engine
 
     print("added:", run_migration(engine))

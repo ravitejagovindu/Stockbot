@@ -8,7 +8,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from data.db.models import Base, MarketDataLake, SecuritiesMaster
+from stockbot.data.db.models import Base, MarketDataLake, SecuritiesMaster
 from engine_core.universe_screener import UniverseScreener, load_fund_symbols
 
 CFG = {"universe": {"min_market_cap_cr": 5000, "min_adtv_cr": 25, "min_listing_age_trading_days": 252},

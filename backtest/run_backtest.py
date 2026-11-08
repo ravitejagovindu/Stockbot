@@ -24,8 +24,8 @@ from backtest.audit_generator import generate, summarize
 from stockbot.universe.exclusions import Exclusions
 from backtest.simulator import SimResult, Simulator
 from stockbot.config.legacy_loader import load_config
-from data.db.connection import get_session
-from data.db.models import MarketDataLake
+from stockbot.data.db.connection import get_session
+from stockbot.data.db.models import MarketDataLake
 
 _ROOT = Path(__file__).resolve().parents[1]
 

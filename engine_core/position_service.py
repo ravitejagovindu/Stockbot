@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from data.db.models import ActivePosition, DailyWatchlist
+from stockbot.data.db.models import ActivePosition, DailyWatchlist
 from stockbot.risk.costs import CostModel
 
 

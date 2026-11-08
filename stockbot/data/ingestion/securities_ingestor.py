@@ -10,7 +10,7 @@ from typing import Optional
 import urllib.request
 from sqlalchemy import text
 
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 logger = logging.getLogger(__name__)
 

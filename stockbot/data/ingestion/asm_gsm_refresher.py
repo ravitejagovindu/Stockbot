@@ -35,7 +35,7 @@ from typing import Any
 import pandas as pd
 from sqlalchemy import text
 
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 logger = logging.getLogger(__name__)

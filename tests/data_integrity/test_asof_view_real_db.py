@@ -71,7 +71,7 @@ def test_120_samples_view_equals_build_candidate_dicts(conn, orm_session):
 @pytest.mark.parametrize("r", ROWS, ids=[f"{r.symbol}-{r.ex_date}-{r.action_type}" for r in ROWS])
 def test_verification_row_through_the_view(conn, orm_session, r):
     from sqlalchemy import or_, select
-    from data.db.models import CorporateActionsLog
+    from stockbot.data.db.models import CorporateActionsLog
     from stockbot.data_checks.f2_engine_scan import engine_frames
     from stockbot.data.adjustments import action_factor
     from stockbot.data.asof import AsOfView

@@ -29,8 +29,8 @@ import pandas as pd
 from sqlalchemy import distinct, select, text
 
 from stockbot.config.legacy_loader import load_config
-from data.db.connection import get_session
-from data.db.models import MarketDataLake
+from stockbot.data.db.connection import get_session
+from stockbot.data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
 from stockbot.data.indicators import atr, donchian_low
 from engine_core.lifecycle_rules import (

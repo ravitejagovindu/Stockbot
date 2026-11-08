@@ -27,7 +27,7 @@ import pandas as pd
 import requests
 from sqlalchemy import text
 
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 logging.basicConfig(
     level=logging.INFO,

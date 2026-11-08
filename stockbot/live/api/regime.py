@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 
 from stockbot.config.legacy_loader import load_config
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 router = APIRouter()
 

@@ -6,8 +6,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
-from data.db.models import (
+from stockbot.data.db.connection import Base
+from stockbot.data.db.models import (
     ActivePosition,
     MarketDataLake,
     RegimeState,

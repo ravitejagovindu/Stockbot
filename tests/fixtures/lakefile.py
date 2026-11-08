@@ -5,8 +5,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
-from data.db.models import CorporateActionsLog
+from stockbot.data.db.connection import Base
+from stockbot.data.db.models import CorporateActionsLog
 from tests.fixtures import mini_lake
 
 SPLIT_EX_IDX = 200          # a 1:5 split on FIXCO's session 200 (factor 0.2)

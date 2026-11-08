@@ -4,8 +4,8 @@ from pathlib import Path
 # Add project root to path so imports work
 sys.path.append(str(Path(__file__).resolve().parents[3]))
 
-from data.db.connection import engine, Base
-import data.db.models  # Ensures models are loaded
+from stockbot.data.db.connection import engine, Base
+import stockbot.data.db.models  # Ensures models are loaded
 
 def run_migration():
     print("Running Phase 2 Migrations...")

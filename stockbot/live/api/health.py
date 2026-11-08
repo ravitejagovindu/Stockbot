@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from stockbot.live.idempotency import IdempotencyGuard
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 router = APIRouter()
 

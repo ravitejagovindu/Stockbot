@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 from datetime import date, timedelta
 
-from data.db.models import MarketDataLake, SharesOutstanding, ActivePosition, PipelineRunLog
+from stockbot.data.db.models import MarketDataLake, SharesOutstanding, ActivePosition, PipelineRunLog
 from stockbot.live.idempotency import IdempotencyGuard, AlreadyRunError
 
 

@@ -212,7 +212,7 @@ class EODPipeline:
         import pandas as pd
         from sqlalchemy import text
         from datetime import timedelta
-        from data.db.connection import engine
+        from stockbot.data.db.connection import engine
 
         index_map = {"^NSEI": "NIFTY50_INDEX", "^INDIAVIX": "INDIA_VIX"}
         # yfinance historical needs end_date = target + 1 for a single day fetch
@@ -317,7 +317,7 @@ class EODPipeline:
 
     def _get_open_positions_for_heat_cap(self, mode: Optional[str] = None) -> list[dict]:
         """Returns open positions as plain dicts for heat cap calculation."""
-        from data.db.models import ActivePosition
+        from stockbot.data.db.models import ActivePosition
         if mode is None:
             from stockbot.config.mode import current_mode
             mode = current_mode(self.config)
@@ -337,7 +337,7 @@ class EODPipeline:
 
     def _persist_watchlist(self, eval_date: date, setups: list) -> None:
         """Persist today's approved and blocked setups to daily_watchlist table."""
-        from data.db.models import DailyWatchlist
+        from stockbot.data.db.models import DailyWatchlist
 
         # Clear today's pending entries (re-run scenario)
         self.session.query(DailyWatchlist).filter(

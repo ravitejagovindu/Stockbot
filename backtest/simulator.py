@@ -9,7 +9,7 @@ import pandas as pd
 from sqlalchemy import distinct, select, text
 from sqlalchemy.engine import make_url
 
-from data.db.models import MarketDataLake
+from stockbot.data.db.models import MarketDataLake
 from engine_core.candidate_builder import bar_context, build_candidate_dicts
 from stockbot.engine.corporate_action_events import apply_actions_to_position, due_actions
 from stockbot.risk.costs import CostModel
@@ -53,8 +53,8 @@ REGIME_WARMUP_SESSIONS = 250  # sessions replayed (in memory) before the window 
 
 
 def _live_db_path():
-    """Absolute path of the live database file (from data.db.connection.DATABASE_URL), or None if not a file DB."""
-    import data.db.connection as conn
+    """Absolute path of the live database file (from stockbot.data.db.connection.DATABASE_URL), or None if not a file DB."""
+    import stockbot.data.db.connection as conn
     from pathlib import Path
 
     url = make_url(conn.DATABASE_URL)

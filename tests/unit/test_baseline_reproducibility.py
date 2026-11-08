@@ -24,7 +24,7 @@ from stockbot.config.legacy_loader import load_config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
+from stockbot.data.db.connection import Base
 from engine_core.candidate_builder import build_candidate_dicts
 from engine_core.entry_filters import apply_entry_filters
 

@@ -21,8 +21,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
-from data.db.models import (
+from stockbot.data.db.connection import Base
+from stockbot.data.db.models import (
     ActivePosition,
     EarningsCalendar,
     MarketDataLake,
@@ -593,7 +593,7 @@ class TestProfitRatchet:
 
     def test_ratchet_bypassed_when_regime_not_enabled(self, session):
         """When enabled_regimes is set and market is in bull regime, ratchet is bypassed."""
-        from data.db.models import RegimeState as DBRegimeState
+        from stockbot.data.db.models import RegimeState as DBRegimeState
         symbol = "RATCHET_BYPASS"
         entry_date = date(2024, 1, 2)
         entry_price = 100.0

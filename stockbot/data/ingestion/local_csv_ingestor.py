@@ -10,7 +10,7 @@ import pandas as pd
 from pathlib import Path
 import logging
 
-from data.db.connection import engine
+from stockbot.data.db.connection import engine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)

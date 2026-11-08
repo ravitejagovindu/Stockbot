@@ -5,8 +5,8 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
-from data.db.models import RegimeState
+from stockbot.data.db.connection import Base
+from stockbot.data.db.models import RegimeState
 from tests.unit.test_r_metric import _sim_fixture
 
 
@@ -79,7 +79,7 @@ def test_regime_filter_persist_false_never_touches_table(session):
 
 
 def test_simulator_refuses_live_db_without_override(tmp_path, monkeypatch):
-    import data.db.connection as conn
+    import stockbot.data.db.connection as conn
     from backtest.simulator import Simulator
     from tests.unit.test_r_metric import _sim_fixture as fx
 

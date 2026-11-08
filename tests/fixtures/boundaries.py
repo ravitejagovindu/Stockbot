@@ -106,45 +106,16 @@ def check(root: Path):
 
 # (importer, imported-name-prefix) -> phase that removes the edge.  Importer is a module name; imported is the exact dotted name found.
 LEGACY_ALLOWLIST = {
-    # ingestion and quality checks still use the old session helper / ORM: replaced by the read-only lake connection and the state-store split
-    **{(f"stockbot.data.ingestion.{m}", n): "Phase 3 (db layer split)" for m, ns in {
-        "asm_gsm_refresher": ["data.db.connection"], "bhavcopy_ingestor": ["data.db.connection"],
-        "corporate_actions_ingestor": ["data.db.connection", "data.db.models"], "earnings_calendar_ingestor": ["data.db.connection", "data.db.models"],
-        "index_vix_ingestor": ["data.db.connection", "data.db.models"], "local_csv_ingestor": ["data.db.connection"],
-        "ohlcv_ingestor": ["data.db.connection", "data.db.models"], "securities_ingestor": ["data.db.connection"],
-        "shares_outstanding_ingestor": ["data.db.connection", "data.db.models"]}.items() for n in ns},
-    ("stockbot.data_checks.quality_checker", "data.db.connection"): "Phase 3 (db layer split)",
     ("stockbot.engine.corporate_action_events", "engine_core.lifecycle_rules"): "Phase 6 (engine; rescale_for_action and PosState move)",
     # the golden engine scan compares the as-of view with the OLD engine path (build_candidate_dicts) and reads the ORM models; both disappear with engine_core / data.db in Phase 10
-    ("stockbot.data_checks.f2_engine_scan", "data.db.models"): "Phase 10 (engine scan reads through the as-of view once engine_core is deleted)",
     ("stockbot.data_checks.f2_engine_scan", "engine_core.candidate_builder"): "Phase 10 (engine scan reads through the as-of view once engine_core is deleted)",
-    ("stockbot.data_checks.f2_verify_engine_path", "data.db.models"): "Phase 10 (engine scan reads through the as-of view once engine_core is deleted)",
     # live: routers moved unmodified and flagged for rework; pipeline/lock/state still legacy
-    ("stockbot.live.api.analytics", "data.db.connection"): "Phase 9 (live package)",
     ("stockbot.live.api.analytics", "engine_core.analytics_loop"): "Phase 9 (live package)",
-    ("stockbot.live.api.health", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.api.ledger", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.api.ledger", "data.db.models"): "Phase 9 (live package)",
     ("stockbot.live.api.ledger", "engine_core.account_ledger"): "Phase 9 (live package)",
-    ("stockbot.live.api.portfolio", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.api.portfolio", "data.db.models"): "Phase 9 (live package)",
     ("stockbot.live.api.portfolio", "engine_core.equity"): "Phase 9 (live package)",
-    ("stockbot.live.api.positions", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.api.positions", "data.db.models"): "Phase 9 (live package)",
     ("stockbot.live.api.positions", "engine_core.analytics_loop"): "Phase 9 (live package)",
     ("stockbot.live.api.positions", "engine_core.position_service"): "Phase 9 (live package)",
-    ("stockbot.live.api.regime", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.api.watchlist", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.idempotency", "data.db.models"): "Phase 9 (live package; state store)",
-    ("stockbot.live.main", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.scheduler", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.scheduler", "data.db.models"): "Phase 9 (live package)",
     ("stockbot.live.scheduler", "live_runner.pipeline"): "Phase 6/9 (EOD runner replaced)",
 }
 # non-stockbot legacy .py files still under the top-level data/ folder -> phase that removes/moves them
-LEGACY_DATA_PY = {
-    "data/__init__.py": "Phase 3 (db layer split)",
-    "data/db/__init__.py": "Phase 3 (db layer split)",
-    "data/db/connection.py": "Phase 3 (db layer split)",
-    "data/db/models.py": "Phase 3 (db layer split) / Phase 9 (state store)",
-}
+LEGACY_DATA_PY = {}

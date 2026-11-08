@@ -16,8 +16,8 @@ import pandas as pd
 from sqlalchemy import select
 
 from stockbot.config.legacy_loader import load_config
-from data.db.connection import get_session
-from data.db.models import MarketDataLake
+from stockbot.data.db.connection import get_session
+from stockbot.data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
 from engine_core.entry_filters import passes_breakout, passes_trend_filter, rs_return
 from stockbot.data.indicators import sma

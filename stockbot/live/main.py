@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
     # (Step 1, the Git-SHA deployment lock, was dropped in restructure Phase 4; its design returns in the strategy phase)
 
     # Step 2: Initialize database
-    from data.db.connection import init_db
+    from stockbot.data.db.connection import init_db
     init_db()
     logger.info("[STARTUP] Database initialized.")
 

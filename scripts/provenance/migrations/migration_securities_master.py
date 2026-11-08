@@ -3,7 +3,7 @@
 Run once: py -3 -m scripts.provenance.migrations.migration_securities_master
 """
 from sqlalchemy import text
-from data.db.connection import get_session
+from stockbot.data.db.connection import get_session
 
 
 def main() -> None:

@@ -33,8 +33,8 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
-from data.db.connection import get_session
-from data.db.models import MarketDataLake
+from stockbot.data.db.connection import get_session
+from stockbot.data.db.models import MarketDataLake
 from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 load_dotenv()

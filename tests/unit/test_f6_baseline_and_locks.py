@@ -11,7 +11,7 @@ import yaml
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
+from stockbot.data.db.connection import Base
 from tests.unit.test_corporate_action_hold import DATES, _build
 
 

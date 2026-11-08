@@ -15,7 +15,7 @@ import pandas as pd
 import requests
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from data.db.connection import engine
+from stockbot.data.db.connection import engine
 
 logger = logging.getLogger(__name__)
 

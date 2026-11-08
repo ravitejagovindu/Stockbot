@@ -8,8 +8,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
-from data.db.models import CorporateActionsLog
+from stockbot.data.db.connection import Base
+from stockbot.data.db.models import CorporateActionsLog
 from engine_core.candidate_builder import build_candidate_dicts
 from stockbot.data.asof import AsOfView, FutureDataError
 from stockbot.data.lake import open_lake

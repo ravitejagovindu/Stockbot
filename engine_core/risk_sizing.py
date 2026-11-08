@@ -555,7 +555,7 @@ class RiskAndSizingEngine:
             return False
         try:
             from sqlalchemy import select
-            from data.db.models import RegimeState as DBRegimeState
+            from stockbot.data.db.models import RegimeState as DBRegimeState
             row = (
                 session.execute(
                     select(

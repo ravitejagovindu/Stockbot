@@ -7,8 +7,8 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
-from data.db.models import (
+from stockbot.data.db.connection import Base
+from stockbot.data.db.models import (
     ActivePosition, CorporateActionsLog, MarketDataLake, SharesOutstanding, TradeAnalyticsLog,
 )
 from tests.integration.test_sim_vs_live_rules import _get_base_config

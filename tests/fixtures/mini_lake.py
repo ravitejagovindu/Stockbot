@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 
-from data.db.models import MarketDataLake, SharesOutstanding
+from stockbot.data.db.models import MarketDataLake, SharesOutstanding
 
 N_SESSIONS = 330
 BREAKOUT = 300          # signal session (close T)

@@ -35,8 +35,8 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
-from data.db.connection import get_session
-from data.db.models import EarningsCalendar
+from stockbot.data.db.connection import get_session
+from stockbot.data.db.models import EarningsCalendar
 from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 logger = logging.getLogger(__name__)

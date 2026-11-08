@@ -12,7 +12,7 @@ sys.path.append(r"f:\Projects\Ravi\StockBot")
 import yfinance as yf
 import pandas as pd
 from sqlalchemy import text
-from data.db.connection import engine
+from stockbot.data.db.connection import engine
 
 START_DATE = "2020-01-01"
 END_DATE = "2026-09-30"

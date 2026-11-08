@@ -36,11 +36,15 @@ GROUPS = {
         "f9_trade_library")],
     "provenance_data": [(f"data.db.{m}", f"scripts.provenance.migrations.{m}") for m in ("migration_f3_corporate_actions", "migration_phase2", "migration_phase3_paper",
                                                                                          "migration_securities_master")] + [("data.ingestion.pit_shares", "scripts.provenance.pit_shares")],
+    "db_layer": [("data.db.connection", "stockbot.data.db.connection"), ("data.db.models", "stockbot.data.db.models")],
+    "live_helpers": [("engine_core.account_ledger", "stockbot.live.account_ledger"), ("engine_core.equity", "stockbot.live.equity"),
+                     ("engine_core.position_service", "stockbot.live.position_service"), ("engine_core.analytics_loop", "stockbot.live.analytics_loop")],
     "validation_scripts": [(f"scripts.{m}", f"stockbot.validation.{m}") for m in ("validate_max_t", "f9_power_study", "f9_report")],
     "live": [("live_runner.idempotency", "stockbot.live.idempotency"), ("live_runner.main", "stockbot.live.main"), ("live_runner.scheduler", "stockbot.live.scheduler")]
             + [(f"live_runner.routers.{r}", f"stockbot.live.api.{r}") for r in ("analytics", "health", "ledger", "portfolio", "positions", "regime", "watchlist")],
 }
-SPECIAL_INIT = {"ingestion": [("data/ingestion/__init__.py", "stockbot/data/ingestion/__init__.py")],
+SPECIAL_INIT = {"db_layer": [("data/db/__init__.py", "stockbot/data/db/__init__.py")],
+                "ingestion": [("data/ingestion/__init__.py", "stockbot/data/ingestion/__init__.py")],
                 "live": [("live_runner/routers/__init__.py", "stockbot/live/api/__init__.py")]}
 
 
