@@ -1,0 +1,91 @@
+symbol,entry_date,cfgs,in_preF2,preF2_ohlc_equal_prev,preF2_flat_bar,preF2_vol,preF2_close_move_pct,in_staging_bhavcopy,missing_run_sessions_now,category,lake_first_date
+HEGAM,2021-06-01,"CFG-01,CFG-02,CFG-03",True,False,False,2388340,-0.61,False,60,D. symbol did not exist under this name in today's lake yet (rename artifact),2026-09-22
+ATGL,2021-06-18,"CFG-01,CFG-02,CFG-03",True,False,True,344217,-5.0,False,58,"B. circuit-locked flat bar (O=H=L=C, about -5% on the day): no trade can have happened",2018-11-20
+ADANIENSOL,2021-06-18,"CFG-01,CFG-02,CFG-03",True,False,True,184482,-5.0,False,58,"B. circuit-locked flat bar (O=H=L=C, about -5% on the day): no trade can have happened",2015-08-14
+ADANIPOWER,2021-06-25,"CFG-01,CFG-02",True,False,False,22943335,-2.46,False,58,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2021-07-19,"CFG-01,CFG-02,CFG-03",True,False,False,19645291,2.69,False,37,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+ATGL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,186415,1.23,False,60,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2018-11-20
+CDSL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,305918,0.31,False,11,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+TTML,2022-01-24,"CFG-01,CFG-03",True,False,True,792875,-4.98,False,43,"B. circuit-locked flat bar (O=H=L=C, about -5% on the day): no trade can have happened",2013-01-01
+TRIDENT,2022-04-08,"CFG-01,CFG-02",True,False,False,3749200,1.53,False,9,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+PATANJALI,2023-08-24,CFG-01,True,False,False,593004,-1.78,False,46,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-01
+LLOYDSENGG,2023-09-04,"CFG-01,CFG-02,CFG-03",True,False,False,1859048,-1.52,False,47,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-12
+SUZLON,2023-12-26,"CFG-01,CFG-02",True,False,False,24483621,-0.94,False,14,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2024-02-07,"CFG-01,CFG-02,CFG-03",True,False,False,31099553,4.99,False,50,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+TATAINVEST,2024-04-10,CFG-01,True,False,False,308290,0.38,False,35,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+SHAKTIPUMP,2025-03-21,"CFG-01,CFG-02,CFG-03",True,False,False,2115710,3.71,False,22,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2025-07-15,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05",True,False,False,6983417,-1.16,False,38,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+KIOCL,2025-10-23,"CFG-01,CFG-03",True,False,False,97348,2.76,False,2,E. other,2017-03-01
+GESHIP,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+BALRAMCHIN,2026-05-28,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+IRB,2026-05-28,"CFG-01,CFG-04",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+QPOWER,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2025-02-24
+ZENTEC,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2015-03-30
+KRN,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2024-10-03
+HEGAM,2021-06-01,"CFG-01,CFG-02,CFG-03",True,False,False,2388340,-0.61,False,60,D. symbol did not exist under this name in today's lake yet (rename artifact),2026-09-22
+ATGL,2021-06-18,"CFG-01,CFG-02,CFG-03",True,False,True,344217,-5.0,False,58,"B. circuit-locked flat bar (O=H=L=C, about -5% on the day): no trade can have happened",2018-11-20
+ADANIENSOL,2021-06-18,"CFG-01,CFG-02,CFG-03",True,False,True,184482,-5.0,False,58,"B. circuit-locked flat bar (O=H=L=C, about -5% on the day): no trade can have happened",2015-08-14
+ADANIPOWER,2021-06-25,"CFG-01,CFG-02",True,False,False,22943335,-2.46,False,58,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RENUKA,2021-08-02,"CFG-02,CFG-03",True,False,False,4245866,-2.04,False,49,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2021-07-19,"CFG-01,CFG-02,CFG-03",True,False,False,19645291,2.69,False,37,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+CDSL,2021-08-17,"CFG-02,CFG-03",True,False,False,648236,-2.15,False,46,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+ATGL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,186415,1.23,False,60,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2018-11-20
+CDSL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,305918,0.31,False,11,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+TRIDENT,2022-04-08,"CFG-01,CFG-02",True,False,False,3749200,1.53,False,9,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+PATANJALI,2023-08-14,"CFG-02,CFG-03",True,False,False,1588197,-1.38,False,53,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-01
+LLOYDSENGG,2023-09-04,"CFG-01,CFG-02,CFG-03",True,False,False,1859048,-1.52,False,47,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-12
+PATANJALI,2023-09-13,CFG-02,True,False,False,804729,0.91,False,32,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-01
+SUZLON,2023-12-26,"CFG-01,CFG-02",True,False,False,24483621,-0.94,False,14,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2024-02-07,"CFG-01,CFG-02,CFG-03",True,False,False,31099553,4.99,False,50,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+SHAKTIPUMP,2025-03-21,"CFG-01,CFG-02,CFG-03",True,False,False,2115710,3.71,False,22,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2025-07-15,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05",True,False,False,6983417,-1.16,False,38,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+BALRAMCHIN,2026-05-28,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+KRN,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2024-10-03
+ADANIPOWER,2021-07-05,CFG-03,True,False,False,22719865,-2.38,False,52,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RENUKA,2021-08-02,"CFG-02,CFG-03",True,False,False,4245866,-2.04,False,49,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2021-07-19,"CFG-01,CFG-02,CFG-03",True,False,False,19645291,2.69,False,37,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+CDSL,2021-08-17,"CFG-02,CFG-03",True,False,False,648236,-2.15,False,46,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+ATGL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,186415,1.23,False,60,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2018-11-20
+CDSL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,305918,0.31,False,11,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+TTML,2022-01-24,"CFG-01,CFG-03",True,False,True,792875,-4.98,False,43,"B. circuit-locked flat bar (O=H=L=C, about -5% on the day): no trade can have happened",2013-01-01
+RPOWER,2022-09-22,CFG-03,True,False,False,10239233,0.0,False,50,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+PATANJALI,2023-08-14,"CFG-02,CFG-03",True,False,False,1588197,-1.38,False,53,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-01
+LLOYDSENGG,2023-09-04,"CFG-01,CFG-02,CFG-03",True,False,False,1859048,-1.52,False,47,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-12
+RPOWER,2024-02-07,"CFG-01,CFG-02,CFG-03",True,False,False,31099553,4.99,False,50,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+NETWORK18,2024-02-13,CFG-03,True,False,False,1060549,-0.8,False,46,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+TMPV,2024-03-18,CFG-03,True,False,False,12121719,2.81,False,60,D. symbol did not exist under this name in today's lake yet (rename artifact),2025-10-24
+SHAKTIPUMP,2025-03-21,"CFG-01,CFG-02,CFG-03",True,False,False,2115710,3.71,False,22,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2025-07-15,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05",True,False,False,6983417,-1.16,False,38,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+KIOCL,2025-10-23,"CFG-01,CFG-03",True,False,False,97348,2.76,False,2,E. other,2017-03-01
+GESHIP,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+BALRAMCHIN,2026-05-28,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+QPOWER,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2025-02-24
+ZENTEC,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2015-03-30
+KRN,2026-05-28,"CFG-01,CFG-02,CFG-03",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2024-10-03
+HEGAM,2021-06-17,"CFG-04,CFG-05,CFG-06",True,False,False,1168790,-4.12,False,60,D. symbol did not exist under this name in today's lake yet (rename artifact),2026-09-22
+ATGL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,186415,1.23,False,60,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2018-11-20
+CDSL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,305918,0.31,False,11,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+ADANIPOWER,2021-10-28,"CFG-04,CFG-05",True,False,False,25304915,-4.87,False,2,E. other,2013-01-01
+TRIDENT,2022-04-13,"CFG-04,CFG-05",True,False,False,2329693,-0.18,False,6,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+PATANJALI,2023-09-06,CFG-04,True,False,False,388314,0.65,False,37,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-01
+SUZLON,2024-01-04,"CFG-04,CFG-05,CFG-06",True,False,False,38232279,2.38,False,7,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2025-07-15,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05",True,False,False,6983417,-1.16,False,38,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+BALRAMCHIN,2026-05-28,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+IRB,2026-05-28,"CFG-01,CFG-04",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+HEGAM,2021-06-17,"CFG-04,CFG-05,CFG-06",True,False,False,1168790,-4.12,False,60,D. symbol did not exist under this name in today's lake yet (rename artifact),2026-09-22
+ATGL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,186415,1.23,False,60,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2018-11-20
+CDSL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,305918,0.31,False,11,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+ADANIPOWER,2021-10-28,"CFG-04,CFG-05",True,False,False,25304915,-4.87,False,2,E. other,2013-01-01
+TRIDENT,2022-04-13,"CFG-04,CFG-05",True,False,False,2329693,-0.18,False,6,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+PATANJALI,2023-09-07,CFG-05,True,False,False,261183,-0.89,False,36,D. symbol did not exist under this name in today's lake yet (rename artifact),2023-11-01
+SUZLON,2024-01-04,"CFG-04,CFG-05,CFG-06",True,False,False,38232279,2.38,False,7,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+TATAINVEST,2024-04-12,"CFG-05,CFG-06",True,False,False,340920,0.68,False,34,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+RPOWER,2025-07-15,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05",True,False,False,6983417,-1.16,False,38,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+KIOCL,2025-10-16,CFG-05,True,False,False,102646,-4.35,False,6,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-03-01
+BALRAMCHIN,2026-05-28,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
+HEGAM,2021-06-17,"CFG-04,CFG-05,CFG-06",True,False,False,1168790,-4.12,False,60,D. symbol did not exist under this name in today's lake yet (rename artifact),2026-09-22
+ATGL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,186415,1.23,False,60,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2018-11-20
+CDSL,2021-10-07,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,False,305918,0.31,False,11,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2017-06-30
+SUZLON,2024-01-04,"CFG-04,CFG-05,CFG-06",True,False,False,38232279,2.38,False,7,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+TATAINVEST,2024-04-12,"CFG-05,CFG-06",True,False,False,340920,0.68,False,34,"C. absent from the EQ-only bhavcopy for 5+ consecutive sessions (non-EQ series / restricted segment period), pre-swap lake had Yahoo bars",2013-01-01
+BALRAMCHIN,2026-05-28,"CFG-01,CFG-02,CFG-03,CFG-04,CFG-05,CFG-06",True,False,True,0,0.0,False,0,A. not an NSE session today (holiday): synthetic flat bar in the pre-swap lake,2013-01-01
