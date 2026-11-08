@@ -1,4 +1,4 @@
-"""backtest/no_network.py — a backtest must be reproducible from the database alone: any attempt to reach the network raises.
+"""stockbot/backtest/no_network.py — a backtest must be reproducible from the database alone: any attempt to reach the network raises.
 
 Patches the socket layer (``connect``, ``connect_ex``, ``create_connection``, ``getaddrinfo``) for the duration of the context, so requests, urllib,
 yfinance and friends all fail with ``NetworkAccessError``.  SQLite and local files are unaffected.

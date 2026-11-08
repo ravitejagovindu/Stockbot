@@ -1,4 +1,4 @@
-"""backtest/exclusions.py — Fail-closed surveillance & earnings exclusion loader."""
+"""stockbot/universe/exclusions.py — Fail-closed surveillance & earnings exclusion loader."""
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,6 +1,6 @@
 """scripts/run_surveillance_scrapers.py — the earnings / ASM-GSM scrapers that used to run inside ``backtest/run_backtest.py --scrape`` (F10).
 
-They use the network, so they are NOT part of a backtest any more (a backtest raises on any network call, see ``backtest/no_network.py``).
+They use the network, so they are NOT part of a backtest any more (a backtest raises on any network call, see ``stockbot/backtest/no_network.py``).
 Run this explicitly BEFORE a Pass 2 backtest; it writes ``historical_earnings_<regime>.csv`` / ``pending_asm_gsm_matches_<regime>.csv`` in backtest/outputs.
 """
 from __future__ import annotations

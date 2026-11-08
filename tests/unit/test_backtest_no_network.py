@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from backtest.no_network import NetworkAccessError, network_forbidden
+from stockbot.backtest.no_network import NetworkAccessError, network_forbidden
 
 ROOT = Path(__file__).resolve().parents[2]
 

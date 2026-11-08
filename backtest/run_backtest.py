@@ -21,7 +21,7 @@ import pandas as pd
 from sqlalchemy import distinct, select
 
 from backtest.audit_generator import generate, summarize
-from backtest.exclusions import Exclusions
+from stockbot.universe.exclusions import Exclusions
 from backtest.simulator import SimResult, Simulator
 from config import load_config
 from data.db.connection import get_session
@@ -58,7 +58,7 @@ def _fetch_nifty_series(session, config: dict, start_date: date, end_date: date)
 
 
 def main() -> None:
-    """Backtest runner.  Reads the database and local files only (no network: see backtest/no_network.py).  Scraping lives in scripts/run_surveillance_scrapers.py."""
+    """Backtest runner.  Reads the database and local files only (no network: see stockbot/backtest/no_network.py).  Scraping lives in scripts/run_surveillance_scrapers.py."""
     parser = argparse.ArgumentParser(description="StockBot Backtest Runner")
     parser.add_argument("--pass1", action="store_true", help="Run Pass 1 (naive, exclusions=None)")
     parser.add_argument("--pass2", action="store_true", help="Run Pass 2 (compliant, fail-closed exclusions)")

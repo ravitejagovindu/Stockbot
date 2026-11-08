@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import pandas as pd
 
-from backtest.exclusions import Exclusions
+from stockbot.universe.exclusions import Exclusions
 from backtest.audit_generator import summarize, generate, AuditGenerator
 from backtest.simulator import SimResult
 

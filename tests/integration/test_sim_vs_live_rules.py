@@ -22,7 +22,7 @@ from engine_core.lifecycle_rules import (
     parabolic_ref_close,
 )
 from engine_core.position_lifecycle import PositionLifecycleManager
-from backtest.exclusions import Exclusions
+from stockbot.universe.exclusions import Exclusions
 from backtest.simulator import Simulator
 
 
