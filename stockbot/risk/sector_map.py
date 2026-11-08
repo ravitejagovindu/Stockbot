@@ -1,4 +1,4 @@
-"""engine_core/sector_map.py — symbol-to-sector lookup from a committed CSV.
+"""stockbot/risk/sector_map.py — symbol-to-sector lookup from a committed CSV.
 
 The sector map CSV must be present at ``data/reference/sector_map.csv``
 with headers: ``symbol,sector``.
@@ -10,7 +10,7 @@ import csv
 from functools import lru_cache
 from pathlib import Path
 
-_PATH = Path(__file__).resolve().parents[1] / "data" / "reference" / "sector_map.csv"
+_PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "sector_map.csv"
 
 
 @lru_cache(maxsize=1)

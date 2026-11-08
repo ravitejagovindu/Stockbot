@@ -33,7 +33,7 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 from data.db.models import ActivePosition, TradeAnalyticsLog, RegimeState, MarketDataLake
-from engine_core.costs import CostModel
+from stockbot.risk.costs import CostModel
 from engine_core.trade_metrics import trades_from_log, metrics_from_trades
 from engine_core.mode import current_mode
 

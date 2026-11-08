@@ -68,7 +68,7 @@ from engine_core.lifecycle_rules import (
     advance_one_bar,
     parabolic_ref_close,
 )
-from engine_core.costs import CostModel
+from stockbot.risk.costs import CostModel
 from engine_core.corporate_action_events import apply_actions_to_position, due_actions
 from engine_core.mode import current_mode
 

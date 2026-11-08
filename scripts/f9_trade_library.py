@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from config import load_config                                                          # noqa: E402
 from stockbot.data.adjustments import get_adjusted_series                                 # noqa: E402
-from engine_core.costs import CostModel                                                 # noqa: E402
+from stockbot.risk.costs import CostModel                                                 # noqa: E402
 from engine_core.lifecycle_rules import Bar, BarCtx, LifecycleRules, PosState, advance_one_bar, parabolic_ref_close   # noqa: E402
 
 OUT = ROOT / "data" / "f9"

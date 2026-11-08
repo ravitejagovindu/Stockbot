@@ -1,4 +1,4 @@
-"""engine_core/costs.py — transaction cost and tax modeling.
+"""stockbot/risk/costs.py — transaction cost and tax modeling.
 
 All rates are read from strategy_config.yaml `costs:` section.
 """

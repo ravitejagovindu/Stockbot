@@ -7,7 +7,7 @@ from __future__ import annotations
 from datetime import date
 
 from data.db.models import ActivePosition, DailyWatchlist
-from engine_core.costs import CostModel
+from stockbot.risk.costs import CostModel
 
 
 def open_position(

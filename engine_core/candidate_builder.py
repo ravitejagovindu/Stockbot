@@ -10,7 +10,7 @@ from data.db.models import CorporateActionsLog, MarketDataLake
 from stockbot.data.adjustments import get_adjusted_series
 from stockbot.data.indicators import atr
 from engine_core.lifecycle_rules import Bar, parabolic_ref_close
-from engine_core.sector_map import sector_for
+from stockbot.risk.sector_map import sector_for
 
 
 def build_candidate_dicts(session, config: dict, symbols: list[str], eval_date: date) -> list[dict]:

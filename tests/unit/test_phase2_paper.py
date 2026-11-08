@@ -14,7 +14,7 @@ from data.db.models import (
     CorporateActionsLog,
     TradeAnalyticsLog,
 )
-from engine_core.costs import CostModel
+from stockbot.risk.costs import CostModel
 from engine_core.equity import paper_cash, paper_equity, get_equity
 from engine_core.account_ledger import get_live_equity
 from engine_core.position_service import open_position

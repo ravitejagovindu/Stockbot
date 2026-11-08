@@ -30,7 +30,7 @@ from config import load_config
 from data.db.connection import get_session
 from data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
-from engine_core.costs import CostModel
+from stockbot.risk.costs import CostModel
 from engine_core.entry_filters import passes_trend_filter
 from stockbot.data.indicators import atr, donchian_high, donchian_low
 from engine_core.lifecycle_rules import (
