@@ -8,10 +8,10 @@ from sqlalchemy import func, select
 
 from stockbot.data.db.models import CorporateActionsLog, DailyWatchlist, MarketDataLake
 from stockbot.risk.costs import CostModel
-from engine_core.equity import paper_cash, paper_equity
+from stockbot.live.equity import paper_cash, paper_equity
 from engine_core.lifecycle_rules import plan_entry_fill
 from stockbot.config.mode import current_mode
-from engine_core.position_service import open_position
+from stockbot.live.position_service import open_position
 
 
 def previous_trading_date(session, eval_date: date) -> Optional[date]:

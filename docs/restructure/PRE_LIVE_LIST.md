@@ -1,0 +1,11 @@
+# Pre-live list: things that must be settled before any strategy runs in LIVE mode
+
+Items are recorded here when a decision was made to NOT build or settle them during the restructure. Nothing here is built.
+
+1. **Correction replay** (reviewer decision at STOP 4, item 5). Today a late or corrected operator report (a report for a session `decide` has already processed) is refused with `late report`. Correction replay would reapply it: rebuild `State` at the reported date from the journal (`StateStore.rebuild` folds effects and Decisions in order), apply the corrected report, and re-run `decide` for every later session, journaling the replacement rows. Do not build it now.
+2. **Validation gates vs trade rate (KI-002).** The shared `validation_gates` carry `min_trades = 40` and `min_expectancy_r = 0.15`; at about 2.6 trades a month neither is testable. To be re-pre-registered with the first strategy.
+3. **Original mandate vs shared config.** `shared.yaml` keeps 12 open positions and 15% total portfolio risk; the original mandate said 10 and 10%. Decide in the strategy phase.
+4. **ASM/GSM point-in-time history.** Only the forward daily snapshot (started 2026-11-08) exists (KI-003); a backtest Pass 2 stays fail-closed until enough history accumulates.
+5. **Corporate-action announcement dates** do not exist in the log (ex-date only); any "ex-date within N days" entry rule is impossible point-in-time until announcement timestamps are collected.
+6. **Market-cap gate** replacement (shares outstanding is a non-point-in-time snapshot, KI-001) is parked.
+7. **Legacy UI tables.** The API routers under `stockbot/live/api` still read and write the old paper tables (`active_positions`, `daily_watchlist`, `account_ledger`, ...) through `stockbot.data.db`. They are not connected to the new state store; rework them against the state store before the UI is used with a strategy.

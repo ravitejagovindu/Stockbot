@@ -23,7 +23,7 @@ ALLOWED = {
     "engine": {"config", "data", "universe", "risk", "strategies"},
     "strategies": {"data"},
     "backtest": {"config", "data", "universe", "risk", "engine", "strategies"},
-    "live": {"config", "data", "universe", "risk", "engine", "strategies"},          # never backtest
+    "live": {"config", "data", "universe", "risk", "engine", "strategies", "validation"},          # never backtest; validation: trade-R reporting used by the (legacy) analytics routers
     "validation": {"config", "data", "risk", "backtest", "engine", "universe"},     # never live; risk: R definitions (Q2); engine + universe: the baseline reuses the engine stepping and the shared eligibility (Q5)
     "data_checks": {"config", "data"},
 }
@@ -110,11 +110,6 @@ LEGACY_ALLOWLIST = {
     # the golden engine scan compares the as-of view with the OLD engine path (build_candidate_dicts) and reads the ORM models; both disappear with engine_core / data.db in Phase 10
     ("stockbot.data_checks.f2_engine_scan", "engine_core.candidate_builder"): "Phase 10 (engine scan reads through the as-of view once engine_core is deleted)",
     # live: routers moved unmodified and flagged for rework; pipeline/lock/state still legacy
-    ("stockbot.live.api.analytics", "engine_core.analytics_loop"): "Phase 9 (live package)",
-    ("stockbot.live.api.ledger", "engine_core.account_ledger"): "Phase 9 (live package)",
-    ("stockbot.live.api.portfolio", "engine_core.equity"): "Phase 9 (live package)",
-    ("stockbot.live.api.positions", "engine_core.analytics_loop"): "Phase 9 (live package)",
-    ("stockbot.live.api.positions", "engine_core.position_service"): "Phase 9 (live package)",
     ("stockbot.live.scheduler", "live_runner.pipeline"): "Phase 6/9 (EOD runner replaced)",
 }
 # non-stockbot legacy .py files still under the top-level data/ folder -> phase that removes/moves them

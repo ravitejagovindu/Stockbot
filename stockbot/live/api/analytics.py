@@ -20,7 +20,7 @@ def get_analytics(limit: int = Query(default=200, le=1000, description="Max trad
     - < 0.5 = critical — pause live trading, investigate
     """
     with get_session() as session:
-        from engine_core.analytics_loop import AnalyticsLoop
+        from stockbot.live.analytics_loop import AnalyticsLoop
         loop = AnalyticsLoop(session=session)
         report = loop.get_decay_report()
 

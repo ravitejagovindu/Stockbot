@@ -1,4 +1,4 @@
-"""engine_core/equity.py — paper vs live equity and cash tracking."""
+"""stockbot/live/equity.py — paper vs live equity and cash tracking."""
 from __future__ import annotations
 
 from sqlalchemy import text
@@ -28,5 +28,5 @@ def get_equity(session, config: dict, mode: str, live_fallback: float) -> float:
     """Dispatch equity lookup based on runtime mode."""
     if mode == "PAPER":
         return paper_equity(session, config)
-    from engine_core.account_ledger import get_live_equity
+    from stockbot.live.account_ledger import get_live_equity
     return get_live_equity(session, live_fallback)

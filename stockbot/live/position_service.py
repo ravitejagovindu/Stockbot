@@ -1,4 +1,4 @@
-"""engine_core/position_service.py — unified position opening logic.
+"""stockbot/live/position_service.py — unified position opening logic.
 
 Used by both PAPER (automated next-open fill) and LIVE (operator entered fill).
 """

@@ -39,7 +39,7 @@ def open_position_endpoint(req: OpenPositionRequest):
     from stockbot.config.legacy_loader import load_config
     from stockbot.risk.costs import CostModel
     from stockbot.config.mode import current_mode
-    from engine_core.position_service import open_position
+    from stockbot.live.position_service import open_position
     from stockbot.data.db.models import DailyWatchlist
 
     cfg = load_config()
@@ -85,7 +85,7 @@ def close_position(req: ClosePositionRequest):
         raise HTTPException(400, "PAPER positions close automatically")
 
     with get_session() as session:
-        from engine_core.analytics_loop import AnalyticsLoop
+        from stockbot.live.analytics_loop import AnalyticsLoop
         from stockbot.data.db.models import ActivePosition
 
         loop = AnalyticsLoop(session=session, config=cfg)

@@ -32,7 +32,7 @@ def get_portfolio():
     total_position_value = 0.0
     sector_exposure: dict[str, float] = {}
 
-    from engine_core.equity import get_equity
+    from stockbot.live.equity import get_equity
     import os
     
     with get_session() as session:

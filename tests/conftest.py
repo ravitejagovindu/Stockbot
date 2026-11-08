@@ -84,7 +84,7 @@ def db_session():
     engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
 
     # Apply schema
-    schema_path = Path(__file__).resolve().parents[1] / "data" / "db" / "schema.sql"
+    schema_path = Path(__file__).resolve().parents[1] / "stockbot" / "data" / "db" / "schema.sql"
     sql = schema_path.read_text(encoding="utf-8")
     with engine.connect() as conn:
         conn.connection.dbapi_connection.executescript(sql)

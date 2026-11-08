@@ -193,6 +193,6 @@ def test_f3_migration_adds_columns_idempotently(tmp_path):
 
 def test_schema_sql_contains_f3_columns():
     from pathlib import Path
-    sql = (Path(__file__).resolve().parents[2] / "data" / "db" / "schema.sql").read_text(encoding="utf-8")
+    sql = (Path(__file__).resolve().parents[2] / "stockbot" / "data" / "db" / "schema.sql").read_text(encoding="utf-8")
     for col in ("applied_corp_actions", "manual_review_ca", "excluded_ca", "risk_inr"):
         assert col in sql

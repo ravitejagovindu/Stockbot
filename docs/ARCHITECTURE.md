@@ -8,12 +8,12 @@ Goal: about five strategies, each developed, tested and retired without touching
 | `config` | shared typed config, runtime mode, logging, file locations (`paths.py`) | nothing from stockbot |
 | `data` | ingestion, **read-only lake access** (`lake.py`), corporate-action adjustment, **point-in-time as-of view** (`asof.py`), shared indicators | config |
 | `universe` | eligibility rules and exclusions (ASM/GSM, earnings) | config, data |
-| `risk` | costs, sector map; later sizing, heat/sector caps, arbitration, R definitions | config, data |
+| `risk` | costs, sizing, heat/sector caps, cross-strategy arbitration, R definitions | config, data |
 | `engine` | one `decide()` for backtest and live; strategy interface (Phase 6) | config, data, universe, risk, strategies (interface only) |
 | `strategies` | interface and registry only; **no strategy files** (a dummy lives under `tests/`) | data (view types) |
 | `backtest` | runner, simulated fills, network guard, run manifest | config, data, universe, risk, engine, strategies (registry) |
-| `live` | EOD runner, tickets, state DB, idempotency, scheduler, read-only API | same as backtest plus its own state store; **never backtest** |
-| `validation` | Max-T, prereg lock, trade-R reporting, power study, matched-random baseline, trial ledger | config, data (types), backtest results; **never live** |
+| `live` | EOD runner, tickets, state DB and journal, idempotency, scheduler, API routers | config, data, universe, risk, engine, strategies, **validation (trade-R reporting only, for the legacy analytics routers)**; its own state store; **never backtest** |
+| `validation` | Max-T, prereg lock, trade-R reporting, power study, matched-random baseline, trial ledger | config, data, risk (R definitions), backtest, **engine and universe (the baseline reuses the engine stepping and the shared eligibility; reviewer decision at STOP 4)**; **never live** |
 | `data_checks` | quality, calendar, corporate-action verification, pre-flight | config, data |
 
 Also forbidden: a strategy or the engine receiving a database session/connection or importing sqlalchemy/sqlite3; any network library inside `backtest`, `engine`, `strategies`, `risk` (the network guard module is the one exception, it patches `socket`); `sys.path` edits inside `stockbot/`; one strategy importing another; any `stockbot` module importing an old top-level path (`data`, `engine_core`, `live_runner`, `backtest`, `config`, ...) unless it is an explicit entry of the temporary allowlist.

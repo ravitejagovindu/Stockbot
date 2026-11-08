@@ -278,7 +278,7 @@ class EODPipeline:
         current_positions = self._get_open_positions_for_heat_cap(mode)
 
         # Size and gate candidates
-        from engine_core.equity import get_equity
+        from stockbot.live.equity import get_equity
         fallback_equity = float(os.getenv("ACCOUNT_EQUITY", "1000000"))
         account_equity = get_equity(self.session, self.config, mode, fallback_equity)
         sizing_engine = RiskAndSizingEngine(config=self.config)
@@ -371,7 +371,7 @@ class EODPipeline:
 
     def _live_equity(self) -> float:
         """Fetch current live account equity from ledger or fallback."""
-        from engine_core.account_ledger import get_live_equity
+        from stockbot.live.account_ledger import get_live_equity
         fallback = float(os.getenv("ACCOUNT_EQUITY", "1000000.0"))
         return get_live_equity(self.session, fallback)
 
