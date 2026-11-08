@@ -1,0 +1,22 @@
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 46%]
+........................................................................ [ 58%]
+........................................................................ [ 70%]
+........................................................................ [ 81%]
+........................................................................ [ 93%]
+........................................                                 [100%]
+============================ slowest 10 durations =============================
+118.39s call     tests/data_integrity/test_golden_frozen.py::test_the_scan_through_the_view_reproduces_the_frozen_old_path_result
+35.85s call     tests/unit/test_every_module_imports_alone.py::test_each_module_imports_in_a_fresh_interpreter
+8.53s call     tests/unit/test_validation_random_baseline.py::test_paired_statistics_are_reproducible_for_a_seed_and_move_with_it
+7.30s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_with_ar1_autocorrelation
+6.42s call     tests/data_integrity/test_entry_bar_real_lake.py::test_entry_bar_rule_agrees_with_every_legacy_trade_on_the_real_lake
+5.58s call     tests/unit/test_validation_random_baseline.py::test_paired_difference_and_significance_follow_the_data
+3.65s call     tests/unit/test_engine_live.py::test_backtest_and_live_give_identical_decisions_day_by_day
+3.63s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_on_pure_noise
+3.06s call     tests/unit/test_validation_random_baseline.py::test_trimmed_mean_and_report
+2.84s call     tests/unit/test_engine_live.py::test_state_is_rebuilt_from_the_journal_alone
+616 passed in 291.50s (0:04:51)
+done
