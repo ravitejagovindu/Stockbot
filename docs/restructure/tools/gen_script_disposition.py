@@ -13,6 +13,8 @@ def where_now(path: str):
     if (ROOT / p).exists():
         return path, ("thin wrapper" if (ROOT / p).read_text(encoding="utf-8", errors="ignore").startswith('"""Thin command-line wrapper') else "unchanged")
     stem = p.name
+    if stem == "__init__.py":
+        return "(package marker)", "moved"
     for cand in list((ROOT / "stockbot").rglob(stem)) + list((ROOT / "scripts" / "provenance").rglob(stem)):
         return str(cand.relative_to(ROOT)).replace("\\", "/"), "moved"
     return "-", "gone"
@@ -58,7 +60,7 @@ for r in inv:
         nxt = {"rewrite": "Phase 9/10 (rewrite)", "undecided": "decide at STOP 4", "keep-as-is": "keep"}.get(cat, cat)
     if how == "moved" and "wrapper at" in now:
         nxt = "done: logic in the package, the old command line still works"
-    if how == "moved" and not path.startswith("scripts/"):
+    if how == "moved" and not path.startswith(("scripts/", "data/")):
         nxt = "done (moved to the package in an earlier phase)"
     special = {
         "backtest/path_sim.py": "replaced by `engine.path.simulate_ticket` (equivalence test in test_f6_baseline_and_locks); leaves in Phase 10 with engine_core",
@@ -67,12 +69,16 @@ for r in inv:
         "scripts/f2_copy_detector.py": "done in Phase 2: logic in `stockbot/data_checks/copy_detector.py`; this file is a thin wrapper",
         "scripts/paper_report.py": "Phase 9: moves to `live` (Q8: paper criteria are shared, in live)",
         "scripts/daily_health_check.py": "Phase 9: rewritten for the state store",
-        "data/__init__.py": "Phase 9/10: goes with the db layer (state-store split)",
-        "data/db/__init__.py": "Phase 9/10: goes with the db layer (state-store split)",
-        "data/db/connection.py": "Phase 9/10: replaced by the read-only lake connection and the live state store",
-        "data/db/models.py": "Phase 9/10: replaced by the read-only lake connection and the live state store",
+        "data/__init__.py": "removed in Phase 9.1 (data/ holds data files only)",
+        "data/db/__init__.py": "moved to stockbot/data/db in Phase 9.1",
+        "data/db/connection.py": "moved to stockbot/data/db/connection.py in Phase 9.1 (used by ingestion and the legacy dashboard tables; the engine never sees it)",
+        "data/db/models.py": "moved to stockbot/data/db/models.py in Phase 9.1 (ORM for ingestion and the legacy dashboard tables)",
     }
     nxt = special.get(path, nxt)
+    if how == "gone":
+        why = {"old-strategy": "the old strategy's code or analysis", "delete": "replaced / invalid (F8 scrapers, git lock, ad-hoc counters)", "rewrite": "replaced by new code (runner, adapters, config)",
+               "undecided": "replaced by engine.path / stockbot.live", "provenance": "provenance not kept (see scripts/provenance/README.md)", "move": "moved or removed"}.get(cat, cat)
+        nxt = f"DELETED in Phase 10 ({why}); tag `pre-restructure`"
     rows.append((path, cat, now, how, legacy_deps(now) if now != "-" else "", nxt))
 
 extra = [("scripts/merge_asm_gsm_snapshots.py", "added in prep (not in INVENTORY)"), ("scripts/check_all.py", "added in Phase 8"), ("scripts/f9_trade_library.py", "-")]
