@@ -97,44 +97,22 @@ def _candidate_count() -> int:
 
 
 def register(reason: str | None = None) -> None:
-    """Write the REGISTRATION row (YAML hash, gate hash, config budget). Re-registration needs an explicit reason."""
-    from stockbot.validation import prereg_lock as pl
+    """Write the REGISTRATION row (YAML hash, gate hash, config budget). Re-registration needs an explicit reason. The writer lives in stockbot.validation.ledger (Phase 7)."""
+    from stockbot.validation import ledger
 
-    if REGISTRY_LEDGER.exists():
-        pl.upgrade_ledger(REGISTRY_LEDGER)
-        pl.verify_ledger(REGISTRY_LEDGER)
-        existing = pl.latest_registration(REGISTRY_LEDGER)
-        if existing and not reason:
-            raise pl.PreRegistrationError(
-                "a REGISTRATION row already exists; re-registering needs --reregister-reason (it is recorded).")
-    else:
-        REGISTRY_LEDGER.parent.mkdir(parents=True, exist_ok=True)
-        cids = [c["id"] for c in _load_yaml(PRE_REG_YAML).get("configs", []) if c.get("role") == "CANDIDATE"]
-        header = (["timestamp_utc", "commit_sha", "selected_config", "selection_reason"]
-                  + [f"{cid}_gate_reached" for cid in cids] + pl.EXTRA_COLUMNS)
-        with open(REGISTRY_LEDGER, "w", newline="", encoding="utf-8") as f:
-            csv.writer(f).writerow(header)
-    pl.append_row(REGISTRY_LEDGER, {
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(), "commit_sha": _git_head_sha(),
-        "selected_config": "N/A", "selection_reason": reason or "initial registration",
-        "row_type": "REGISTRATION", "yaml_sha256": pl.sha256_text_file(PRE_REG_YAML),
-        "gates_sha256": pl.gates_hash(gate_parameters()), "budget": _candidate_count(),
-    })
-    print(f"Registered: yaml={pl.sha256_text_file(PRE_REG_YAML)[:12]} gates={pl.gates_hash(gate_parameters())[:12]} "
-          f"budget={_candidate_count()}")
+    cids = [c["id"] for c in _load_yaml(PRE_REG_YAML).get("configs", []) if c.get("role") == "CANDIDATE"]
+    rec = ledger.register(ledger=REGISTRY_LEDGER, yaml_path=PRE_REG_YAML, gate_params=gate_parameters(), candidate_ids=cids, git_sha=_git_head_sha(), reason=reason)
+    print(f"Registered: yaml={rec['yaml_sha256'][:12]} gates={rec['gates_sha256'][:12]} budget={rec['budget']}")
 
 
 def _log_exploratory(note: str, selected, gate_reached: dict) -> None:
-    """Dry-run / diagnostic-folder runs are still counted (F6)."""
-    new = not EXPLORATORY_LOG.exists()
-    with open(EXPLORATORY_LOG, "a", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        if new:
-            w.writerow(["timestamp_utc", "commit_sha", "outputs_dir", "mode", "selected_config", "gate_reached_json"])
-        w.writerow([datetime.now(timezone.utc).isoformat(), _git_head_sha(), str(OUTPUTS_DIR), note,
-                    selected or "NONE", json.dumps(gate_reached, sort_keys=True)])
-BOOTSTRAP_BLOCK_SIZE = 4              # Primary block size (Gate 3 also checks block_size=8)
+    """Dry-run / diagnostic-folder runs are still counted (F6). The writer lives in stockbot.validation.ledger (Phase 7)."""
+    from stockbot.validation import ledger
 
+    ledger.record_exploratory(path=EXPLORATORY_LOG, note=note, selected=selected, gate_reached=gate_reached, git_sha=_git_head_sha(), source=str(OUTPUTS_DIR))
+
+
+BOOTSTRAP_BLOCK_SIZE = 4              # Primary block size (Gate 3 also checks block_size=8)
 
 # ---------------------------------------------------------------------------
 # Helper utilities
