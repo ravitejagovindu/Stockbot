@@ -1,0 +1,86 @@
+"""stockbot.data.lake / stockbot.data.asof on a small file-backed fixture lake (never touches finsight.db)."""
+import sqlite3
+from datetime import date, timedelta
+from pathlib import Path
+
+import pandas as pd
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from data.db.connection import Base
+from data.db.models import CorporateActionsLog
+from engine_core.candidate_builder import build_candidate_dicts
+from stockbot.data.asof import AsOfView, FutureDataError
+from stockbot.data.lake import open_lake
+from tests.fixtures import mini_lake
+from tests.fixtures.lakefile import SPLIT_EX_IDX, _make, lake_path  # noqa: F401
+
+def test_future_is_unreachable(lake_path):
+    ds = mini_lake.sessions()
+    T = ds[250]
+    v = AsOfView(open_lake(lake_path), T)
+    with pytest.raises(FutureDataError):
+        v.raw_bars("FIXCO", end=T + timedelta(days=1))
+    with pytest.raises(FutureDataError):
+        v.adjusted_bars("FIXCO", start=T + timedelta(days=1))
+    for fr in (v.raw_bars("FIXCO"), v.adjusted_bars("FIXCO"), v.index_bars("NIFTY50_INDEX"), v.index_bars("INDIA_VIX")):
+        assert max(fr.index) == T
+    assert v.sessions()[-1] == T and max(v.sessions()) == T
+    assert all(a["ex_date"] <= T for a in v.corporate_actions("FIXCO"))
+    assert v.symbol_info("FIXCO").n_sessions == 251
+
+
+def test_no_connection_is_exposed(lake_path):
+    v = AsOfView(open_lake(lake_path), mini_lake.sessions()[10])
+    public = [a for a in dir(v) if not a.startswith("_")]
+    assert not {"conn", "connection", "session", "cursor", "execute", "db", "engine"} & set(public)
+    assert not [a for a in public if isinstance(getattr(v, a), (sqlite3.Connection, sqlite3.Cursor))]
+
+
+def test_decisions_do_not_change_when_every_later_row_changes(tmp_path):
+    ds = mini_lake.sessions()
+    a, b = tmp_path / "a.db", tmp_path / "b.db"
+    _make(a)
+    _make(b)
+    T = ds[250]
+    con = sqlite3.connect(b)                                         # corrupt EVERYTHING after T in lake b
+    con.execute("update market_data_lake set open_raw=open_raw*7, high_raw=high_raw*7, low_raw=low_raw*7, close_raw=close_raw*7, volume_raw=1 where trade_date>?", (T.isoformat(),))
+    con.execute("delete from market_data_lake where trade_date>? and symbol='INDIA_VIX'", (T.isoformat(),))
+    con.execute("insert into corporate_actions_log (symbol, ex_date, action_type, ratio_numerator, ratio_denominator, source, evidence_tier) values ('FIXCO', ?, 'SPLIT', 1, 2, 'x', 'T1')",
+                ((T + timedelta(days=3)).isoformat(),))
+    con.commit(); con.close()
+    va, vb = AsOfView(open_lake(a), T), AsOfView(open_lake(b), T)
+    for sym in ("FIXCO", "NIFTY50_INDEX", "INDIA_VIX"):
+        pd.testing.assert_frame_equal(va.raw_bars(sym), vb.raw_bars(sym))
+    pd.testing.assert_frame_equal(va.adjusted_bars("FIXCO"), vb.adjusted_bars("FIXCO"))
+    assert va.corporate_actions("FIXCO") == vb.corporate_actions("FIXCO")
+    assert va.sessions() == vb.sessions() and va.adtv("FIXCO") == vb.adtv("FIXCO") and va.symbols_trading() == vb.symbols_trading()
+    assert va.symbol_info("FIXCO") == vb.symbol_info("FIXCO")
+
+
+def test_adjustment_uses_only_actions_known_at_the_as_of_date(lake_path):
+    ds = mini_lake.sessions()
+    ex = ds[SPLIT_EX_IDX]
+    before = AsOfView(open_lake(lake_path), ds[SPLIT_EX_IDX - 1])           # split not yet known
+    after = AsOfView(open_lake(lake_path), ds[SPLIT_EX_IDX + 5])
+    rb, ra = before.raw_bars("FIXCO", None), after.raw_bars("FIXCO", None)
+    pd.testing.assert_series_equal(before.adjusted_bars("FIXCO", None)["close_adj"], rb["close_raw"].rename("close_adj"))
+    adj = after.adjusted_bars("FIXCO", None)
+    pre = [d for d in ra.index if d < ex]
+    assert all(abs(adj.loc[d, "close_adj"] - 0.2 * ra.loc[d, "close_raw"]) < 1e-9 for d in pre)
+    assert abs(adj.loc[ex, "close_adj"] - ra.loc[ex, "close_raw"]) < 1e-12      # the ex-date bar and later are not scaled
+    assert [a["ex_date"] for a in before.corporate_actions("FIXCO")] == []
+    assert [a["ex_date"] for a in after.corporate_actions("FIXCO")] == [ex]
+
+
+def test_view_equals_the_current_candidate_path(lake_path):
+    eng = create_engine(f"sqlite:///{lake_path.as_posix()}")
+    ds = mini_lake.sessions()
+    cfg = {"data": {"resistance_lookback_days": 252}}
+    with sessionmaker(bind=eng)() as s:
+        for i in (120, 199, 205, 260, 301):
+            cand = build_candidate_dicts(s, cfg, ["FIXCO"], ds[i])[0]
+            v = AsOfView(open_lake(lake_path), ds[i])
+            pd.testing.assert_frame_equal(v.raw_bars("FIXCO", 282), cand["raw_ohlcv"])
+            pd.testing.assert_frame_equal(v.adjusted_bars("FIXCO", 282), cand["adjusted_ohlcv"])
