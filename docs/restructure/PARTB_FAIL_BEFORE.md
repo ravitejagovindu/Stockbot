@@ -100,3 +100,13 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_validation_ledger.py::test_register_writes_a_chained_registration_row_and_demands_a_reason_to_repeat | stockbot/validation/ledger/__init__.py | re-registration without a reason accepted | passes clean / FAILS mutated |
 | tests/unit/test_validation_ledger.py::test_exploratory_log_has_one_header_and_no_chain | stockbot/validation/ledger/__init__.py | header written on every row | passes clean / FAILS mutated |
 | tests/unit/test_validation_ledger.py::test_the_real_trial_ledger_verifies_through_the_new_api | stockbot/validation/ledger/__init__.py | wrong row count | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_same_seed_same_draws_and_other_seeds_differ | stockbot/validation/random_baseline.py | draws not seeded | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_draws_use_the_engine_exit_policy_and_the_matched_relative_stop | stockbot/validation/random_baseline.py | stop distance not matched | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_the_pool_is_the_shared_universe_minus_the_actual_symbol | stockbot/validation/random_baseline.py | pool ignores eligibility and the actual symbol | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_the_pool_is_the_shared_universe_minus_the_actual_symbol | stockbot/validation/random_baseline.py | pool_filter ignored | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_forward_returns_are_measured_from_the_fill_price | stockbot/validation/random_baseline.py | forward return off by one session | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_unfilled_draws_are_counted_not_hidden | stockbot/validation/random_baseline.py | unfilled draws not counted | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_paired_statistics_are_reproducible_for_a_seed_and_move_with_it | stockbot/validation/paired_stats.py | statistics not seeded | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_paired_difference_and_significance_follow_the_data | stockbot/validation/paired_stats.py | median used for the paired difference | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_paired_difference_and_significance_follow_the_data | stockbot/validation/paired_stats.py | significance threshold removed | passes clean / FAILS mutated |
+| tests/unit/test_validation_random_baseline.py::test_trimmed_mean_and_report | stockbot/validation/paired_stats.py | nothing trimmed | passes clean / FAILS mutated |
