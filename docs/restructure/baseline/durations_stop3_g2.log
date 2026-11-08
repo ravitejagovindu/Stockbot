@@ -1,0 +1,39 @@
+........................................................................ [ 13%]
+........................................................................ [ 27%]
+........................................................................ [ 41%]
+.................................................................s...... [ 54%]
+........................................................................ [ 68%]
+........................................................................ [ 82%]
+........................................................................ [ 95%]
+......................                                                   [100%]
+============================== warnings summary ===============================
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:166: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top40 = apply_rs_rank_percentile(cands, 40.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:169: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top50 = apply_rs_rank_percentile(cands, 50.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:172: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, None)) == 10
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:173: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, 100.0)) == 10
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 10 durations =============================
+197.71s call     tests/data_integrity/test_asof_view_real_db.py::test_120_samples_view_equals_build_candidate_dicts
+98.49s call     tests/data_integrity/test_baseline_real_db.py::test_real_db_active_simulator_mini_window_jan_feb_2020
+23.58s call     tests/unit/test_every_module_imports_alone.py::test_each_module_imports_in_a_fresh_interpreter
+6.42s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_with_ar1_autocorrelation
+4.89s call     tests/data_integrity/test_baseline_real_db.py::test_real_db_simulator_and_funnel_agreement
+3.39s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_on_pure_noise
+2.34s call     tests/unit/test_snapshot_asm_gsm.py::test_stores_both_lists_and_is_idempotent
+2.26s call     tests/unit/test_snapshot_asm_gsm.py::test_touches_only_its_own_tables
+1.84s call     tests/unit/test_asof_view.py::test_decisions_do_not_change_when_every_later_row_changes
+1.22s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_is_reproducible
+525 passed, 1 skipped, 4 warnings in 374.31s (0:06:14)
+done 0

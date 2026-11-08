@@ -1,0 +1,40 @@
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+....................................................................s... [ 57%]
+........................................................................ [ 68%]
+........................................................................ [ 80%]
+........................................................................ [ 91%]
+......................................................                   [100%]
+============================== warnings summary ===============================
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:166: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top40 = apply_rs_rank_percentile(cands, 40.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:169: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top50 = apply_rs_rank_percentile(cands, 50.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:172: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, None)) == 10
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:173: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, 100.0)) == 10
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 10 durations =============================
+680.51s call     tests/data_integrity/test_asof_view_real_db.py::test_120_samples_view_equals_build_candidate_dicts
+134.26s call     tests/data_integrity/test_baseline_real_db.py::test_real_db_active_simulator_mini_window_jan_feb_2020
+61.45s call     tests/data_integrity/test_baseline_real_db.py::test_real_db_simulator_and_funnel_agreement
+61.05s call     tests/unit/test_every_module_imports_alone.py::test_each_module_imports_in_a_fresh_interpreter
+36.69s call     tests/data_integrity/test_calendar_integrity.py::test_staging_dates_are_nifty_dates_or_documented_special_sessions
+11.16s call     tests/unit/test_validation_random_baseline.py::test_paired_statistics_are_reproducible_for_a_seed_and_move_with_it
+9.64s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_with_ar1_autocorrelation
+8.03s call     tests/unit/test_validation_random_baseline.py::test_paired_difference_and_significance_follow_the_data
+4.97s call     tests/data_integrity/test_entry_bar_real_lake.py::test_entry_bar_rule_agrees_with_every_legacy_trade_on_the_real_lake
+4.85s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_on_pure_noise
+629 passed, 1 skipped, 4 warnings in 1121.54s (0:18:41)
+done
