@@ -1,6 +1,6 @@
 """scripts/f2_engine_scan.py — post-adjustment scan of large moves through the ENGINE's real adjustment code path.
 
-Reads market_data_lake and corporate_actions_log with the ORM models and adjusts with ``engine_core.adjustments.get_adjusted_series``
+Reads market_data_lake and corporate_actions_log with the ORM models and adjusts with ``stockbot.data.adjustments.get_adjusted_series``
 exactly as ``engine_core.candidate_builder.build_candidate_dicts`` does (same query shape, same dict fields, same function).
 An equivalence check runs ``build_candidate_dicts`` itself on sample symbols and compares its adjusted frame with the scan's.
 Counts |adjusted close-to-close move| > 40% on ADTV-eligible equity names (raw price >= Rs5), 2013-01-01..2026-09-30.
@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from data.db.models import CorporateActionsLog, MarketDataLake       # noqa: E402
-from engine_core.adjustments import get_adjusted_series              # noqa: E402
+from stockbot.data.adjustments import get_adjusted_series              # noqa: E402
 from engine_core.candidate_builder import build_candidate_dicts      # noqa: E402
 
 OUT = ROOT / "docs" / "data_audit"
@@ -109,7 +109,7 @@ def main() -> int:
             checked += 1
             if not np.allclose(sub["close_adj"].values, adj_c["close_adj"].values, rtol=1e-12):
                 mism += 1
-    lines = [f"# Engine-path scan ({a.tag})\n", f"Database: `{a.db}`.  Adjusted with `engine_core.adjustments.get_adjusted_series` from `corporate_actions_log` rows keyed by lake symbol.\n",
+    lines = [f"# Engine-path scan ({a.tag})\n", f"Database: `{a.db}`.  Adjusted with `stockbot.data.adjustments.get_adjusted_series` from `corporate_actions_log` rows keyed by lake symbol.\n",
              f"Names scanned: {len(frames)}.\n", "```", f"large moves before adjustment : {raw_n}", f"large moves after adjustment  : {adj_n}",
              f"  removed by adjusting        : {fixed}", f"  created by adjusting        : {created}", "```\n", "Remaining by category:\n", "```",
              rdf.groupby("category").size().to_string(), "```\n",

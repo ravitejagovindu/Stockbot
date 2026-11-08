@@ -9,7 +9,7 @@ import logging
 from datetime import date
 import pandas as pd
 
-from engine_core.adjustments import get_adjusted_series
+from stockbot.data.adjustments import get_adjusted_series
 from engine_core.sector_map import sector_for
 
 logger = logging.getLogger(__name__)

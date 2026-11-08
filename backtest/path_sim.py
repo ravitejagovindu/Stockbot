@@ -15,7 +15,7 @@ import pandas as pd
 from sqlalchemy import select
 
 from data.db.models import CorporateActionsLog, MarketDataLake
-from engine_core.adjustments import get_adjusted_series
+from stockbot.data.adjustments import get_adjusted_series
 from engine_core.candidate_builder import bar_context
 from engine_core.corporate_action_events import apply_actions_to_position, due_actions
 from engine_core.costs import CostModel

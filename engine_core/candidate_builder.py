@@ -7,8 +7,8 @@ import pandas as pd
 from sqlalchemy import select
 
 from data.db.models import CorporateActionsLog, MarketDataLake
-from engine_core.adjustments import get_adjusted_series
-from engine_core.indicators import atr
+from stockbot.data.adjustments import get_adjusted_series
+from stockbot.data.indicators import atr
 from engine_core.lifecycle_rules import Bar, parabolic_ref_close
 from engine_core.sector_map import sector_for
 

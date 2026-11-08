@@ -63,7 +63,7 @@ def sma(series: pd.Series, period: int) -> pd.Series:
     Examples
     --------
     >>> import pandas as pd
-    >>> from engine_core.indicators import sma
+    >>> from stockbot.data.indicators import sma
     >>> prices = pd.Series([1.0, 2.0, 3.0, 4.0, 5.0])
     >>> sma(prices, 3).iloc[-1]
     4.0
@@ -225,7 +225,7 @@ def donchian_low(low: pd.Series, period: int = 20) -> pd.Series:
     Examples
     --------
     >>> import pandas as pd
-    >>> from engine_core.indicators import donchian_low
+    >>> from stockbot.data.indicators import donchian_low
     >>> lows = pd.Series([10.0, 9.0, 8.0, 11.0, 7.0])
     >>> donchian_low(lows, period=3).iloc[-1]
     7.0
@@ -256,7 +256,7 @@ def donchian_high(high: pd.Series, period: int = 252) -> pd.Series:
     Examples
     --------
     >>> import pandas as pd
-    >>> from engine_core.indicators import donchian_high
+    >>> from stockbot.data.indicators import donchian_high
     >>> highs = pd.Series([100.0, 120.0, 110.0, 115.0, 105.0])
     >>> donchian_high(highs, period=3).iloc[-1]
     120.0

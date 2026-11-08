@@ -14,7 +14,7 @@ from engine_core.candidate_builder import bar_context, build_candidate_dicts
 from engine_core.corporate_action_events import apply_actions_to_position, due_actions
 from engine_core.costs import CostModel
 from engine_core.entry_filters import apply_entry_filters
-from engine_core.indicators import atr
+from stockbot.data.indicators import atr
 from engine_core.lifecycle_rules import (
     BarCtx,
     Bar,

@@ -48,7 +48,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-from engine_core.indicators import sma
+from stockbot.data.indicators import sma
 
 
 # ---------------------------------------------------------------------------
@@ -100,7 +100,7 @@ def compute_cumulative_factor(
     Examples
     --------
     >>> from datetime import date
-    >>> from engine_core.adjustments import compute_cumulative_factor
+    >>> from stockbot.data.adjustments import compute_cumulative_factor
     >>> actions = [
     ...     {"ex_date": date(2024, 6, 1), "action_type": "SPLIT",
     ...      "ratio_numerator": 1.0, "ratio_denominator": 2.0},

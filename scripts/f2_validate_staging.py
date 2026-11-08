@@ -25,7 +25,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject  # noqa: E402
-from engine_core.adjustments import action_factor  # noqa: E402
+from stockbot.data.adjustments import action_factor  # noqa: E402
 
 OUT = ROOT / "docs" / "data_audit"
 SWAP_FROM, SWAP_TO = "2020-01-01", "2026-09-30"

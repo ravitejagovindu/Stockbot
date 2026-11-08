@@ -7,8 +7,8 @@ Import order matters for circular-import avoidance:
   indicators → adjustments → regime_filter / universe_screener / risk_sizing
   → position_lifecycle → analytics_loop
 """
-from engine_core.indicators import sma, rma, atr, donchian_low, donchian_high
-from engine_core.adjustments import (
+from stockbot.data.indicators import sma, rma, atr, donchian_low, donchian_high
+from stockbot.data.adjustments import (
     compute_cumulative_factor,
     get_adjusted_series,
     compute_adtv,

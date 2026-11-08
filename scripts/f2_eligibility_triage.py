@@ -1,6 +1,6 @@
 """scripts/f2_eligibility_triage.py — F2 Step 5.  Read-only.
 
-1. Eligible symbols = ADTV (SMA(raw close x raw volume, 20 sessions), same definition as engine_core.adjustments.compute_adtv)
+1. Eligible symbols = ADTV (SMA(raw close x raw volume, 20 sessions), same definition as stockbot.data.adjustments.compute_adtv)
    >= Rs25 crore on at least one session in the staged raw data.  (Market cap needs F2b and is NOT applied here.)
 2. Automated triage of the large close-to-close moves (>40%) that have no logged corporate action within 3 days.
 3. Counts of unsupported corporate-action events and placeholder listing dates on eligible symbols.

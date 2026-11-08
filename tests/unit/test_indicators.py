@@ -1,5 +1,5 @@
 """
-Unit tests for engine_core.indicators — pure functions only.
+Unit tests for stockbot.data.indicators — pure functions only.
 
 All tests use known numerical values computed by hand or cross-checked against
 TradingView's ta.sma / ta.atr / ta.lowest / ta.highest functions.
@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from engine_core.indicators import atr, donchian_high, donchian_low, rma, sma
+from stockbot.data.indicators import atr, donchian_high, donchian_low, rma, sma
 
 
 # ---------------------------------------------------------------------------

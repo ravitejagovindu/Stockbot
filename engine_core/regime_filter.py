@@ -41,7 +41,7 @@ from data.db.models import (
     MarketDataLake,
     RegimeState as RegimeStateModel,
 )
-from engine_core.indicators import sma
+from stockbot.data.indicators import sma
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 """
-Unit tests for engine_core.adjustments.
+Unit tests for stockbot.data.adjustments.
 
 Tests verify:
   * 1:2 SPLIT  → prices halve (factor = 0.5)
@@ -20,7 +20,7 @@ from datetime import date, timedelta
 import pandas as pd
 import pytest
 
-from engine_core.adjustments import (
+from stockbot.data.adjustments import (
     compute_adtv,
     compute_cumulative_factor,
     compute_market_cap,

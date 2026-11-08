@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from engine_core.adjustments import compute_adtv, compute_market_cap, get_adjusted_series
+from stockbot.data.adjustments import compute_adtv, compute_market_cap, get_adjusted_series
 
 ROOT = Path(__file__).resolve().parents[2]
 SKIP_DIRS = {"tests", ".git", "__pycache__", "venv", ".venv", "node_modules", "backtest/outputs_recomputed_net"}
@@ -16,7 +16,7 @@ SKIP_DIRS = {"tests", ".git", "__pycache__", "venv", ".venv", "node_modules", "b
 def _call_sites(names):
     for p in ROOT.rglob("*.py"):
         rel = p.relative_to(ROOT).as_posix()
-        if any(part in SKIP_DIRS for part in p.relative_to(ROOT).parts) or rel == "engine_core/adjustments.py":
+        if any(part in SKIP_DIRS for part in p.relative_to(ROOT).parts) or rel == "stockbot/data/adjustments.py":
             continue
         try:
             tree = ast.parse(p.read_text(encoding="utf-8"))

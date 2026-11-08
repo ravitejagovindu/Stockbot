@@ -39,7 +39,7 @@ from data.db.models import (
     SecuritiesMaster,
     SharesOutstanding,
 )
-from engine_core.adjustments import compute_adtv, compute_market_cap
+from stockbot.data.adjustments import compute_adtv, compute_market_cap
 
 logger = logging.getLogger(__name__)
 

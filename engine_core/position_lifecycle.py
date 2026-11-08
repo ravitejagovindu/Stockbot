@@ -58,8 +58,8 @@ from data.db.models import (
     CorporateActionsLog,
     TradeAnalyticsLog,
 )
-from engine_core.adjustments import get_adjusted_series
-from engine_core.indicators import atr
+from stockbot.data.adjustments import get_adjusted_series
+from stockbot.data.indicators import atr
 from engine_core.lifecycle_rules import (
     Bar,
     BarCtx,

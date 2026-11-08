@@ -6,7 +6,7 @@ equities and stores them in the ``corporate_actions_log`` table.
 
 IMPORTANT: This module only *logs* events.  It does NOT apply adjustments to
 stored OHLCV prices.  Backward price adjustments are performed in-memory by
-``engine_core/adjustments.py`` when the engine needs adjusted series.
+``stockbot/data/adjustments.py`` when the engine needs adjusted series.
 
 Sources (tried in order):
     1. Zerodha Kite corporate actions endpoint:
@@ -98,7 +98,7 @@ class CorporateActionsIngestor(BaseIngestor):
     Ingests corporate action events from Kite and NSE into ``corporate_actions_log``.
 
     This class stores events as an immutable log; it never modifies OHLCV data.
-    The ``engine_core/adjustments.py`` module reads this log to compute in-memory
+    The ``stockbot/data/adjustments.py`` module reads this log to compute in-memory
     price adjustments.
 
     Args:
@@ -195,7 +195,7 @@ class CorporateActionsIngestor(BaseIngestor):
         """
         Return all corporate actions for *symbol* with ``ex_date >= from_date``.
 
-        Used by ``engine_core/adjustments.py`` to determine which events
+        Used by ``stockbot/data/adjustments.py`` to determine which events
         need to be factored into the adjustment calculation.
 
         Args:

@@ -9,7 +9,7 @@ CRITICAL DATA INTEGRITY RULES (DO NOT VIOLATE):
        receive un-adjusted prices.  Kite returns adjusted prices when
        ``continuous=True``.  We NEVER want adjusted prices at storage time.
     2. Only raw open/high/low/close/volume are stored.  Adjustment factors are
-       applied in-memory in ``engine_core/adjustments.py``.
+       applied in-memory in ``stockbot/data/adjustments.py``.
     3. ADTV = SMA(raw_close × raw_volume, 20) — volume and close used here
        are ALWAYS the raw columns from market_data_lake.
     4. Market Cap = raw_close × raw_shares_outstanding — raw_close only.

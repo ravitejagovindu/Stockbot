@@ -39,8 +39,8 @@ from typing import Optional
 import pandas as pd
 from sqlalchemy.orm import Session
 
-from engine_core.adjustments import get_adjusted_series
-from engine_core.indicators import atr, donchian_high, donchian_low
+from stockbot.data.adjustments import get_adjusted_series
+from stockbot.data.indicators import atr, donchian_high, donchian_low
 
 logger = logging.getLogger(__name__)
 

@@ -21,7 +21,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from data.ingestion.pit_shares import derive_segments, parse_rights_ratio, rights_factor, shares_on      # noqa: E402
-from engine_core.adjustments import action_factor                                                         # noqa: E402
+from stockbot.data.adjustments import action_factor                                                         # noqa: E402
 
 OUT = ROOT / "docs" / "data_audit"
 SNAPSHOT = date(2026, 10, 2)

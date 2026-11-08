@@ -1,0 +1,458 @@
+[
+  {
+    "freq": "weekly",
+    "n_periods": 60,
+    "edge": 0.0,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.075,
+    "size_any_block2": 0.05,
+    "size_any_dual": 0.05,
+    "cfg1_sig_block1": 0.025,
+    "cfg1_sig_block2": 0.0,
+    "cfg1_sig_dual": 0.0,
+    "trades_per_period": 0.5958215297450424,
+    "mean_period_sd": 0.008649688523955873,
+    "mean_observed_shift_cfg1_minus_nulls": -0.0003110665383661438
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 60,
+    "edge": 0.05,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.05,
+    "size_any_block2": 0.125,
+    "size_any_dual": 0.05,
+    "cfg1_sig_block1": 0.0,
+    "cfg1_sig_block2": 0.025,
+    "cfg1_sig_dual": 0.0,
+    "trades_per_period": 0.5870396600566572,
+    "mean_period_sd": 0.008960402978206416,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0003803242453341347
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 60,
+    "edge": 0.1,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.05,
+    "size_any_block2": 0.075,
+    "size_any_dual": 0.05,
+    "cfg1_sig_block1": 0.025,
+    "cfg1_sig_block2": 0.05,
+    "cfg1_sig_dual": 0.025,
+    "trades_per_period": 0.5965297450424929,
+    "mean_period_sd": 0.008296335574001088,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0007170194131931529
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 60,
+    "edge": 0.15,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.2,
+    "size_any_block2": 0.225,
+    "size_any_dual": 0.2,
+    "cfg1_sig_block1": 0.15,
+    "cfg1_sig_block2": 0.175,
+    "cfg1_sig_dual": 0.15,
+    "trades_per_period": 0.5883144475920681,
+    "mean_period_sd": 0.008499577331038531,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0012139284308939461
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 60,
+    "edge": 0.25,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.275,
+    "size_any_block2": 0.325,
+    "size_any_dual": 0.25,
+    "cfg1_sig_block1": 0.25,
+    "cfg1_sig_block2": 0.275,
+    "cfg1_sig_dual": 0.225,
+    "trades_per_period": 0.5959631728045325,
+    "mean_period_sd": 0.008873828368181416,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0017396596579588315
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 60,
+    "edge": 0.5,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.55,
+    "size_any_block2": 0.575,
+    "size_any_dual": 0.55,
+    "cfg1_sig_block1": 0.55,
+    "cfg1_sig_block2": 0.575,
+    "cfg1_sig_dual": 0.55,
+    "trades_per_period": 0.5957507082152974,
+    "mean_period_sd": 0.009030741011780672,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0034622868865522146
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 81,
+    "edge": 0.0,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.1,
+    "size_any_block2": 0.05,
+    "size_any_dual": 0.05,
+    "cfg1_sig_block1": 0.0,
+    "cfg1_sig_block2": 0.0,
+    "cfg1_sig_dual": 0.0,
+    "trades_per_period": 0.5968838526912181,
+    "mean_period_sd": 0.008927076873478892,
+    "mean_observed_shift_cfg1_minus_nulls": -0.00010181587592345414
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 81,
+    "edge": 0.05,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.075,
+    "size_any_block2": 0.075,
+    "size_any_dual": 0.075,
+    "cfg1_sig_block1": 0.025,
+    "cfg1_sig_block2": 0.05,
+    "cfg1_sig_dual": 0.025,
+    "trades_per_period": 0.5882436260623229,
+    "mean_period_sd": 0.008696205115292663,
+    "mean_observed_shift_cfg1_minus_nulls": 0.00044483658148509716
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 81,
+    "edge": 0.1,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.075,
+    "size_any_block2": 0.05,
+    "size_any_dual": 0.05,
+    "cfg1_sig_block1": 0.05,
+    "cfg1_sig_block2": 0.05,
+    "cfg1_sig_dual": 0.025,
+    "trades_per_period": 0.5898016997167139,
+    "mean_period_sd": 0.008345207890349407,
+    "mean_observed_shift_cfg1_minus_nulls": 0.000558162771685836
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 81,
+    "edge": 0.15,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.125,
+    "size_any_block2": 0.1,
+    "size_any_dual": 0.1,
+    "cfg1_sig_block1": 0.125,
+    "cfg1_sig_block2": 0.1,
+    "cfg1_sig_dual": 0.1,
+    "trades_per_period": 0.5837818696883852,
+    "mean_period_sd": 0.008544177218319307,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0009298010758996819
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 81,
+    "edge": 0.25,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.275,
+    "size_any_block2": 0.25,
+    "size_any_dual": 0.225,
+    "cfg1_sig_block1": 0.275,
+    "cfg1_sig_block2": 0.225,
+    "cfg1_sig_dual": 0.225,
+    "trades_per_period": 0.5922804532577903,
+    "mean_period_sd": 0.008322837081294854,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0013627585052581857
+  },
+  {
+    "freq": "weekly",
+    "n_periods": 81,
+    "edge": 0.5,
+    "reps": 40,
+    "blocks": [
+      4,
+      8
+    ],
+    "size_any_block1": 0.775,
+    "size_any_block2": 0.8,
+    "size_any_dual": 0.775,
+    "cfg1_sig_block1": 0.775,
+    "cfg1_sig_block2": 0.8,
+    "cfg1_sig_dual": 0.775,
+    "trades_per_period": 0.5914305949008498,
+    "mean_period_sd": 0.008574220927993243,
+    "mean_observed_shift_cfg1_minus_nulls": 0.003222379949841253
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 60,
+    "edge": 0.0,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.075,
+    "size_any_block2": 0.075,
+    "size_any_dual": 0.075,
+    "cfg1_sig_block1": 0.0,
+    "cfg1_sig_block2": 0.0,
+    "cfg1_sig_dual": 0.0,
+    "trades_per_period": 2.627469135802469,
+    "mean_period_sd": 0.018355382968772573,
+    "mean_observed_shift_cfg1_minus_nulls": -0.00014245607894677753
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 60,
+    "edge": 0.05,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.15,
+    "size_any_block2": 0.15,
+    "size_any_dual": 0.15,
+    "cfg1_sig_block1": 0.1,
+    "cfg1_sig_block2": 0.1,
+    "cfg1_sig_dual": 0.1,
+    "trades_per_period": 2.609259259259259,
+    "mean_period_sd": 0.018148727984858247,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0012660513493600641
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 60,
+    "edge": 0.1,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.225,
+    "size_any_block2": 0.225,
+    "size_any_dual": 0.225,
+    "cfg1_sig_block1": 0.2,
+    "cfg1_sig_block2": 0.2,
+    "cfg1_sig_dual": 0.2,
+    "trades_per_period": 2.6246913580246916,
+    "mean_period_sd": 0.018598033081881175,
+    "mean_observed_shift_cfg1_minus_nulls": 0.003248451070951051
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 60,
+    "edge": 0.15,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.4,
+    "size_any_block2": 0.375,
+    "size_any_dual": 0.375,
+    "cfg1_sig_block1": 0.375,
+    "cfg1_sig_block2": 0.35,
+    "cfg1_sig_dual": 0.35,
+    "trades_per_period": 2.605864197530864,
+    "mean_period_sd": 0.018267969326999506,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0043255840714367015
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 60,
+    "edge": 0.25,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.675,
+    "size_any_block2": 0.675,
+    "size_any_dual": 0.675,
+    "cfg1_sig_block1": 0.675,
+    "cfg1_sig_block2": 0.675,
+    "cfg1_sig_dual": 0.675,
+    "trades_per_period": 2.582098765432099,
+    "mean_period_sd": 0.018774154954688822,
+    "mean_observed_shift_cfg1_minus_nulls": 0.007907603452486894
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 60,
+    "edge": 0.5,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 1.0,
+    "size_any_block2": 1.0,
+    "size_any_dual": 1.0,
+    "cfg1_sig_block1": 1.0,
+    "cfg1_sig_block2": 1.0,
+    "cfg1_sig_dual": 1.0,
+    "trades_per_period": 2.558333333333333,
+    "mean_period_sd": 0.018215749907371383,
+    "mean_observed_shift_cfg1_minus_nulls": 0.014764578930803652
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 81,
+    "edge": 0.0,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.05,
+    "size_any_block2": 0.05,
+    "size_any_dual": 0.05,
+    "cfg1_sig_block1": 0.0,
+    "cfg1_sig_block2": 0.0,
+    "cfg1_sig_dual": 0.0,
+    "trades_per_period": 2.5824074074074073,
+    "mean_period_sd": 0.017744608651967503,
+    "mean_observed_shift_cfg1_minus_nulls": 8.443624689127895e-05
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 81,
+    "edge": 0.05,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.2,
+    "size_any_block2": 0.2,
+    "size_any_dual": 0.2,
+    "cfg1_sig_block1": 0.175,
+    "cfg1_sig_block2": 0.175,
+    "cfg1_sig_dual": 0.175,
+    "trades_per_period": 2.5503086419753087,
+    "mean_period_sd": 0.01741014763780182,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0013871016835298536
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 81,
+    "edge": 0.1,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.125,
+    "size_any_block2": 0.15,
+    "size_any_dual": 0.125,
+    "cfg1_sig_block1": 0.1,
+    "cfg1_sig_block2": 0.1,
+    "cfg1_sig_dual": 0.1,
+    "trades_per_period": 2.5543209876543207,
+    "mean_period_sd": 0.017088589306829657,
+    "mean_observed_shift_cfg1_minus_nulls": 0.0026832253940272275
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 81,
+    "edge": 0.15,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.425,
+    "size_any_block2": 0.45,
+    "size_any_dual": 0.425,
+    "cfg1_sig_block1": 0.4,
+    "cfg1_sig_block2": 0.425,
+    "cfg1_sig_dual": 0.4,
+    "trades_per_period": 2.5891975308641975,
+    "mean_period_sd": 0.017660785365996405,
+    "mean_observed_shift_cfg1_minus_nulls": 0.004370543284286471
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 81,
+    "edge": 0.25,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 0.675,
+    "size_any_block2": 0.675,
+    "size_any_dual": 0.675,
+    "cfg1_sig_block1": 0.675,
+    "cfg1_sig_block2": 0.675,
+    "cfg1_sig_dual": 0.675,
+    "trades_per_period": 2.630864197530864,
+    "mean_period_sd": 0.01766874838569591,
+    "mean_observed_shift_cfg1_minus_nulls": 0.006098039376767103
+  },
+  {
+    "freq": "monthly",
+    "n_periods": 81,
+    "edge": 0.5,
+    "reps": 40,
+    "blocks": [
+      2,
+      3
+    ],
+    "size_any_block1": 1.0,
+    "size_any_block2": 1.0,
+    "size_any_dual": 1.0,
+    "cfg1_sig_block1": 1.0,
+    "cfg1_sig_block2": 1.0,
+    "cfg1_sig_dual": 1.0,
+    "trades_per_period": 2.5746913580246913,
+    "mean_period_sd": 0.01777965653739765,
+    "mean_observed_shift_cfg1_minus_nulls": 0.012672933197300108
+  }
+]

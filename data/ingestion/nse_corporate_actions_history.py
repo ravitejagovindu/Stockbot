@@ -10,7 +10,7 @@ Two modes:
   --dump CSV   fetch every symbol and write the raw rows (audit artifact; no database access)
   --load CSV   insert parsed rows into corporate_actions_log (append-only: INSERT OR IGNORE, never UPDATE/DELETE)
 
-Ratio convention (matches engine_core.adjustments):
+Ratio convention (matches stockbot.data.adjustments):
   SPLIT  num/den = new_face_value / old_face_value   (Rs10 -> Rs2  => 2/10 = factor 0.2)
   BONUS  num:den = bonus shares : held shares        ("Bonus 4:1" => num 4, den 1 => factor 1/5)
   RIGHTS num:den = new shares : held shares (price in notes); DEMERGER / MERGER / OTHER carry no ratio.

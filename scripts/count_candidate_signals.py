@@ -20,7 +20,7 @@ from data.db.connection import get_session
 from data.db.models import MarketDataLake
 from engine_core.candidate_builder import build_candidate_dicts
 from engine_core.entry_filters import passes_breakout, passes_trend_filter, rs_return
-from engine_core.indicators import sma
+from stockbot.data.indicators import sma
 from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import bull_correction_active, is_bull, nifty_sma
 from engine_core.universe_screener import UniverseScreener

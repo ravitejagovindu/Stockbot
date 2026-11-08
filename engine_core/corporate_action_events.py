@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Iterable
 
-from engine_core.adjustments import action_factor
+from stockbot.data.adjustments import action_factor
 from engine_core.lifecycle_rules import PosState, rescale_for_action
 
 RESCALED_TYPES = ("SPLIT", "BONUS")
