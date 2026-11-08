@@ -84,3 +84,6 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_asof_earnings.py::test_results_within_is_none_without_coverage_and_respects_the_window | stockbot/universe/eligibility.py | no data read as no event | passes clean / FAILS mutated |
 | tests/unit/test_asof_earnings.py::test_results_within_is_none_without_coverage_and_respects_the_window | stockbot/universe/eligibility.py | window end exclusive | passes clean / FAILS mutated |
 | tests/data_integrity/test_entry_bar_real_lake.py::test_entry_bar_rule_agrees_with_every_legacy_trade_on_the_real_lake | stockbot/engine/stepping.py | stop not checked on the entry bar (real-lake legacy trades disagree) | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_the_run_manifest_records_what_reproduces_the_run | stockbot/backtest/manifest.py | config hash does not depend on the config | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_the_run_manifest_records_what_reproduces_the_run | stockbot/backtest/manifest.py | overlay declarations missing from the manifest | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_the_run_manifest_records_what_reproduces_the_run | stockbot/backtest/manifest.py | strategy config hash missing | passes clean / FAILS mutated |

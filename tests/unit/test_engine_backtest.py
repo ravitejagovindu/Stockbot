@@ -60,3 +60,21 @@ def test_the_baseline_helper_and_the_backtest_agree_on_the_same_ticket(lake_path
     else:
         assert trade == ref and why == "CLOSED"
         assert list(exits) == [e for d in bt.decisions for e in d.exits]
+
+
+def test_the_run_manifest_records_what_reproduces_the_run(lake_path):
+    import json
+    s = ScriptedStrategy(make_spec("dummy", "timed", overlays={"counter": "1.0.0"}), {})
+    from tests.fixtures.dummies import CountingOverlay
+    r = run_backtest(lake_path, DS[298], DS[300], 1_000_000.0, [s], POL, CFG, EVENTS, overlays={"counter": CountingOverlay()}, seed=7)
+    m = r.manifest
+    assert json.loads(json.dumps(m)) == m                                                             # plain JSON data
+    assert len(m["shared_config_hash"]) == 64 and m["seed"] == 7 and m["window"] == [DS[298].isoformat(), DS[300].isoformat()] and m["initial_equity"] == 1_000_000.0
+    assert m["strategies"]["dummy"] == {"version": "0.1.0", "config_hash": s.spec.config_hash(), "exit_policy": "timed", "overlays": {"counter": "1.0.0"}}
+    assert m["data_snapshot"]["file"] == "lake.db" and m["data_snapshot"]["size"] == lake_path.stat().st_size and m["data_snapshot"]["last_session"] == DS[300].isoformat()
+    assert m["git_sha"] is None or len(m["git_sha"]) == 40
+    again = run_backtest(lake_path, DS[298], DS[300], 1_000_000.0, [s], POL, CFG, EVENTS, overlays={"counter": CountingOverlay()}, seed=7).manifest
+    assert again == m                                                                                 # deterministic
+    from dataclasses import replace
+    other = replace(CFG, execution=replace(CFG.execution, entry_slippage_pct=CFG.execution.entry_slippage_pct + 0.01))
+    assert run_backtest(lake_path, DS[298], DS[300], 1_000_000.0, [s], POL, other, EVENTS, overlays={"counter": CountingOverlay()}, seed=7).manifest["shared_config_hash"] != m["shared_config_hash"]
