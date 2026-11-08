@@ -2,7 +2,7 @@
 
 ``load_shared_config()`` reads ``stockbot/config/shared.yaml`` into frozen dataclasses and validates ranges.  Nothing here is strategy-specific;
 a strategy spec can never override these sections (``NON_OVERRIDABLE``).  Values are carried over unchanged from strategy_config.yaml
-(tests/unit/test_shared_config.py compares them key by key).  The legacy dict loader (``legacy_loader``) stays for the old pipeline until Phase 10.
+(tests/unit/test_shared_config.py compares them key by key).  strategy_config.yaml was removed in Phase 10 (frozen in tests/golden); the legacy nested-dict shape is available from stockbot.config.dict_view.
 """
 from __future__ import annotations
 

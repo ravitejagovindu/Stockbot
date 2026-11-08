@@ -27,24 +27,10 @@ import yaml
 # ---------------------------------------------------------------------------
 logger = logging.getLogger(__name__)
 
-# Path to the project root strategy_config.yaml (two levels above data/ingestion/)
-_CONFIG_PATH = Path(__file__).resolve().parents[3] / "strategy_config.yaml"
-
-
 def _load_strategy_config() -> dict:
-    """
-    Load and return the strategy_config.yaml as a plain dict.
-
-    Raises:
-        FileNotFoundError: if strategy_config.yaml cannot be located.
-        yaml.YAMLError: if the file is malformed.
-    """
-    if not _CONFIG_PATH.exists():
-        raise FileNotFoundError(
-            f"strategy_config.yaml not found at expected path: {_CONFIG_PATH}"
-        )
-    with _CONFIG_PATH.open("r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+    """The shared configuration as the nested dict this module was written against (stockbot.config.dict_view; strategy_config.yaml no longer exists)."""
+    from stockbot.config.dict_view import config_dict
+    return config_dict()
 
 
 # ---------------------------------------------------------------------------

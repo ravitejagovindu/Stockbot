@@ -18,7 +18,7 @@ from sqlalchemy import text
 
 _ROOT = Path(__file__).resolve().parents[2]
 
-from stockbot.config.legacy_loader import load_config
+from stockbot.config.dict_view import config_dict as load_config
 from stockbot.data.db.connection import get_session
 from stockbot.validation.trade_metrics import metrics_from_trades, trades_from_log
 

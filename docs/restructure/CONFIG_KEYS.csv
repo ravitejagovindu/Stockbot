@@ -21,12 +21,12 @@ costs.stamp_duty_buy_pct,0.015,shared,config,
 costs.gst_pct,18.0,shared,config,
 costs.dp_charge_per_sell_inr,15.34,shared,config,
 costs.stcg_tax_pct,0.0,shared,config,stays 0.0
-macro.nifty_kill_sma_period,200,undecided,engine or strategy,Q4: macro regime
-macro.bull_entry_sma_period,50,undecided,engine or strategy,Q4
-macro.vix_kill_threshold,22.0,undecided,engine or strategy,Q4
-macro.nifty_reentry_sma_period,20,undecided,engine or strategy,Q4
-macro.vix_reentry_threshold,20.0,undecided,engine or strategy,Q4
-macro.reentry_consecutive_sessions,3,undecided,engine or strategy,Q4
+macro.nifty_kill_sma_period,200,old-strategy,OLD_STRATEGY_REFERENCE.md; scripts/provenance/regime,"kill-switch overlay candidate (D1: interface exists, not implemented); values recorded"
+macro.bull_entry_sma_period,50,old-strategy,OLD_STRATEGY_REFERENCE.md; scripts/provenance/regime,"kill-switch overlay candidate (D1: interface exists, not implemented); values recorded"
+macro.vix_kill_threshold,22.0,old-strategy,OLD_STRATEGY_REFERENCE.md; scripts/provenance/regime,"kill-switch overlay candidate (D1: interface exists, not implemented); values recorded"
+macro.nifty_reentry_sma_period,20,old-strategy,OLD_STRATEGY_REFERENCE.md; scripts/provenance/regime,"kill-switch overlay candidate (D1: interface exists, not implemented); values recorded"
+macro.vix_reentry_threshold,20.0,old-strategy,OLD_STRATEGY_REFERENCE.md; scripts/provenance/regime,"kill-switch overlay candidate (D1: interface exists, not implemented); values recorded"
+macro.reentry_consecutive_sessions,3,old-strategy,OLD_STRATEGY_REFERENCE.md; scripts/provenance/regime,"kill-switch overlay candidate (D1: interface exists, not implemented); values recorded"
 risk.atr_period,14,old-strategy,old strategy spec,ATR for the stop and trailing; the indicator function itself is shared
 risk.atr_stop_multiplier,2.0,old-strategy,old strategy spec,Stop A
 risk.donchian_period,30,old-strategy,old strategy spec,Stop B
@@ -36,7 +36,7 @@ risk.trailing_stop_atr_multiplier_kill_switch,1.5,old-strategy,old strategy spec
 risk.max_loss_pct_per_trade,1.0,shared,risk,risk per trade
 risk.min_rr_ratio,1.5,old-strategy,strategy param (per-strategy),Q3 decided: per-strategy; value recorded in OLD_STRATEGY_REFERENCE
 risk.max_concurrent_positions,12,shared,risk,hard cap
-risk.max_concurrent_positions_bull,12,undecided,risk,Q4: regime-dependent cap (same value as the normal cap today)
+risk.max_concurrent_positions_bull,12,dropped,OLD_STRATEGY_REFERENCE.md,"D2 (STOP 3): equal to the normal cap, no behaviour change; dropped"
 risk.max_total_portfolio_risk_pct,15.0,shared,risk,heat cap
 risk.max_sector_exposure_pct,15.0,shared,risk,sector cap
 risk.max_rr_cap,6.0,old-strategy,strategy param (per-strategy),Q3 decided: per-strategy; value recorded in OLD_STRATEGY_REFERENCE

@@ -77,3 +77,33 @@ def test_no_old_strategy_key_is_in_the_shared_file():
     old_leaves = {r["key"].split(".", 1)[1] for r in rows if r["class"] == "old-strategy"}
     shared_leaves = {k.split(".", 1)[1] for k in load_shared_config().flat()}
     assert not (old_leaves & shared_leaves), old_leaves & shared_leaves
+
+
+# ------------------------------------------------------------------ strategy_config.yaml was removed in Phase 10: every key has a documented new home
+def test_every_key_of_the_removed_yaml_has_a_documented_new_home():
+    import csv
+    rows = list(csv.DictReader(open(ROOT / "docs" / "restructure" / "CONFIG_KEYS.csv", encoding="utf-8", newline="")))
+    homes = {r["key"]: r for r in rows}
+    flat = {f"{sec}.{k}" for sec, v in LEGACY.items() for k in (v if isinstance(v, dict) else [])} | {sec for sec, v in LEGACY.items() if not isinstance(v, dict)}
+    assert flat == set(homes), sorted(flat ^ set(homes))
+    assert {r["class"] for r in rows} <= {"shared", "shared (parked)", "old-strategy", "dropped"}, {r["class"] for r in rows}            # nothing left undecided
+    ref = (ROOT / "docs" / "restructure" / "OLD_STRATEGY_REFERENCE.md").read_text(encoding="utf-8")
+    missing = [k for k, r in homes.items() if r["class"] in ("old-strategy", "dropped") and f"`{k}`" not in ref]
+    assert not missing, f"keys whose old values are not recorded in OLD_STRATEGY_REFERENCE.md: {missing}"
+    shared_keys = {k for k, r in homes.items() if r["class"].startswith("shared")}
+    assert len(shared_keys) == 44 and not (ROOT / "strategy_config.yaml").exists()
+
+
+def test_the_config_dict_has_the_legacy_shape_and_the_shared_values():
+    from stockbot.config.dict_view import config_dict
+    d = config_dict()
+    assert {"runtime", "data", "execution", "costs", "risk", "universe", "earnings", "trade_management", "gates", "backtest", "paper_criteria"} <= set(d)
+    assert d["risk"]["max_concurrent_positions"] == LEGACY["risk"]["max_concurrent_positions"] and d["costs"] == {k: LEGACY["costs"][k] for k in d["costs"]}
+    assert d["backtest"]["regimes"] == LEGACY["backtest"]["regimes"] and d["gates"]["min_trades"] == LEGACY["gates"]["min_trades"]
+    d["risk"]["max_concurrent_positions"] = 1                                          # a fresh dict on every call
+    assert config_dict()["risk"]["max_concurrent_positions"] == LEGACY["risk"]["max_concurrent_positions"]
+
+
+def test_the_regime_endpoint_constants_equal_the_frozen_macro_section():
+    from stockbot.live.api.regime import LEGACY_MACRO
+    assert all(LEGACY["macro"][k] == v for k, v in LEGACY_MACRO.items())

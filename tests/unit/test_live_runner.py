@@ -187,3 +187,18 @@ def test_api_routers_do_not_import_engine_internals():
 def test_main_registers_no_order_or_engine_routes_and_the_scheduler_job_is_the_runner():
     import inspect
     assert "run_eod" in inspect.getsource(scheduler.run_eod_job) and "EODPipeline" not in Path(scheduler.__file__).read_text(encoding="utf-8")
+
+
+def test_the_health_endpoint_reports_the_configured_mode_not_unknown(monkeypatch):
+    """Regression: since Phase 4 a stray comment had swallowed the import line in the health router, so it answered mode UNKNOWN."""
+    from contextlib import contextmanager
+    from unittest.mock import MagicMock
+    from stockbot.live.api import health
+
+    @contextmanager
+    def fake_session():
+        yield MagicMock()
+    monkeypatch.setattr(health, "get_session", fake_session)
+    monkeypatch.setattr(health, "IdempotencyGuard", lambda s: MagicMock(get_last_run=lambda: None))
+    out = health.health_check()
+    assert out["mode"] == "PAPER" and out["status"] == "ok" and out["authorized"] is False and out["last_pipeline_run"] is None

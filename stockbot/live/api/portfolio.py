@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 from sqlalchemy import text
 
-from stockbot.config.legacy_loader import load_config
+from stockbot.config.dict_view import config_dict as load_config
 from stockbot.data.db.connection import get_session
 
 router = APIRouter()

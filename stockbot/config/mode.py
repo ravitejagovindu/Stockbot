@@ -12,5 +12,5 @@ def current_mode(config: dict) -> str:
     """
     m = str(config.get("runtime", {}).get("mode", "")).upper()
     if m not in ("PAPER", "LIVE"):
-        raise ValueError("strategy_config.yaml: runtime.mode must be PAPER or LIVE")
+        raise ValueError("runtime.mode must be PAPER or LIVE")
     return m

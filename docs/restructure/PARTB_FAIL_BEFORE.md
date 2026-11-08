@@ -159,3 +159,7 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_asof_view.py::test_the_fund_list_file_is_read_and_funds_are_not_eligible | stockbot/data/asof.py | fund list not read | passes clean / FAILS mutated |
 | tests/unit/test_asof_view.py::test_no_asm_ranges_and_an_empty_dict_give_the_same_universe | stockbot/universe/eligibility.py | ASM/GSM ranges ignored | passes clean / FAILS mutated |
 | tests/unit/test_asof_view.py::test_no_asm_ranges_and_an_empty_dict_give_the_same_universe | stockbot/universe/eligibility.py | range end ignored | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_the_health_endpoint_reports_the_configured_mode_not_unknown | stockbot/live/api/health.py | the import swallowed by a comment (the old bug) | passes clean / FAILS mutated |
+| tests/unit/test_shared_config.py::test_every_key_of_the_removed_yaml_has_a_documented_new_home | docs/restructure/CONFIG_KEYS.csv | a key left without a decided home | passes clean / FAILS mutated |
+| tests/unit/test_shared_config.py::test_the_regime_endpoint_constants_equal_the_frozen_macro_section | stockbot/live/api/regime.py | display constant differs from the frozen value | passes clean / FAILS mutated |
+| tests/unit/test_shared_config.py::test_the_config_dict_has_the_legacy_shape_and_the_shared_values | stockbot/config/dict_view.py | a legacy section name not mapped | passes clean / FAILS mutated |

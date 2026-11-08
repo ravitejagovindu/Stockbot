@@ -16,7 +16,8 @@ def health_check():
         guard = IdempotencyGuard(session)
         last_run = guard.get_last_run()
 
-    auth_info: dict = {}      # the Git-SHA deployment lock was dropped in restructure Phase 4; keys kept so the UI contract is unchanged{n}    from stockbot.config.legacy_loader import load_config
+    auth_info: dict = {}      # the Git-SHA deployment lock was dropped in restructure Phase 4; keys kept so the UI contract is unchanged
+    from stockbot.config.dict_view import config_dict as load_config
     from stockbot.config.mode import current_mode
     try:
         cfg = load_config()

@@ -4,7 +4,10 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 
-from stockbot.config.legacy_loader import load_config
+
+# The old strategy's kill-switch thresholds, shown by this (legacy, display-only) endpoint. Frozen values of the old strategy_config.yaml `macro:` section
+# (tests/unit/test_live_runner.py pins them to tests/golden); the kill switch itself is not running (decision D1, scripts/provenance/regime).
+LEGACY_MACRO = {"vix_kill_threshold": 22.0, "vix_reentry_threshold": 20.0, "reentry_consecutive_sessions": 3}
 from stockbot.data.db.connection import get_session
 
 router = APIRouter()
@@ -24,7 +27,7 @@ def get_regime():
     if not result:
         raise HTTPException(status_code=404, detail="No regime state found. Run the EOD pipeline first.")
 
-    cfg = load_config()["macro"]
+    cfg = LEGACY_MACRO
 
     vix_trigger_threshold = cfg["vix_kill_threshold"]
     vix_reentry_threshold = cfg["vix_reentry_threshold"]

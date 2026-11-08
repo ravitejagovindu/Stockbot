@@ -46,8 +46,6 @@ from stockbot.data.db.connection import get_session
 
 logger = logging.getLogger(__name__)
 
-# Path to strategy_config.yaml — two levels above this file (data/)
-_CONFIG_PATH = Path(__file__).resolve().parents[2] / "strategy_config.yaml"
 
 # NSE approximate holiday set — kept in sync with ohlcv_ingestor._NSE_HOLIDAY_SET
 # (import to avoid duplication in production; duplicated here for clarity)
@@ -75,16 +73,9 @@ _LARGE_GAP_THRESHOLD_PCT = 20.0
 
 
 def _load_config() -> dict:
-    """
-    Load and return ``strategy_config.yaml`` as a plain dict.
-
-    Returns:
-        Parsed YAML configuration dict.
-    """
-    if not _CONFIG_PATH.exists():
-        raise FileNotFoundError(f"strategy_config.yaml not found at {_CONFIG_PATH}")
-    with _CONFIG_PATH.open("r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+    """The shared configuration as the nested dict this module was written against (stockbot.config.dict_view; strategy_config.yaml no longer exists)."""
+    from stockbot.config.dict_view import config_dict
+    return config_dict()
 
 
 def _get_nse_trading_days(from_date: date, to_date: date) -> list[date]:
