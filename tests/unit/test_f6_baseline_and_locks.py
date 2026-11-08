@@ -80,20 +80,20 @@ def lock_env(tmp_path, monkeypatch):
 
 
 def _enforce(sc):
-    from engine_core import prereg_lock as pl
+    from stockbot.validation import prereg_lock as pl
     n = len([c for c in yaml.safe_load(sc.PRE_REG_YAML.read_text(encoding="utf-8"))["configs"] if c["role"] == "CANDIDATE"])
     return pl.enforce(sc.PRE_REG_YAML, sc.REGISTRY_LEDGER, sc.gate_parameters(), n)
 
 
 def test_unregistered_or_legacy_ledger_is_refused(lock_env):
-    from engine_core.prereg_lock import PreRegistrationError
+    from stockbot.validation.prereg_lock import PreRegistrationError
     sc, _, _ = lock_env
     with pytest.raises(PreRegistrationError):
         _enforce(sc)
 
 
 def test_register_then_verify_and_budget_and_yaml_tamper(lock_env):
-    from engine_core.prereg_lock import PreRegistrationError
+    from stockbot.validation.prereg_lock import PreRegistrationError
     sc, yml, ledger = lock_env
     sc.register()
     reg = _enforce(sc)
@@ -120,7 +120,7 @@ def test_register_then_verify_and_budget_and_yaml_tamper(lock_env):
 
 
 def test_crlf_does_not_change_yaml_hash(tmp_path):
-    from engine_core.prereg_lock import sha256_text_file
+    from stockbot.validation.prereg_lock import sha256_text_file
     a, b = tmp_path / "a.yaml", tmp_path / "b.yaml"
     a.write_bytes(b"x: 1\ny: 2\n")
     b.write_bytes(b"x: 1\r\ny: 2\r\n")
@@ -128,7 +128,7 @@ def test_crlf_does_not_change_yaml_hash(tmp_path):
 
 
 def test_ledger_row_deletion_and_alteration_detected(lock_env):
-    from engine_core import prereg_lock as pl
+    from stockbot.validation import prereg_lock as pl
     sc, _, ledger = lock_env
     sc.register()
     pl.append_row(ledger, {"timestamp_utc": "t", "commit_sha": "c", "selected_config": "NONE",
@@ -154,7 +154,7 @@ def test_ledger_row_deletion_and_alteration_detected(lock_env):
 
 
 def test_legacy_row_is_preserved_and_chained(lock_env):
-    from engine_core import prereg_lock as pl
+    from stockbot.validation import prereg_lock as pl
     sc, _, ledger = lock_env
     sc.register()
     header, recs = pl.read_ledger(ledger)

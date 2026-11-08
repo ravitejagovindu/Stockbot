@@ -34,7 +34,7 @@ from sqlalchemy.orm import Session
 
 from data.db.models import ActivePosition, TradeAnalyticsLog, RegimeState, MarketDataLake
 from stockbot.risk.costs import CostModel
-from engine_core.trade_metrics import trades_from_log, metrics_from_trades
+from stockbot.validation.trade_metrics import trades_from_log, metrics_from_trades
 from stockbot.config.mode import current_mode
 
 logger = logging.getLogger(__name__)

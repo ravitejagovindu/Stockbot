@@ -44,7 +44,7 @@ from engine_core.lifecycle_rules import (
 )
 from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import is_bull
-from engine_core.trade_metrics import add_r_columns, compute_trade_r
+from stockbot.validation.trade_metrics import add_r_columns, compute_trade_r
 from engine_core.universe_screener import UniverseScreener
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -82,7 +82,7 @@ def load_actual_trades(session) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFram
     df_w1["window"] = "W1 (2020-21)"
     df_w2["window"] = "W2 (2022-26)"
     df_all = pd.concat([df_w1, df_w2], ignore_index=True)
-    # R columns come from the single definition in engine_core.trade_metrics (F1).
+    # R columns come from the single definition in stockbot.validation.trade_metrics (F1).
     df_w1, df_w2, df_all = (add_r_columns(d) for d in (df_w1, df_w2, df_all))
     for df in [df_w1, df_w2, df_all]:
         df["entry_date"] = pd.to_datetime(df["entry_date"]).dt.date

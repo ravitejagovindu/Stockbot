@@ -98,7 +98,7 @@ def _candidate_count() -> int:
 
 def register(reason: str | None = None) -> None:
     """Write the REGISTRATION row (YAML hash, gate hash, config budget). Re-registration needs an explicit reason."""
-    from engine_core import prereg_lock as pl
+    from stockbot.validation import prereg_lock as pl
 
     if REGISTRY_LEDGER.exists():
         pl.upgrade_ledger(REGISTRY_LEDGER)
@@ -266,7 +266,7 @@ def _compute_gate2_ci(trades_df: pd.DataFrame) -> Tuple[float, float]:
       Gate 2: Is the strategy profitable in absolute terms?  (lower CI of own net-R > 0)
       Gate 3: Does it beat a matched random baseline?        (Max-T FWER p-value <= 0.05)
     """
-    from engine_core.max_t_bootstrap import (
+    from stockbot.validation.max_t_bootstrap import (
         build_weekly_actual_series,
         compute_block_bootstrap_ci,
     )
@@ -365,7 +365,7 @@ def _bootstrap_ci_and_maxt(
     -------
     Dict mapping config_id to dict of block_size -> bootstrap result dict.
     """
-    from engine_core.max_t_bootstrap import (
+    from stockbot.validation.max_t_bootstrap import (
         WestfallYoungMaxTBootstrap,
         build_weekly_paired_series,
         BootstrapResult,
@@ -552,7 +552,7 @@ def run_selection(dry_run: bool = False, no_ledger: bool = False) -> Dict[str, A
     ]
     print(f"\nPre-registered candidates: {candidate_ids}\n")
 
-    from engine_core import prereg_lock as _pl
+    from stockbot.validation import prereg_lock as _pl
     reg = _pl.enforce(PRE_REG_YAML, REGISTRY_LEDGER, gate_parameters(), len(candidate_ids))
     print(f"Pre-registration lock verified (yaml {reg['yaml_sha256'][:12]}, budget {reg['budget']}).")
 

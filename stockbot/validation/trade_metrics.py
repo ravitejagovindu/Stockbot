@@ -1,4 +1,4 @@
-"""engine_core/trade_metrics.py — Unified trade and portfolio performance metrics."""
+"""stockbot/validation/trade_metrics.py — Unified trade and portfolio performance metrics."""
 from __future__ import annotations
 
 import numpy as np

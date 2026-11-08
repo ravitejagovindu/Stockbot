@@ -1,4 +1,4 @@
-"""engine_core/prereg_lock.py — hash lock for the pre-registration and a tamper-evident trial ledger (F6).
+"""stockbot/validation/prereg_lock.py — hash lock for the pre-registration and a tamper-evident trial ledger (F6).
 
 * The SHA-256 of ``pre_registered_configs.yaml`` (line endings normalised) and of the selection-gate parameters are
   recorded in a REGISTRATION row of the trial ledger together with the registered config budget.

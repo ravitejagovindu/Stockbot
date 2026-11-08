@@ -17,7 +17,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from engine_core.max_t_bootstrap import WestfallYoungMaxTBootstrap          # noqa: E402
+from stockbot.validation.max_t_bootstrap import WestfallYoungMaxTBootstrap          # noqa: E402
 
 LIB = ROOT / "data" / "f9" / "trade_library.npz"
 K, MAX_OPEN, P_ENTRY, RISK_FRAC, B, SEED = 6, 12, 0.188, 0.01, 2000, 20261108   # P_ENTRY: pre-registration Amendment 1

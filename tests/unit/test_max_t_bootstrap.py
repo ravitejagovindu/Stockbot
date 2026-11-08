@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from engine_core.max_t_bootstrap import (
+from stockbot.validation.max_t_bootstrap import (
     WestfallYoungMaxTBootstrap,
     assign_calendar_week,
     build_weekly_actual_series,

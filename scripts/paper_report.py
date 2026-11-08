@@ -23,7 +23,7 @@ if str(_ROOT) not in sys.path:
 
 from config import load_config
 from data.db.connection import get_session
-from engine_core.trade_metrics import metrics_from_trades, trades_from_log
+from stockbot.validation.trade_metrics import metrics_from_trades, trades_from_log
 from live_runner.git_lock import read_authorized_info
 
 

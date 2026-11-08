@@ -126,7 +126,7 @@ def test_simulator_flags_unhandled_action_and_metrics_exclude_it():
     res = _run(s2, cfg)
     t = res.trades.iloc[0]
     assert bool(t["excluded_ca"])
-    from engine_core.trade_metrics import metrics_from_trades
+    from stockbot.validation.trade_metrics import metrics_from_trades
     assert metrics_from_trades(res.trades, 1_000_000.0).get("n_trades", 0) == 0
 
 

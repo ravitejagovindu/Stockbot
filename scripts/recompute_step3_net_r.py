@@ -1,7 +1,7 @@
 """scripts/recompute_step3_net_r.py — F1: derive explicit gross/net/after-tax R columns for the Step 3 outputs.
 
 Reads the existing Step 3 trade CSVs (``backtest/outputs/trades_candidate_CFG-0x.csv``), recomputes
-``risk_inr``, ``gross_r``, ``net_r``, ``net_r_after_tax`` with ``engine_core.trade_metrics.add_r_columns`` and writes
+``risk_inr``, ``gross_r``, ``net_r``, ``net_r_after_tax`` with ``stockbot.validation.trade_metrics.add_r_columns`` and writes
 them to a NEW folder (default ``backtest/outputs_recomputed_net``). Old outputs and the trial ledger are never modified.
 Equity curves and random-baseline files are copied unchanged.
 
@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from engine_core.trade_metrics import add_r_columns  # noqa: E402
+from stockbot.validation.trade_metrics import add_r_columns  # noqa: E402
 
 SRC = ROOT / "backtest" / "outputs"
 CFGS = [f"CFG-0{i}" for i in range(1, 7)]

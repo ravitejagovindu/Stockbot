@@ -1,5 +1,5 @@
 """
-engine_core/max_t_bootstrap.py — Westfall-Young Stepdown Max-T Studentized Block Bootstrap.
+stockbot/validation/max_t_bootstrap.py — Westfall-Young Stepdown Max-T Studentized Block Bootstrap.
 ========================================================================================
 Implements the pre-registered multiple testing procedure for candidate trading strategies.
 Controls the Family-Wise Error Rate (FWER <= 0.05) across K correlated configurations

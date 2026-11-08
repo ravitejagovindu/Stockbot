@@ -1,4 +1,4 @@
-"""F1 — explicit gross / net / after-tax R metrics (single definition in engine_core.trade_metrics)."""
+"""F1 — explicit gross / net / after-tax R metrics (single definition in stockbot.validation.trade_metrics)."""
 from __future__ import annotations
 
 import math
@@ -7,7 +7,7 @@ from datetime import date, timedelta
 import pandas as pd
 import pytest
 
-from engine_core.trade_metrics import add_r_columns, compute_trade_r
+from stockbot.validation.trade_metrics import add_r_columns, compute_trade_r
 
 
 def test_compute_trade_r_with_partial_exit_hand_computed():
@@ -141,7 +141,7 @@ def test_select_candidate_rejects_net_equal_gross_with_costs():
 
 
 def test_max_t_series_builders_require_explicit_column():
-    from engine_core.max_t_bootstrap import build_weekly_actual_series
+    from stockbot.validation.max_t_bootstrap import build_weekly_actual_series
 
     df = _trades(False).drop(columns=["net_r"])
     with pytest.raises(ValueError, match="net_r"):

@@ -27,7 +27,7 @@ from engine_core.lifecycle_rules import (
 from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import bull_correction_active, is_bull, nifty_sma
 from engine_core.risk_sizing import RiskAndSizingEngine
-from engine_core.trade_metrics import compute_trade_r
+from stockbot.validation.trade_metrics import compute_trade_r
 from backtest.no_network import network_forbidden
 from engine_core.universe_screener import UniverseScreener
 
@@ -125,7 +125,7 @@ class Simulator:
         return out
 
     def _trade_row(self, sym: str, p: dict, exit_date: date, exit_reason: str, exit_state: str) -> dict:
-        """One closed-position output row. R metrics come from engine_core.trade_metrics.compute_trade_r
+        """One closed-position output row. R metrics come from stockbot.validation.trade_metrics.compute_trade_r
         (R base = initial risk in INR recorded at entry; see that module for partial-exit handling)."""
         st = p["st"]
         net = p["gross"] - p["costs"]

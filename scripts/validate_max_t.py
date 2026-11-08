@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from engine_core.max_t_bootstrap import WestfallYoungMaxTBootstrap  # noqa: E402
+from stockbot.validation.max_t_bootstrap import WestfallYoungMaxTBootstrap  # noqa: E402
 
 K = 6
 COMMON = 0.5  # cross-config correlation target (loading sqrt(0.5) on a shared factor)

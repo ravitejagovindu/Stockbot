@@ -18,7 +18,7 @@ from stockbot.risk.costs import CostModel
 from engine_core.equity import paper_cash, paper_equity, get_equity
 from engine_core.account_ledger import get_live_equity
 from engine_core.position_service import open_position
-from engine_core.trade_metrics import trades_from_log, sharpe_from_equity, metrics_from_trades
+from stockbot.validation.trade_metrics import trades_from_log, sharpe_from_equity, metrics_from_trades
 import pandas as pd
 
 
