@@ -19,9 +19,15 @@ def test_no_order_routes():
 
 
 def test_no_broker_order_code():
+    """Everything under stockbot/ and scripts/ is scanned. The broker-data client name (kiteconnect) is allowed ONLY in the ingestion package, which uses it to fetch prices;
+    order placement / UI-automation terms are forbidden everywhere."""
     root = pathlib.Path(__file__).resolve().parents[2]
-    hits = [
-        str(p) for d in ("live_runner", "engine_core") for p in (root / d).rglob("*.py")
-        if FORBIDDEN_CODE.search(p.read_text(encoding="utf-8", errors="ignore"))
-    ]
+    orders_only = re.compile(r"place_order|modify_order|selenium|playwright|pyautogui|pywinauto", re.I)
+    hits = []
+    for d in ("stockbot", "scripts"):
+        for p in (root / d).rglob("*.py"):
+            text = p.read_text(encoding="utf-8", errors="ignore")
+            rx = orders_only if "stockbot/data/ingestion" in p.as_posix() else FORBIDDEN_CODE
+            if rx.search(text):
+                hits.append(str(p))
     assert not hits, f"broker/order automation code found: {hits}"

@@ -119,3 +119,16 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_f6_baseline_and_locks.py::test_engine_path_equals_legacy_path_sim_for_the_same_ticket | stockbot/engine/stepping.py | stop fill price differs from the legacy path | passes clean / FAILS mutated |
 | tests/unit/test_f6_baseline_and_locks.py::test_engine_path_equals_legacy_path_sim_for_the_same_ticket | stockbot/engine/fills.py | fill price differs from the legacy path | passes clean / FAILS mutated |
 | tests/unit/test_f6_baseline_and_locks.py::test_engine_path_equals_legacy_path_sim_for_the_same_ticket | stockbot/engine/corporate.py | split not rebased like the legacy path | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_live_needs_a_strategy_with_status_live_and_a_validation_ref | stockbot/live/runner.py | paper strategies allowed in LIVE | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_live_needs_a_strategy_with_status_live_and_a_validation_ref | stockbot/live/runner.py | LIVE runs with no live strategy | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_paper_runs_paper_and_live_strategies_but_never_research | stockbot/live/runner.py | research strategies run in the live package | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_a_date_the_lake_does_not_hold_yet_is_refused_and_nothing_is_written | stockbot/live/runner.py | freshness not checked | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_live_fails_closed_without_an_asm_gsm_snapshot_and_paper_continues | stockbot/live/runner.py | LIVE does not fail closed | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_a_fresh_state_database_starts_with_the_configured_paper_equity | stockbot/live/runner.py | wrong starting equity | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_tickets_are_written_as_a_file_per_session | stockbot/live/runner.py | ticket file not written atomically (temp file left) | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_running_the_same_date_twice_changes_nothing | stockbot/live/adapter.py | date processed twice | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_symbols_in_todays_asm_gsm_snapshot_are_not_eligible | stockbot/live/runner.py | ASM/GSM names not excluded | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_scheduler_job_survives_a_refusal_and_runs_when_data_is_there | stockbot/live/scheduler.py | scheduler job dies on a refusal | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_scheduler_job_survives_a_refusal_and_runs_when_data_is_there | stockbot/live/runner.py | default mode is LIVE | passes clean / FAILS mutated |
+| tests/unit/test_live_runner.py::test_command_line_exit_codes | stockbot/live/eod_cli.py | refusal exit code changed | passes clean / FAILS mutated |
+| tests/unit/test_regulatory_barrier.py::test_no_broker_order_code | stockbot/live/runner.py | order-placement code in stockbot | passes clean / FAILS mutated |

@@ -1,10 +1,15 @@
 """
-FInsight Trading Engine — APScheduler for 5 PM IST Daily Pipeline
+FInsight Trading Engine - scheduler for the daily EOD run (restructure Phase 9).
+
+The job is thin: it calls ``stockbot.live.runner.run_eod`` for the expected session. It does NOT ingest data (ingestion is its own step, run before this
+one by whatever schedules it) and it does not look at Yahoo or any other network source: sessions come from the lake. A failed freshness check, a mode refusal or
+any other error is logged and raised as a desktop alert; the run is idempotent per trading date, so the next firing simply tries again.
 """
 from __future__ import annotations
 
 import logging
 from datetime import date
+from typing import Optional
 
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -16,92 +21,28 @@ IST = pytz.timezone("Asia/Kolkata")
 _scheduler: BackgroundScheduler | None = None
 
 
-def run_eod_pipeline():
-    """Entry point called by APScheduler. Includes Catch-Up Logic for missed days."""
-    today = date.today()
-    logger.info(f"[SCHEDULER] Trigger fired. Evaluating runs up to {today}...")
+def run_eod_job(book=None, today: Optional[date] = None):
+    """Entry point called by APScheduler (and by hand). Returns the RunResult, or None if the run could not happen."""
+    from stockbot.config.shared import load_shared_config
+    from stockbot.live.runner import default_book, run_eod
 
+    today = today or date.today()
     try:
-        from stockbot.data.db.connection import get_session
-        from stockbot.data.db.models import PipelineRunLog
-        from live_runner.pipeline import EODPipeline
-        import yfinance as yf
-        import pandas as pd
-        from datetime import timedelta
-
-        with get_session() as session:
-            # 1. Find last successful run date anchored to actual equity data in market_data_lake
-            from sqlalchemy import text
-            latest_equity_date = session.execute(
-                text("SELECT MAX(trade_date) FROM market_data_lake WHERE symbol NOT IN ('NIFTY50_INDEX', 'INDIA_VIX')")
-            ).scalar()
-
-            if latest_equity_date:
-                if isinstance(latest_equity_date, str):
-                    from datetime import datetime
-                    latest_equity_date = datetime.strptime(latest_equity_date, "%Y-%m-%d").date()
-                last_date = latest_equity_date
-            else:
-                last_run = (
-                    session.query(PipelineRunLog.run_date)
-                    .filter(PipelineRunLog.status == "COMPLETE")
-                    .order_by(PipelineRunLog.run_date.desc())
-                    .first()
-                )
-                last_date = last_run[0] if last_run else (today - timedelta(days=1))
-
-            if last_date >= today:
-                logger.info("[SCHEDULER] System is fully caught up.")
-                return
-
-            # Clear any stale pipeline logs after last_date so IdempotencyGuard allows re-processing
-            session.execute(
-                text("DELETE FROM pipeline_run_log WHERE run_date > :last_date"),
-                {"last_date": last_date}
-            )
-            session.commit()
-
-            # 2. Get true trading days using Yahoo Finance Nifty50 index
-            logger.info(f"[SCHEDULER] Fetching actual trading calendar between {last_date} and {today}...")
-            start_fetch = last_date + timedelta(days=1)
-            end_fetch = today + timedelta(days=1)
-            
-            df = yf.download("^NSEI", start=start_fetch, end=end_fetch, progress=False)
-            
-            if df.empty:
-                logger.info("[SCHEDULER] No trading days found in this window (weekends/holidays). Skipping.")
-                return
-                
-            df.reset_index(inplace=True)
-            date_col = next((c for c in df.columns if "date" in str(c).lower()), None)
-            trading_days = pd.to_datetime(df[date_col], utc=True).dt.date.tolist()
-
-            logger.info(f"[SCHEDULER] Found {len(trading_days)} trading day(s) to process: {trading_days}")
-
-            # 3. Sequentially run the pipeline for each missing day
-            for t_date in trading_days:
-                logger.info(f"[SCHEDULER] --- Executing Catch-Up run for {t_date} ---")
-                pipeline = EODPipeline(session=session)
-                pipeline.run(eval_date=t_date)
-                session.commit()  # Commit each day successfully before moving to the next
-
-            logger.info("[SCHEDULER] All catch-up and current runs completed successfully.")
-
-    except Exception as e:
-        logger.error(f"[SCHEDULER] EOD pipeline FAILED: {e}", exc_info=True)
+        cfg = load_shared_config()
+        result = run_eod(cfg=cfg, book=book or default_book(), today=today)
+        logger.info("[SCHEDULER] %s run for %s: %d session(s) processed, %d ticket file(s)", result.mode, result.as_of, len(result.decisions), len(result.ticket_files))
+        return result
+    except Exception as e:                                           # noqa: BLE001 - the scheduler thread must survive
+        logger.error("[SCHEDULER] EOD run FAILED: %s", e, exc_info=True)
         _send_failure_alert(today, str(e))
+        return None
 
 
 def _send_failure_alert(run_date: date, error: str):
-    """Send desktop notification on pipeline failure."""
+    """Send desktop notification on failure."""
     try:
         from winotify import Notification, audio
-        toast = Notification(
-            app_id="FInsight Trading Engine",
-            title="⚠️ EOD Pipeline Failed",
-            msg=f"{run_date}: {error[:100]}",
-            duration="long",
-        )
+        toast = Notification(app_id="FInsight Trading Engine", title="EOD run failed", msg=f"{run_date}: {error[:100]}", duration="long")
         toast.set_audio(audio.Default, loop=False)
         toast.show()
     except Exception:
@@ -111,20 +52,20 @@ def _send_failure_alert(run_date: date, error: str):
 def start_scheduler():
     """Initialize and start the APScheduler."""
     global _scheduler
+    from stockbot.config.shared import load_shared_config
 
-    from stockbot.config.legacy_loader import load_config
-    config = load_config()
-    eod_source = config.get("data", {}).get("eod_source", "kite")
+    cfg = load_shared_config()
+    eod_source = cfg.data.eod_source
     trigger_hour = 19 if eod_source == "bhavcopy" else 17
 
     _scheduler = BackgroundScheduler(timezone=IST)
     _scheduler.add_job(
-        run_eod_pipeline,
+        run_eod_job,
         trigger=CronTrigger(hour=trigger_hour, minute=0, timezone=IST),
-        id="eod_pipeline",
-        name="FInsight EOD Pipeline",
+        id="eod_run",
+        name="FInsight EOD run",
         replace_existing=True,
-        misfire_grace_time=300,  # 5-minute grace period if scheduler was down at trigger time
+        misfire_grace_time=300,
     )
     _scheduler.start()
     logger.info(f"[SCHEDULER] APScheduler started. Next fire time: {trigger_hour}:00 IST daily (Source: {eod_source}).")

@@ -12,3 +12,13 @@ def repo_root() -> Path:
 def lake_path() -> Path:
     """The lake database: ``STOCKBOT_DB`` if set, else <repo>/finsight.db."""
     return Path(os.environ.get("STOCKBOT_DB") or repo_root() / "finsight.db")
+
+
+def state_db_path() -> Path:
+    """The live state database (separate from the lake): STOCKBOT_STATE_DB if set, else <repo>/state/live_state.db."""
+    return Path(os.environ.get("STOCKBOT_STATE_DB") or repo_root() / "state" / "live_state.db")
+
+
+def tickets_dir() -> Path:
+    """Where the EOD runner writes its ticket files: STOCKBOT_TICKETS_DIR if set, else <repo>/state/tickets."""
+    return Path(os.environ.get("STOCKBOT_TICKETS_DIR") or repo_root() / "state" / "tickets")

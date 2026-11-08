@@ -48,3 +48,6 @@ ui/.env.local
 Thumbs.db
 
 # NOTE: authorized_deployment.json IS committed intentionally (Git-SHA lock)
+
+# Live state database and ticket files (generated)
+state/

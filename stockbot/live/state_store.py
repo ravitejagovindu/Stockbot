@@ -40,6 +40,7 @@ class StateStore:
         self.path = Path(path)
         if self.path.name.lower() == "finsight.db":
             raise StateStoreError("the state store is separate from the lake: refusing to open finsight.db")
+        self.path.parent.mkdir(parents=True, exist_ok=True)
         self._con = sqlite3.connect(self.path)
         self._con.executescript(_DDL)
         row = self._con.execute("select value from meta where key='schema_version'").fetchone()
