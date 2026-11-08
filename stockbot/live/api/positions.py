@@ -36,7 +36,7 @@ class OpenPositionRequest(BaseModel):
 @router.post("/open")
 def open_position_endpoint(req: OpenPositionRequest):
     """LIVE only. Records a trade you ALREADY executed in your broker terminal. Sends nothing to any broker."""
-    from config import load_config
+    from stockbot.config.legacy_loader import load_config
     from stockbot.risk.costs import CostModel
     from stockbot.config.mode import current_mode
     from engine_core.position_service import open_position
@@ -77,7 +77,7 @@ def close_position(req: ClosePositionRequest):
     This endpoint is called after the user has manually executed the exit
     in their Kite terminal. The engine records the trade for analytics.
     """
-    from config import load_config
+    from stockbot.config.legacy_loader import load_config
     from stockbot.config.mode import current_mode
 
     cfg = load_config()

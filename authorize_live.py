@@ -26,7 +26,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from config import load_config
+from stockbot.config.legacy_loader import load_config
 from stockbot.config.mode import current_mode
 
 BASE_DIR = Path(__file__).resolve().parent

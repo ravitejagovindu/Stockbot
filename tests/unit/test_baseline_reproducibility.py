@@ -20,7 +20,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backtest.simulator import Simulator
-from config import load_config
+from stockbot.config.legacy_loader import load_config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

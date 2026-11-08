@@ -1,5 +1,5 @@
 """
-FInsight Trading Engine — Strategy Configuration Loader
+FInsight Trading Engine — LEGACY loader of strategy_config.yaml (the old-strategy dict config; moved from config.py in restructure Phase 4; removed in Phase 10 with strategy_config.yaml)
 
 Loads strategy_config.yaml once at startup and provides typed access.
 All numeric parameters flow from here — no hardcoded magic numbers anywhere else.
@@ -13,7 +13,7 @@ from typing import Any
 import yaml
 
 
-CONFIG_PATH = Path(__file__).parent / "strategy_config.yaml"
+CONFIG_PATH = Path(__file__).resolve().parents[2] / "strategy_config.yaml"
 
 
 @lru_cache(maxsize=1)

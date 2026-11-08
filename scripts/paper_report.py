@@ -21,7 +21,7 @@ _ROOT = Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from config import load_config
+from stockbot.config.legacy_loader import load_config
 from data.db.connection import get_session
 from stockbot.validation.trade_metrics import metrics_from_trades, trades_from_log
 from live_runner.git_lock import read_authorized_info

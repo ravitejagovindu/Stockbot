@@ -23,7 +23,7 @@ from sqlalchemy import distinct, select
 from backtest.audit_generator import generate, summarize
 from stockbot.universe.exclusions import Exclusions
 from backtest.simulator import SimResult, Simulator
-from config import load_config
+from stockbot.config.legacy_loader import load_config
 from data.db.connection import get_session
 from data.db.models import MarketDataLake
 

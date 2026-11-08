@@ -121,7 +121,7 @@ def start_scheduler():
     """Initialize and start the APScheduler."""
     global _scheduler
 
-    from config import load_config
+    from stockbot.config.legacy_loader import load_config
     config = load_config()
     eod_source = config.get("data", {}).get("eod_source", "kite")
     trigger_hour = 19 if eod_source == "bhavcopy" else 17

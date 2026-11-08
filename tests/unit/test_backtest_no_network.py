@@ -34,7 +34,7 @@ def test_a_network_call_inside_simulator_run_raises(monkeypatch):
     from sqlalchemy.orm import sessionmaker
 
     import backtest.simulator as simmod
-    from config import load_config
+    from stockbot.config.legacy_loader import load_config
     from data.db.connection import Base
     from tests.fixtures import mini_lake
 

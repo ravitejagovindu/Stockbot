@@ -18,7 +18,7 @@ def health_check():
         last_run = guard.get_last_run()
 
     auth_info = read_authorized_info()
-    from config import load_config
+    from stockbot.config.legacy_loader import load_config
     from stockbot.config.mode import current_mode
     try:
         cfg = load_config()

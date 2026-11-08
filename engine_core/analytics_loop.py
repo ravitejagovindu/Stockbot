@@ -57,7 +57,7 @@ class AnalyticsLoop:
         self._session = session
         if config is None:
             try:
-                from config import load_config
+                from stockbot.config.legacy_loader import load_config
                 self._config = load_config()
             except Exception:
                 self._config = {"costs": {}, "runtime": {"mode": "LIVE"}}

@@ -173,7 +173,7 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
 
 
 def test_live_drawdown_guardrail_triggers(monkeypatch):
-    from config import load_config
+    from stockbot.config.legacy_loader import load_config
     from live_runner.pipeline import EODPipeline
     mock_session = MagicMock()
     pipeline = EODPipeline(mock_session)

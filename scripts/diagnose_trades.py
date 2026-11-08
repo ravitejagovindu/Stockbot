@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import desc, func, select, text
 
-from config import load_config
+from stockbot.config.legacy_loader import load_config
 from data.db.connection import get_session
 from data.db.models import MarketDataLake
 from stockbot.data.sector_map import sector_for

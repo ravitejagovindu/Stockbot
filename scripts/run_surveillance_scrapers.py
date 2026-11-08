@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from backtest.bifurcated_scraper.asm_gsm_pdf_scraper import ASMGSMPDFScraper      # noqa: E402
 from backtest.bifurcated_scraper.earnings_scraper import EarningsScraper          # noqa: E402
-from config import load_config                                                    # noqa: E402
+from stockbot.config.legacy_loader import load_config                                                    # noqa: E402
 
 
 def main() -> None:
