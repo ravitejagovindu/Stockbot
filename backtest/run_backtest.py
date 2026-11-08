@@ -21,8 +21,6 @@ import pandas as pd
 from sqlalchemy import distinct, select
 
 from backtest.audit_generator import generate, summarize
-from backtest.bifurcated_scraper.asm_gsm_pdf_scraper import ASMGSMPDFScraper
-from backtest.bifurcated_scraper.earnings_scraper import EarningsScraper
 from backtest.exclusions import Exclusions
 from backtest.simulator import SimResult, Simulator
 from config import load_config
@@ -60,9 +58,9 @@ def _fetch_nifty_series(session, config: dict, start_date: date, end_date: date)
 
 
 def main() -> None:
+    """Backtest runner.  Reads the database and local files only (no network: see backtest/no_network.py).  Scraping lives in scripts/run_surveillance_scrapers.py."""
     parser = argparse.ArgumentParser(description="StockBot Backtest Runner")
     parser.add_argument("--pass1", action="store_true", help="Run Pass 1 (naive, exclusions=None)")
-    parser.add_argument("--scrape", action="store_true", help="Run bifurcated scrapers")
     parser.add_argument("--pass2", action="store_true", help="Run Pass 2 (compliant, fail-closed exclusions)")
     parser.add_argument("--audit", action="store_true", help="Generate audit.json from Pass 2 results")
     parser.add_argument("--allow-unverified", action="store_true", help="Allow unverified ASM/GSM or earnings in Pass 2")
@@ -103,24 +101,6 @@ def main() -> None:
 
     initial_equity = float(config.get("backtest", {}).get("initial_equity", 1_000_000.0))
     pass2_sim_results: Dict[str, SimResult] = {}
-
-    if args.scrape:
-        print("\n--- Running Bifurcated Scrapers ---")
-        e_scraper = EarningsScraper()
-        a_scraper = ASMGSMPDFScraper()
-        for regime in target_regimes:
-            r_name = regime["name"]
-            p = out_dir / f"candidate_trades_{r_name}.csv"
-            if p.exists():
-                e_scraper.scrape_candidates(str(p))
-                df = pd.read_csv(p)
-                symbols = df["symbol"].unique().tolist()
-                asm_df = a_scraper.build_surveillance_timeline(
-                    symbols,
-                    date.fromisoformat(regime["start"]),
-                    date.fromisoformat(regime["end"]),
-                )
-                asm_df.to_csv(out_dir / f"pending_asm_gsm_matches_{r_name}.csv", index=False)
 
     with get_session() as session:
         for regime in target_regimes:

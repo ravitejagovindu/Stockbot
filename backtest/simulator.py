@@ -28,6 +28,7 @@ from engine_core.regime_filter import RegimeFilter
 from engine_core.regime_gates import bull_correction_active, is_bull, nifty_sma
 from engine_core.risk_sizing import RiskAndSizingEngine
 from engine_core.trade_metrics import compute_trade_r
+from backtest.no_network import network_forbidden
 from engine_core.universe_screener import UniverseScreener
 
 
@@ -202,6 +203,11 @@ class Simulator:
     # ---- main loop ------------------------------------------------------------
     def run(self, start: date, end: date, initial_equity: float, exclusions=None,
             regime_seed: Optional[dict] = None) -> SimResult:
+        with network_forbidden():                       # F10: a backtest reads the database only
+            return self._run_guarded(start, end, initial_equity, exclusions, regime_seed)
+
+    def _run_guarded(self, start: date, end: date, initial_equity: float, exclusions=None,
+                     regime_seed: Optional[dict] = None) -> SimResult:
         if self._on_live_db:
             self.s.execute(text("PRAGMA query_only=ON"))
             try:
