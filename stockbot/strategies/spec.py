@@ -43,6 +43,7 @@ class StrategySpec:
     validation_ref: Optional[str] = None
     expected_trade_rate: Optional[float] = None            # trades per month
     smallest_edge_of_interest: Optional[float] = None      # R per trade, net of costs
+    overlays: Mapping[str, str] = field(default_factory=dict)   # overlay id -> version the strategy declares (ids and versions are part of config_hash)
 
     def __post_init__(self) -> None:
         if not isinstance(self.id, str) or not _ID.match(self.id):
@@ -61,6 +62,11 @@ class StrategySpec:
         bad_u = set(self.universe_overrides) - UNIVERSE_OVERRIDABLE
         if bad_u:
             raise SpecError(f"universe_overrides may only contain {sorted(UNIVERSE_OVERRIDABLE)}; got {sorted(bad_u)}")
+        ov = dict(self.overlays)
+        for oid, ver in ov.items():
+            if not isinstance(oid, str) or not _ID.match(oid) or not isinstance(ver, str) or not _VERSION.match(ver):
+                raise SpecError(f"overlays must map an overlay id to a MAJOR.MINOR.PATCH version: {oid!r}: {ver!r}")
+        object.__setattr__(self, "overlays", _jsonable(ov, "overlays"))
         for name in ("expected_trade_rate", "smallest_edge_of_interest"):
             v = getattr(self, name)
             if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or v <= 0):
