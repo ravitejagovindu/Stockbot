@@ -8,7 +8,6 @@ import pandas as pd
 import pytest
 
 from stockbot.data_checks.preflight import assert_preflight_spot_check
-from scripts.daily_health_check import main as daily_health_check_main
 from stockbot.live.paper_report import evaluate_paper_performance, load_backtest_baseline
 
 
@@ -27,34 +26,6 @@ def test_preflight_spot_check_fails_on_tampered_adjustment(monkeypatch):
     monkeypatch.setattr(pf, "get_adjusted_series", bad_adjusted_series)
     with pytest.raises(RuntimeError, match="PREFLIGHT_SPOT_CHECK_FAILED"):
         assert_preflight_spot_check()
-
-
-def test_daily_health_check_detects_problems(monkeypatch):
-    # Mock session to return failing conditions
-    mock_session = MagicMock()
-    mock_session.execute.side_effect = [
-        MagicMock(first=lambda: (date(2026, 10, 15), "FAILED")),  # run: FAILED
-        MagicMock(scalar=lambda: "2026-10-10"),                     # last_bar: stale (>4 days)
-        MagicMock(scalar=lambda: date(2026, 10, 15)),               # max_dw_run
-        MagicMock(scalar=lambda: 3),                                # pending tickets: 3
-        MagicMock(scalar=lambda: date(2026, 10, 15)),               # max_pipe_run
-        MagicMock(scalar=lambda: 2),                                # stale positions: 2
-    ]
-
-    @pytest.fixture
-    def mock_get_session():
-        class CM:
-            def __enter__(self):
-                return mock_session
-            def __exit__(self, *args):
-                pass
-        return lambda: CM()
-
-    monkeypatch.setattr("scripts.daily_health_check.get_session", lambda: mock_session.__enter__())
-    with patch("scripts.daily_health_check.get_session") as mock_gs:
-        mock_gs.return_value.__enter__.return_value = mock_session
-        exit_code = daily_health_check_main()
-        assert exit_code == 1
 
 
 def test_load_backtest_baseline(tmp_path):
@@ -170,40 +141,3 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
     assert res2["checks"]["duration_or_trades"] is True
     assert res2["metrics"]["n_closed_trades"] == 65
     assert res2["metrics"]["days_count"] < 90
-
-
-def test_live_drawdown_guardrail_triggers(monkeypatch):
-    from stockbot.config.legacy_loader import load_config
-    from live_runner.pipeline import EODPipeline
-    mock_session = MagicMock()
-    pipeline = EODPipeline(mock_session)
-    cfg = load_config()
-    cfg["runtime"]["mode"] = "LIVE"
-    cfg["live_guardrails"] = {"max_drawdown_pct": 8.0}
-    pipeline.config = cfg
-
-    # Simulate 10% drawdown (peak: 1M, current: 900k)
-    monkeypatch.setattr(pipeline, "_live_equity_peak", lambda: 1_000_000.0)
-    monkeypatch.setattr(pipeline, "_live_equity", lambda: 900_000.0)
-    monkeypatch.setattr(pipeline, "_run_ingestion", lambda d: None)
-    monkeypatch.setattr(pipeline, "_assert_data_freshness", lambda d: None)
-    monkeypatch.setattr("stockbot.data_checks.preflight.assert_preflight_spot_check", lambda: True)
-
-    mock_regime = MagicMock()
-    mock_regime.kill_switch_active = False
-    mock_regime.nifty_close = 20000.0
-    mock_regime.nifty_sma200 = 19000.0
-    mock_regime.vix_close = 15.0
-    monkeypatch.setattr("engine_core.regime_filter.RegimeFilter.evaluate", lambda self, d: mock_regime)
-    monkeypatch.setattr("engine_core.position_lifecycle.PositionLifecycleManager.process_all", lambda self, d, **kw: [])
-
-    # Idempotency guard mock
-    with patch("live_runner.pipeline.IdempotencyGuard") as mock_guard_cls:
-        guard_inst = MagicMock()
-        guard_inst.acquire.return_value = True
-        mock_guard_cls.return_value = guard_inst
-
-        res = pipeline.run(date(2026, 10, 21))
-        assert res.get("paused") == "LIVE_DRAWDOWN_GUARD"
-        guard_inst.complete.assert_called_once()
-

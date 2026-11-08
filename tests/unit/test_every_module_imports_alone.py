@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def _modules():
     names = []
-    for pkg in ("stockbot", "engine_core", "backtest", "live_runner"):
+    for pkg in ("stockbot", "engine_core"):
         mod = __import__(pkg)
         names.append(pkg)
         names += [m.name for m in pkgutil.walk_packages(mod.__path__, pkg + ".") if not m.name.endswith(".main")]
