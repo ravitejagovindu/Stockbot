@@ -50,7 +50,7 @@ async def lifespan(app: FastAPI):
     logger.info("[STARTUP] Database initialized.")
 
     # Step 3: Start APScheduler for 5 PM IST daily pipeline
-    from live_runner.scheduler import start_scheduler
+    from stockbot.live.scheduler import start_scheduler
     start_scheduler()
     logger.info("[STARTUP] EOD scheduler started. Pipeline fires daily at 17:00 IST.")
 
@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
     yield  # App runs here
 
     # ── Shutdown ──────────────────────────────────────────────────────────────
-    from live_runner.scheduler import stop_scheduler
+    from stockbot.live.scheduler import stop_scheduler
     stop_scheduler()
     logger.info("[SHUTDOWN] Scheduler stopped. FInsight Engine shut down cleanly.")
 
@@ -85,7 +85,7 @@ app.add_middleware(
 )
 
 # ── Routers ────────────────────────────────────────────────────────────────────
-from live_runner.routers import health, regime, watchlist, portfolio, analytics, positions, ledger
+from stockbot.live.api import health, regime, watchlist, portfolio, analytics, positions, ledger
 
 app.include_router(health.router)
 app.include_router(regime.router, prefix="/regime", tags=["Regime"])
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     host = os.getenv("API_HOST", "127.0.0.1")
     port = int(os.getenv("API_PORT", "8000"))
     uvicorn.run(
-        "live_runner.main:app",
+        "stockbot.live.main:app",
         host=host,
         port=port,
         reload=False,  # Never use reload=True in production

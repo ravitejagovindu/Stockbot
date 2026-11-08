@@ -9,7 +9,7 @@ import pytest
 from datetime import date, timedelta
 
 from data.db.models import MarketDataLake, SharesOutstanding, ActivePosition, PipelineRunLog
-from live_runner.idempotency import IdempotencyGuard, AlreadyRunError
+from stockbot.live.idempotency import IdempotencyGuard, AlreadyRunError
 
 
 class TestIdempotencyGuard:

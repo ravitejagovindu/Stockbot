@@ -92,7 +92,7 @@ python authorize_live.py --confirm-ledger=backtest/outputs/audit.json
 
 ```bash
 # Start the FastAPI EOD runner (verifies Git-SHA lock on startup)
-python -m live_runner.main
+python -m stockbot.live.main
 
 # Start the React dashboard
 cd ui

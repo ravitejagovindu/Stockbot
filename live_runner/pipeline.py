@@ -18,7 +18,7 @@ from datetime import date, datetime
 from sqlalchemy.orm import Session
 
 from config import load_config
-from live_runner.idempotency import AlreadyRunError, IdempotencyGuard
+from stockbot.live.idempotency import AlreadyRunError, IdempotencyGuard
 
 logger = logging.getLogger(__name__)
 

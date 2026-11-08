@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from live_runner.git_lock import read_authorized_info
-from live_runner.idempotency import IdempotencyGuard
+from stockbot.live.idempotency import IdempotencyGuard
 from data.db.connection import get_session
 
 router = APIRouter()

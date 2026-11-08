@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pathlib
 import re
-from live_runner.main import app
+from stockbot.live.main import app
 
 FORBIDDEN_ROUTE = re.compile(r"order|place|execute|trade|buy|sell|broker|kite", re.I)
 FORBIDDEN_CODE = re.compile(r"place_order|modify_order|kiteconnect|selenium|playwright|pyautogui|pywinauto", re.I)

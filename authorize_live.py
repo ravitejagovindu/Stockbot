@@ -215,7 +215,7 @@ def main():
     print(f"║     SHA: {sha[:8]}                                            ║")
     print(f"╚══════════════════════════════════════════════════════════════╝\n")
     print(f"The engine is now authorized in {mode} mode. Start it with:")
-    print("    python -m live_runner.main")
+    print("    python -m stockbot.live.main")
     print("\nWARNING: Any code or config change will break the lock. Re-authorize after each change.")
 
 
