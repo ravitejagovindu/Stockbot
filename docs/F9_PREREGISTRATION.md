@@ -26,3 +26,6 @@ No gate or alpha is loosened to reach either condition. If more than one design 
 
 ## Pre-registered caveats
 Random-entry portfolios from the lake are a stand-in for a strategy's return process (no real signals are used); dependence in them comes from overlapping holds, market-wide moves in the shared window and the 12-position cap. The pool omits the market-cap gate (KI-001). The result bounds the test's size and power under that dependence, not under any particular strategy's.
+
+## Amendment 1 (2026-11-08, before any study result; only the trade-library summary existed)
+The library has trades on 1,134 of 1,676 sessions (the rest have an empty pool: regime or trend filter off). A Bernoulli probability of 0.13 applied only to sessions that have a pool would give about 0.44 trades a week, not the stated ~0.65 a week (the baseline's rate: 159 trades in 4.75 years). The intent is the baseline's trade rate, so the entry probability per pool session is set to **0.188** (= 0.127 per calendar session x 1,676 / 1,134), giving about 0.64 trades a week. Nothing else changes. The realised trades per week and per month are reported with the results.
