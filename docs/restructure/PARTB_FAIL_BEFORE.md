@@ -113,3 +113,9 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_lake_symbols.py::test_the_mapping_in_force_on_the_ex_date_wins | stockbot/data/ingestion/lake_symbols.py | range end ignored | passes clean / FAILS mutated |
 | tests/unit/test_lake_symbols.py::test_outside_every_range_the_latest_mapping_is_used | stockbot/data/ingestion/lake_symbols.py | wrong fallback mapping | passes clean / FAILS mutated |
 | tests/unit/test_lake_symbols.py::test_without_an_isin_or_a_mapping_the_feed_symbol_is_kept | stockbot/data/ingestion/lake_symbols.py | feed symbol dropped | passes clean / FAILS mutated |
+| tests/unit/test_check_all.py::test_default_run_has_the_four_steps_and_no_environment_switches | stockbot/data_checks/check_all.py | boundary test dropped from the entry point | passes clean / FAILS mutated |
+| tests/unit/test_check_all.py::test_data_and_final_switch_on_their_environment_variables_and_add_the_real_db_step | stockbot/data_checks/check_all.py | final switch ignored | passes clean / FAILS mutated |
+| tests/unit/test_check_all.py::test_any_failing_step_fails_the_whole_run_and_is_named | stockbot/data_checks/check_all.py | failures do not change the exit code | passes clean / FAILS mutated |
+| tests/unit/test_f6_baseline_and_locks.py::test_engine_path_equals_legacy_path_sim_for_the_same_ticket | stockbot/engine/stepping.py | stop fill price differs from the legacy path | passes clean / FAILS mutated |
+| tests/unit/test_f6_baseline_and_locks.py::test_engine_path_equals_legacy_path_sim_for_the_same_ticket | stockbot/engine/fills.py | fill price differs from the legacy path | passes clean / FAILS mutated |
+| tests/unit/test_f6_baseline_and_locks.py::test_engine_path_equals_legacy_path_sim_for_the_same_ticket | stockbot/engine/corporate.py | split not rebased like the legacy path | passes clean / FAILS mutated |
