@@ -34,6 +34,12 @@ class CostModel:
             float(c["stcg_tax_pct"]),
         )
 
+    @staticmethod
+    def from_shared(costs) -> "CostModel":
+        """Build from the typed shared config section (stockbot.config.shared.CostsConfig); same numbers as ``from_config`` on strategy_config.yaml."""
+        return CostModel(costs.stt_buy_pct, costs.stt_sell_pct, costs.brokerage_per_order_inr, costs.exchange_txn_pct, costs.sebi_fee_pct,
+                         costs.stamp_duty_buy_pct, costs.gst_pct, costs.dp_charge_per_sell_inr, costs.stcg_tax_pct)
+
     def _fees(self, value: float) -> float:
         """Exchange transaction charges + SEBI turnover fee."""
         return value * (self.exch_pct + self.sebi_pct) / 100.0
