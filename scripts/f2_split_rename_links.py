@@ -17,7 +17,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from data.ingestion.ca_evidence import classify      # noqa: E402
+from stockbot.data.ingestion.ca_evidence import classify      # noqa: E402
 
 
 def find_links(con, events: pd.DataFrame, eligible_syms: set[str]) -> pd.DataFrame:

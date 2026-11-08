@@ -1,4 +1,4 @@
-"""data/ingestion/ca_evidence.py — evidence tiers for split/bonus events (F2 Step 4).
+"""stockbot/data/ingestion/ca_evidence.py — evidence tiers for split/bonus events (F2 Step 4).
 
 STRONG       Yahoo-implied factor within 3% of the logged factor.
 WEAK         raw close-to-close ratio (best day pair within +-2 sessions of the ex-date) within 25% of the logged factor AND

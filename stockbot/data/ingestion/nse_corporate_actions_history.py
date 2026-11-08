@@ -1,4 +1,4 @@
-"""data/ingestion/nse_corporate_actions_history.py — F2: corporate-action history from the NSE API (2010 -> today).
+"""stockbot/data/ingestion/nse_corporate_actions_history.py — F2: corporate-action history from the NSE API (2010 -> today).
 
 Source: ``https://www.nseindia.com/api/corporates-corporateActions?index=equities&symbol=X&from_date=..&to_date=..``
 (public JSON, needs a browser-like session; free-text ``subject`` field).  Limits (documented): keyed by the CURRENT
@@ -29,7 +29,7 @@ from typing import Optional
 import pandas as pd
 import requests
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 SOURCE = "NSE corporates-corporateActions API"
 HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "

@@ -20,7 +20,7 @@ Split-ratio parsing:
     ``ratio_numerator`` (new) and ``ratio_denominator`` (old).
 
 Usage:
-    from data.ingestion.corporate_actions_ingestor import CorporateActionsIngestor
+    from stockbot.data.ingestion.corporate_actions_ingestor import CorporateActionsIngestor
     from datetime import date
 
     ingestor = CorporateActionsIngestor(kite_instance)
@@ -39,7 +39,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from data.db.connection import get_session
 from data.db.models import CorporateActionsLog
-from data.ingestion.base_ingestor import BaseIngestor
+from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 logger = logging.getLogger(__name__)
 

@@ -189,7 +189,7 @@ class EODPipeline:
 
         if eod_source == "bhavcopy":
             logger.info("[PIPELINE] Running Bhavcopy Ingestion...")
-            from data.ingestion.bhavcopy_ingestor import BhavcopyIngestor
+            from stockbot.data.ingestion.bhavcopy_ingestor import BhavcopyIngestor
             BhavcopyIngestor(self.config).ingest(self.session, eval_date)
 
             # Ingest NIFTY50 and INDIA_VIX using yfinance (not present in Bhavcopy)
@@ -197,8 +197,8 @@ class EODPipeline:
 
         elif eod_source == "kite":
             logger.info("[PIPELINE] Running Kite Ingestion...")
-            from data.ingestion.ohlcv_ingestor import OHLCVIngestor
-            from data.ingestion.index_vix_ingestor import IndexVIXIngestor
+            from stockbot.data.ingestion.ohlcv_ingestor import OHLCVIngestor
+            from stockbot.data.ingestion.index_vix_ingestor import IndexVIXIngestor
             try:
                 # Kite ingestion expects historical sync structure, here we just do today
                 OHLCVIngestor(self.config).ingest_universe(None, eval_date, eval_date)

@@ -12,7 +12,7 @@ import logging
 import sys
 
 # Ensure StockBot modules can be loaded
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+sys.path.append(str(Path(__file__).resolve().parents[3]))
 
 from data.db.connection import engine
 

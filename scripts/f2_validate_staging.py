@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject  # noqa: E402
+from stockbot.data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject  # noqa: E402
 from stockbot.data.adjustments import action_factor  # noqa: E402
 
 OUT = ROOT / "docs" / "data_audit"

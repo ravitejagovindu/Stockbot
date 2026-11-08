@@ -1,4 +1,4 @@
-"""data/ingestion/securities_ingestor.py — Bulk Ingestor for NSE Listed Securities Master."""
+"""stockbot/data/ingestion/securities_ingestor.py — Bulk Ingestor for NSE Listed Securities Master."""
 from __future__ import annotations
 
 import csv
@@ -18,7 +18,7 @@ _EQUITY_L_URLS = [
     "https://archives.nseindia.com/content/equities/EQUITY_L.csv",
     "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv",
 ]
-_CACHE_PATH = Path(__file__).resolve().parents[1] / "reference" / "EQUITY_L.csv"
+_CACHE_PATH = Path(__file__).resolve().parents[3] / "data" / "reference" / "EQUITY_L.csv"
 
 
 def _parse_nse_date(date_str: str) -> Optional[date]:
@@ -112,7 +112,7 @@ def fetch_and_save_symbol_listing_date(symbol: str, session=None) -> Optional[da
     """Fallback fetch for a single symbol from NSE live Quote API and persist to DB."""
     sym = symbol.strip().upper()
     try:
-        from data.ingestion.base_ingestor import BaseIngestor
+        from stockbot.data.ingestion.base_ingestor import BaseIngestor
         ingestor = BaseIngestor()
         nse_sess = ingestor._get_nse_session()
         quote_url = f"https://www.nseindia.com/api/quote-equity?symbol={sym}"

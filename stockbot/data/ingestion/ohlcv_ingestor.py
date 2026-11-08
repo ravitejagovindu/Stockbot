@@ -15,7 +15,7 @@ CRITICAL DATA INTEGRITY RULES (DO NOT VIOLATE):
     4. Market Cap = raw_close × raw_shares_outstanding — raw_close only.
 
 Usage:
-    from data.ingestion.ohlcv_ingestor import OHLCVIngestor
+    from stockbot.data.ingestion.ohlcv_ingestor import OHLCVIngestor
     from datetime import date
 
     ingestor = OHLCVIngestor(kite_instance)
@@ -35,7 +35,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from data.db.connection import get_session
 from data.db.models import MarketDataLake
-from data.ingestion.base_ingestor import BaseIngestor
+from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 load_dotenv()
 

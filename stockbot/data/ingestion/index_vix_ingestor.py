@@ -21,7 +21,7 @@ store actual OHLCV if Kite provides it.  Volume is stored as 0 for indices
 where volume is not meaningful.
 
 Usage:
-    from data.ingestion.index_vix_ingestor import IndexVIXIngestor
+    from stockbot.data.ingestion.index_vix_ingestor import IndexVIXIngestor
     from datetime import date
 
     ingestor = IndexVIXIngestor(kite)
@@ -40,7 +40,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from data.db.connection import get_session
 from data.db.models import MarketDataLake
-from data.ingestion.base_ingestor import BaseIngestor
+from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 logger = logging.getLogger(__name__)
 

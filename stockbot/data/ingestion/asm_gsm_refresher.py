@@ -36,7 +36,7 @@ import pandas as pd
 from sqlalchemy import text
 
 from data.db.connection import get_session
-from data.ingestion.base_ingestor import BaseIngestor
+from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 logger = logging.getLogger(__name__)
 

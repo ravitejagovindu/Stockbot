@@ -584,7 +584,7 @@ class UniverseScreener:
         ).scalar()
         if listing_date is None:
             try:
-                from data.ingestion.securities_ingestor import fetch_and_save_symbol_listing_date
+                from stockbot.data.ingestion.securities_ingestor import fetch_and_save_symbol_listing_date
                 listing_date = fetch_and_save_symbol_listing_date(sym, session=self._session)
             except Exception as e:
                 logger.warning(f"[SCREENER] Failed on-demand listing date fetch for {sym}: {e}")

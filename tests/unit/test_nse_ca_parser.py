@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from data.ingestion.nse_corporate_actions_history import parse_subject
+from stockbot.data.ingestion.nse_corporate_actions_history import parse_subject
 from stockbot.data.adjustments import action_factor
 
 

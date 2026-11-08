@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from data.ingestion.ca_evidence import STANDARD_RATIOS, classify, nearest_standard, best_pair
+from stockbot.data.ingestion.ca_evidence import STANDARD_RATIOS, classify, nearest_standard, best_pair
 
 
 def test_strong_when_yahoo_factor_within_3pct():

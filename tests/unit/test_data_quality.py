@@ -623,7 +623,7 @@ class TestParseRatio(unittest.TestCase):
 
     def setUp(self):
         # Import inside setUp so mocks in other test classes don't interfere
-        from data.ingestion.corporate_actions_ingestor import parse_ratio
+        from stockbot.data.ingestion.corporate_actions_ingestor import parse_ratio
         self.parse_ratio = parse_ratio
 
     def test_standard_split_ratio(self):

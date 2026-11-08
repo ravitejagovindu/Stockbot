@@ -28,7 +28,7 @@ import yaml
 logger = logging.getLogger(__name__)
 
 # Path to the project root strategy_config.yaml (two levels above data/ingestion/)
-_CONFIG_PATH = Path(__file__).resolve().parents[2] / "strategy_config.yaml"
+_CONFIG_PATH = Path(__file__).resolve().parents[3] / "strategy_config.yaml"
 
 
 def _load_strategy_config() -> dict:

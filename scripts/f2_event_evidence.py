@@ -17,8 +17,8 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from data.ingestion.ca_evidence import best_pair, classify          # noqa: E402
-from data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject   # noqa: E402
+from stockbot.data.ingestion.ca_evidence import best_pair, classify          # noqa: E402
+from stockbot.data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject   # noqa: E402
 from stockbot.data.adjustments import action_factor                    # noqa: E402
 
 YAHOO_FROM, YAHOO_TO = "2020-01-01", "2026-09-30"

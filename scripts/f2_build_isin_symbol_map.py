@@ -24,7 +24,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject  # noqa: E402
+from stockbot.data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject  # noqa: E402
 
 CONT_LO, CONT_HI = 0.8, 1.25
 MAX_GAP_SESSIONS = 20

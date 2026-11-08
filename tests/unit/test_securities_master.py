@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from data.db.models import SecuritiesMaster
-from data.ingestion.securities_ingestor import _parse_nse_date, fetch_and_save_symbol_listing_date
+from stockbot.data.ingestion.securities_ingestor import _parse_nse_date, fetch_and_save_symbol_listing_date
 from engine_core.universe_screener import UniverseScreener
 
 
