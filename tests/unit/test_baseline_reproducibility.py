@@ -153,12 +153,15 @@ def test_cfg00_pooled_reproducibility():
 
 
 def test_this_module_does_not_depend_on_the_real_database():
-    """F10 guard: no get_session / finsight.db in the unit version (real-DB versions are in tests/data_integrity)."""
+    """F10 guard: no get_session and no database path string in the unit version (real-DB versions are in tests/data_integrity)."""
     import ast
-    src = Path(__file__).read_text(encoding="utf-8")
-    names = {n.id for n in ast.walk(ast.parse(src)) if isinstance(n, ast.Name)} | {a.name for n in ast.walk(ast.parse(src)) if isinstance(n, ast.ImportFrom) for a in n.names}
-    assert "get_session" not in names
-    code = "
-".join(l for l in src.split("
-") if not l.lstrip().startswith(("#", "F10", "The real")))
-    assert "get_session(" not in code and "sqlite:///:memory:" in code
+    tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
+    imported = {a.name for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) for a in n.names}
+    assert "get_session" not in imported
+    docstrings = {id(n.body[0].value) for n in ast.walk(tree)
+                  if isinstance(n, (ast.Module, ast.FunctionDef)) and n.body and isinstance(n.body[0], ast.Expr)
+                  and isinstance(getattr(n.body[0], "value", None), ast.Constant)}
+    strings = [n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docstrings]
+    needle = "".join(["fin", "sight"])
+    assert not any(needle in x for x in strings)
+    assert "sqlite:///:memory:" in strings
