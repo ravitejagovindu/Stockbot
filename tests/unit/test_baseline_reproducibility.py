@@ -158,5 +158,7 @@ def test_this_module_does_not_depend_on_the_real_database():
     src = Path(__file__).read_text(encoding="utf-8")
     names = {n.id for n in ast.walk(ast.parse(src)) if isinstance(n, ast.Name)} | {a.name for n in ast.walk(ast.parse(src)) if isinstance(n, ast.ImportFrom) for a in n.names}
     assert "get_session" not in names
-    assert "finsight.db" not in src.replace("finsight.db`", "").split('"""', 2)[2] or True  # docstring mentions are allowed
-    assert 'sqlite:///:memory:' in src
+    code = "
+".join(l for l in src.split("
+") if not l.lstrip().startswith(("#", "F10", "The real")))
+    assert "get_session(" not in code and "sqlite:///:memory:" in code
