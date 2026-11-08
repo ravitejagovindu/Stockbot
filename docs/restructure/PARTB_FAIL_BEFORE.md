@@ -75,3 +75,12 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_engine_live.py::test_a_report_journaled_before_any_further_session_is_rebuilt | stockbot/live/state_store.py | rebuild ignores operator reports | passes clean / FAILS mutated |
 | tests/unit/test_engine_decide.py::test_entry_bar_rule_equals_legacy_advance_one_bar_on_a_random_grid | stockbot/engine/stepping.py | stop-hit fill ignores the stop price | passes clean / FAILS mutated |
 | tests/unit/test_engine_decide.py::test_entry_bar_rule_equals_legacy_advance_one_bar_on_a_random_grid | stockbot/engine/stepping.py | stop-hit fill floored at the bar's low | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_a_meeting_is_visible_only_from_its_intimation_date | stockbot/data/asof.py | intimation date not enforced | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_changing_rows_intimated_after_the_as_of_date_changes_nothing | stockbot/data/asof.py | intimation date not enforced | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_duplicate_meeting_dates_collapse_to_the_earliest_intimation | stockbot/data/asof.py | latest intimation kept instead of the earliest | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_only_results_meetings_with_a_known_intimation_count | stockbot/data/asof.py | non-results meetings returned | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_coverage_says_no_data_instead_of_no_event | stockbot/data/asof.py | empty API response counted as coverage | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_a_lake_without_earnings_tables_has_no_coverage_and_no_meetings | stockbot/data/asof.py | missing earnings tables crash the view | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_results_within_is_none_without_coverage_and_respects_the_window | stockbot/universe/eligibility.py | no data read as no event | passes clean / FAILS mutated |
+| tests/unit/test_asof_earnings.py::test_results_within_is_none_without_coverage_and_respects_the_window | stockbot/universe/eligibility.py | window end exclusive | passes clean / FAILS mutated |
+| tests/data_integrity/test_entry_bar_real_lake.py::test_entry_bar_rule_agrees_with_every_legacy_trade_on_the_real_lake | stockbot/engine/stepping.py | stop not checked on the entry bar (real-lake legacy trades disagree) | passes clean / FAILS mutated |

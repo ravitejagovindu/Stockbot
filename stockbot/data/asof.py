@@ -8,6 +8,9 @@
   - raw close / raw volume / traded value are exposed separately from adjusted prices (liquidity uses raw, never adjusted);
   - the connection is private; callers get frames and small value objects, never a session or cursor.
 The connection passed in should come from ``stockbot.data.lake.open_lake`` (read-only); the view itself only issues SELECTs.
+Earnings (decision D5): results meetings come from the ``earnings_*`` tables of the same file, and only meetings whose board-meeting INTIMATION date is on or before
+the as-of date are returned (``intimation_ts`` empty = not known, never returned); duplicates (same lake symbol and ``bm_date`` reached through several query symbols)
+collapse to the earliest intimation; ``earnings_coverage`` says whether the symbol has earnings data at all, so "no data" is never read as "no event".
 Not exposed: ``shares_outstanding`` / market cap (single current snapshot, KI-001; the market-cap gate is parked).
 """
 from __future__ import annotations
@@ -137,6 +140,40 @@ class AsOfView:
             sql += " limit ?"
             args.append(int(lookback))
         return [date.fromisoformat(str(r[0])[:10]) for r in reversed(self._conn.execute(sql, args).fetchall())]
+
+    # -------------------------------------------------------------- earnings
+    def _has_table(self, name: str) -> bool:
+        return self._conn.execute("select 1 from sqlite_master where type='table' and name=?", (name,)).fetchone() is not None
+
+    def _query_symbols(self, symbol: str) -> list:
+        if not self._has_table("earnings_symbol_map"):
+            return []
+        return [r[0] for r in self._conn.execute("select query_symbol from earnings_symbol_map where lake_symbol=? order by query_symbol", (symbol,)).fetchall()]
+
+    def earnings_coverage(self, symbol: str) -> bool:
+        """True if the earnings collection returned data for this symbol (mapped, and at least one API response with rows). False means "no data", NOT "no events"."""
+        qs = self._query_symbols(symbol)
+        if not qs or not self._has_table("earnings_api_raw"):
+            return False
+        marks = ",".join("?" * len(qs))
+        return self._conn.execute(f"select 1 from earnings_api_raw where query_symbol in ({marks}) and row_count>0 limit 1", qs).fetchone() is not None
+
+    def results_meetings(self, symbol: str) -> list[dict]:
+        """Results board meetings known by as_of (intimation date <= as_of), one per bm_date (earliest intimation), ascending by bm_date.
+        Each: {"bm_date": date, "intimation_ts": str, "purpose": str}. Meetings may lie after as_of (an upcoming meeting that was already announced)."""
+        qs = self._query_symbols(symbol)
+        if not qs or not self._has_table("earnings_board_meeting"):
+            return []
+        marks = ",".join("?" * len(qs))
+        rows = self._conn.execute(
+            f"select bm_date, intimation_ts, purpose from earnings_board_meeting where query_symbol in ({marks}) and is_results_meeting=1 and bm_date is not null "
+            f"and intimation_ts is not null and substr(intimation_ts,1,10)<=? order by bm_date, intimation_ts", [*qs, self._as_of.isoformat()]).fetchall()
+        out: dict = {}
+        for bm, ts, purpose in rows:
+            d = date.fromisoformat(str(bm)[:10])
+            if d not in out:
+                out[d] = {"bm_date": d, "intimation_ts": str(ts), "purpose": purpose}
+        return [out[d] for d in sorted(out)]
 
     # --------------------------------------------------------------- symbols
     def symbols_trading(self) -> list[str]:

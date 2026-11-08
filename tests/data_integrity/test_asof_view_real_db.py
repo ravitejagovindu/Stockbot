@@ -2,7 +2,7 @@
 
   1. 120 (symbol, eval_date) samples (40 symbols x 3 dates, rng seed 7, as in scripts/f2_engine_scan.py): view.raw_bars / adjusted_bars equal
      build_candidate_dicts' raw_ohlcv / adjusted_ohlcv (0 mismatches required).
-  2. The 58 verification rows (data/reference/verified_corporate_actions.csv) go through the view and PASS the same checks as
+  2. The 57 verification rows (data/reference/verified_corporate_actions.csv) go through the view and PASS the same checks as
      scripts/f2_verify_engine_path.verify_row; the engine factor on the bar before the ex-date equals the original engine path's factor.
 """
 from __future__ import annotations

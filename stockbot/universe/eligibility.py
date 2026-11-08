@@ -11,6 +11,7 @@ A strategy can only tighten ``min_adtv_cr`` / ``min_listing_age_trading_days`` (
 """
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Mapping, Optional, Sequence
 
 CRORE = 1e7
@@ -35,3 +36,12 @@ def eligible_symbols(view, universe_cfg, *, overrides: Optional[Mapping] = None,
             continue
         out.append(sym)
     return sorted(out)
+
+
+def results_within(view, symbol: str, days: int) -> Optional[bool]:
+    """Shared mechanism: is a results meeting, KNOWN as of ``view.as_of`` (intimation date <= as_of), due within the next ``days`` calendar days (as-of day included)?
+    Returns None when the symbol has NO earnings data at all - "no data" is never read as "no event". Whether this blocks entries, and ``days``, are per-strategy."""
+    if not view.earnings_coverage(symbol):
+        return None
+    lo, hi = view.as_of, view.as_of + timedelta(days=int(days))
+    return any(lo <= m["bm_date"] <= hi for m in view.results_meetings(symbol))
