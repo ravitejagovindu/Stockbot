@@ -149,3 +149,9 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_asof_view.py::test_a_recent_listing_is_still_young_and_a_name_without_bars_has_no_age | stockbot/data/asof.py | young names treated as seasoned | passes clean / FAILS mutated |
 | tests/unit/test_asof_view.py::test_eligibility_uses_the_f2_listing_age | stockbot/universe/eligibility.py | eligibility uses the raw session count | passes clean / FAILS mutated |
 | tests/unit/test_asof_view.py::test_a_later_name_ages_by_its_own_sessions_until_550_calendar_days | stockbot/data/asof.py | 550-day rule dropped | passes clean / FAILS mutated |
+| tests/unit/test_live_health_check.py::test_stale_price_data_is_reported | stockbot/live/health_check.py | stale data not reported | passes clean / FAILS mutated |
+| tests/unit/test_live_health_check.py::test_a_snapshot_that_disagrees_with_the_journal_is_reported | stockbot/live/health_check.py | snapshot vs journal not compared | passes clean / FAILS mutated |
+| tests/unit/test_live_health_check.py::test_a_state_store_behind_the_lake_is_reported | stockbot/live/health_check.py | state behind the lake not reported | passes clean / FAILS mutated |
+| tests/unit/test_live_health_check.py::test_an_uninitialised_store_is_reported | stockbot/live/health_check.py | uninitialised store not reported | passes clean / FAILS mutated |
+| tests/unit/test_live_health_check.py::test_command_line_exit_codes | stockbot/live/health_check.py | problems do not change the exit code | passes clean / FAILS mutated |
+| tests/unit/test_script_wrappers_help.py::test_every_wrapper_and_the_provenance_readme_is_tracked_by_git | scripts/ (a new untracked wrapper file) | a wrapper that git does not track | passes clean / FAILS with an untracked wrapper present |

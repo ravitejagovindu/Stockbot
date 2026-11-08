@@ -36,6 +36,14 @@ def test_there_are_wrappers_to_check():
     assert len(WRAPPERS) >= 20
 
 
+def test_every_wrapper_and_the_provenance_readme_is_tracked_by_git():
+    """Slip found in Phase 10: the wrappers existed on disk but were never committed (a new file at the path of a moved script is untracked, and `git add -u` does not add it)."""
+    tracked = set(subprocess.run(["git", "ls-files", "scripts"], cwd=ROOT, capture_output=True, text=True).stdout.split())
+    missing = [f"scripts/{p.name}" for p in WRAPPERS if f"scripts/{p.name}" not in tracked]
+    assert not missing, f"wrappers not tracked by git: {missing}"
+    assert "scripts/provenance/README.md" in tracked
+
+
 @pytest.mark.parametrize("script", WRAPPERS, ids=lambda p: p.name)
 def test_help_answers_and_writes_nothing(script):
     before = fingerprint()

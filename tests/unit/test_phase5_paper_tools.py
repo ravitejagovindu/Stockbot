@@ -9,7 +9,7 @@ import pytest
 
 from stockbot.data_checks.preflight import assert_preflight_spot_check
 from scripts.daily_health_check import main as daily_health_check_main
-from scripts.paper_report import evaluate_paper_performance, load_backtest_baseline
+from stockbot.live.paper_report import evaluate_paper_performance, load_backtest_baseline
 
 
 def test_preflight_spot_check_passes():
@@ -94,7 +94,7 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
     }
 
     # Case A: 100 days active, but only 10 trades -> D4 OR condition met for duration
-    monkeypatch.setattr("scripts.paper_report.read_authorized_info", lambda: {
+    monkeypatch.setattr("stockbot.live.paper_report.read_authorized_info", lambda: {
         "authorized_at": (date.today() - timedelta(days=100)).isoformat()
     })
 
@@ -117,7 +117,7 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
         for i in range(10)
     ])
 
-    monkeypatch.setattr("scripts.paper_report.trades_from_log", lambda s, mode: sample_trades)
+    monkeypatch.setattr("stockbot.live.paper_report.trades_from_log", lambda s, mode: sample_trades)
 
     mock_s = MagicMock()
     # opened_cnt, skipped_cnt
@@ -126,7 +126,7 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
         MagicMock(scalar=lambda: 1),
     ]
 
-    with patch("scripts.paper_report.get_session") as mock_gs:
+    with patch("stockbot.live.paper_report.get_session") as mock_gs:
         mock_gs.return_value.__enter__.return_value = mock_s
         res = evaluate_paper_performance(cfg, audit_file=audit_file, output_file=out_file)
 
@@ -136,7 +136,7 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
     assert out_file.exists()
 
     # Case B: 30 days active, but 65 trades -> D4 OR condition met for trades
-    monkeypatch.setattr("scripts.paper_report.read_authorized_info", lambda: {
+    monkeypatch.setattr("stockbot.live.paper_report.read_authorized_info", lambda: {
         "authorized_at": (date.today() - timedelta(days=30)).isoformat()
     })
     sample_65_trades = pd.DataFrame([
@@ -156,14 +156,14 @@ def test_paper_report_d4_or_condition(tmp_path, monkeypatch):
         }
         for i in range(65)
     ])
-    monkeypatch.setattr("scripts.paper_report.trades_from_log", lambda s, mode: sample_65_trades)
+    monkeypatch.setattr("stockbot.live.paper_report.trades_from_log", lambda s, mode: sample_65_trades)
 
     mock_s2 = MagicMock()
     mock_s2.execute.side_effect = [
         MagicMock(scalar=lambda: 65),
         MagicMock(scalar=lambda: 5),
     ]
-    with patch("scripts.paper_report.get_session") as mock_gs2:
+    with patch("stockbot.live.paper_report.get_session") as mock_gs2:
         mock_gs2.return_value.__enter__.return_value = mock_s2
         res2 = evaluate_paper_performance(cfg, audit_file=audit_file, output_file=out_file)
 
