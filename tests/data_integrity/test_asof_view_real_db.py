@@ -41,34 +41,6 @@ def orm_session():
     return Session(create_engine(f"sqlite:///file:{Path(DB).as_posix()}?mode=ro&uri=true", connect_args={"check_same_thread": False}))
 
 
-def test_120_samples_view_equals_build_candidate_dicts(conn, orm_session):
-    from engine_core.candidate_builder import build_candidate_dicts
-    from stockbot.data.asof import AsOfView
-    cfg = {"data": {"resistance_lookback_days": 252}}
-    syms = [r[0] for r in conn.execute("select symbol from market_data_lake group by symbol having count(*) >= 300 order by symbol")]
-    syms = [s for s in syms if s not in ("NIFTY50_INDEX", "INDIA_VIX")]
-    rng = np.random.default_rng(7)
-    sample = list(rng.choice(syms, size=40, replace=False))
-    checked = mism = 0
-    for sym in sample:
-        dates = [date.fromisoformat(r[0]) for r in conn.execute("select trade_date from market_data_lake where symbol=? order by trade_date", (sym,))]
-        for k in rng.choice(len(dates), size=3, replace=False):
-            d = dates[int(k)]
-            cand = build_candidate_dicts(orm_session, cfg, [sym], d)
-            if not cand:
-                continue
-            v = AsOfView(conn, d)
-            lb = len(cand[0]["raw_ohlcv"])
-            checked += 1
-            try:
-                pd.testing.assert_frame_equal(v.raw_bars(sym, lb), cand[0]["raw_ohlcv"], check_exact=True)
-                pd.testing.assert_frame_equal(v.adjusted_bars(sym, lb), cand[0]["adjusted_ohlcv"], rtol=1e-12, atol=0)
-            except AssertionError:
-                mism += 1
-    print(f"as-of view vs build_candidate_dicts: {checked} samples, {mism} mismatches")
-    assert checked == 120 and mism == 0
-
-
 @pytest.mark.parametrize("r", ROWS, ids=[f"{r.symbol}-{r.ex_date}-{r.action_type}" for r in ROWS])
 def test_verification_row_through_the_view(conn, orm_session, r):
     from sqlalchemy import or_, select

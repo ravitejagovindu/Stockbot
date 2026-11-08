@@ -10,7 +10,6 @@ from sqlalchemy.orm import sessionmaker
 
 from stockbot.data.db.connection import Base
 from stockbot.data.db.models import CorporateActionsLog
-from engine_core.candidate_builder import build_candidate_dicts
 from stockbot.data.asof import AsOfView, FutureDataError
 from stockbot.data.lake import open_lake
 from tests.fixtures import mini_lake
@@ -74,18 +73,6 @@ def test_adjustment_uses_only_actions_known_at_the_as_of_date(lake_path):
     assert [a["ex_date"] for a in after.corporate_actions("FIXCO")] == [ex]
 
 
-def test_view_equals_the_current_candidate_path(lake_path):
-    eng = create_engine(f"sqlite:///{lake_path.as_posix()}")
-    ds = mini_lake.sessions()
-    cfg = {"data": {"resistance_lookback_days": 252}}
-    with sessionmaker(bind=eng)() as s:
-        for i in (120, 199, 205, 260, 301):
-            cand = build_candidate_dicts(s, cfg, ["FIXCO"], ds[i])[0]
-            v = AsOfView(open_lake(lake_path), ds[i])
-            pd.testing.assert_frame_equal(v.raw_bars("FIXCO", 282), cand["raw_ohlcv"])
-            pd.testing.assert_frame_equal(v.adjusted_bars("FIXCO", 282), cand["adjusted_ohlcv"])
-
-
 # ------------------------------------------------------------------ F2 listing-age rule (ported from the old universe screener; reviewer-approved 2026-11-07)
 def _age_lake(tmp_path):
     p = tmp_path / "age.db"
@@ -141,3 +128,35 @@ def test_eligibility_uses_the_f2_listing_age(tmp_path):
     got = eligible_symbols(AsOfView(open_lake(p), date(2021, 12, 1)), cfg)
     assert "OLDCO" in got and "YOUNGCO" in got and "IPOCO" not in got
     assert eligible_symbols(AsOfView(open_lake(p), date(2020, 1, 15)), cfg) == ["GAPCO", "OLDCO", "YOUNGCO"]
+
+
+# ------------------------------------------------------------------ fund / ETF exclusion (ported from the old screener: reviewer-approved F2 rule, INF-ISIN list)
+def test_the_fund_list_file_is_read_and_funds_are_not_eligible(tmp_path):
+    from types import SimpleNamespace
+    from stockbot.data.asof import _fund_symbols
+    from stockbot.universe.eligibility import eligible_symbols
+    funds = _fund_symbols()
+    assert {"NIFTYBEES", "GOLDBEES"} <= funds and len(funds) > 400                      # data/reference/fund_etf_symbols.csv (INF ISINs), read and upper-cased
+    p = _age_lake(tmp_path)
+    con = sqlite3.connect(p)
+    con.execute("update market_data_lake set symbol='NIFTYBEES' where symbol='OLDCO'")      # a fund with a long, liquid history
+    con.execute("update market_data_lake set close_raw=1000, volume_raw=10000000 where symbol != 'NIFTY50_INDEX'")
+    con.commit(); con.close()
+    cfg = SimpleNamespace(min_adtv_cr=25, min_listing_age_trading_days=252)
+    v = AsOfView(open_lake(p), date(2020, 1, 15))
+    assert v.symbol_info("NIFTYBEES").is_fund_or_etf is True and v.symbol_info("YOUNGCO").is_fund_or_etf is False
+    assert "NIFTYBEES" not in eligible_symbols(v, cfg) and "YOUNGCO" in eligible_symbols(v, cfg)
+
+
+def test_no_asm_ranges_and_an_empty_dict_give_the_same_universe(tmp_path):
+    from types import SimpleNamespace
+    from stockbot.universe.eligibility import eligible_symbols
+    p = _age_lake(tmp_path)
+    con = sqlite3.connect(p)
+    con.execute("update market_data_lake set close_raw=1000, volume_raw=10000000 where symbol != 'NIFTY50_INDEX'")
+    con.commit(); con.close()
+    cfg = SimpleNamespace(min_adtv_cr=25, min_listing_age_trading_days=252)
+    v = AsOfView(open_lake(p), date(2020, 1, 15))
+    assert eligible_symbols(v, cfg) == eligible_symbols(v, cfg, asm_ranges={}) == eligible_symbols(v, cfg, asm_ranges=None)
+    assert "YOUNGCO" not in eligible_symbols(v, cfg, asm_ranges={"YOUNGCO": [(date(2020, 1, 1), date(2020, 1, 31))]})           # an ASM/GSM range covering the day excludes the name
+    assert "YOUNGCO" in eligible_symbols(v, cfg, asm_ranges={"YOUNGCO": [(date(2019, 12, 1), date(2019, 12, 31)), (date(2020, 2, 1), date(2020, 2, 28))]})     # ranges before or after the day do not

@@ -155,3 +155,7 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_live_health_check.py::test_an_uninitialised_store_is_reported | stockbot/live/health_check.py | uninitialised store not reported | passes clean / FAILS mutated |
 | tests/unit/test_live_health_check.py::test_command_line_exit_codes | stockbot/live/health_check.py | problems do not change the exit code | passes clean / FAILS mutated |
 | tests/unit/test_script_wrappers_help.py::test_every_wrapper_and_the_provenance_readme_is_tracked_by_git | scripts/ (a new untracked wrapper file) | a wrapper that git does not track | passes clean / FAILS with an untracked wrapper present |
+| tests/unit/test_asof_view.py::test_the_fund_list_file_is_read_and_funds_are_not_eligible | stockbot/universe/eligibility.py | funds are eligible | passes clean / FAILS mutated |
+| tests/unit/test_asof_view.py::test_the_fund_list_file_is_read_and_funds_are_not_eligible | stockbot/data/asof.py | fund list not read | passes clean / FAILS mutated |
+| tests/unit/test_asof_view.py::test_no_asm_ranges_and_an_empty_dict_give_the_same_universe | stockbot/universe/eligibility.py | ASM/GSM ranges ignored | passes clean / FAILS mutated |
+| tests/unit/test_asof_view.py::test_no_asm_ranges_and_an_empty_dict_give_the_same_universe | stockbot/universe/eligibility.py | range end ignored | passes clean / FAILS mutated |
