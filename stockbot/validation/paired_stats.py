@@ -1,4 +1,4 @@
-"""Paired statistics of actual trades against their matched random draws (restructure Phase 7; the computations come from ``scripts/redesigned_random_baseline.py``).
+"""Paired statistics of actual trades against their matched random draws (restructure Phase 7; the computations come from ``scripts/provenance/redesigned_random_baseline.py``).
 
 Same statistics as the legacy script - forward-return horizons with trade-level t, date-clustered bootstrap SE and sign-flip permutation p-values (Bonferroni
 alpha 0.05/4), then the expectancy comparison in R (mean, median, 5% trimmed mean, trade t, clustered t, one-sided skill p, raw draw-level means, holding

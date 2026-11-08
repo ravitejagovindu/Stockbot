@@ -117,7 +117,7 @@ def _trades(net_equals_gross: bool) -> pd.DataFrame:
 
 
 def test_select_candidate_rejects_missing_r_column():
-    from scripts.select_candidate import require_r_columns
+    from scripts.provenance.select_candidate import require_r_columns
 
     df = _trades(False).drop(columns=["net_r"])
     with pytest.raises(ValueError, match="net_r"):
@@ -125,7 +125,7 @@ def test_select_candidate_rejects_missing_r_column():
 
 
 def test_select_candidate_rejects_legacy_file_without_gross_r():
-    from scripts.select_candidate import require_r_columns
+    from scripts.provenance.select_candidate import require_r_columns
 
     df = _trades(False).drop(columns=["gross_r"])
     with pytest.raises(ValueError, match="gross_r"):
@@ -133,7 +133,7 @@ def test_select_candidate_rejects_legacy_file_without_gross_r():
 
 
 def test_select_candidate_rejects_net_equal_gross_with_costs():
-    from scripts.select_candidate import require_r_columns
+    from scripts.provenance.select_candidate import require_r_columns
 
     with pytest.raises(ValueError, match="identical"):
         require_r_columns(_trades(True))

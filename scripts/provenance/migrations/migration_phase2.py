@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 # Add project root to path so imports work
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+sys.path.append(str(Path(__file__).resolve().parents[3]))
 
 from data.db.connection import engine, Base
 import data.db.models  # Ensures models are loaded

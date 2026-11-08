@@ -1,7 +1,7 @@
 """stockbot/validation/f9_power_study.py — F9 step 2: size and power of the Westfall-Young step-down Max-T block bootstrap on portfolio-level periodic returns.
 
 Design, blocks, replications, decision rule and the smallest edge of interest are fixed in docs/F9_PREREGISTRATION.md (committed before this ran).
-Input: data/f9/trade_library.npz (scripts/f9_trade_library.py).  Output: data/f9/power_results.json, docs/F9_POWER_RESULTS.md.
+Input: data/f9/trade_library.npz (scripts/provenance/f9_trade_library.py).  Output: data/f9/power_results.json, docs/F9_POWER_RESULTS.md.
 """
 from __future__ import annotations
 

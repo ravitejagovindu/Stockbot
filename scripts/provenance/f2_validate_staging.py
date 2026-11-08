@@ -1,4 +1,4 @@
-"""scripts/f2_validate_staging.py — F2 STOP-1 evidence: validate the Bhavcopy staging table BEFORE any swap.
+"""scripts/provenance/f2_validate_staging.py — F2 STOP-1 evidence: validate the Bhavcopy staging table BEFORE any swap.
 
 Read-only on the database. Produces (in docs/data_audit/):
   F2_staging_validation_report.md      human-readable report
@@ -7,7 +7,7 @@ Read-only on the database. Produces (in docs/data_audit/):
   symbol_map.csv                       A3: ISIN-based renames / symbol changes
   historical_universe.csv              A4: universe built from the daily files (incl. delisted names)
   unexplained_moves.csv                |close-to-close| moves > 40% without a logged corporate action (disposition col)
-Usage: py -3 scripts/f2_validate_staging.py [--db finsight.db] [--actions-csv data/reference/nse_corporate_actions_raw.csv]
+Usage: py -3 scripts/provenance/f2_validate_staging.py [--db finsight.db] [--actions-csv data/reference/nse_corporate_actions_raw.csv]
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 

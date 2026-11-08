@@ -1,4 +1,4 @@
-"""scripts/f2_volume_continuity.py — are volume units continuous across the Bhavcopy legacy -> UDiFF format change?
+"""scripts/provenance/f2_volume_continuity.py — are volume units continuous across the Bhavcopy legacy -> UDiFF format change?
 
 For each symbol: median volume of the N sessions before vs after a boundary.  The real boundary (2024-06-28 | 2024-07-01)
 is compared with control boundaries that have no format change; the median across symbols of after/before should be ~1

@@ -1,4 +1,4 @@
-"""scripts/f2_load_plan.py — what would go into corporate_actions_log, and what the chosen tiers do to the price history.  Read-only.
+"""scripts/provenance/f2_load_plan.py — what would go into corporate_actions_log, and what the chosen tiers do to the price history.  Read-only.
 
 1. Reconciliation: events (symbol, ex-date) vs parsed rows vs rows that survive the table's UNIQUE(symbol, ex_date, action_type),
    by tier and by stored type.
@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from stockbot.data.ingestion.lake_symbols import lake_symbol        # noqa: E402  (moved to the package in Phase 8)
 

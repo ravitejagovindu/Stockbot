@@ -6,7 +6,7 @@ import sqlite3
 import pandas as pd
 import pytest
 
-from scripts import f2_swap as sw
+from scripts.provenance import f2_swap as sw
 
 LAKE = """create table market_data_lake(id integer primary key autoincrement, symbol text not null, trade_date date not null,
  open_raw real not null, high_raw real not null, low_raw real not null, close_raw real not null, volume_raw bigint not null,

@@ -1,9 +1,9 @@
-"""scripts/f2_swap.py — F2: replace the Yahoo-adjusted lake rows with raw NSE Bhavcopy rows (three separate transactions).
+"""scripts/provenance/f2_swap.py — F2: replace the Yahoo-adjusted lake rows with raw NSE Bhavcopy rows (three separate transactions).
 
-    py -3 -m scripts.f2_swap schema   --db finsight.db      # 1. schema-only migrations (F3 columns, F2 columns, archive table, relaxed CHECK)
-    py -3 -m scripts.f2_swap swap     --db finsight.db      # 2. archive + replace 2020-01-01..2026-09-30, special sessions, index gaps
-    py -3 -m scripts.f2_swap map      --db finsight.db      # 3. ISIN -> canonical symbol relabel (all years), source_symbol kept
-    py -3 -m scripts.f2_swap checks   --db finsight.db      # read-only post-swap report
+    py -3 -m scripts.provenance.f2_swap schema   --db finsight.db      # 1. schema-only migrations (F3 columns, F2 columns, archive table, relaxed CHECK)
+    py -3 -m scripts.provenance.f2_swap swap     --db finsight.db      # 2. archive + replace 2020-01-01..2026-09-30, special sessions, index gaps
+    py -3 -m scripts.provenance.f2_swap map      --db finsight.db      # 3. ISIN -> canonical symbol relabel (all years), source_symbol kept
+    py -3 -m scripts.provenance.f2_swap checks   --db finsight.db      # read-only post-swap report
 
 Every stage is one transaction; any failed assertion rolls the whole stage back.  Nothing is ever deleted without first being
 copied to ``market_data_lake_yahoo_archive``.  ``source_symbol`` NULL means "symbol is the traded symbol".
@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 INDEX_SYMBOLS = ("NIFTY50_INDEX", "INDIA_VIX")
 WINDOW = ("2020-01-01", "2026-09-30")
 LAKE_COLS = ["id", "symbol", "trade_date", "open_raw", "high_raw", "low_raw", "close_raw", "volume_raw", "exchange", "created_at"]

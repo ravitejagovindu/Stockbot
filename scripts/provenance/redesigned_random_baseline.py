@@ -1,5 +1,5 @@
 """
-scripts/redesigned_random_baseline.py — Rigorous Apples-to-Apples Random Baseline:
+scripts/provenance/redesigned_random_baseline.py — Rigorous Apples-to-Apples Random Baseline:
 1. Universe: Same screened pool on signal date T (Gates 1-3: Mcap > 5000cr, ADTV > 25cr, Age > 252) AND Trend Filter (Close > SMA50 > SMA200).
 2. Execution: Enters at T+1 Open with 0.10% entry slippage, enforces <= 3.0% gap cap, verifies RR >= 1.5 at fill.
 3. Sizing & Exits: Exact same risk sizing (1% risk) and lifecycle exits via advance_one_bar() with 0.10% exit slippage.
@@ -18,7 +18,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 

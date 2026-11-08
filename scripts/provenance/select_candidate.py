@@ -1,5 +1,5 @@
 """
-scripts/select_candidate.py — Automated Pre-Registered Candidate Selection.
+scripts/provenance/select_candidate.py — Automated Pre-Registered Candidate Selection.
 ============================================================================
 Applies all pre-registered gates from backtest/pre_registered_configs.yaml in sequence.
 Writes a committed JSON decision file and an append-only CSV trial ledger to eliminate
@@ -20,7 +20,7 @@ Outputs (both must be committed):
   backtest/outputs/trial_ledger.csv          — append-only audit log of each run
 
 Usage:
-  py -3 scripts/select_candidate.py [--dry-run]
+  py -3 scripts/provenance/select_candidate.py [--dry-run]
 
   --dry-run : Print results without writing outputs.
 """
@@ -43,7 +43,7 @@ import yaml
 # ---------------------------------------------------------------------------
 # Project root resolution
 # ---------------------------------------------------------------------------
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 OUTPUTS_DIR = PROJECT_ROOT / "backtest" / "outputs"
@@ -148,7 +148,7 @@ def require_r_columns(df: pd.DataFrame) -> None:
         if col not in df.columns:
             raise ValueError(
                 f"Trade file lacks explicit column '{col}'. Legacy files with an unexplained 'net_r' are refused; "
-                "regenerate with the Simulator or scripts/recompute_step3_net_r.py."
+                "regenerate with the Simulator or scripts/provenance/recompute_step3_net_r.py."
             )
     if "costs" in df.columns:
         paid = df[df["costs"] > 0]

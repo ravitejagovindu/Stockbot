@@ -6,9 +6,9 @@ import sqlite3, sys
 from datetime import date
 from pathlib import Path
 import numpy as np, pandas as pd
-ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
-from scripts.f2b_build_pit_shares import build, lake_symbols
-from data.ingestion.pit_shares import shares_on
+ROOT = Path(__file__).resolve().parents[2]; sys.path.insert(0, str(ROOT))
+from scripts.provenance.f2b_build_pit_shares import build, lake_symbols
+from scripts.provenance.pit_shares import shares_on
 
 BAR_MEDIAN, BAR_P90, GATE_CR = 5.0, 15.0, 5000.0
 

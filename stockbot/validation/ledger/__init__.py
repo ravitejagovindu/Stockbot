@@ -3,7 +3,7 @@
 Records live next to this module in ``records/`` (see docs/restructure/LEDGER_MANIFEST.md): the hash-chained trial ledger of the rejected CFG-01..06 search, the
 exploratory ledger (a sha256 pin, never a chain) and the pre-registration yaml. NOTHING in a ledger row depends on a file path, so records can be moved.
 
-This module holds the ledger WRITERS, extracted from ``scripts/select_candidate.py`` (which stays as provenance and now calls them):
+This module holds the ledger WRITERS, extracted from ``scripts/provenance/select_candidate.py`` (which stays as provenance and now calls them):
   * ``register`` writes a REGISTRATION row (yaml hash, gate hash, config budget); re-registration needs a reason;
   * ``record_exploratory`` logs dry runs / diagnostic runs (they still count; no chain);
   * the FAMILY helper records N strategies of one family TOGETHER: one registration row fixes the family size, and one results row must cover every member,

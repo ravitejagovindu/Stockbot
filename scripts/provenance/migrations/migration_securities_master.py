@@ -1,6 +1,6 @@
-"""data/db/migration_securities_master.py — Create securities_master table.
+"""scripts/provenance/migrations/migration_securities_master.py — Create securities_master table.
 
-Run once: py -3 -m data.db.migration_securities_master
+Run once: py -3 -m scripts.provenance.migrations.migration_securities_master
 """
 from sqlalchemy import text
 from data.db.connection import get_session

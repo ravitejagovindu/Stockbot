@@ -1,4 +1,4 @@
-"""scripts/recompute_step3_net_r.py — F1: derive explicit gross/net/after-tax R columns for the Step 3 outputs.
+"""scripts/provenance/recompute_step3_net_r.py — F1: derive explicit gross/net/after-tax R columns for the Step 3 outputs.
 
 Reads the existing Step 3 trade CSVs (``backtest/outputs/trades_candidate_CFG-0x.csv``), recomputes
 ``risk_inr``, ``gross_r``, ``net_r``, ``net_r_after_tax`` with ``stockbot.validation.trade_metrics.add_r_columns`` and writes
@@ -8,7 +8,7 @@ Equity curves and random-baseline files are copied unchanged.
 IMPORTANT: the source data are the flawed Yahoo-adjusted prices (see the F2 finding). The comparison table therefore
 only shows the gross-versus-net effect; it is NOT a valid strategy result.
 
-Usage:  py -3 scripts/recompute_step3_net_r.py [--out DIR]
+Usage:  py -3 scripts/provenance/recompute_step3_net_r.py [--out DIR]
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 

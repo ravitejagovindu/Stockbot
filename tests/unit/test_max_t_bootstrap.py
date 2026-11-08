@@ -344,7 +344,7 @@ def test_gate3_dual_block_size_requirement():
     root = Path(__file__).resolve().parents[2]
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
-    from scripts.select_candidate import gate3_fwer_significance
+    from scripts.provenance.select_candidate import gate3_fwer_significance
 
     # Case 1: Significant at block_size=4 but NOT at block_size=8 -> FAIL
     bs_partial = {
@@ -381,7 +381,7 @@ def test_gate5_drawdown_check_enforcement():
     root = Path(__file__).resolve().parents[2]
     if str(root) not in sys.path:
         sys.path.insert(0, str(root))
-    from scripts.select_candidate import gate5_strategy_gates, _compute_equity_drawdown_pct
+    from scripts.provenance.select_candidate import gate5_strategy_gates, _compute_equity_drawdown_pct
 
     # Case 1: Drawdown exceeds 15% threshold (e.g. 20.0%) -> FAIL
     stats_high_dd = {

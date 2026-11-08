@@ -1,4 +1,4 @@
-"""scripts/f2_move_dispositions.py — evidence and recorded disposition for the large moves that automation could not settle.
+"""scripts/provenance/f2_move_dispositions.py — evidence and recorded disposition for the large moves that automation could not settle.
 
 For every relevant equity move whose triage disposition starts with MANUAL it records: the previous session and whether it is a
 special (weekend/holiday) session with a thin print, the move against the last REGULAR close, the Nifty return that day, the sector
@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "data_audit"
 NAMED = [("PGIL", "2024-01-20"), ("JYOTISTRUC", "2024-01-20"), ("SCHNEIDER", "2024-05-18")]   # the reviewer's 2024-01-22 / 2024-05-20 moves, now under their true dates
 REVIEWER_DECISIONS = {                       # (symbol, date): (disposition, reason)  — reviewer's instruction 2026-11-07

@@ -6,7 +6,7 @@ actual trade's own symbol), give each draw the actual trade's RELATIVE stop dist
 ``stockbot.engine.path.simulate_ticket``: the same fill rule (next open, slippage, gap rules), corporate-action rebasing and generic stepping that ``decide`` uses,
 with the strategy's own ExitPolicy object. No portfolio effects (no cash competition, no caps). Seeded: same seed, same draws.
 Nothing here knows a strategy: the exit policy, the pool filter and the holding limit come from the caller (the spec).
-The legacy script ``scripts/redesigned_random_baseline.py`` (trend filter, old stops, old exits) stays as provenance of the rejected CFG-01..06 comparison.
+The legacy script ``scripts/provenance/redesigned_random_baseline.py`` (trend filter, old stops, old exits) stays as provenance of the rejected CFG-01..06 comparison.
 """
 from __future__ import annotations
 

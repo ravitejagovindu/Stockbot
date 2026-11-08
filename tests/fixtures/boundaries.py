@@ -147,9 +147,4 @@ LEGACY_DATA_PY = {
     "data/db/__init__.py": "Phase 3 (db layer split)",
     "data/db/connection.py": "Phase 3 (db layer split)",
     "data/db/models.py": "Phase 3 (db layer split) / Phase 9 (state store)",
-    "data/db/migration_f3_corporate_actions.py": "Phase 8 (provenance disposition)",
-    "data/db/migration_phase2.py": "Phase 8 (provenance disposition)",
-    "data/db/migration_phase3_paper.py": "Phase 8 (provenance disposition)",
-    "data/db/migration_securities_master.py": "Phase 8 (provenance disposition)",
-    "data/ingestion/pit_shares.py": "Phase 8 (provenance disposition; F2b NOT USED)",
 }

@@ -1,6 +1,6 @@
 """Add paper-mode columns to active_positions, trade_analytics_log, daily_watchlist.
 
-Run once: python -m data.db.migration_phase3_paper
+Run once: python -m scripts.provenance.migrations.migration_phase3_paper
 Idempotent: safe to run multiple times; skips columns that already exist.
 """
 from sqlalchemy import text

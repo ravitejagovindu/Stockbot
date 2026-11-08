@@ -5,9 +5,9 @@ import sqlite3, sys
 from datetime import date
 from pathlib import Path
 import pandas as pd
-ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
-from scripts.f2b_build_pit_shares import build, lake_symbols
-from data.ingestion.pit_shares import shares_on
+ROOT = Path(__file__).resolve().parents[2]; sys.path.insert(0, str(ROOT))
+from scripts.provenance.f2b_build_pit_shares import build, lake_symbols
+from scripts.provenance.pit_shares import shares_on
 PAIRS = [("BHARTIARTL","2018-12-31","large_rights"),("M&MFIN","2020-03-31","large_rights"),("IDEA","2020-03-31","large_rights"),("SUZLON","2022-03-31","large_rights"),
          ("YESBANK","2019-03-31","qip_pref"),("OLECTRA","2021-03-31","qip_pref"),("RPOWER","2019-03-31","qip_pref"),("SOUTHBANK","2020-03-31","qip_pref"),
          ("RBLBANK","2019-03-31","qip_pref"),("JPPOWER","2019-03-31","qip_pref"),("JINDALSTEL","2019-03-31","qip_pref"),

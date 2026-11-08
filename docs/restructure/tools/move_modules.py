@@ -30,6 +30,12 @@ GROUPS = {
                           "f2_index_gap_fill", "f2_index_gap_fill_yahoo", "f2_load_corporate_actions", "ingest_raw_bhavcopy_range", "snapshot_asm_gsm", "merge_asm_gsm_snapshots")],
     "scripts_checks": [(f"scripts.{m}", f"stockbot.data_checks.{m}") for m in ("earnings_coverage", "earnings_validate", "f2_engine_scan", "f2_split_rename_links", "f2_verify_engine_path",
                                                                               "f2_verify_list", "preflight_spot_check")],
+    "provenance_scripts": [(f"scripts.{m}", f"scripts.provenance.{m}") for m in (
+        "f2_eligibility_triage", "f2_load_plan", "f2_move_dispositions", "f2_post_swap_checks", "f2_pre2020_compare", "f2_swap", "f2_validate_staging", "f2_volume_continuity",
+        "f2b_build_pit_shares", "f2b_spotcheck", "f2b_spotcheck_model", "ingest_historical_2018_2019", "recompute_step3_net_r", "select_candidate", "redesigned_random_baseline",
+        "f9_trade_library")],
+    "provenance_data": [(f"data.db.{m}", f"scripts.provenance.migrations.{m}") for m in ("migration_f3_corporate_actions", "migration_phase2", "migration_phase3_paper",
+                                                                                         "migration_securities_master")] + [("data.ingestion.pit_shares", "scripts.provenance.pit_shares")],
     "validation_scripts": [(f"scripts.{m}", f"stockbot.validation.{m}") for m in ("validate_max_t", "f9_power_study", "f9_report")],
     "live": [("live_runner.idempotency", "stockbot.live.idempotency"), ("live_runner.main", "stockbot.live.main"), ("live_runner.scheduler", "stockbot.live.scheduler")]
             + [(f"live_runner.routers.{r}", f"stockbot.live.api.{r}") for r in ("analytics", "health", "ledger", "portfolio", "positions", "regime", "watchlist")],

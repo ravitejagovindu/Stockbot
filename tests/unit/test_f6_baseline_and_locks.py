@@ -47,14 +47,14 @@ def test_path_sim_matches_simulator_for_same_entry(with_split):
 
 
 def test_baseline_windows_come_from_config_and_exclude_test_window():
-    from scripts.redesigned_random_baseline import tune_windows
+    from scripts.provenance.redesigned_random_baseline import tune_windows
 
     cfg = {"backtest": {"regimes": [
         {"name": "a", "role": "TUNE", "start": "2020-01-01", "end": "2021-12-31"},
         {"name": "t", "role": "TEST", "start": "2015-01-01", "end": "2019-12-31"},
     ]}}
     assert tune_windows(cfg) == [("a", date(2020, 1, 1), date(2021, 12, 31))]
-    src = Path("scripts/redesigned_random_baseline.py").read_text(encoding="utf-8")
+    src = Path("scripts/provenance/redesigned_random_baseline.py").read_text(encoding="utf-8")
     for hard in ("2026, 10, 16", "date(2019, 10, 1)", "date(2021, 12, 31)"):
         assert hard not in src, f"hardcoded date {hard} still present"
 
@@ -62,7 +62,7 @@ def test_baseline_windows_come_from_config_and_exclude_test_window():
 # ----------------------------------------------------------------------------- hash lock
 @pytest.fixture
 def lock_env(tmp_path, monkeypatch):
-    import scripts.select_candidate as sc
+    import scripts.provenance.select_candidate as sc
 
     yml = tmp_path / "pre_registered_configs.yaml"
     shutil.copy(Path("stockbot/validation/ledger/records/pre_registered_configs.yaml"), yml)

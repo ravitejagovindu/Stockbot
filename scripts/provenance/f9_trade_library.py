@@ -1,4 +1,4 @@
-"""scripts/f9_trade_library.py — F9 step 1: a library of random-entry trades from the lake, simulated with the engine's own holding rules.
+"""scripts/provenance/f9_trade_library.py — F9 step 1: a library of random-entry trades from the lake, simulated with the engine's own holding rules.
 
 See docs/F9_PREREGISTRATION.md.  For every session t in 2020-01-01..2026-09-29 a random sample (<= 15) of names from that session's random-entry pool
 (raw ADTV20 >= Rs25 cr, raw price >= Rs5, >= 252 sessions of history, not a fund, close > SMA50 > SMA200) gets one trade: signal at close t, fill at open t+1 plus
@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from stockbot.config.legacy_loader import load_config                                                          # noqa: E402
 from stockbot.data.adjustments import get_adjusted_series                                 # noqa: E402

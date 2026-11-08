@@ -2,7 +2,7 @@
 
 active_positions:    risk_inr, applied_corp_actions, manual_review_ca
 trade_analytics_log: risk_inr, excluded_ca
-Idempotent. Usage:  py -3 -m data.db.migration_f3_corporate_actions
+Idempotent. Usage:  py -3 -m scripts.provenance.migrations.migration_f3_corporate_actions
 (ALTER TABLE ADD COLUMN is allowed on trade_analytics_log despite its append-only triggers: they only block UPDATE/DELETE.)
 """
 from __future__ import annotations
@@ -10,7 +10,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+sys.path.append(str(Path(__file__).resolve().parents[3]))
 
 from sqlalchemy import text
 

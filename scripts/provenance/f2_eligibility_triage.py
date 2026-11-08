@@ -1,4 +1,4 @@
-"""scripts/f2_eligibility_triage.py — F2 Step 5.  Read-only.
+"""scripts/provenance/f2_eligibility_triage.py — F2 Step 5.  Read-only.
 
 1. Eligible symbols = ADTV (SMA(raw close x raw volume, 20 sessions), same definition as stockbot.data.adjustments.compute_adtv)
    >= Rs25 crore on at least one session in the staged raw data.  (Market cap needs F2b and is NOT applied here.)
@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 OUT = ROOT / "docs" / "data_audit"
 CRORE = 1e7
@@ -110,7 +110,7 @@ def main() -> int:
     # large moves
     um = pd.read_csv(OUT / "unexplained_moves.csv")
     openm = um[(um.disposition == "OPEN") & (~um.penny_or_illiquid.astype(bool))].reset_index(drop=True)
-    from scripts.f2_validate_staging import load_actions
+    from scripts.provenance.f2_validate_staging import load_actions
     acts = load_actions(ROOT / "data/reference/nse_corporate_actions_raw.csv")
     evp = pd.read_csv(ROOT / "data/reference/corporate_actions_evidence.csv")
     evp = evp[evp.action_type.isin(["SPLIT", "BONUS"])]

@@ -1,4 +1,4 @@
-"""scripts/f2_post_swap_checks.py — read-only post-swap report (F2 Step 3).  Writes docs/data_audit/post_swap_report_<tag>.md."""
+"""scripts/provenance/f2_post_swap_checks.py — read-only post-swap report (F2 Step 3).  Writes docs/data_audit/post_swap_report_<tag>.md."""
 from __future__ import annotations
 
 import argparse
@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 IDX = "('NIFTY50_INDEX','INDIA_VIX')"
 
 

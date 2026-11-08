@@ -1,4 +1,4 @@
-"""Symbol resolution shared by the corporate-action loading tools (extracted from scripts/f2_load_plan.py in restructure Phase 8 so that a package module does not
+"""Symbol resolution shared by the corporate-action loading tools (extracted from scripts/provenance/f2_load_plan.py in restructure Phase 8 so that a package module does not
 import a one-off script)."""
 from __future__ import annotations
 

@@ -180,7 +180,7 @@ def test_original_scratch_repro_is_now_a_regression_test():
 
 
 def test_f3_migration_adds_columns_idempotently(tmp_path):
-    from data.db.migration_f3_corporate_actions import run_migration
+    from scripts.provenance.migrations.migration_f3_corporate_actions import run_migration
 
     eng = create_engine(f"sqlite:///{(tmp_path / 'old.db').as_posix()}")
     with eng.begin() as c:

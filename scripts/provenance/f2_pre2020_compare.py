@@ -1,4 +1,4 @@
-"""scripts/f2_pre2020_compare.py — reviewer condition 3.1: compare the lake's pre-2020 rows with staging (2013-2019).
+"""scripts/provenance/f2_pre2020_compare.py — reviewer condition 3.1: compare the lake's pre-2020 rows with staging (2013-2019).
 
 Read-only.  Aggregates inside SQLite (memory-safe).  Writes docs/data_audit/pre2020_lake_vs_staging.csv and
 pre2020_symbol_coverage.csv and prints a summary.
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "data_audit"
 IDX = ("NIFTY50_INDEX", "INDIA_VIX")
 
