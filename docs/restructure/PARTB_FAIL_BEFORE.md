@@ -50,3 +50,9 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_engine_corporate.py::test_equal_to_the_legacy_f3_module_on_a_random_grid | stockbot/engine/corporate.py | shares rounded instead of floored | passes clean / FAILS mutated |
 | tests/unit/test_engine_corporate.py::test_a_split_inside_the_holding_period_leaves_pnl_and_r_unchanged | stockbot/engine/corporate.py | initial shares not rescaled | passes clean / FAILS mutated |
 | tests/unit/test_engine_corporate.py::test_a_split_inside_the_holding_period_leaves_pnl_and_r_unchanged | stockbot/engine/corporate.py | position not rescaled at the split | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_backtest_closes_open_positions_at_the_window_end | stockbot/backtest/runner.py | end-of-window exit without slippage | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_backtest_closes_open_positions_at_the_window_end | stockbot/backtest/runner.py | open positions left open at the window end | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_backtest_forbids_the_network | stockbot/backtest/runner.py | network guard removed | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_the_baseline_helper_and_the_backtest_agree_on_the_same_ticket | stockbot/engine/path.py | baseline never fills | passes clean / FAILS mutated |
+| tests/unit/test_engine_backtest.py::test_the_baseline_helper_and_the_backtest_agree_on_the_same_ticket | stockbot/engine/path.py | baseline ignores exit slippage | passes clean / FAILS mutated |
+| tests/unit/test_engine_corporate.py::test_the_baseline_helper_rebases_for_a_split_exactly_like_decide | stockbot/engine/path.py | baseline does not rebase for the split | passes clean / FAILS mutated |

@@ -106,3 +106,20 @@ def test_a_split_inside_the_holding_period_leaves_pnl_and_r_unchanged(tmp_path):
     assert split.gross_pnl == pytest.approx(plain.gross_pnl) and split.costs == pytest.approx(plain.costs, rel=1e-6)
     assert split.net_pnl == pytest.approx(plain.net_pnl, rel=1e-6) and split.exit_date == plain.exit_date
     assert out[True][2].cash == pytest.approx(out[False][2].cash, rel=1e-9)
+
+
+def test_the_baseline_helper_rebases_for_a_split_exactly_like_decide(tmp_path):
+    from stockbot.backtest.runner import run_backtest
+    from stockbot.data.asof import AsOfView
+    from stockbot.data.lake import open_lake
+    from stockbot.engine.path import simulate_ticket
+    from tests.fixtures.engine_run import CFG, EVENTS
+    lake = _split_lake(tmp_path, True)
+    pol = policies(FixedPolicy(id="timed", max_days=8))
+    s = ScriptedStrategy(make_spec("dummy", "timed"), {SIG.isoformat(): [{"symbol": "FIXCO", "stop": 150.0}]})
+    window = DS[298:316]
+    bt = run_backtest(lake, window[0], window[-1], 1_000_000.0, [s], pol, CFG, EVENTS)
+    ticket = next(t for d in bt.decisions for t in d.new_tickets)
+    conn = open_lake(lake)
+    trade, exits, why = simulate_ticket(ticket, window, lambda d: AsOfView(conn, d), shared_config=CFG, policy=pol["timed"], equity=1_000_000.0)
+    assert why == "CLOSED" and trade == bt.trades[0] and trade.shares_initial == pytest.approx(2 * 367)
