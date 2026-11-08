@@ -1,7 +1,7 @@
 """
 Unit Tests — DataQualityChecker
 ================================
-Tests for ``data/quality_checker.py``.
+Tests for ``stockbot/data_checks/quality_checker.py``.
 
 All tests use ``unittest.mock`` to patch DB access and the strategy config
 loader.  No real database connections, no API calls.
@@ -46,8 +46,8 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         Construct a DataQualityChecker with the config loader and DB session
         both mocked out.
         """
-        with patch("data.quality_checker._load_config", return_value=self._mock_config()):
-            from data.quality_checker import DataQualityChecker
+        with patch("stockbot.data_checks.quality_checker._load_config", return_value=self._mock_config()):
+            from stockbot.data_checks.quality_checker import DataQualityChecker
             return DataQualityChecker()
 
     @staticmethod
@@ -77,13 +77,13 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
             }
         )
 
-    @patch("data.quality_checker.get_session")
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_clean_data_no_warnings(self, mock_config, mock_get_session):
         """A perfectly clean dataset should produce zero warnings."""
         mock_config.return_value = self._mock_config()
 
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -101,11 +101,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
             f"Expected no warnings for clean data but got: {warnings}",
         )
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_missing_trading_day_flagged(self, mock_config):
         """Missing weekday in data should produce a 'Missing trading day' warning."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -123,11 +123,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         self.assertEqual(len(missing_warnings), 1)
         self.assertIn(str(wednesday), missing_warnings[0])
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_zero_volume_flagged(self, mock_config):
         """A day with zero volume should generate a warning."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -146,11 +146,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         self.assertEqual(len(zero_vol_warnings), 1)
         self.assertIn(str(tuesday), zero_vol_warnings[0])
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_ohlc_low_greater_than_high(self, mock_config):
         """low > high is an OHLC violation and should be flagged."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -173,11 +173,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         ohlc_warnings = [w for w in warnings if "OHLC violation" in w]
         self.assertGreaterEqual(len(ohlc_warnings), 1)
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_ohlc_close_below_low(self, mock_config):
         """close < low is an OHLC violation."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -199,11 +199,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         ohlc_warnings = [w for w in warnings if "OHLC violation" in w]
         self.assertGreaterEqual(len(ohlc_warnings), 1)
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_ohlc_open_above_high(self, mock_config):
         """open > high is an OHLC violation."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -225,11 +225,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         ohlc_warnings = [w for w in warnings if "OHLC violation" in w]
         self.assertGreaterEqual(len(ohlc_warnings), 1)
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_large_price_gap_flagged(self, mock_config):
         """A day-over-day close change > 20% should trigger a large gap warning."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -253,11 +253,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         self.assertEqual(len(gap_warnings), 1)
         self.assertIn("30.0%", gap_warnings[0])
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_gap_below_threshold_not_flagged(self, mock_config):
         """A 10% gap is below threshold and should NOT produce a gap warning."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -280,11 +280,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         gap_warnings = [w for w in warnings if "Large price gap" in w]
         self.assertEqual(len(gap_warnings), 0)
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_no_data_returns_single_warning(self, mock_config):
         """An empty DataFrame should produce exactly one 'No OHLCV data' warning."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -299,11 +299,11 @@ class TestCheckOhlcvIntegrity(unittest.TestCase):
         self.assertEqual(len(warnings), 1)
         self.assertIn("No OHLCV data", warnings[0])
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_multiple_violations_all_reported(self, mock_config):
         """Multiple distinct violations in one dataset should all be captured."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -345,16 +345,16 @@ class TestCheckStaleData(unittest.TestCase):
         return {"data": {}, "universe": {}}
 
     def _make_checker(self):
-        with patch("data.quality_checker._load_config", return_value=self._mock_config()):
-            from data.quality_checker import DataQualityChecker
+        with patch("stockbot.data_checks.quality_checker._load_config", return_value=self._mock_config()):
+            from stockbot.data_checks.quality_checker import DataQualityChecker
             return DataQualityChecker()
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_fresh_data_not_stale(self, mock_get_session, mock_config):
         """Data from the most recent trading day should not be stale."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -369,18 +369,18 @@ class TestCheckStaleData(unittest.TestCase):
         mock_get_session.return_value = mock_ctx
 
         # Patch _get_nse_trading_days so lag = 0 even if yesterday was holiday
-        with patch("data.quality_checker._get_nse_trading_days", return_value=[]):
+        with patch("stockbot.data_checks.quality_checker._get_nse_trading_days", return_value=[]):
             result = checker.check_stale_data("INFY", max_lag_days=1)
 
         # 0 trading days of lag ≤ 1: not stale
         self.assertFalse(result)
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_no_data_is_stale(self, mock_get_session, mock_config):
         """Symbol with no rows at all must be reported as stale."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -394,12 +394,12 @@ class TestCheckStaleData(unittest.TestCase):
         result = checker.check_stale_data("GHOST", max_lag_days=1)
         self.assertTrue(result)
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_old_data_is_stale(self, mock_get_session, mock_config):
         """Data from 5 trading days ago should be stale with max_lag_days=1."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -414,18 +414,18 @@ class TestCheckStaleData(unittest.TestCase):
 
         # Patch _get_nse_trading_days to return 5 days in the lag window
         five_days = [old_date + timedelta(days=i) for i in range(1, 6)]
-        with patch("data.quality_checker._get_nse_trading_days", return_value=five_days):
+        with patch("stockbot.data_checks.quality_checker._get_nse_trading_days", return_value=five_days):
             result = checker.check_stale_data("STALE", max_lag_days=1)
 
         # 5 trading days of lag > 1: stale
         self.assertTrue(result)
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_custom_max_lag_honoured(self, mock_get_session, mock_config):
         """max_lag_days=3 should allow up to 3 trading days of lag."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -440,18 +440,18 @@ class TestCheckStaleData(unittest.TestCase):
 
         # 3 trading days of lag
         three_days = [old_date + timedelta(days=i) for i in range(1, 4)]
-        with patch("data.quality_checker._get_nse_trading_days", return_value=three_days):
+        with patch("stockbot.data_checks.quality_checker._get_nse_trading_days", return_value=three_days):
             result = checker.check_stale_data("SEMI_FRESH", max_lag_days=3)
 
         # 3 lag == 3 max: not stale (boundary condition)
         self.assertFalse(result)
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_lag_exceeds_custom_max(self, mock_get_session, mock_config):
         """4 trading days of lag with max_lag_days=3 → stale."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -464,7 +464,7 @@ class TestCheckStaleData(unittest.TestCase):
         mock_get_session.return_value = mock_ctx
 
         four_days = [old_date + timedelta(days=i) for i in range(1, 5)]
-        with patch("data.quality_checker._get_nse_trading_days", return_value=four_days):
+        with patch("stockbot.data_checks.quality_checker._get_nse_trading_days", return_value=four_days):
             result = checker.check_stale_data("TOO_OLD", max_lag_days=3)
 
         # 4 lag > 3 max: stale
@@ -478,12 +478,12 @@ class TestGetUniverseQualityReport(unittest.TestCase):
     def _mock_config() -> dict:
         return {"data": {}, "universe": {}}
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_empty_db_returns_zero_counts(self, mock_get_session, mock_config):
         """An empty market_data_lake should return a report with zero symbols."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -501,12 +501,12 @@ class TestGetUniverseQualityReport(unittest.TestCase):
         self.assertEqual(report["stale_symbols"], [])
         self.assertEqual(report["per_symbol"], {})
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_report_structure_keys_present(self, mock_get_session, mock_config):
         """Report dict must contain all expected top-level keys."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -530,12 +530,12 @@ class TestGetUniverseQualityReport(unittest.TestCase):
         }
         self.assertEqual(required_keys, set(report.keys()))
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_stale_symbol_appears_in_stale_list(self, mock_get_session, mock_config):
         """A symbol with old data must appear in stale_symbols list."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -560,12 +560,12 @@ class TestGetUniverseQualityReport(unittest.TestCase):
         self.assertEqual(report["stale_count"], 1)
         self.assertTrue(report["per_symbol"]["STALE_CO"]["is_stale"])
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_ohlc_violation_symbol_appears_in_list(self, mock_get_session, mock_config):
         """A symbol with OHLC violations must appear in symbols_with_ohlc_violations."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -590,12 +590,12 @@ class TestGetUniverseQualityReport(unittest.TestCase):
         self.assertIn("BAD_CO", report["symbols_with_ohlc_violations"])
         self.assertEqual(report["per_symbol"]["BAD_CO"]["ohlc_violation_count"], 1)
 
-    @patch("data.quality_checker._load_config")
-    @patch("data.quality_checker.get_session")
+    @patch("stockbot.data_checks.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker.get_session")
     def test_total_rows_summed_correctly(self, mock_get_session, mock_config):
         """total_rows should be the sum of row_count across all symbols."""
         mock_config.return_value = self._mock_config()
-        from data.quality_checker import DataQualityChecker
+        from stockbot.data_checks.quality_checker import DataQualityChecker
 
         checker = DataQualityChecker()
 
@@ -678,11 +678,11 @@ class TestParseRatio(unittest.TestCase):
 class TestNSETradingDays(unittest.TestCase):
     """Unit tests for the NSE trading day helper."""
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_weekends_excluded(self, mock_config):
         """Saturday and Sunday should not appear in trading days."""
         mock_config.return_value = {"data": {}, "universe": {}}
-        from data.quality_checker import _get_nse_trading_days
+        from stockbot.data_checks.quality_checker import _get_nse_trading_days
 
         # Full week Mon 2 Sep to Sun 8 Sep 2024
         days = _get_nse_trading_days(date(2024, 9, 2), date(2024, 9, 8))
@@ -691,32 +691,32 @@ class TestNSETradingDays(unittest.TestCase):
                 d.weekday(), 5, f"{d} ({d.strftime('%A')}) should not be a trading day"
             )
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_known_holiday_excluded(self, mock_config):
         """A known NSE holiday (2024-08-15 Independence Day) must not be in the list."""
         mock_config.return_value = {"data": {}, "universe": {}}
-        from data.quality_checker import _get_nse_trading_days
+        from stockbot.data_checks.quality_checker import _get_nse_trading_days
 
         independence_day = date(2024, 8, 15)
         days = _get_nse_trading_days(date(2024, 8, 12), date(2024, 8, 16))
         self.assertNotIn(independence_day, days)
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_regular_weekday_included(self, mock_config):
         """A regular Monday (not a holiday) must be in the trading days list."""
         mock_config.return_value = {"data": {}, "universe": {}}
-        from data.quality_checker import _get_nse_trading_days
+        from stockbot.data_checks.quality_checker import _get_nse_trading_days
 
         # 2024-09-02 is a Monday and not an NSE holiday
         regular_monday = date(2024, 9, 2)
         days = _get_nse_trading_days(date(2024, 9, 2), date(2024, 9, 2))
         self.assertIn(regular_monday, days)
 
-    @patch("data.quality_checker._load_config")
+    @patch("stockbot.data_checks.quality_checker._load_config")
     def test_empty_range_returns_empty_list(self, mock_config):
         """from_date > to_date should return an empty list."""
         mock_config.return_value = {"data": {}, "universe": {}}
-        from data.quality_checker import _get_nse_trading_days
+        from stockbot.data_checks.quality_checker import _get_nse_trading_days
 
         days = _get_nse_trading_days(date(2024, 9, 6), date(2024, 9, 2))
         self.assertEqual(days, [])

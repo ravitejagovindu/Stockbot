@@ -23,7 +23,7 @@ Quality checks performed:
          ``market_data_lake`` into a single dict for monitoring.
 
 Usage:
-    from data.quality_checker import DataQualityChecker
+    from stockbot.data_checks.quality_checker import DataQualityChecker
     from datetime import date
 
     checker = DataQualityChecker()
@@ -47,7 +47,7 @@ from data.db.connection import get_session
 logger = logging.getLogger(__name__)
 
 # Path to strategy_config.yaml — two levels above this file (data/)
-_CONFIG_PATH = Path(__file__).resolve().parents[1] / "strategy_config.yaml"
+_CONFIG_PATH = Path(__file__).resolve().parents[2] / "strategy_config.yaml"
 
 # NSE approximate holiday set — kept in sync with ohlcv_ingestor._NSE_HOLIDAY_SET
 # (import to avoid duplication in production; duplicated here for clarity)

@@ -73,7 +73,7 @@ class EODPipeline:
             logger.info(f"[PIPELINE] Data freshness OK for {eval_date}.")
 
             # ── Step 1.5: Pre-flight spot-check ──────────────────────────────
-            from engine_core.preflight import assert_preflight_spot_check
+            from stockbot.data_checks.preflight import assert_preflight_spot_check
             assert_preflight_spot_check()
 
             # ── Step 2: Macro regime evaluation ───────────────────────────────

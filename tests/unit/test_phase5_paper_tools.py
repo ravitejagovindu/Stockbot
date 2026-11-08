@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
-from engine_core.preflight import assert_preflight_spot_check
+from stockbot.data_checks.preflight import assert_preflight_spot_check
 from scripts.daily_health_check import main as daily_health_check_main
 from scripts.paper_report import evaluate_paper_performance, load_backtest_baseline
 
@@ -17,7 +17,7 @@ def test_preflight_spot_check_passes():
 
 
 def test_preflight_spot_check_fails_on_tampered_adjustment(monkeypatch):
-    import engine_core.preflight as pf
+    import stockbot.data_checks.preflight as pf
     # Mock get_adjusted_series to return wrong close
     def bad_adjusted_series(raw_df, actions, as_of_date):
         df = raw_df.copy()
@@ -187,7 +187,7 @@ def test_live_drawdown_guardrail_triggers(monkeypatch):
     monkeypatch.setattr(pipeline, "_live_equity", lambda: 900_000.0)
     monkeypatch.setattr(pipeline, "_run_ingestion", lambda d: None)
     monkeypatch.setattr(pipeline, "_assert_data_freshness", lambda d: None)
-    monkeypatch.setattr("engine_core.preflight.assert_preflight_spot_check", lambda: True)
+    monkeypatch.setattr("stockbot.data_checks.preflight.assert_preflight_spot_check", lambda: True)
 
     mock_regime = MagicMock()
     mock_regime.kill_switch_active = False

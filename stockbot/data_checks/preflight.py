@@ -1,4 +1,4 @@
-"""engine_core/preflight.py — Pre-flight data and adjustment spot-checks.
+"""stockbot/data_checks/preflight.py — Pre-flight data and adjustment spot-checks.
 
 Runs before nightly pipeline / paper runs to guarantee point-in-time corporate action
 adjustments and critical data components match deterministic ground-truth values.
