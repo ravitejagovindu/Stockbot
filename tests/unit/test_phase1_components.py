@@ -1,6 +1,6 @@
 """Unit tests for Phase 1 components:
 - stockbot/config/mode.py
-- stockbot/risk/sector_map.py
+- stockbot/data/sector_map.py
 - engine_core/entry_filters.py
 - engine_core/regime_gates.py
 - engine_core/universe_screener.py (apply_event_gates flag)
@@ -12,7 +12,7 @@ import pytest
 from unittest.mock import MagicMock
 
 from stockbot.config.mode import current_mode
-from stockbot.risk.sector_map import sector_for
+from stockbot.data.sector_map import sector_for
 from engine_core.entry_filters import (
     passes_trend_filter,
     passes_breakout,

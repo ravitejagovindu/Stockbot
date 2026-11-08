@@ -21,6 +21,7 @@ GROUPS = {
     "config": [("engine_core.mode", "stockbot.config.mode"), ("logging_config", "stockbot.config.logging_config")],
     "validation": [("engine_core.max_t_bootstrap", "stockbot.validation.max_t_bootstrap"), ("engine_core.prereg_lock", "stockbot.validation.prereg_lock"),
                    ("engine_core.trade_metrics", "stockbot.validation.trade_metrics")],
+    "sector_map": [("stockbot.risk.sector_map", "stockbot.data.sector_map")],
     "engine": [("engine_core.corporate_action_events", "stockbot.engine.corporate_action_events")],
     "data_checks": [("engine_core.preflight", "stockbot.data_checks.preflight"), ("data.quality_checker", "stockbot.data_checks.quality_checker")],
     "ingestion": [(f"data.ingestion.{m}", f"stockbot.data.ingestion.{m}") for m in ING],

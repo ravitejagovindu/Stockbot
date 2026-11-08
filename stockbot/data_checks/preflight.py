@@ -10,7 +10,7 @@ from datetime import date
 import pandas as pd
 
 from stockbot.data.adjustments import get_adjusted_series
-from stockbot.risk.sector_map import sector_for
+from stockbot.data.sector_map import sector_for
 
 logger = logging.getLogger(__name__)
 

@@ -24,7 +24,7 @@ from sqlalchemy import desc, select, text
 
 from data.db.connection import get_session
 from data.db.models import MarketDataLake
-from stockbot.risk.sector_map import sector_for
+from stockbot.data.sector_map import sector_for
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("eval_hypotheses")

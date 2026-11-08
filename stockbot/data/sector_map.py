@@ -1,4 +1,4 @@
-"""stockbot/risk/sector_map.py — symbol-to-sector lookup from a committed CSV.
+"""stockbot/data/sector_map.py — symbol-to-sector lookup from a committed CSV.
 
 The sector map CSV must be present at ``data/reference/sector_map.csv``
 with headers: ``symbol,sector``.

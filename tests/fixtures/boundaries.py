@@ -115,8 +115,6 @@ LEGACY_ALLOWLIST = {
         "shares_outstanding_ingestor": ["data.db.connection", "data.db.models"]}.items() for n in ns},
     ("stockbot.data_checks.quality_checker", "data.db.connection"): "Phase 3 (db layer split)",
     ("stockbot.engine.corporate_action_events", "engine_core.lifecycle_rules"): "Phase 6 (engine; rescale_for_action and PosState move)",
-    # pre-flight spot-check (data_checks) uses the sector lookup that sits in risk (heat caps); decision for the reviewer: keep here or move sector_map to data
-    ("stockbot.data_checks.preflight", "stockbot.risk.sector_map"): "Phase 8 (preflight disposition; or move sector_map to data)",
     # live: routers moved unmodified and flagged for rework; pipeline/lock/state still legacy
     ("stockbot.live.api.analytics", "data.db.connection"): "Phase 9 (live package)",
     ("stockbot.live.api.analytics", "engine_core.analytics_loop"): "Phase 9 (live package)",
