@@ -1,6 +1,6 @@
 """stockbot.engine.decide on the fixture lake with dummy strategies/policies (tests/fixtures/dummies.py): hand-derived expectations, no strategy design."""
 import sqlite3
-from datetime import timedelta
+from datetime import date, timedelta
 
 import pytest
 
@@ -321,3 +321,37 @@ def test_proposals_outside_the_eligible_universe_are_refused(lake_path):
     s2 = ScriptedStrategy(make_spec("dummy"), {DS[298].isoformat(): [{"symbol": "NIFTY50_INDEX", "stop": 1.0}]})
     decs, st = run_days(lake_path, days(DS[298], DS[299]), [s2], policies(FixedPolicy()))
     assert [(b.reason, b.stage) for d in decs for b in d.blocked] == [("NOT_ELIGIBLE", "propose")] and st.pending == ()
+
+
+# ------------------------------------------------------------------ C1: the entry-bar rule equals the legacy lifecycle on a random grid
+def test_entry_bar_rule_equals_legacy_advance_one_bar_on_a_random_grid():
+    import random
+    from engine_core.lifecycle_rules import Bar as LBar, BarCtx, LifecycleRules, PosState, advance_one_bar
+    from stockbot.config.legacy_loader import load_config
+    from stockbot.engine.exit_policy import Bar
+    from stockbot.engine.stepping import step_position
+    from stockbot.engine.types import Position
+    rules = LifecycleRules.from_config(load_config())
+    pol = FixedPolicy()
+    rng = random.Random(21)
+    stopped = 0
+    for _ in range(5000):
+        entry = rng.uniform(20, 900)
+        stop = entry * rng.uniform(0.85, 0.99)
+        o = entry * rng.uniform(0.97, 1.03)
+        lo = min(o, stop * rng.uniform(0.97, 1.03)) if rng.random() < 0.6 else o * rng.uniform(0.99, 1.0)
+        lo = min(lo, o)
+        hi = max(o, lo) * rng.uniform(1.0, 1.04)
+        cl = rng.uniform(lo, hi)
+        shares = rng.randint(1, 3000)
+        legacy = advance_one_bar(PosState(entry_price=entry, initial_stop=stop, live_stop=stop, target=entry * 1.3, highest_high=entry, shares_remaining=shares),
+                                 LBar(o, hi, lo, cl), BarCtx(atr14=entry * 0.03, kill_switch=False, is_bull=False, close_n_ago=entry), rules, CFG.execution.exit_slippage_pct)
+        pos = Position("x", "s", "AAA", None, date(2020, 1, 1), entry, stop, stop, None, float(shares), shares, shares * (entry - stop), "fixed", highest_high=entry, last_close=entry)
+        new = step_position(pos, Bar(o, hi, lo, cl), date(2020, 1, 1), None, pol, COSTS, CFG.execution.exit_slippage_pct)
+        l_stop = [e for e in legacy.exits if e.reason == "STOP_HIT"]
+        n_stop = [e for e in new.exits if e.reason == "STOP_HIT"]
+        assert bool(l_stop) == bool(n_stop)
+        if l_stop:
+            stopped += 1
+            assert n_stop[0].price == pytest.approx(l_stop[0].price, rel=1e-12) and n_stop[0].shares == l_stop[0].shares
+    assert stopped > 1000                                                             # the grid really exercises entry-bar stops, incl. lows inside the slippage band

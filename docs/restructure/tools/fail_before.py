@@ -28,13 +28,16 @@ def main() -> int:
         raw = orig.decode("utf-8")
         crlf = (CR + LF) in raw
         text = raw.replace(CR + LF, LF)
-        if text.count(c["old"]) != 1:
-            print("MUTATION NOT UNIQUE/FOUND:", c["file"], c["old"][:50])
+        edits = c.get("edits") or [[c["old"], c["new"]]]            # one or several (old, new) pairs applied together
+        if any(text.count(o) != 1 for o, _ in edits):
+            print("MUTATION NOT UNIQUE/FOUND:", c["file"], edits[0][0][:50])
             bad += 1
             continue
         try:
             clean = run(c["test"])
-            mutated_text = text.replace(c["old"], c["new"])
+            mutated_text = text
+            for o, n in edits:
+                mutated_text = mutated_text.replace(o, n)
             f.write_bytes((mutated_text.replace(LF, CR + LF) if crlf else mutated_text).encode("utf-8"))
             mutated = run(c["test"])
         finally:

@@ -56,3 +56,22 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_engine_backtest.py::test_the_baseline_helper_and_the_backtest_agree_on_the_same_ticket | stockbot/engine/path.py | baseline never fills | passes clean / FAILS mutated |
 | tests/unit/test_engine_backtest.py::test_the_baseline_helper_and_the_backtest_agree_on_the_same_ticket | stockbot/engine/path.py | baseline ignores exit slippage | passes clean / FAILS mutated |
 | tests/unit/test_engine_corporate.py::test_the_baseline_helper_rebases_for_a_split_exactly_like_decide | stockbot/engine/path.py | baseline does not rebase for the split | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_reported_fill_overrides_the_simulated_one | stockbot/engine/reports.py | buy costs not charged on a reported fill | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_reported_exit_closes_the_position_with_the_real_price | stockbot/engine/reports.py | gross P&L of a reported exit ignored | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_ticket_not_taken_is_dropped_without_a_position | stockbot/engine/reports.py | not-taken ticket stays pending | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_missed_sessions_are_processed_one_decide_each | stockbot/live/adapter.py | missed sessions skipped | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_reported_fill_overrides_the_simulated_one | stockbot/live/adapter.py | operator reports ignored | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_a_report_given_twice_is_applied_once | stockbot/live/adapter.py | report applied twice | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_bad_reports_are_refused_not_guessed | stockbot/live/adapter.py | late report accepted | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_unreported_ticket_is_simulated_and_flagged | stockbot/live/adapter.py | live mode not passed to decide | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_backtest_and_live_give_identical_decisions_day_by_day | stockbot/live/adapter.py | live state drifts from the backtest state | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_journal_is_append_only | stockbot/live/state_store.py | journal rows can be updated | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_state_store_is_versioned_and_separate_from_the_lake | stockbot/live/state_store.py | schema version not checked | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_state_store_is_versioned_and_separate_from_the_lake | stockbot/live/state_store.py | lake file accepted as the state store | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_state_is_rebuilt_from_the_journal_alone | stockbot/live/state_store.py | rebuild ignores decisions | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_the_live_adapter_does_not_write_the_lake | stockbot/live/adapter.py | adapter tries to write the lake (read-only connection refuses) | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_reported_fill_overrides_the_simulated_one | stockbot/engine/reports.py | resolved ticket stays pending | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_processing_the_same_live_date_twice_changes_nothing | stockbot/live/adapter.py | already-processed dates are processed again (both guards removed) | passes clean / FAILS mutated |
+| tests/unit/test_engine_live.py::test_a_report_journaled_before_any_further_session_is_rebuilt | stockbot/live/state_store.py | rebuild ignores operator reports | passes clean / FAILS mutated |
+| tests/unit/test_engine_decide.py::test_entry_bar_rule_equals_legacy_advance_one_bar_on_a_random_grid | stockbot/engine/stepping.py | stop-hit fill ignores the stop price | passes clean / FAILS mutated |
+| tests/unit/test_engine_decide.py::test_entry_bar_rule_equals_legacy_advance_one_bar_on_a_random_grid | stockbot/engine/stepping.py | stop-hit fill floored at the bar's low | passes clean / FAILS mutated |
