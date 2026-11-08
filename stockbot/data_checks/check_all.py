@@ -2,7 +2,7 @@
 
 Steps (each is a pytest run in its own process; the exit code is the OR of all steps):
   G1  unit suite                    tests/unit and tests/fixtures-based tests (the default ``pytest tests`` run)
-  G3  fixture baseline              the hand-derived trade on the fixture lake (tests/unit/test_baseline_reproducibility.py)
+  G3  fixture baseline              the hand-derived trade on the fixture lake, run through the engine (tests/unit/test_g3_fixture_baseline.py)
   G5  import boundaries             tests/unit/test_import_boundaries.py (fails on seeded violations, passes on the real tree)
   G6  parity / lookahead / idempotency / determinism / isolation / baseline reuse / strict mode   tests/unit/test_engine_*.py
   G2  env-gated real-database tests only with --data (STOCKBOT_DATA_TESTS=1; read-only on finsight.db)
@@ -22,7 +22,7 @@ from typing import Callable, Optional, Sequence
 ROOT = Path(__file__).resolve().parents[2]
 STEPS = (
     ("G1 unit suite", ["tests/unit", "-q"]),
-    ("G3 fixture baseline", ["tests/unit/test_baseline_reproducibility.py", "-q"]),
+    ("G3 fixture baseline", ["tests/unit/test_g3_fixture_baseline.py", "-q"]),
     ("G5 import boundaries", ["tests/unit/test_import_boundaries.py", "tests/unit/test_every_module_imports_alone.py", "-q"]),
     ("G6 engine: parity, lookahead, idempotency, determinism, isolation, baseline reuse, strict mode",
      ["tests/unit/test_engine_decide.py", "tests/unit/test_engine_live.py", "tests/unit/test_engine_backtest.py", "tests/unit/test_engine_corporate.py",

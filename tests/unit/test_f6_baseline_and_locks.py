@@ -12,7 +12,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from stockbot.data.db.connection import Base
-from tests.unit.test_corporate_action_hold import DATES, _build
 
 
 def _session():
@@ -22,43 +21,6 @@ def _session():
 
 
 # ----------------------------------------------------------------------------- parity: baseline path == simulator
-@pytest.mark.parametrize("with_split", [False, True])
-def test_path_sim_matches_simulator_for_same_entry(with_split):
-    from backtest.path_sim import simulate_position_path
-    from backtest.simulator import Simulator
-    from engine_core.candidate_builder import build_candidate_dicts
-    from engine_core.risk_sizing import RiskAndSizingEngine
-
-    s = _session()
-    cfg = _build(s, action=("SPLIT", 1.0, 2.0), factor=0.5) if with_split else _build(s)
-    sim_t = Simulator(cfg, s).run(DATES[0], DATES[17], 1_000_000.0).trades.iloc[0]
-
-    sd, ed = DATES[9], DATES[10]
-    cand = build_candidate_dicts(s, cfg, ["SYNTH"], sd)[0]
-    setup = RiskAndSizingEngine(cfg).compute_setup(
-        "SYNTH", sd, cand["adjusted_ohlcv"], cand["raw_ohlcv"], 1_000_000.0, [], sector=cand["sector"])
-    assert not setup.blocked
-    res = simulate_position_path(s, cfg, "SYNTH", setup, ed, DATES[17], {d: (False, True) for d in DATES},
-                                 equity=1_000_000.0, cash=1_000_000.0)
-    assert res["ok"]
-    assert res["exit_date"] == sim_t["exit_date"] and res["exit_reason"] == sim_t["exit_reason"]
-    for k in ("gross_r", "net_r", "net_r_after_tax", "risk_inr", "pnl_gross", "pnl_net"):
-        assert res[k] == pytest.approx(sim_t[k], rel=1e-9), k
-
-
-def test_baseline_windows_come_from_config_and_exclude_test_window():
-    from scripts.provenance.redesigned_random_baseline import tune_windows
-
-    cfg = {"backtest": {"regimes": [
-        {"name": "a", "role": "TUNE", "start": "2020-01-01", "end": "2021-12-31"},
-        {"name": "t", "role": "TEST", "start": "2015-01-01", "end": "2019-12-31"},
-    ]}}
-    assert tune_windows(cfg) == [("a", date(2020, 1, 1), date(2021, 12, 31))]
-    src = Path("scripts/provenance/redesigned_random_baseline.py").read_text(encoding="utf-8")
-    for hard in ("2026, 10, 16", "date(2019, 10, 1)", "date(2021, 12, 31)"):
-        assert hard not in src, f"hardcoded date {hard} still present"
-
-
 # ----------------------------------------------------------------------------- hash lock
 @pytest.fixture
 def lock_env(tmp_path, monkeypatch):

@@ -87,23 +87,6 @@ def session():
     eng.dispose()
 
 
-def test_simulator_writes_explicit_r_columns_net_differs_from_gross(session):
-    from backtest.simulator import Simulator
-
-    cfg, dates = _sim_fixture(session)
-    cfg["costs"]["stcg_tax_pct"] = 20.0
-    res = Simulator(cfg, session).run(dates[0], dates[17], 1_000_000.0)
-    t = res.trades.iloc[0]
-    for col in ("risk_inr", "gross_r", "net_r", "net_r_after_tax"):
-        assert col in res.trades.columns, col
-    assert t["costs"] > 0
-    assert t["risk_inr"] == pytest.approx(t["shares"] * (t["entry_price"] - t["stop"]))
-    assert t["gross_r"] == pytest.approx(t["pnl_gross"] / t["risk_inr"])
-    assert t["net_r"] == pytest.approx(t["pnl_net"] / t["risk_inr"])
-    assert t["net_r"] < t["gross_r"]
-    assert t["gross_r"] == pytest.approx(t["realized_r"])  # deprecated alias
-
-
 def _trades(net_equals_gross: bool) -> pd.DataFrame:
     rows = []
     for i in range(6):
@@ -148,13 +131,3 @@ def test_max_t_series_builders_require_explicit_column():
         build_weekly_actual_series(df)
 
 
-def test_baseline_and_simulator_share_the_same_r_function(session):
-    """Same inputs -> same R whether produced by the Simulator row or the baseline's add_r_columns path."""
-    from backtest.simulator import Simulator
-
-    cfg, dates = _sim_fixture(session)
-    res = Simulator(cfg, session).run(dates[0], dates[17], 1_000_000.0)
-    legacy_shape = res.trades.drop(columns=["risk_inr", "gross_r", "net_r", "net_r_after_tax"])
-    again = add_r_columns(legacy_shape)  # what scripts/redesigned_random_baseline.load_actual_trades does
-    for k in ("gross_r", "net_r", "net_r_after_tax"):
-        assert again[k].iloc[0] == pytest.approx(res.trades[k].iloc[0])

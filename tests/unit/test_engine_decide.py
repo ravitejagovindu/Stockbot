@@ -38,28 +38,6 @@ def days(a, b):
     return [d for d in DS if a <= d <= b]
 
 
-# ------------------------------------------------------------------ G3: the hand-derived trade through the new engine
-def test_the_g3_trade_is_reproduced_by_the_engine(lake_path):
-    decs, st = run_days(lake_path, days(DS[295], DS[306]), [strat(G3_STOP)], policies(FixedPolicy()))
-    tickets = [t for d in decs for t in d.new_tickets]
-    assert [(t.symbol, t.signal_date, t.stop) for t in tickets] == [("FIXCO", SIG, G3_STOP)]
-    fills = [f for d in decs for f in d.fills]
-    assert len(fills) == 1 and fills[0].date == ENTRY
-    entry = 177.0 * (1 + SLIP_IN)
-    assert fills[0].price == pytest.approx(entry, abs=1e-9)
-    assert fills[0].shares == int(1_000_000.0 * CFG.portfolio_risk.max_loss_pct_per_trade / 100.0 // (entry - G3_STOP)) == 553
-    (t,) = [c for d in decs for c in d.closed]
-    assert (t.entry_date, t.exit_date, t.exit_reason) == (ENTRY, CRASH, "STOP_HIT")
-    exit_price = G3_STOP * (1 - SLIP_OUT)
-    (e,) = [x for d in decs for x in d.exits]
-    assert e.price == pytest.approx(exit_price, abs=1e-9) and e.shares == 553 and e.closed
-    gross = 553 * (exit_price - entry)
-    costs = COSTS.buy_cost(entry * 553) + COSTS.sell_cost(exit_price * 553)
-    assert t.gross_pnl == pytest.approx(gross) and t.costs == pytest.approx(costs) and t.net_pnl == pytest.approx(gross - costs)
-    assert t.risk_inr == pytest.approx(553 * (entry - G3_STOP)) and t.gross_pnl / t.risk_inr < -1.0
-    assert st.positions == () and st.cash == pytest.approx(1_000_000.0 + gross - costs) and st.realised_pnl_net == pytest.approx(gross - costs)
-
-
 # ------------------------------------------------------------------ C1: the entry bar
 NO_SECTOR = EventData()          # tight stops make big positions; leave the sector cap out of the entry-bar tests
 
