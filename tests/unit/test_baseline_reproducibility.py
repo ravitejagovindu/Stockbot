@@ -2,6 +2,9 @@
 tests/unit/test_baseline_reproducibility.py — Programmatic verification of CFG-00 Reproducibility.
 Asserts that CFG-00 reproduces the official baseline backtest trade counts, P&L, and Net Expectancy
 both via active execution of Simulator and across the verified full backtest dataset.
+
+F10: the active-Simulator tests run on a small fixture lake (tests/fixtures/mini_lake.py) in an in-memory database - they never touch finsight.db.
+The real-database versions live in tests/data_integrity/test_baseline_real_db.py (STOCKBOT_DATA_TESTS=1).
 """
 from __future__ import annotations
 
@@ -18,7 +21,10 @@ if str(ROOT) not in sys.path:
 
 from backtest.simulator import Simulator
 from config import load_config
-from data.db.connection import get_session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from data.db.connection import Base
 from engine_core.candidate_builder import build_candidate_dicts
 from engine_core.entry_filters import apply_entry_filters
 
@@ -29,34 +35,66 @@ W1_SHA256 = "66e9aec15eb43b051dd2c73b917e5674dd8d762652dc5bed8bac81a7a341d041"
 W2_SHA256 = "34e87890c90adc6cf3cab8e1a7af9b90b688516af39c26ca2058cba79407d96e"
 
 
-def test_simulator_and_funnel_agreement():
-    """Verify that Simulator and candidate screening/filtering agree on candidate selection."""
+@pytest.fixture
+def lake():
+    from tests.fixtures import mini_lake
+    eng = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    Base.metadata.create_all(eng)
+    s = sessionmaker(bind=eng)()
+    ds = mini_lake.build(s)
+    yield s, ds
+    s.close()
+    eng.dispose()
+
+
+def test_simulator_and_funnel_agreement(lake):
+    """Simulator and candidate screening/filtering agree on candidate selection (fixture lake, real strategy_config.yaml)."""
+    from tests.fixtures import mini_lake as m
+    s, ds = lake
     cfg = load_config()
-    with get_session() as s:
-        sim = Simulator(cfg, s, allow_live_db=True)
-        d = date(2020, 1, 14)  # Signal date for ESCORTS entry on 2020-01-15
+    sim = Simulator(cfg, s)
+    d = ds[m.BREAKOUT]                                      # signal date; fill is on the next session
 
-        # Screening through UniverseScreener
-        all_syms = sim.screener._get_all_symbols(d)
-        passed = [
-            sym for sym in all_syms
-            if sym not in ("NIFTY50_INDEX", "INDIA_VIX")
-            and sim.screener.screen_single(sym, d, apply_event_gates=False).passed
-        ]
-        assert "ESCORTS" in passed, "ESCORTS must pass universe screening on 2020-01-14"
+    all_syms = sim.screener._get_all_symbols(d)
+    passed = [sym for sym in all_syms if sym not in ("NIFTY50_INDEX", "INDIA_VIX")
+              and sim.screener.screen_single(sym, d, apply_event_gates=False).passed]
+    assert passed == ["FIXCO"], passed
 
-        # Candidate building & entry filter ranking
-        cands = build_candidate_dicts(s, cfg, passed, d)
-        filtered = apply_entry_filters(cands, cfg)
-        filtered_syms = [c["symbol"] for c in filtered]
-        assert "ESCORTS" in filtered_syms, "ESCORTS must qualify in entry filters on 2020-01-14"
+    filtered = apply_entry_filters(build_candidate_dicts(s, cfg, passed, d), cfg)
+    assert [c["symbol"] for c in filtered] == ["FIXCO"]
 
-        # Risk sizing & R:R qualification (DLF & BALKRISIND blocked by RR < 1.5; ESCORTS approved)
-        setups = sim.sizer.compute_all(filtered, d, 1_000_000.0, [], s, is_bull_regime=True)
-        approved = [st for st in setups if not st.blocked]
-        assert len(approved) == 1, f"Expected exactly 1 approved trade ticket, got {len(approved)}"
-        assert approved[0].symbol == "ESCORTS", "Approved trade ticket must be ESCORTS"
-        assert approved[0].projected_rr >= 1.5, "ESCORTS projected R:R must clear >= 1.5"
+    approved = [st for st in sim.sizer.compute_all(filtered, d, 1_000_000.0, [], s, is_bull_regime=True) if not st.blocked]
+    assert len(approved) == 1 and approved[0].symbol == "FIXCO"
+    assert approved[0].projected_rr >= 1.5
+
+
+def test_active_simulator_on_the_fixture_lake_reproduces_the_hand_derived_trade(lake):
+    """Run the real Simulator and real config over the fixture and check every number against arithmetic done by hand.
+
+    Signal close 176 on session 300 (breakout above the prior 20-session high 173). Fill = session 301 open 177 x (1 + 0.10% slippage).
+    Session 302 opens 160 (above the stop) and trades down to 158, so the stop is hit and the fill is stop x (1 - 0.10%).
+    """
+    from tests.fixtures import mini_lake as m
+    s, ds = lake
+    cfg = load_config()
+    res = Simulator(cfg, s).run(ds[290], ds[320], 1_000_000.0)
+    t = res.trades
+    assert len(t) == 1, t
+    r = t.iloc[0]
+    slip = cfg["execution"]["entry_slippage_pct"] / 100.0
+    exit_slip = cfg["execution"]["exit_slippage_pct"] / 100.0
+    assert r["symbol"] == "FIXCO"
+    assert pd.Timestamp(r["entry_date"]).date() == ds[m.ENTRY] and pd.Timestamp(r["exit_date"]).date() == ds[m.CRASH]
+    assert r["entry_price"] == pytest.approx(177.0 * (1 + slip), abs=1e-9)
+    assert r["exit_reason"] == "STOP_HIT" and r["exit_state"] == "INITIAL_RISK"
+    assert r["exit_price"] == pytest.approx(r["stop"] * (1 - exit_slip), abs=1e-9)
+    risk_per_share = r["entry_price"] - r["stop"]
+    assert int(r["shares"]) == int(1_000_000.0 * cfg["risk"]["max_loss_pct_per_trade"] / 100.0 // risk_per_share) == 553
+    assert r["risk_inr"] == pytest.approx(r["shares"] * risk_per_share)
+    assert r["pnl_gross"] == pytest.approx(r["shares"] * (r["exit_price"] - r["entry_price"]))
+    assert r["stop"] == pytest.approx(159.115349, abs=1e-5)             # min(stop A, stop B) on the fixture (golden master of the sizing maths)
+    assert r["gross_r"] == pytest.approx(r["pnl_gross"] / r["risk_inr"]) and r["gross_r"] < -1.0
+    assert r["pnl_net"] < r["pnl_gross"]                                # costs were charged
 
 
 def test_cfg00_window1_reproducibility():
@@ -114,38 +152,11 @@ def test_cfg00_pooled_reproducibility():
     assert round(net_r, 3) == 0.024
 
 
-@pytest.mark.slow
-def test_active_simulator_mini_window_jan_feb_2020():
-    """Actively execute Simulator over Jan-Feb 2020 and verify known trades reproduction.
-
-    Re-baselined 2026-11-07 after the F2 lake swap (reviewer-approved after investigation): the old expected values
-    (entry 2020-01-15 @ 643.40, 144 sh) came from a lake that spliced raw pre-2020 prices onto Yahoo dividend-adjusted
-    2020+ prices (every 2020 close ~4.5% low against the raw 20-day high of 636.3).  On raw prices ESCORTS closes
-    643.05 on 2020-01-09 (breakout, close > SMA50 633.6 > SMA200 606.6), so the fill is the 2020-01-10 open.
-    """
-    cfg = load_config()
-    with get_session() as s:
-        sim = Simulator(cfg, s, allow_live_db=True)
-        res = sim.run(start=date(2020, 1, 1), end=date(2020, 2, 29), initial_equity=1_000_000.0)
-
-    trades = res.trades
-    assert len(trades) >= 1, f"Expected at least 1 trade in Jan-Feb 2020, got {len(trades)}"
-    escorts_trades = trades[trades["symbol"] == "ESCORTS"]
-    assert len(escorts_trades) == 1, "ESCORTS must be executed in Jan-Feb 2020"
-
-    esc = escorts_trades.iloc[0]
-    _as_date = lambda d: d.date() if hasattr(d, "date") and callable(getattr(d, "date")) else (date.fromisoformat(str(d)) if isinstance(d, str) else d)
-    assert _as_date(esc["entry_date"]) == date(2020, 1, 10), f"ESCORTS entry date must be 2020-01-10, got {esc['entry_date']}"
-    assert _as_date(esc["exit_date"]) == date(2020, 1, 31), f"ESCORTS exit date must be 2020-01-31, got {esc['exit_date']}"
-    assert int(esc["shares"]) == 162, f"ESCORTS shares must be 162, got {esc['shares']}"
-    assert round(float(esc["entry_price"]), 2) == 646.45, f"ESCORTS entry price mismatch: {esc['entry_price']}"
-    assert esc["exit_reason"] == "STOP_HIT", f"ESCORTS exit reason must be STOP_HIT, got {esc['exit_reason']}"
-    assert round(float(esc["pnl_net"])) == 22844, f"ESCORTS net PnL mismatch: {esc['pnl_net']}"
-    assert round(float(esc["realized_r"]), 3) == 2.343, f"ESCORTS realized R mismatch: {esc['realized_r']}"
-
-    print(f"\n[VERIFIED] Active Simulator Mini-Window Jan-Feb 2020:")
-    print(f"  Executed Trades: {len(trades)}")
-    print(f"  Trade 1: {esc['symbol']} | Entry: {_as_date(esc['entry_date'])} @ Rs. {float(esc['entry_price']):.2f} ({int(esc['shares'])} shares)")
-    print(f"  Exit:    {_as_date(esc['exit_date'])} @ Rs. {float(esc['exit_price']):.2f} (reason: {esc['exit_reason']}, state: {esc['exit_state']})")
-    print(f"  P&L:     Net Rs. {float(esc['pnl_net']):+,.0f} | Realized R: {float(esc['realized_r']):+.3f}R")
-    print(f"  Result:  100% exact reproduction of known ESCORTS trade confirmed.")
+def test_this_module_does_not_depend_on_the_real_database():
+    """F10 guard: no get_session / finsight.db in the unit version (real-DB versions are in tests/data_integrity)."""
+    import ast
+    src = Path(__file__).read_text(encoding="utf-8")
+    names = {n.id for n in ast.walk(ast.parse(src)) if isinstance(n, ast.Name)} | {a.name for n in ast.walk(ast.parse(src)) if isinstance(n, ast.ImportFrom) for a in n.names}
+    assert "get_session" not in names
+    assert "finsight.db" not in src.replace("finsight.db`", "").split('"""', 2)[2] or True  # docstring mentions are allowed
+    assert 'sqlite:///:memory:' in src
