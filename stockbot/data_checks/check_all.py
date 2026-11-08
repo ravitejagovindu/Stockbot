@@ -1,7 +1,7 @@
 """One entry point for the golden checks (restructure Phase 8): ``py scripts/check_all.py [--data] [--final]``.
 
 Steps (each is a pytest run in its own process; the exit code is the OR of all steps):
-  G1  unit suite                    tests/unit and tests/fixtures-based tests (the default ``pytest tests`` run)
+  G1  unit and integration suite    tests/unit and tests/integration (fixture lake; no real database)
   G3  fixture baseline              the hand-derived trade on the fixture lake, run through the engine (tests/unit/test_g3_fixture_baseline.py)
   G5  import boundaries             tests/unit/test_import_boundaries.py (fails on seeded violations, passes on the real tree)
   G6  parity / lookahead / idempotency / determinism / isolation / baseline reuse / strict mode   tests/unit/test_engine_*.py
@@ -21,7 +21,7 @@ from typing import Callable, Optional, Sequence
 
 ROOT = Path(__file__).resolve().parents[2]
 STEPS = (
-    ("G1 unit suite", ["tests/unit", "-q"]),
+    ("G1 unit and integration suite", ["tests/unit", "tests/integration", "-q"]),
     ("G3 fixture baseline", ["tests/unit/test_g3_fixture_baseline.py", "-q"]),
     ("G5 import boundaries", ["tests/unit/test_import_boundaries.py", "tests/unit/test_every_module_imports_alone.py", "-q"]),
     ("G6 engine: parity, lookahead, idempotency, determinism, isolation, baseline reuse, strict mode",
