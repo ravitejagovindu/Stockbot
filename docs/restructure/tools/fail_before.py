@@ -2,8 +2,8 @@
 
 Usage: py docs/restructure/tools/fail_before.py <cases.json> [--append docs/restructure/PARTB_FAIL_BEFORE.md]
 cases.json: [{"test": "tests/unit/x.py::test_a", "file": "stockbot/engine/types.py", "old": "text", "new": "text", "why": "what the mutation breaks"}, ...]
-A case passes the check when the mutated run FAILS (the test detects the defect) and the unmutated run PASSES.
-The file is always restored (byte-identical) in a finally block.
+A case passes the check when the unmutated run PASSES and the mutated run FAILS (the test detects the defect).
+The file is always restored (byte-identical) in a finally block. Line endings are normalised for matching and kept on write.
 """
 import json
 import subprocess
@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+CR, LF = chr(13), chr(10)
 
 
 def run(test: str) -> bool:
@@ -24,14 +25,17 @@ def main() -> int:
     for c in cases:
         f = ROOT / c["file"]
         orig = f.read_bytes()
-        text = orig.decode("utf-8")
+        raw = orig.decode("utf-8")
+        crlf = (CR + LF) in raw
+        text = raw.replace(CR + LF, LF)
         if text.count(c["old"]) != 1:
             print("MUTATION NOT UNIQUE/FOUND:", c["file"], c["old"][:50])
             bad += 1
             continue
         try:
             clean = run(c["test"])
-            f.write_bytes(text.replace(c["old"], c["new"]).encode("utf-8"))
+            mutated_text = text.replace(c["old"], c["new"])
+            f.write_bytes((mutated_text.replace(LF, CR + LF) if crlf else mutated_text).encode("utf-8"))
             mutated = run(c["test"])
         finally:
             f.write_bytes(orig)
@@ -44,9 +48,9 @@ def main() -> int:
         new = not out.exists()
         with out.open("a", encoding="utf-8") as fh:
             if new:
-                fh.write("# Part B fail-before evidence\n\nEach row: the test, the code file, the mutation that breaks it, and the result (the test must pass on the real code and FAIL on the mutated code).\n\n| test | code mutated | defect introduced | result |\n|---|---|---|---|\n")
+                fh.write("# Part B fail-before evidence" + LF + LF + "Each row: the test, the code file, the mutation that breaks it, and the result (the test must pass on the real code and FAIL on the mutated code)." + LF + LF + "| test | code mutated | defect introduced | result |" + LF + "|---|---|---|---|" + LF)
             for r in rows:
-                fh.write("| " + " | ".join(x.replace("|", "/") for x in r) + " |\n")
+                fh.write("| " + " | ".join(x.replace("|", "/") for x in r) + " |" + LF)
     return 1 if bad else 0
 
 

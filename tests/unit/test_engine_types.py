@@ -37,12 +37,13 @@ def full_decisions():
         fills=(T.Fill("t", "p", "s1", "AAA", D, 100.5, 100, 12.3, True),),
         exits=(T.ExitRecord("p", "s1", "AAA", D, "STOP_HIT", 94.0, 100, 11.0, True, False),),
         closed=(T.ClosedTrade("p", "s1", "AAA", date(2020, 2, 3), D, 100.5, 95.0, 100.0, 550.0, -650.0, 23.3, -673.3, "STOP_HIT", True),),
-        position_updates=(T.PositionUpdate("p", 98.0, {"a": 1}),),
+        position_updates=(T.PositionUpdate("p", pos(position_id="p", live_stop=98.0)),),
         new_tickets=(ticket(),),
         blocked=(T.Blocked("s2", "AAA", "SYMBOL_HELD_BY_OTHER_STRATEGY", "risk"),),
         corporate_actions_applied=(T.CorporateActionApplied("p", "2020-03-01:SPLIT", 0.5, 12.5),),
         flags=(T.Flag("STRATEGY_ERROR", "boom", "s1", None),),
         audit=(("fill", {"x": 1}), ("exit", {"y": [1, 2]})),
+        cash_after=1234.5, realised_pnl_after=-9.5, strategy_state_after={"s1": {"a": [1]}}, overlay_state_after={"o": {"b": 2}},
     )
 
 

@@ -158,13 +158,13 @@ class ClosedTrade:
 
 @dataclass(frozen=True)
 class PositionUpdate:
+    """The complete position as it stands at the end of the session (new fills, stop moves, exit-state changes, corporate-action rescaling, partial exits)."""
     position_id: str
-    live_stop: float
-    exit_state: Mapping[str, Any] = field(default_factory=dict)
+    position: Position
 
     @staticmethod
     def from_plain(d: Mapping[str, Any]) -> "PositionUpdate":
-        return PositionUpdate(**dict(d))
+        return PositionUpdate(d["position_id"], Position.from_plain(d["position"]))
 
 
 @dataclass(frozen=True)
@@ -248,6 +248,11 @@ class Decisions:
     corporate_actions_applied: tuple = ()
     flags: tuple = ()
     audit: tuple = ()                  # (event, plain mapping) pairs in the order they happened
+    # the state after the session, so that State can be rebuilt by folding Decisions (engine.apply.apply_decisions; the journal stores exactly this)
+    cash_after: float = 0.0
+    realised_pnl_after: float = 0.0
+    strategy_state_after: Mapping[str, Any] = field(default_factory=dict)
+    overlay_state_after: Mapping[str, Any] = field(default_factory=dict)
 
     @staticmethod
     def from_plain(d: Mapping[str, Any]) -> "Decisions":
