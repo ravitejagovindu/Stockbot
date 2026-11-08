@@ -50,7 +50,7 @@ Recovery: tag `pre-restructure`; path `strategy_config.yaml` (all keys); code pa
 | `macro.nifty_reentry_sma_period` | `20` | Q4 |
 | `macro.vix_reentry_threshold` | `20.0` | Q4 |
 | `macro.reentry_consecutive_sessions` | `3` | Q4 |
-| `risk.max_concurrent_positions_bull` | `12` | Q4: regime-dependent cap (same value as the normal cap today) |
+| `risk.max_concurrent_positions_bull` | `12` | DROPPED (STOP 3 ruling D2): equal to the normal cap, no behaviour change |
 
 ## Per-strategy values decided at the Stop-1 review (recorded unchanged)
 

@@ -92,3 +92,6 @@
 | `profit_ratchet.enabled` | old-strategy | old strategy spec |
 | `profit_ratchet.active_in_bull` | old-strategy | old strategy spec |
 | `profit_ratchet.rungs` | old-strategy | old strategy spec |
+
+## Differs from original mandate (STOP 3 note)
+`shared.yaml` carries `max_concurrent_positions` 12 and `max_total_portfolio_risk_pct` 15.0 unchanged from `strategy_config.yaml`; the original mandate said 10 positions and 10% total risk. Not changed. Differs from original mandate; decide in strategy phase.
