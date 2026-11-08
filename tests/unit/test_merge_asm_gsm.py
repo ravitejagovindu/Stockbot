@@ -1,11 +1,10 @@
-"""scripts/merge_asm_gsm_snapshots.py: dry run writes nothing; apply merges without overwriting existing rows; idempotent."""
+"""stockbot/data/ingestion/merge_asm_gsm_snapshots.py: dry run writes nothing; apply merges without overwriting existing rows; idempotent."""
 import sqlite3
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-import merge_asm_gsm_snapshots as mg  # noqa: E402
-import snapshot_asm_gsm as snap       # noqa: E402
+from stockbot.data.ingestion import merge_asm_gsm_snapshots as mg
+from stockbot.data.ingestion import snapshot_asm_gsm as snap
 
 
 def _mk(path, rows, raw):

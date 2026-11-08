@@ -1,4 +1,4 @@
-"""scripts/ingest_raw_bhavcopy_range.py — F2: true RAW daily prices from NSE Bhavcopy into a STAGING table.
+"""stockbot/data/ingestion/ingest_raw_bhavcopy_range.py — F2: true RAW daily prices from NSE Bhavcopy into a STAGING table.
 
 Writes ONLY to ``market_data_lake_staging`` and ``bhavcopy_fetch_log`` (never to ``market_data_lake``); the swap into
 the lake is a separate, reviewed step (scripts/f2_swap_raw_prices.py). Resumable: dates already logged OK/HOLIDAY are
@@ -7,7 +7,7 @@ skipped. Both Bhavcopy formats are handled (legacy ``cmDDMONYYYYbhav.csv.zip`` a
 close are kept: they are used for symbol continuity (renames) and as an independent corporate-action signal.
 
 Usage:
-  py -3 scripts/ingest_raw_bhavcopy_range.py --start 2020-01-01 --end 2026-09-30 [--db PATH] [--sleep 0.4]
+  py -3 stockbot/data/ingestion/ingest_raw_bhavcopy_range.py --start 2020-01-01 --end 2026-09-30 [--db PATH] [--sleep 0.4]
 """
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ from typing import Optional
 import pandas as pd
 import requests
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                    "Chrome/120.0.0.0 Safari/537.36"),

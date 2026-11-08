@@ -1,4 +1,4 @@
-"""scripts/f2_verify_list.py — F2 Step 6: add result columns to data/reference/verified_corporate_actions.csv and extend it.
+"""stockbot/data_checks/f2_verify_list.py — F2 Step 6: add result columns to data/reference/verified_corporate_actions.csv and extend it.
 
 Result columns: logged_factor (group product for same-day events), observed_raw_ratio, yahoo_factor, tier, result (PASS/FAIL), result_note.
 Rules: price-moving rows (SPLIT/BONUS) PASS when the logged factor equals the expected factor (1%) and the tier is STRONG or WEAK;
@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 V = ROOT / "data/reference/verified_corporate_actions.csv"
 E = ROOT / "data/reference/corporate_actions_evidence.csv"
 BASIS = "added in Step 6 (deterministic pick from the evidence file)"

@@ -26,6 +26,10 @@ GROUPS = {
     "data_checks": [("engine_core.preflight", "stockbot.data_checks.preflight"), ("data.quality_checker", "stockbot.data_checks.quality_checker")],
     "ingestion": [(f"data.ingestion.{m}", f"stockbot.data.ingestion.{m}") for m in ING],
     "universe_backtest": [("backtest.exclusions", "stockbot.universe.exclusions"), ("backtest.no_network", "stockbot.backtest.no_network")],
+    "scripts_ingestion": [(f"scripts.{m}", f"stockbot.data.ingestion.{m}") for m in ("collect_earnings_history", "f2_build_fund_symbols", "f2_build_isin_symbol_map", "f2_event_evidence",
+                          "f2_index_gap_fill", "f2_index_gap_fill_yahoo", "f2_load_corporate_actions", "ingest_raw_bhavcopy_range", "snapshot_asm_gsm", "merge_asm_gsm_snapshots")],
+    "scripts_checks": [(f"scripts.{m}", f"stockbot.data_checks.{m}") for m in ("earnings_coverage", "earnings_validate", "f2_engine_scan", "f2_split_rename_links", "f2_verify_engine_path",
+                                                                              "f2_verify_list", "preflight_spot_check")],
     "validation_scripts": [(f"scripts.{m}", f"stockbot.validation.{m}") for m in ("validate_max_t", "f9_power_study", "f9_report")],
     "live": [("live_runner.idempotency", "stockbot.live.idempotency"), ("live_runner.main", "stockbot.live.main"), ("live_runner.scheduler", "stockbot.live.scheduler")]
             + [(f"live_runner.routers.{r}", f"stockbot.live.api.{r}") for r in ("analytics", "health", "ledger", "portfolio", "positions", "regime", "watchlist")],

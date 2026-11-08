@@ -8,7 +8,7 @@ T = {"NIFTY50_INDEX": "^NSEI", "INDIA_VIX": "^INDIAVIX"}
 
 
 def main() -> int:
-    from scripts.f2_index_gap_fill import missing
+    from stockbot.data.ingestion.f2_index_gap_fill import missing
     con = sqlite3.connect("finsight.db", timeout=60)
     miss = missing(con)
     have = {(s, d) for s, d in con.execute("select symbol, trade_date from index_gap_fill")}

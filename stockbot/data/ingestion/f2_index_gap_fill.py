@@ -1,4 +1,4 @@
-"""scripts/f2_index_gap_fill.py — fetch Nifty 50 / India VIX rows for dates the lake lacks, from NSE's daily index file
+"""stockbot/data/ingestion/f2_index_gap_fill.py — fetch Nifty 50 / India VIX rows for dates the lake lacks, from NSE's daily index file
 (archives.nseindia.com/content/indices/ind_close_all_DDMMYYYY.csv).  The file's own 'Index Date' must equal the requested
 date.  Results go to table index_gap_fill (symbol, trade_date, OHLC, source) — NOT into market_data_lake (the swap does that,
 labelled and append-only).  Dates the NSE file does not cover are listed so another source can be used.

@@ -1,4 +1,4 @@
-"""scripts/f2_load_corporate_actions.py — F2 Step 7: append-only load of corporate actions into ``corporate_actions_log``.
+"""stockbot/data/ingestion/f2_load_corporate_actions.py — F2 Step 7: append-only load of corporate actions into ``corporate_actions_log``.
 
 Rules (reviewer, 2026-11-07):
   * ``symbol`` = the lake symbol that holds the PRE-ex-date prices (evidence ``lake_symbol``; else the ISIN map; else the feed symbol);
@@ -22,8 +22,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[3]
 from stockbot.data.ingestion.lake_symbols import lake_symbol      # noqa: E402
 
 OUT = ROOT / "docs" / "data_audit"

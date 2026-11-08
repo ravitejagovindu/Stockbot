@@ -1,4 +1,4 @@
-"""scripts/f2_build_fund_symbols.py — list the ETF / fund symbols (INF-prefixed ISIN) from the raw Bhavcopy staging ISINs and the
+"""stockbot/data/ingestion/f2_build_fund_symbols.py — list the ETF / fund symbols (INF-prefixed ISIN) from the raw Bhavcopy staging ISINs and the
 securities master, mapped to the lake's canonical symbol.  Writes data/reference/fund_etf_symbols.csv.  Read-only on the database."""
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def main() -> int:

@@ -1,13 +1,11 @@
-"""scripts/collect_earnings_history.py: timestamp parsing, results-meeting classification, parsing and idempotent storage (no network)."""
+"""stockbot/data/ingestion/collect_earnings_history.py: timestamp parsing, results-meeting classification, parsing and idempotent storage (no network)."""
 import json
 import sqlite3
 import sys
 import zlib
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts"))
-import collect_earnings_history as ce  # noqa: E402
+from stockbot.data.ingestion import collect_earnings_history as ce
 
 FIN = {"audited": "Audited", "broadCastDate": "16-Jan-2025 19:42:10", "companyName": "Infosys Limited", "consolidated": "Non-Consolidated",
        "cumulative": "Non-cumulative", "exchdisstime": "16-Jan-2025 19:42:44", "filingDate": "16-Jan-2025 19:42", "format": "New", "fromDate": "01-Oct-2024",

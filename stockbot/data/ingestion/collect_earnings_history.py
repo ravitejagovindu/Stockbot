@@ -1,4 +1,4 @@
-"""scripts/collect_earnings_history.py — Step 12: earnings (results announcement) history from two NSE APIs, into NEW tables only (KI-004).
+"""stockbot/data/ingestion/collect_earnings_history.py — Step 12: earnings (results announcement) history from two NSE APIs, into NEW tables only (KI-004).
 
 Sources (only these two; one symbol per request, polite delay, no retry storms):
   api/corporates-financial-results?index=equities&symbol=S&period=Quarterly   -> exchange broadcast / filing timestamps of each results filing
@@ -18,7 +18,7 @@ New tables (nothing existing is altered):
 Resumable: a (endpoint, query_symbol) already in earnings_api_raw is skipped.  Stops (exit 2) after ``--max-consecutive-fail`` consecutive failed
 requests (403/429/timeouts), so a block is reported, not hammered.  Not wired into any backtest.
 
-    py scripts/collect_earnings_history.py [--limit N] [--sleep 0.6] [--symbols A,B,...]
+    py stockbot/data/ingestion/collect_earnings_history.py [--limit N] [--sleep 0.6] [--symbols A,B,...]
 """
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ from typing import Optional
 import pandas as pd
 import requests
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                    "Chrome/124.0.0.0 Safari/537.36"),

@@ -7,8 +7,7 @@ from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-from collect_earnings_history import DDL  # noqa: E402
+from stockbot.data.ingestion.collect_earnings_history import DDL
 from stockbot.data.asof import AsOfView
 from stockbot.data.lake import open_lake
 from stockbot.universe.eligibility import results_within

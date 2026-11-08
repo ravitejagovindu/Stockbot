@@ -1,4 +1,4 @@
-"""scripts/f2_verify_engine_path.py — run every row of data/reference/verified_corporate_actions.csv through the engine's real
+"""stockbot/data_checks/f2_verify_engine_path.py — run every row of data/reference/verified_corporate_actions.csv through the engine's real
 adjustment code path (corporate_actions_log -> get_adjusted_series) on the real database.  Read-only.
 
 A SPLIT/BONUS row PASSES when
@@ -19,11 +19,10 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import func, or_, select
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[2]
 from data.db.models import CorporateActionsLog, MarketDataLake       # noqa: E402
 from stockbot.data.adjustments import action_factor                    # noqa: E402
-from scripts.f2_engine_scan import engine_frames, session_for        # noqa: E402
+from stockbot.data_checks.f2_engine_scan import engine_frames, session_for        # noqa: E402
 
 V = ROOT / "data/reference/verified_corporate_actions.csv"
 OUT = ROOT / "docs" / "data_audit" / "verification_engine_path.csv"

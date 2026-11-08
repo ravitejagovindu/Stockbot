@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 _CR = 1e7
 
 # ETFs / mutual-fund units carry ISINs starting "INF" (companies: "INE").  The list is built from the raw Bhavcopy ISINs by
-# scripts/f2_build_fund_symbols.py and is excluded from the equity universe (reviewer-approved, F2).
+# stockbot/data/ingestion/f2_build_fund_symbols.py and is excluded from the equity universe (reviewer-approved, F2).
 FUND_SYMBOLS_FILE = Path(__file__).resolve().parents[1] / "data" / "reference" / "fund_etf_symbols.csv"
 
 

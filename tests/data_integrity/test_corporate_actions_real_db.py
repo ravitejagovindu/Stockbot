@@ -25,7 +25,7 @@ ROWS = list(pd.read_csv(V).itertuples()) if V.exists() else []
 
 @pytest.fixture(scope="module")
 def session():
-    from scripts.f2_engine_scan import session_for
+    from stockbot.data_checks.f2_engine_scan import session_for
     return session_for(str(DB))
 
 
@@ -37,7 +37,7 @@ def test_the_log_is_loaded():
 
 @pytest.mark.parametrize("r", ROWS, ids=[f"{r.symbol}-{r.ex_date}-{r.action_type}" for r in ROWS])
 def test_verification_row_through_the_engine_path(session, r):
-    from scripts.f2_verify_engine_path import verify_row
+    from stockbot.data_checks.f2_verify_engine_path import verify_row
     v = pd.read_csv(V)
     same = v[(v.symbol == r.symbol) & (v.ex_date == r.ex_date) & v.action_type.isin(["SPLIT", "BONUS"])]
     expected = float(np.prod(same["expected_factor"])) if r.action_type in ("SPLIT", "BONUS") else 1.0

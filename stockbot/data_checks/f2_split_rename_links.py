@@ -1,4 +1,4 @@
-"""scripts/f2_split_rename_links.py — find renames that coincide with an ISIN change at a split (reviewer-approved rule, eligible names only).
+"""stockbot/data_checks/f2_split_rename_links.py — find renames that coincide with an ISIN change at a split (reviewer-approved rule, eligible names only).
 
 A boundary pair (old symbol A ends, new symbol B starts) is LINKED when
   * a SPLIT/BONUS event on B (or on A) has its ex-date within 3 days of the boundary,
@@ -15,8 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[2]
 from stockbot.data.ingestion.ca_evidence import classify      # noqa: E402
 
 

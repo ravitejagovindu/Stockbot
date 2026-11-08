@@ -1,4 +1,4 @@
-"""scripts/f2_event_evidence.py — evidence tier for every corporate-action event in the NSE dump (F2 Step 4).  Read-only on the DB.
+"""stockbot/data/ingestion/f2_event_evidence.py — evidence tier for every corporate-action event in the NSE dump (F2 Step 4).  Read-only on the DB.
 
 Events are matched to raw price rows BY ISIN (NSE keys its history to the current symbol; staging keeps the traded symbol), so
 renamed companies are covered without extra symbol queries.  Yahoo factors come from market_data_lake_yahoo_archive (the
@@ -15,8 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[3]
 from stockbot.data.ingestion.ca_evidence import best_pair, classify          # noqa: E402
 from stockbot.data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject   # noqa: E402
 from stockbot.data.adjustments import action_factor                    # noqa: E402

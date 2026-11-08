@@ -1,4 +1,4 @@
-"""scripts/f2_engine_scan.py — post-adjustment scan of large moves through the ENGINE's real adjustment code path.
+"""stockbot/data_checks/f2_engine_scan.py — post-adjustment scan of large moves through the ENGINE's real adjustment code path.
 
 Reads market_data_lake and corporate_actions_log with the ORM models and adjusts with ``stockbot.data.adjustments.get_adjusted_series``
 exactly as ``engine_core.candidate_builder.build_candidate_dicts`` does (same query shape, same dict fields, same function).
@@ -18,8 +18,7 @@ import pandas as pd
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[2]
 from data.db.models import CorporateActionsLog, MarketDataLake       # noqa: E402
 from stockbot.data.adjustments import get_adjusted_series              # noqa: E402
 from engine_core.candidate_builder import build_candidate_dicts      # noqa: E402

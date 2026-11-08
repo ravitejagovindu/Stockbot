@@ -1,6 +1,6 @@
 """Phase 3 equivalence tests on the REAL lake (STOCKBOT_DATA_TESTS=1): the as-of view must give the same numbers as the current engine paths.
 
-  1. 120 (symbol, eval_date) samples (40 symbols x 3 dates, rng seed 7, as in scripts/f2_engine_scan.py): view.raw_bars / adjusted_bars equal
+  1. 120 (symbol, eval_date) samples (40 symbols x 3 dates, rng seed 7, as in stockbot/data_checks/f2_engine_scan.py): view.raw_bars / adjusted_bars equal
      build_candidate_dicts' raw_ohlcv / adjusted_ohlcv (0 mismatches required).
   2. The 57 verification rows (data/reference/verified_corporate_actions.csv) go through the view and PASS the same checks as
      scripts/f2_verify_engine_path.verify_row; the engine factor on the bar before the ex-date equals the original engine path's factor.
@@ -36,7 +36,7 @@ def conn():
 
 @pytest.fixture(scope="module")
 def orm_session():
-    from scripts.f2_engine_scan import session_for
+    from stockbot.data_checks.f2_engine_scan import session_for
     return session_for(str(DB))
 
 
@@ -72,7 +72,7 @@ def test_120_samples_view_equals_build_candidate_dicts(conn, orm_session):
 def test_verification_row_through_the_view(conn, orm_session, r):
     from sqlalchemy import or_, select
     from data.db.models import CorporateActionsLog
-    from scripts.f2_engine_scan import engine_frames
+    from stockbot.data_checks.f2_engine_scan import engine_frames
     from stockbot.data.adjustments import action_factor
     from stockbot.data.asof import AsOfView
     v = pd.read_csv(V)

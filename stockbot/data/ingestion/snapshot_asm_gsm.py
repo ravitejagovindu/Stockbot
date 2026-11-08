@@ -1,4 +1,4 @@
-"""scripts/snapshot_asm_gsm.py — forward daily snapshot of NSE's current ASM and GSM lists (Step 12, KI-003).
+"""stockbot/data/ingestion/snapshot_asm_gsm.py — forward daily snapshot of NSE's current ASM and GSM lists (Step 12, KI-003).
 
 Standalone: no engine, screener or backtest imports.  Reads ``api/reportASM`` (long-term + short-term) and ``api/reportGSM`` once each and appends
 to NEW tables only:
@@ -12,7 +12,7 @@ Idempotent per day (INSERT OR IGNORE): a second run on the same date changes not
 (an empty list on a normal day is treated as a failure, not as "nobody is on surveillance").  One retry with a fresh session; a 403/429 stops the run.
 Exit code 0 = both lists stored (or already stored today); 1 = something failed.
 
-    py scripts/snapshot_asm_gsm.py [--db finsight.db]
+    py stockbot/data/ingestion/snapshot_asm_gsm.py [--db finsight.db]
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ from pathlib import Path
 
 import requests
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                    "Chrome/124.0.0.0 Safari/537.36"),

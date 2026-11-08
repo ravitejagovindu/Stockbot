@@ -1,11 +1,11 @@
-"""scripts/merge_asm_gsm_snapshots.py — merge the frozen standalone ASM/GSM snapshot database into the main store (run at STOP 5 or later).
+"""stockbot/data/ingestion/merge_asm_gsm_snapshots.py — merge the frozen standalone ASM/GSM snapshot database into the main store (run at STOP 5 or later).
 
 Source: F:\\Projects\\Ravi\\StockBotSnapshot\\asm_gsm_snapshot.db (written by the frozen copy of snapshot_asm_gsm.py; this script never writes there).
 Target: finsight.db, tables asm_gsm_daily_snapshot / asm_gsm_snapshot_raw / asm_gsm_snapshot_log (created if missing, same schema).
 Rows are copied with INSERT OR IGNORE on the primary keys, so rows already in the target (for example the day-1 snapshot taken before the split) are kept as they are.
 Default is a dry run that only prints counts; pass --apply to write.
 
-    py scripts/merge_asm_gsm_snapshots.py [--src PATH] [--db PATH] [--apply]
+    py stockbot/data/ingestion/merge_asm_gsm_snapshots.py [--src PATH] [--db PATH] [--apply]
 """
 from __future__ import annotations
 
@@ -14,9 +14,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from snapshot_asm_gsm import DDL                                             # noqa: E402  (schema only)
+ROOT = Path(__file__).resolve().parents[3]
+from stockbot.data.ingestion.snapshot_asm_gsm import DDL                      # schema only
 
 DEFAULT_SRC = r"F:\Projects\Ravi\StockBotSnapshot\asm_gsm_snapshot.db"
 TABLES = (("asm_gsm_daily_snapshot", "snapshot_date, framework, symbol"),

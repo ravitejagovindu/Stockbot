@@ -1,4 +1,4 @@
-"""scripts/f2_build_isin_symbol_map.py — deterministic ISIN -> canonical symbol map (reviewer: Option A).
+"""stockbot/data/ingestion/f2_build_isin_symbol_map.py — deterministic ISIN -> canonical symbol map (reviewer: Option A).
 
 Reads staging (read-only) and the NSE corporate-actions dump.  For every ISIN that traded under more than one
 symbol it classifies each symbol-change boundary and the ISIN as a whole:
@@ -22,8 +22,7 @@ from pathlib import Path
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[3]
 from stockbot.data.ingestion.nse_corporate_actions_history import _parse_ex, parse_subject  # noqa: E402
 
 CONT_LO, CONT_HI = 0.8, 1.25

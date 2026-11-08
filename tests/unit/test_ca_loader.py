@@ -6,7 +6,7 @@ import sqlite3
 import pandas as pd
 import pytest
 
-from scripts import f2_load_corporate_actions as ld
+from stockbot.data.ingestion import f2_load_corporate_actions as ld
 
 DDL = """
 create table market_data_lake(id integer primary key autoincrement, symbol text not null, trade_date date not null,
