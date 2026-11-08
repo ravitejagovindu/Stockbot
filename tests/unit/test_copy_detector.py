@@ -1,7 +1,7 @@
 """The holiday-copy detector flags a date that repeats the previous session and nothing else."""
 import sqlite3
 
-from scripts.f2_copy_detector import copy_dates
+from stockbot.data_checks.copy_detector import copy_dates
 
 
 def _db(rows):
