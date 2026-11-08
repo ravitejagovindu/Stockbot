@@ -1,4 +1,4 @@
-"""scripts/f9_power_study.py — F9 step 2: size and power of the Westfall-Young step-down Max-T block bootstrap on portfolio-level periodic returns.
+"""stockbot/validation/f9_power_study.py — F9 step 2: size and power of the Westfall-Young step-down Max-T block bootstrap on portfolio-level periodic returns.
 
 Design, blocks, replications, decision rule and the smallest edge of interest are fixed in docs/F9_PREREGISTRATION.md (committed before this ran).
 Input: data/f9/trade_library.npz (scripts/f9_trade_library.py).  Output: data/f9/power_results.json, docs/F9_POWER_RESULTS.md.
@@ -15,8 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+ROOT = Path(__file__).resolve().parents[2]
 from stockbot.validation.max_t_bootstrap import WestfallYoungMaxTBootstrap          # noqa: E402
 
 LIB = ROOT / "data" / "f9" / "trade_library.npz"

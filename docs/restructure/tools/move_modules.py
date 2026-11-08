@@ -26,6 +26,7 @@ GROUPS = {
     "data_checks": [("engine_core.preflight", "stockbot.data_checks.preflight"), ("data.quality_checker", "stockbot.data_checks.quality_checker")],
     "ingestion": [(f"data.ingestion.{m}", f"stockbot.data.ingestion.{m}") for m in ING],
     "universe_backtest": [("backtest.exclusions", "stockbot.universe.exclusions"), ("backtest.no_network", "stockbot.backtest.no_network")],
+    "validation_scripts": [(f"scripts.{m}", f"stockbot.validation.{m}") for m in ("validate_max_t", "f9_power_study", "f9_report")],
     "live": [("live_runner.idempotency", "stockbot.live.idempotency"), ("live_runner.main", "stockbot.live.main"), ("live_runner.scheduler", "stockbot.live.scheduler")]
             + [(f"live_runner.routers.{r}", f"stockbot.live.api.{r}") for r in ("analytics", "health", "ledger", "portfolio", "positions", "regime", "watchlist")],
 }
