@@ -69,7 +69,7 @@ from engine_core.lifecycle_rules import (
     parabolic_ref_close,
 )
 from stockbot.risk.costs import CostModel
-from engine_core.corporate_action_events import apply_actions_to_position, due_actions
+from stockbot.engine.corporate_action_events import apply_actions_to_position, due_actions
 from stockbot.config.mode import current_mode
 
 logger = logging.getLogger(__name__)

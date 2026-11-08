@@ -11,7 +11,7 @@ from sqlalchemy.engine import make_url
 
 from data.db.models import MarketDataLake
 from engine_core.candidate_builder import bar_context, build_candidate_dicts
-from engine_core.corporate_action_events import apply_actions_to_position, due_actions
+from stockbot.engine.corporate_action_events import apply_actions_to_position, due_actions
 from stockbot.risk.costs import CostModel
 from engine_core.entry_filters import apply_entry_filters
 from stockbot.data.indicators import atr

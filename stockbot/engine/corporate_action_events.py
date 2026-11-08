@@ -1,4 +1,4 @@
-"""engine_core/corporate_action_events.py — corporate actions during an OPEN position (F3).
+"""stockbot/engine/corporate_action_events.py — corporate actions during an OPEN position (F3).
 
 Approach (documented decision): when an ex-date falls inside a holding period, every price-denominated piece of
 position state (entry, initial stop, live stop, target, highest high) is multiplied by the action's factor and the

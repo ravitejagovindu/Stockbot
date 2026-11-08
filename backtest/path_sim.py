@@ -17,7 +17,7 @@ from sqlalchemy import select
 from data.db.models import CorporateActionsLog, MarketDataLake
 from stockbot.data.adjustments import get_adjusted_series
 from engine_core.candidate_builder import bar_context
-from engine_core.corporate_action_events import apply_actions_to_position, due_actions
+from stockbot.engine.corporate_action_events import apply_actions_to_position, due_actions
 from stockbot.risk.costs import CostModel
 from engine_core.lifecycle_rules import BarCtx, LifecycleRules, PosState, advance_one_bar, plan_entry_fill
 from stockbot.validation.trade_metrics import compute_trade_r
