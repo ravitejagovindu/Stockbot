@@ -84,3 +84,60 @@ def test_view_equals_the_current_candidate_path(lake_path):
             v = AsOfView(open_lake(lake_path), ds[i])
             pd.testing.assert_frame_equal(v.raw_bars("FIXCO", 282), cand["raw_ohlcv"])
             pd.testing.assert_frame_equal(v.adjusted_bars("FIXCO", 282), cand["adjusted_ohlcv"])
+
+
+# ------------------------------------------------------------------ F2 listing-age rule (ported from the old universe screener; reviewer-approved 2026-11-07)
+def _age_lake(tmp_path):
+    p = tmp_path / "age.db"
+    con = sqlite3.connect(p)
+    con.execute("create table market_data_lake (id integer primary key autoincrement, symbol text not null, trade_date date not null, open_raw real, high_raw real, low_raw real, close_raw real, volume_raw bigint, exchange text default 'NSE', unique(symbol, trade_date))")
+    def sessions(start, n):
+        out, d = [], start
+        while len(out) < n:
+            if d.weekday() < 5:
+                out.append(d)
+            d += timedelta(days=1)
+        return out
+    for sym, start, n in (("NIFTY50_INDEX", date(2013, 1, 1), 3600), ("OLDCO", date(2013, 1, 1), 3000), ("YOUNGCO", date(2018, 5, 1), 1500), ("IPOCO", date(2021, 11, 18), 40)):
+        for d in sessions(start, n):
+            con.execute("insert into market_data_lake (symbol, trade_date, open_raw, high_raw, low_raw, close_raw, volume_raw) values (?,?,1,1,1,1,1)", (sym, d.isoformat()))
+    for start, n in ((date(2018, 5, 1), 20), (date(2020, 1, 2), 20)):                  # GAPCO: two short stretches 20 months apart (few sessions, many calendar days)
+        for d in sessions(start, n):
+            con.execute("insert into market_data_lake (symbol, trade_date, open_raw, high_raw, low_raw, close_raw, volume_raw) values ('GAPCO',?,1,1,1,1,1)", (d.isoformat(),))
+    con.commit(); con.close()
+    return p
+
+
+def test_a_name_trading_on_the_lakes_first_day_is_seasoned_even_in_2013(tmp_path):
+    v = AsOfView(open_lake(_age_lake(tmp_path)), date(2013, 6, 3))
+    assert v.symbol_info("OLDCO").listing_age_days >= 252 and v.symbol_info("OLDCO").n_sessions < 252      # the lake merely starts there
+
+
+def test_a_later_name_ages_by_its_own_sessions_until_550_calendar_days(tmp_path):
+    p = _age_lake(tmp_path)
+    young_day = AsOfView(open_lake(p), date(2018, 8, 1)).symbol_info("YOUNGCO")
+    assert young_day.listing_age_days == young_day.n_sessions and 0 < young_day.n_sessions < 252
+    assert AsOfView(open_lake(p), date(2020, 1, 15)).symbol_info("YOUNGCO").listing_age_days >= 252          # more than 550 calendar days: seasoned
+    gap = AsOfView(open_lake(p), date(2020, 1, 15)).symbol_info("GAPCO")
+    assert gap.n_sessions < 60 and gap.listing_age_days >= 252                                              # few sessions but 20 months since the first bar: seasoned
+
+
+def test_a_recent_listing_is_still_young_and_a_name_without_bars_has_no_age(tmp_path):
+    p = _age_lake(tmp_path)
+    assert 0 < AsOfView(open_lake(p), date(2021, 12, 1)).symbol_info("IPOCO").listing_age_days < 252
+    assert AsOfView(open_lake(p), date(2021, 11, 1)).symbol_info("IPOCO").listing_age_days is None          # before its first row
+    assert AsOfView(open_lake(p), date(2021, 12, 1)).symbol_info("NOSUCH").listing_age_days is None
+
+
+def test_eligibility_uses_the_f2_listing_age(tmp_path):
+    from types import SimpleNamespace
+    from stockbot.universe.eligibility import eligible_symbols
+    p = _age_lake(tmp_path)
+    con = sqlite3.connect(p)
+    con.execute("update market_data_lake set close_raw=1000, volume_raw=10000000 where symbol != 'NIFTY50_INDEX'")      # ADTV 1,000 crore: liquidity is not the reason
+    con.commit(); con.close()
+    cfg = SimpleNamespace(min_adtv_cr=25, min_listing_age_trading_days=252)
+    assert eligible_symbols(AsOfView(open_lake(p), date(2013, 11, 1)), cfg) == ["OLDCO"]                      # seasoned from the first day; the others do not exist yet
+    got = eligible_symbols(AsOfView(open_lake(p), date(2021, 12, 1)), cfg)
+    assert "OLDCO" in got and "YOUNGCO" in got and "IPOCO" not in got
+    assert eligible_symbols(AsOfView(open_lake(p), date(2020, 1, 15)), cfg) == ["GAPCO", "OLDCO", "YOUNGCO"]

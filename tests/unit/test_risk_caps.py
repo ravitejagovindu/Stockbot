@@ -48,19 +48,14 @@ def test_max_positions_override_and_caps_full():
     assert caps_full(limits=L, equity=EQ, open_positions=[pos("A", 1, 1)] * 3, max_positions=4) is False
 
 
-def test_equal_to_the_legacy_heat_cap_code_on_a_random_grid():
-    from stockbot.config.legacy_loader import load_config
-    from engine_core.risk_sizing import RiskAndSizingEngine
-    cfg = load_config()
-    eng = RiskAndSizingEngine(cfg)
-    lim = CapLimits(int(cfg["risk"]["max_concurrent_positions"]), float(cfg["risk"]["max_total_portfolio_risk_pct"]), float(cfg["risk"]["max_sector_exposure_pct"]))
-    rng = random.Random(5)
-    sectors = ["IT", "BANK", "AUTO", "PHARMA", None]
-    for _ in range(4000):
-        equity = rng.choice([1e5, 1e6, 3.3e6])
-        open_ = [pos(rng.choice(sectors), rng.uniform(0, 0.3) * equity, rng.uniform(0, 0.03) * equity) for _ in range(rng.randint(0, 13))]
-        sec, val, risk = rng.choice(sectors), rng.uniform(0, 0.3) * equity, rng.uniform(0, 0.03) * equity
-        mp = rng.choice([None, 5, 12])
-        assert check_caps(limits=lim, equity=equity, open_positions=open_, sector=sec, position_value=val, risk_amount=risk, max_positions=mp) == \
-            eng._check_heat_cap(sec, val, risk, equity, open_, max_positions=mp)
-        assert caps_full(limits=lim, equity=equity, open_positions=open_, max_positions=mp) == eng._is_heat_cap_full(open_, equity, max_positions=mp)
+def test_equal_to_the_frozen_answers_of_the_legacy_heat_cap_code_on_4000_random_cases():
+    """The old ``RiskAndSizingEngine._check_heat_cap`` / ``_is_heat_cap_full`` answered these 4,000 cases (frozen in tests/golden before engine_core was deleted)."""
+    from tests.fixtures.golden import legacy
+    g = legacy()["caps"]
+    lim = CapLimits(*g["limits"])
+    assert len(g["cases"]) == 4000
+    for c in g["cases"]:
+        assert check_caps(limits=lim, equity=c["equity"], open_positions=c["open"], sector=c["sector"], position_value=c["value"], risk_amount=c["risk"],
+                          max_positions=c["max_positions"]) == c["reason"]
+        assert caps_full(limits=lim, equity=c["equity"], open_positions=c["open"], max_positions=c["max_positions"]) == c["full"]
+    assert sum(c["reason"] is not None for c in g["cases"]) > 500 and sum(c["full"] for c in g["cases"]) > 100         # the grid really exercises both outcomes

@@ -36,8 +36,9 @@ def conn():
 
 @pytest.fixture(scope="module")
 def orm_session():
-    from stockbot.data_checks.f2_engine_scan import session_for
-    return session_for(str(DB))
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
+    return Session(create_engine(f"sqlite:///file:{Path(DB).as_posix()}?mode=ro&uri=true", connect_args={"check_same_thread": False}))
 
 
 def test_120_samples_view_equals_build_candidate_dicts(conn, orm_session):
@@ -72,7 +73,6 @@ def test_120_samples_view_equals_build_candidate_dicts(conn, orm_session):
 def test_verification_row_through_the_view(conn, orm_session, r):
     from sqlalchemy import or_, select
     from stockbot.data.db.models import CorporateActionsLog
-    from stockbot.data_checks.f2_engine_scan import engine_frames
     from stockbot.data.adjustments import action_factor
     from stockbot.data.asof import AsOfView
     v = pd.read_csv(V)
@@ -94,10 +94,10 @@ def test_verification_row_through_the_view(conn, orm_session, r):
     assert before and after, "no bars on both sides of the ex-date in the lake"
     p, o = before[-1], after[0]
     f_view = float(adj.loc[p, "close_adj"] / raw.loc[p, "close_raw"])
-    # the same number from the original engine path (as_of = the ex-date)
-    raw0, adj0 = engine_frames(orm_session, lake_sym, as_of=ex, lo=ex - timedelta(days=60), hi=ex + timedelta(days=30))
-    f_orig = float(adj0.loc[p, "close_adj"] / raw0.loc[p, "close_raw"])
-    assert abs(f_view / f_orig - 1) < 1e-12, (f_view, f_orig)
+    # the same number the original engine path gave (frozen before engine_core was deleted: tests/golden/verification_old_path.csv, rounded to 6 decimals there)
+    frozen = pd.read_csv(Path(__file__).resolve().parents[1] / "golden" / "verification_old_path.csv")
+    f = frozen[(frozen.symbol == r.symbol) & (frozen.ex_date == r.ex_date) & (frozen.action_type == r.action_type)]
+    assert len(f) == 1 and abs(round(f_view, 6) - float(f.iloc[0]["engine_factor_prev_bar"])) < 1e-9, (f_view, f.to_dict("records"))
     if r.action_type in ("SPLIT", "BONUS"):
         prod = float(np.prod([action_factor(a) for a in view.corporate_actions(lake_sym) if a["ex_date"] == ex and a["action_type"] in ("SPLIT", "BONUS")]))
         assert abs(prod / expected - 1) < 0.01 and abs(f_view / expected - 1) < 0.01

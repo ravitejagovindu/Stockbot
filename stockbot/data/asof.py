@@ -41,6 +41,7 @@ class SymbolInfo:
     first_date: Optional[date]       # first bar on or before as_of
     n_sessions: int                  # bars on or before as_of
     is_fund_or_etf: bool
+    listing_age_days: Optional[int] = None   # F2 rule (below); None if the symbol has no bar on or before as_of
 
 
 @lru_cache(maxsize=1)
@@ -181,7 +182,27 @@ class AsOfView:
         rows = self._conn.execute("select symbol from market_data_lake where trade_date=? order by symbol", (self._as_of.isoformat(),)).fetchall()
         return [r[0] for r in rows if r[0] not in (NIFTY, VIX)]
 
+    def _lake_first_date(self) -> Optional[date]:
+        r = self._conn.execute("select min(trade_date) from market_data_lake where symbol=?", (NIFTY,)).fetchone()
+        return date.fromisoformat(str(r[0])[:10]) if r and r[0] else None
+
     def symbol_info(self, symbol: str) -> SymbolInfo:
+        """First bar, bar count and listing age as of the view date.
+
+        Listing age in trading days follows the reviewer-approved F2 rule (ported from the old universe screener): a name that already trades on the lake's first day is not a
+        new listing, it counts as seasoned (252 + calendar days beyond a year); otherwise 550 or more calendar days since the first bar counts as seasoned the same way, and
+        younger names are aged by the number of their own sessions."""
         r = self._conn.execute("select min(trade_date), count(*) from market_data_lake where symbol=? and trade_date<=?", (symbol, self._as_of.isoformat())).fetchone()
         first = date.fromisoformat(str(r[0])[:10]) if r and r[0] else None
-        return SymbolInfo(symbol, first, int(r[1] or 0), symbol.strip().upper() in _fund_symbols())
+        n = int(r[1] or 0)
+        age = None
+        if first is not None:
+            lake_first = self._lake_first_date()
+            cal = (self._as_of - first).days
+            if lake_first is not None and first <= lake_first:
+                age = 252 + max(cal - 365, 0)
+            elif cal >= 550:
+                age = 252 + (cal - 365)
+            else:
+                age = n
+        return SymbolInfo(symbol, first, n, symbol.strip().upper() in _fund_symbols(), age)

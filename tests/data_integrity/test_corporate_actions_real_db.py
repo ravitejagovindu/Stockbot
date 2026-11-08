@@ -20,13 +20,15 @@ if RUN and not DB.exists():
 pytestmark = pytest.mark.skipif(not RUN, reason="needs STOCKBOT_DATA_TESTS=1 and the real database")
 
 V = Path(__file__).resolve().parents[2] / "data/reference/verified_corporate_actions.csv"
+GOLD = Path(__file__).resolve().parents[1] / "golden"
 ROWS = list(pd.read_csv(V).itertuples()) if V.exists() else []
 
 
 @pytest.fixture(scope="module")
 def session():
-    from stockbot.data_checks.f2_engine_scan import session_for
-    return session_for(str(DB))
+    """The read-only lake connection (the tests below pass it to verify_row, which reads through the as-of view)."""
+    from stockbot.data.lake import open_lake
+    return open_lake(DB)
 
 
 def test_the_log_is_loaded():
@@ -37,9 +39,15 @@ def test_the_log_is_loaded():
 
 @pytest.mark.parametrize("r", ROWS, ids=[f"{r.symbol}-{r.ex_date}-{r.action_type}" for r in ROWS])
 def test_verification_row_through_the_engine_path(session, r):
+    """Each of the verification rows passes through the as-of view AND its engine factor equals the one the OLD path gave (frozen in tests/golden)."""
     from stockbot.data_checks.f2_verify_engine_path import verify_row
     v = pd.read_csv(V)
     same = v[(v.symbol == r.symbol) & (v.ex_date == r.ex_date) & v.action_type.isin(["SPLIT", "BONUS"])]
     expected = float(np.prod(same["expected_factor"])) if r.action_type in ("SPLIT", "BONUS") else 1.0
     res = verify_row(session, r, expected)
     assert res["result"] == "PASS", res
+    frozen = pd.read_csv(GOLD / "verification_old_path.csv")
+    f = frozen[(frozen.symbol == r.symbol) & (frozen.ex_date == r.ex_date) & (frozen.action_type == r.action_type)]
+    assert len(f) == 1 and f.iloc[0]["result"] == "PASS"
+    assert abs(res["engine_factor_prev_bar"] - float(f.iloc[0]["engine_factor_prev_bar"])) < 1e-9, (res["engine_factor_prev_bar"], f.iloc[0]["engine_factor_prev_bar"])
+    assert res["raw_move"] == float(f.iloc[0]["raw_move"]) and res["adjusted_move"] == float(f.iloc[0]["adjusted_move"])

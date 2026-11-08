@@ -3,7 +3,7 @@
 Rules (same semantics as the legacy screener gates 2-4, computed from the as-of view only):
   - not a fund / ETF;
   - raw 20-session ADTV in crores strictly above ``min_adtv_cr`` (raw prices, never adjusted);
-  - listing age in trading days at least ``min_listing_age_trading_days``;
+  - listing age in trading days at least ``min_listing_age_trading_days`` (the F2 rule: a name already trading on the lake's first day is seasoned; see ``AsOfView.symbol_info``);
   - not under ASM/GSM surveillance on the as-of date (fail-closed: ``asm_ranges`` is supplied by the caller; a symbol listed there is excluded).
 The market-cap gate is parked (KI-001) and is NOT applied. Event proximity (results meetings) is a shared MECHANISM (added with the earnings view, D5); whether it blocks
 entries, and for how many days, is a per-strategy parameter, so it is not applied here.
@@ -29,7 +29,7 @@ def eligible_symbols(view, universe_cfg, *, overrides: Optional[Mapping] = None,
         if any(s <= day <= e for s, e in asm.get(sym.upper(), ())):
             continue
         info = view.symbol_info(sym)
-        if info.is_fund_or_etf or info.n_sessions < min_age:
+        if info.is_fund_or_etf or info.listing_age_days is None or info.listing_age_days < min_age:
             continue
         adtv = view.adtv(sym, adtv_period)
         if adtv is None or adtv / CRORE <= min_adtv:

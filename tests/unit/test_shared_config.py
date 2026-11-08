@@ -10,7 +10,8 @@ import yaml
 from stockbot.config.shared import SHARED_YAML, load_shared_config, parse_shared_config
 
 ROOT = Path(__file__).resolve().parents[2]
-LEGACY = yaml.safe_load(open(ROOT / "strategy_config.yaml", encoding="utf-8"))
+from tests.fixtures.golden import legacy as _legacy
+LEGACY = _legacy()["strategy_config"]            # the old strategy_config.yaml, frozen before it is deleted (sha256 in tests/golden/legacy_equivalence.json.gz)
 RAW = yaml.safe_load(open(SHARED_YAML, encoding="utf-8"))
 RENAMED = {"portfolio_risk": "risk", "exclusions": "earnings", "live": "trade_management", "validation_gates": "gates"}
 

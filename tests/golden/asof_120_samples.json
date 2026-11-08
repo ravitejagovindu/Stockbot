@@ -1,0 +1,1207 @@
+{
+ "rng_seed": 7,
+ "symbols": 40,
+ "dates_per_symbol": 3,
+ "samples": [
+  {
+   "symbol": "BIRLACOT",
+   "eval_date": "2013-08-14",
+   "lookback": 96,
+   "raw_sha256": "9e9439fadd555526c4f34670e4c2a4494280ed4c6879b1d1c111cb8da5023cc7",
+   "adj_sha256": "ba12033f0118e6e1791214ef5c0be24c479677e1f32ffbc51a62560242599d13",
+   "raw_last_close": 0.1,
+   "adj_first_close": 0.15,
+   "adj_last_close": 0.1
+  },
+  {
+   "symbol": "BIRLACOT",
+   "eval_date": "2015-06-04",
+   "lookback": 282,
+   "raw_sha256": "4c1c1029ea7f5aed53555ab409003aaf7b038e8a8a4f8fae4b02603fe3224ae1",
+   "adj_sha256": "725898b8e061747a52740cdcd1bf1e922f3a72c9e067d15566f1a7794c486391",
+   "raw_last_close": 0.15,
+   "adj_first_close": 0.15,
+   "adj_last_close": 0.15
+  },
+  {
+   "symbol": "BIRLACOT",
+   "eval_date": "2014-08-22",
+   "lookback": 166,
+   "raw_sha256": "8f4ba3934cd220571d0a68c05a0fcf004f95e0aa75789c514c0f911746590ad0",
+   "adj_sha256": "bf1d3384bc380fa2cbb7fa13cf76d06cca588301f264c777d9f2c2eaf7617e84",
+   "raw_last_close": 0.1,
+   "adj_first_close": 0.15,
+   "adj_last_close": 0.1
+  },
+  {
+   "symbol": "XLENERGY",
+   "eval_date": "2014-03-19",
+   "lookback": 181,
+   "raw_sha256": "390c5ade67463c2d37df7cef0e0af7101f3e2f62cee3fff9fc4249c1fd727c17",
+   "adj_sha256": "5bd27491f0b47ee3d49fd76585afc8e35a8c2fb927676160fbc1733139c6c62e",
+   "raw_last_close": 1.9,
+   "adj_first_close": 3.2,
+   "adj_last_close": 1.9
+  },
+  {
+   "symbol": "XLENERGY",
+   "eval_date": "2015-09-10",
+   "lookback": 282,
+   "raw_sha256": "c88868f17e66574dd93fed1bd427f90f276402265383ddb215e5bb30977cbaa0",
+   "adj_sha256": "458e26ce00eda4fddf84335f22dcfc6051d5921178ccff5e33466f0329948319",
+   "raw_last_close": 3.25,
+   "adj_first_close": 2.05,
+   "adj_last_close": 3.25
+  },
+  {
+   "symbol": "XLENERGY",
+   "eval_date": "2017-09-06",
+   "lookback": 282,
+   "raw_sha256": "aae5b7a0895327c432c227ada4e50af7defb72aaf24ea1eeb918c2ba18e84f61",
+   "adj_sha256": "eec5d21d1e5c3b6696ae010171fa723202f0cfb497ba7b4a5f9beab124767e32",
+   "raw_last_close": 1.65,
+   "adj_first_close": 2.75,
+   "adj_last_close": 1.65
+  },
+  {
+   "symbol": "ZEEMEDIA",
+   "eval_date": "2023-04-11",
+   "lookback": 282,
+   "raw_sha256": "aa7d11fa25c8fab0c9fbb920c358108c026b9b6f7431798d2cd05139c0ba839c",
+   "adj_sha256": "ca59ee5e397f544ca716083d16a1a0a3e63e4040f6bab78f3c9024ebb2a01ca7",
+   "raw_last_close": 9.1,
+   "adj_first_close": 9.4,
+   "adj_last_close": 9.1
+  },
+  {
+   "symbol": "ZEEMEDIA",
+   "eval_date": "2021-08-05",
+   "lookback": 282,
+   "raw_sha256": "90ffa7f15370aafecaf22ca3d8fd2a4a28e08f3a99315e391b21a4284ca6ab0c",
+   "adj_sha256": "cd050da72e8f281211fc34982d3c9b0f20d12348943905539132df144c652fd6",
+   "raw_last_close": 11.95,
+   "adj_first_close": 11.3,
+   "adj_last_close": 11.95
+  },
+  {
+   "symbol": "ZEEMEDIA",
+   "eval_date": "2013-08-30",
+   "lookback": 125,
+   "raw_sha256": "607b3b3edd662846e98881cc4ad52b35c313326d1e7d7812145f7354533cf6ae",
+   "adj_sha256": "7e773450632e0afbf3433031b17945919cf512fafd07edc6b1d010265562fc88",
+   "raw_last_close": 10.9,
+   "adj_first_close": 14.85,
+   "adj_last_close": 10.9
+  },
+  {
+   "symbol": "SHRIRAMFIN",
+   "eval_date": "2016-05-19",
+   "lookback": 282,
+   "raw_sha256": "058f8df464c658e6a95a3de041757dc011410b84e27dfdc5af190a396787dced",
+   "adj_sha256": "5113ea6337c8c36d48679929fbbd85f6125244f7e35d168ee9272a47bad9e866",
+   "raw_last_close": 1100.85,
+   "adj_first_close": 1083.4,
+   "adj_last_close": 1100.85
+  },
+  {
+   "symbol": "SHRIRAMFIN",
+   "eval_date": "2023-01-10",
+   "lookback": 282,
+   "raw_sha256": "8daa5f66306977c6e5f569363cb142d739c6636ba5bc21887aa5f2543d2a0e4f",
+   "adj_sha256": "70cb9ffb6eac5f4c909d4792085348e28c2f88bc93cdb6c6abaa6da73a4800d4",
+   "raw_last_close": 1333.9,
+   "adj_first_close": 1570.95,
+   "adj_last_close": 1333.9
+  },
+  {
+   "symbol": "SHRIRAMFIN",
+   "eval_date": "2020-06-26",
+   "lookback": 282,
+   "raw_sha256": "5b6e718b470ea35c6f17c4a0b8d8c4c798f496d3380c5e844b1c3b5b1beca452",
+   "adj_sha256": "3f8fb9f0e52a217e19aa54bb52f6d0203c24cc16ba1a856ae8a13b544c9b3267",
+   "raw_last_close": 704.9,
+   "adj_first_close": 1023.0,
+   "adj_last_close": 704.9
+  },
+  {
+   "symbol": "RAILTEL",
+   "eval_date": "2026-01-22",
+   "lookback": 282,
+   "raw_sha256": "a7772d38cd6a6debc4098696daa0b24bfb5f5baf66554bb0b8fb921c893c23b7",
+   "adj_sha256": "8283ddee447728179e26f65987226a2ea8fc196431a75e9ba300efe1e8ac4795",
+   "raw_last_close": 336.1,
+   "adj_first_close": 417.4,
+   "adj_last_close": 336.1
+  },
+  {
+   "symbol": "RAILTEL",
+   "eval_date": "2023-03-10",
+   "lookback": 282,
+   "raw_sha256": "58fe731a1601adb97aa56eab7007bf32aed4abdb9202d98e603db2efa50f3b13",
+   "adj_sha256": "df515064dc91b7845b2c741cb0f510015b7c34b781df2ab087759bcba2a07a8f",
+   "raw_last_close": 108.65,
+   "adj_first_close": 117.7,
+   "adj_last_close": 108.65
+  },
+  {
+   "symbol": "RAILTEL",
+   "eval_date": "2025-01-08",
+   "lookback": 282,
+   "raw_sha256": "b9b604156b34ab543b3f740b176515faa67314cd0fc74fc3ac1248766672fd60",
+   "adj_sha256": "6243371210fcb7a4f62d81706a3983c5a114ef0a0d16d8d56bd39a978e2c77d5",
+   "raw_last_close": 409.55,
+   "adj_first_close": 270.95,
+   "adj_last_close": 409.55
+  },
+  {
+   "symbol": "SEPOWER",
+   "eval_date": "2014-01-21",
+   "lookback": 221,
+   "raw_sha256": "c2ca1562cfa3ccd37739fb79c51faaef60ae2f953feb6462eb3651d542a1ac4a",
+   "adj_sha256": "98772947234057561e2f953451fb7d34de0df100768f6aa6889ee18ffe25af86",
+   "raw_last_close": 8.2,
+   "adj_first_close": 20.9,
+   "adj_last_close": 8.2
+  },
+  {
+   "symbol": "SEPOWER",
+   "eval_date": "2019-08-05",
+   "lookback": 282,
+   "raw_sha256": "9e0e8302adb14212c0431b9198b9dd5c304b818523017f9b9340e4360a0c0fa0",
+   "adj_sha256": "599124b8346e377307219c849151b68ee6add4b3fb0f93f1bf5c912e04d12719",
+   "raw_last_close": 2.95,
+   "adj_first_close": 8.0,
+   "adj_last_close": 2.95
+  },
+  {
+   "symbol": "SEPOWER",
+   "eval_date": "2013-07-01",
+   "lookback": 121,
+   "raw_sha256": "d4d10b59e0dd0112f9d9f659701ff9768c0bf59c64ef3206e23f98c58855a97b",
+   "adj_sha256": "3943547e5afc60dc789fd6e84714321341089ea6c5e6630cf2af328b925309aa",
+   "raw_last_close": 13.35,
+   "adj_first_close": 20.9,
+   "adj_last_close": 13.35
+  },
+  {
+   "symbol": "WIPRO",
+   "eval_date": "2017-06-16",
+   "lookback": 282,
+   "raw_sha256": "45d55963ce03a3b01749ac4f0456607cc29ecb602016b4b0873cdf1dce1e728f",
+   "adj_sha256": "987df9ad66a368205b721630cb9ccf4d9b896589c077e8fe40b63162d9772bb5",
+   "raw_last_close": 255.25,
+   "adj_first_close": 274.25,
+   "adj_last_close": 255.25
+  },
+  {
+   "symbol": "WIPRO",
+   "eval_date": "2015-01-29",
+   "lookback": 282,
+   "raw_sha256": "90151442c858e08e4b9a71ce262c2ca4177a73f3d50516d131a6ca644253a896",
+   "adj_sha256": "91caf947fa42f28b9269721fb0c821faa86e077981b378daf734848596ab31d1",
+   "raw_last_close": 602.7,
+   "adj_first_close": 492.9,
+   "adj_last_close": 602.7
+  },
+  {
+   "symbol": "WIPRO",
+   "eval_date": "2016-02-11",
+   "lookback": 282,
+   "raw_sha256": "1795b034a7870e0acc4e59625f1841659a3419b34cc0ef9083c25f11d5b92157",
+   "adj_sha256": "7a1082be1d4e0b8a20a9244687c24a0a0b910cb1496c70087e7403d753ce25dc",
+   "raw_last_close": 517.2,
+   "adj_first_close": 545.5,
+   "adj_last_close": 517.2
+  },
+  {
+   "symbol": "FMCGIETF",
+   "eval_date": "2023-07-27",
+   "lookback": 282,
+   "raw_sha256": "29ffb8f5a34c2244567c7ee0364111e0dd99bfcd112323da17633cfacf98a6dd",
+   "adj_sha256": "3c60189607113cbf5b8ad8a5bd417f4103d92665c1b9c27088629f843472b38e",
+   "raw_last_close": 541.96,
+   "adj_first_close": 380.48,
+   "adj_last_close": 541.96
+  },
+  {
+   "symbol": "FMCGIETF",
+   "eval_date": "2023-09-06",
+   "lookback": 282,
+   "raw_sha256": "e3eb78b00220c9ef3a5b5fa99ec38baef34fbfc22aec4b62d9ec17248f85410e",
+   "adj_sha256": "33eba230efbfd3e1016c9da08a79e4fa12d4c2941a598549a545493a85057612",
+   "raw_last_close": 536.39,
+   "adj_first_close": 422.02,
+   "adj_last_close": 536.39
+  },
+  {
+   "symbol": "FMCGIETF",
+   "eval_date": "2024-08-05",
+   "lookback": 282,
+   "raw_sha256": "43644e7f742084d1cc5d74e79cff9862fadea86649581f722ff4762f4d85ece3",
+   "adj_sha256": "e48c57f0fcfb84d82bcb2f1ad30a6d84b8b638e6cb8e24f01c43e64c5cf7840b",
+   "raw_last_close": 64.51,
+   "adj_first_close": 539.35,
+   "adj_last_close": 64.51
+  },
+  {
+   "symbol": "AARON",
+   "eval_date": "2024-08-19",
+   "lookback": 282,
+   "raw_sha256": "414799d1a72b8d8223f76afe19e2cd4a4f19b0869cc0d0773a70b69bcc0104fb",
+   "adj_sha256": "c83166f8325d93b4b9d4d6da57f0d05e74233fc47bcf40ecacaf3ab90e332fc2",
+   "raw_last_close": 271.35,
+   "adj_first_close": 183.1,
+   "adj_last_close": 271.35
+  },
+  {
+   "symbol": "AARON",
+   "eval_date": "2024-09-17",
+   "lookback": 282,
+   "raw_sha256": "53de14f1e05c646583bf3190e163f6a037951aba9e6f4024cb52ec6b665a31b1",
+   "adj_sha256": "3844465a84d8edf4c01f9260a33e42195e2ea447cccd03d4aa8e5c4882de253f",
+   "raw_last_close": 274.05,
+   "adj_first_close": 218.0,
+   "adj_last_close": 274.05
+  },
+  {
+   "symbol": "AARON",
+   "eval_date": "2023-11-02",
+   "lookback": 282,
+   "raw_sha256": "b6aba1fa9738ae5c235bf9d3f1246754944d20d97daf2624e092c34aae681720",
+   "adj_sha256": "448c62224a5246c84a004669aa5f67f13df6e29031b20fd925268b61ee62cab2",
+   "raw_last_close": 257.45,
+   "adj_first_close": 112.45,
+   "adj_last_close": 257.45
+  },
+  {
+   "symbol": "GVPTECH",
+   "eval_date": "2026-07-29",
+   "lookback": 282,
+   "raw_sha256": "c20e07d68b4f358692f22fba6c6b8d00dceba63945a70566a1ee83c80941c40c",
+   "adj_sha256": "5ae81245a4665327261bf968862adb29baecb8fc6782079bfd5eb530791207e9",
+   "raw_last_close": 6.94,
+   "adj_first_close": 9.91,
+   "adj_last_close": 6.94
+  },
+  {
+   "symbol": "GVPTECH",
+   "eval_date": "2025-11-25",
+   "lookback": 282,
+   "raw_sha256": "0738af6ab22cd7d90a9b6378109d08622dac4aecba3572330edc42491e3fdecd",
+   "adj_sha256": "e9f1ab8bd4655893f6145c4c2f3731cd121510f8804d3f91e14f4d8dbdfc30e1",
+   "raw_last_close": 9.01,
+   "adj_first_close": 12.37,
+   "adj_last_close": 9.01
+  },
+  {
+   "symbol": "GVPTECH",
+   "eval_date": "2025-08-01",
+   "lookback": 282,
+   "raw_sha256": "ba1b0fccd7e4f72bf1d659636c73c57f02ce1f9dde379ea30ea2008e9f216d43",
+   "adj_sha256": "ee49b26e825eca460917a422707f07b6df923c9961632346ae1d6174cc4da0da",
+   "raw_last_close": 10.73,
+   "adj_first_close": 12.5,
+   "adj_last_close": 10.73
+  },
+  {
+   "symbol": "DODLA",
+   "eval_date": "2023-05-23",
+   "lookback": 282,
+   "raw_sha256": "6bad21da0be22a5cc2c6d7bfb8d04f8f12e586678eaf02c18c61b4bfc0e9e88d",
+   "adj_sha256": "4e241c71a53060f5a8efd660ed828b2842a26e2dfe64b8623a115f758b30e098",
+   "raw_last_close": 500.55,
+   "adj_first_close": 471.9,
+   "adj_last_close": 500.55
+  },
+  {
+   "symbol": "DODLA",
+   "eval_date": "2022-10-03",
+   "lookback": 282,
+   "raw_sha256": "a897461970a2e648dbef48859e260e98f9f520021f0cdeb6be70be4d35efacef",
+   "adj_sha256": "b3c7ef57b3be5ea8867419712f014788e4bc8cbafbca8d8327c6312125f4a828",
+   "raw_last_close": 501.8,
+   "adj_first_close": 595.55,
+   "adj_last_close": 501.8
+  },
+  {
+   "symbol": "DODLA",
+   "eval_date": "2023-10-27",
+   "lookback": 282,
+   "raw_sha256": "8feea23c4685d1ee450d58680f35689862e73fe936480da92a06805dd03aa42a",
+   "adj_sha256": "c30fea1cb0cfd53c0847c67baf845493601e9385eab884aa8241d293a71e2ace",
+   "raw_last_close": 703.35,
+   "adj_first_close": 552.95,
+   "adj_last_close": 703.35
+  },
+  {
+   "symbol": "SUPERHOUSE",
+   "eval_date": "2024-09-11",
+   "lookback": 282,
+   "raw_sha256": "224fc5a4f293884bd09294f720bb24667fd75c88764f70ed7028943683a22e1d",
+   "adj_sha256": "c8114247f204efb984a617caedf08c111d562b86803196b3e54743b1eaad989e",
+   "raw_last_close": 218.24,
+   "adj_first_close": 209.35,
+   "adj_last_close": 218.24
+  },
+  {
+   "symbol": "SUPERHOUSE",
+   "eval_date": "2015-12-02",
+   "lookback": 282,
+   "raw_sha256": "ddb901e554cfa7609a1f49f69683f4bedd66da495cc731af46903ea7df8f9575",
+   "adj_sha256": "40d84f88500866885bfe657b06cc457f9068dc5c107d34c7140bc91e35c45c1c",
+   "raw_last_close": 174.1,
+   "adj_first_close": 270.6,
+   "adj_last_close": 174.1
+  },
+  {
+   "symbol": "SUPERHOUSE",
+   "eval_date": "2019-08-27",
+   "lookback": 282,
+   "raw_sha256": "78f53277475e25124dfb3aa4bb717153438cf46da4642ed9678faa9776a7e1ab",
+   "adj_sha256": "808a0853c9388dff2a84289957a37b55ec35049427de94132c514728d50bbf82",
+   "raw_last_close": 72.6,
+   "adj_first_close": 132.2,
+   "adj_last_close": 72.6
+  },
+  {
+   "symbol": "PHARMABEES",
+   "eval_date": "2021-07-20",
+   "lookback": 10,
+   "raw_sha256": "b5e1165142e032a821dcf04cea1d97662de9a500d3bcce3e1745d211f868ec3f",
+   "adj_sha256": "d533a357abb48813e426f0e236fcb55c2335c52b757500f69b23cb895149d724",
+   "raw_last_close": 14.54,
+   "adj_first_close": 14.49,
+   "adj_last_close": 14.54
+  },
+  {
+   "symbol": "PHARMABEES",
+   "eval_date": "2025-01-22",
+   "lookback": 282,
+   "raw_sha256": "842ac0767a860681c863ec36171ab21d79cc37207236bc9618362b83464a9a15",
+   "adj_sha256": "7e5dcd837ad51ceae111555abf9dfa322fb1eebeec09a0bbf847137e49267bd6",
+   "raw_last_close": 22.44,
+   "adj_first_close": 16.41,
+   "adj_last_close": 22.44
+  },
+  {
+   "symbol": "PHARMABEES",
+   "eval_date": "2022-08-24",
+   "lookback": 282,
+   "raw_sha256": "ab4b6f4a45413f54c983f5538727b53f55e3edf2ae23b8b37aac8d988737e6c9",
+   "adj_sha256": "2d6abf7b44127919dca324c9d43579cf7ea565d7deeee89e06ef2b1c59a141c9",
+   "raw_last_close": 12.77,
+   "adj_first_close": 14.49,
+   "adj_last_close": 12.77
+  },
+  {
+   "symbol": "SERVOTECH",
+   "eval_date": "2024-12-11",
+   "lookback": 282,
+   "raw_sha256": "8cbb44cf4ca1130c5bbbf1e3c1bdbb3241d23df10272099764a62e2c8367ccaf",
+   "adj_sha256": "16ae5af60988f8de35fa956417391d3620c054e9f36f21bd86741bc96f017ef9",
+   "raw_last_close": 181.1,
+   "adj_first_close": 5.8500000000000005,
+   "adj_last_close": 181.1
+  },
+  {
+   "symbol": "SERVOTECH",
+   "eval_date": "2022-03-29",
+   "lookback": 85,
+   "raw_sha256": "5a063b332d42d452276433f5e713106f33e55468c195d636a88508c551bdcb53",
+   "adj_sha256": "1d8fbd6bc3d7a31810052b069a4e4b9107b7a003c4919f99f2414ce58c155c9c",
+   "raw_last_close": 89.7,
+   "adj_first_close": 25.8,
+   "adj_last_close": 89.7
+  },
+  {
+   "symbol": "SERVOTECH",
+   "eval_date": "2026-05-04",
+   "lookback": 282,
+   "raw_sha256": "8c9665b98c6316f04bc323d641ea6dc9a0a92e638300db1f1984f847b32f9b14",
+   "adj_sha256": "55d47c622a36992b4baefbd71a8ce0fa97fbb9dfcbe2bcd304c4b0666328fcec",
+   "raw_last_close": 96.17,
+   "adj_first_close": 120.76,
+   "adj_last_close": 96.17
+  },
+  {
+   "symbol": "UJAAS",
+   "eval_date": "2014-02-14",
+   "lookback": 282,
+   "raw_sha256": "f9f6d78032c8a68712c0afa995dc635278ac3bb0970f7886de51079b1ee35532",
+   "adj_sha256": "2abb537bf26dea4c0294b596cbb7a746723ce26797f12bea77bcb3ff2e0706a9",
+   "raw_last_close": 14.0,
+   "adj_first_close": 24.1,
+   "adj_last_close": 14.0
+  },
+  {
+   "symbol": "UJAAS",
+   "eval_date": "2023-11-02",
+   "lookback": 282,
+   "raw_sha256": "e7d0efacc6caaf03dafc5489a636b15918794f137b25f9dae523b246b5976051",
+   "adj_sha256": "eb9dad9d1b5beafcf0918693364333b38942b815005fc02fcd3fcd46a48dc1c2",
+   "raw_last_close": 2.25,
+   "adj_first_close": 4.0,
+   "adj_last_close": 2.25
+  },
+  {
+   "symbol": "UJAAS",
+   "eval_date": "2020-06-30",
+   "lookback": 282,
+   "raw_sha256": "66b04db5ee33c86b251eba7dc6080ebf99a26cb80f004d6eb5d2a2c57b8a4925",
+   "adj_sha256": "38d378d3f95a94a6aae19f62c50d75be01846e7270bfba56ec3fc6a71366caa8",
+   "raw_last_close": 9.5,
+   "adj_first_close": 6.35,
+   "adj_last_close": 9.5
+  },
+  {
+   "symbol": "SIGIND",
+   "eval_date": "2026-05-14",
+   "lookback": 282,
+   "raw_sha256": "b53a16edb3b30e03e6a1cd409c72ddee085ac7a6a94b25d0f16d5a4e1033081c",
+   "adj_sha256": "13d3d3fb6c8efee09b262de183fe97ae92558c7013b866eb04fe8304abbdf841",
+   "raw_last_close": 50.83,
+   "adj_first_close": 72.88,
+   "adj_last_close": 50.83
+  },
+  {
+   "symbol": "SIGIND",
+   "eval_date": "2023-01-05",
+   "lookback": 282,
+   "raw_sha256": "fe2e9c825d42dbad1682b3d2b22d4ba026b234043a5c7af8f4c19166ceb514a2",
+   "adj_sha256": "0eae64e52da7ad41e997997f02334e147413882b7d7ff04c7449d60bf557a79a",
+   "raw_last_close": 39.1,
+   "adj_first_close": 39.2,
+   "adj_last_close": 39.1
+  },
+  {
+   "symbol": "SIGIND",
+   "eval_date": "2025-12-12",
+   "lookback": 282,
+   "raw_sha256": "4d676aca1e5628e46b4c290317003a7b4377befbf213ba1b67bb81a4931a4fb1",
+   "adj_sha256": "6506ae44f35bd6646494c908a57d1d56eadeb2c29fcbaec06f79af061dac5341",
+   "raw_last_close": 55.8,
+   "adj_first_close": 76.48,
+   "adj_last_close": 55.8
+  },
+  {
+   "symbol": "LGBBROSLTD",
+   "eval_date": "2015-01-14",
+   "lookback": 282,
+   "raw_sha256": "5c0bc40c1c454477329e3f28fced11a3d79c9972d252914818d62c55a1147fe4",
+   "adj_sha256": "f9f8bef64f795c6e7c896e3b44b884a2526bf3bcc6c3e4864ae7f3c83de5a780",
+   "raw_last_close": 627.15,
+   "adj_first_close": 112.5,
+   "adj_last_close": 627.15
+  },
+  {
+   "symbol": "LGBBROSLTD",
+   "eval_date": "2020-10-14",
+   "lookback": 282,
+   "raw_sha256": "5a52cdcfc788551f5a4f046bd741b253d7c49957b9dfc544c7d0d5b53d4b6eef",
+   "adj_sha256": "bb3cf5664ba1fc19e27beb6b46456482773c895426f7f15a5b4b905d64bd8185",
+   "raw_last_close": 234.1,
+   "adj_first_close": 339.75,
+   "adj_last_close": 234.1
+  },
+  {
+   "symbol": "LGBBROSLTD",
+   "eval_date": "2015-09-03",
+   "lookback": 282,
+   "raw_sha256": "2a8de3adcd913abe73f384ab5d416a5a012d75ceb86cfd3c7bd69b561cbe966d",
+   "adj_sha256": "7a19db5f90abd81e66bba57c23074101e35a205fc88ce9de7be247cfde212fac",
+   "raw_last_close": 471.6,
+   "adj_first_close": 425.8,
+   "adj_last_close": 471.6
+  },
+  {
+   "symbol": "SINTERCOM",
+   "eval_date": "2024-03-12",
+   "lookback": 282,
+   "raw_sha256": "d9cf1cce5830e3e9656da3f616527d198247b17a64d94899e3f605c22153f879",
+   "adj_sha256": "e48bb57f02ef5b0838c4ba629c8139acc9f973e857133e4e9803f24804ac9dc6",
+   "raw_last_close": 126.25,
+   "adj_first_close": 84.35,
+   "adj_last_close": 126.25
+  },
+  {
+   "symbol": "SINTERCOM",
+   "eval_date": "2021-01-15",
+   "lookback": 71,
+   "raw_sha256": "f3ff0372dae483bf8880838b17760265c3498feced5ab6ad5915d05ca43a214b",
+   "adj_sha256": "7e37857a0d05ba91f42703635827bcf9112a8a9654cf6505fc663afde9235b70",
+   "raw_last_close": 79.2,
+   "adj_first_close": 83.05,
+   "adj_last_close": 79.2
+  },
+  {
+   "symbol": "SINTERCOM",
+   "eval_date": "2022-03-07",
+   "lookback": 282,
+   "raw_sha256": "465c2da8b74529096fa56405e0b2d5742c016a0a024f4dda709b3da41c7e2db0",
+   "adj_sha256": "629218084cbb6a727e70e43da417fd988cdef0da825fb675f55c274bbbe59a45",
+   "raw_last_close": 89.6,
+   "adj_first_close": 79.2,
+   "adj_last_close": 89.6
+  },
+  {
+   "symbol": "EQUAL50",
+   "eval_date": "2026-08-17",
+   "lookback": 282,
+   "raw_sha256": "e98575045b7c178b7e16d1beb8dd2ded62127427870c54c6f9ab392672b6896e",
+   "adj_sha256": "92bdcc96d2efbd690fde4327c4847f8c63017e4605a2dc183c34dcf718da53b4",
+   "raw_last_close": 336.8,
+   "adj_first_close": 316.49,
+   "adj_last_close": 336.8
+  },
+  {
+   "symbol": "EQUAL50",
+   "eval_date": "2026-04-16",
+   "lookback": 226,
+   "raw_sha256": "96705163ac9428ee552a62e06cb666a9bc880771e62942f5123792fb1cdc9a22",
+   "adj_sha256": "04f435ebe09783bf483780f71dba49477d4922acc507af3a414956ed65b71791",
+   "raw_last_close": 325.12,
+   "adj_first_close": 313.2,
+   "adj_last_close": 325.12
+  },
+  {
+   "symbol": "EQUAL50",
+   "eval_date": "2026-09-30",
+   "lookback": 282,
+   "raw_sha256": "5964fe59a73ad431e2483b8908bfeff133acef288e970b4602a4e5de0a5831f6",
+   "adj_sha256": "a481ca02c033e1138fdecf94f11deb3fe7e498295b11e75e27db736dc23a8e0d",
+   "raw_last_close": 312.57,
+   "adj_first_close": 309.34,
+   "adj_last_close": 312.57
+  },
+  {
+   "symbol": "PRIMO",
+   "eval_date": "2026-10-08",
+   "lookback": 282,
+   "raw_sha256": "f0c3c3f8be4d99834a270ea6275711d7d1edca1deec11d22d94dfb7ab5210fff",
+   "adj_sha256": "37bde9a048221b3c9fdd1bfdce694b2aa64f2fac51997d9c307ffa57560419f3",
+   "raw_last_close": 24.58,
+   "adj_first_close": 27.06,
+   "adj_last_close": 24.58
+  },
+  {
+   "symbol": "PRIMO",
+   "eval_date": "2025-05-23",
+   "lookback": 23,
+   "raw_sha256": "58f3850e77fcbeed952ed9a56042192232d42bb0d793507ee0d73d14e7285825",
+   "adj_sha256": "8f90d3f365efc1446a66878e81a2d0d66ee38a85876a70b16ab007e07f3c2cf8",
+   "raw_last_close": 25.27,
+   "adj_first_close": 27.96,
+   "adj_last_close": 25.27
+  },
+  {
+   "symbol": "PRIMO",
+   "eval_date": "2025-11-11",
+   "lookback": 140,
+   "raw_sha256": "0fc4fe088b88fd277341c259cc3ba5e899ff0f6389f854cc46180c3619b67ecb",
+   "adj_sha256": "8353dc31ee3bea8c23fc787f454a0cbc3e8003d90b7b0751e35807c8c9558887",
+   "raw_last_close": 22.28,
+   "adj_first_close": 27.96,
+   "adj_last_close": 22.28
+  },
+  {
+   "symbol": "GAEL",
+   "eval_date": "2016-04-26",
+   "lookback": 282,
+   "raw_sha256": "49a41e674ced02a9ab90a75374df190627a2b344f11659e516dacb549a990ec2",
+   "adj_sha256": "3e3d00af65b9ee6ed83bd9a9e72e96da2e13845110b3ad4ea0280223d1dea7f7",
+   "raw_last_close": 53.9,
+   "adj_first_close": 39.75,
+   "adj_last_close": 53.9
+  },
+  {
+   "symbol": "GAEL",
+   "eval_date": "2022-11-04",
+   "lookback": 282,
+   "raw_sha256": "47c72b58cde4022c3927d4b9540e8c8023bc322d1cfaaa8d5a968c86fe46b507",
+   "adj_sha256": "0f6b9a459a8e3ba3edae753da8c7425f2ac8a1ef71a756086f7bffe39d746630",
+   "raw_last_close": 251.2,
+   "adj_first_close": 181.55,
+   "adj_last_close": 251.2
+  },
+  {
+   "symbol": "GAEL",
+   "eval_date": "2013-07-08",
+   "lookback": 131,
+   "raw_sha256": "f82a45b506232660c6b92af0a3cf0a8455933da0d4b94dd0bd3b336a4a918e9f",
+   "adj_sha256": "dd477dc910289c03ec90baa7ce61c5ad0a0dd866d086f7bdc7b45e4373422bc8",
+   "raw_last_close": 21.45,
+   "adj_first_close": 25.9,
+   "adj_last_close": 21.45
+  },
+  {
+   "symbol": "GICRE",
+   "eval_date": "2024-08-27",
+   "lookback": 282,
+   "raw_sha256": "7230ad54792d6392293609469ef6c9f4a30161536cceb7381469fa997cdb14a8",
+   "adj_sha256": "cfe0e6453452e82c4cb91289613a8b21f16e5392f4cf85f8743c295fdc7d8ef8",
+   "raw_last_close": 414.3,
+   "adj_first_close": 190.2,
+   "adj_last_close": 414.3
+  },
+  {
+   "symbol": "GICRE",
+   "eval_date": "2022-11-29",
+   "lookback": 282,
+   "raw_sha256": "6f18c0b47e99b29c5b9dd7bd5c36448d38550821c2b462546a7153ac686a9696",
+   "adj_sha256": "026a2f6cff72bb17a249e690a7ff370fcd65440218d7c29f3e2e22c3b8774993",
+   "raw_last_close": 147.35,
+   "adj_first_close": 145.85,
+   "adj_last_close": 147.35
+  },
+  {
+   "symbol": "GICRE",
+   "eval_date": "2022-01-05",
+   "lookback": 282,
+   "raw_sha256": "ea4d9882dcd7c86ec0f952c690124775a704ed6507a4266fb0d093fd9ed44f29",
+   "adj_sha256": "2a5d332f08e46344d5692f453c70e4772695f6fa9d31ce21a1179ba53d139248",
+   "raw_last_close": 142.65,
+   "adj_first_close": 126.05,
+   "adj_last_close": 142.65
+  },
+  {
+   "symbol": "KINGFA",
+   "eval_date": "2021-03-19",
+   "lookback": 282,
+   "raw_sha256": "650ff2723af7fa630b3a369d8e45b2780ba357deb923a2119d2c739ae59c5870",
+   "adj_sha256": "fe58b42dc0572c7a967ae36d9afea7251617d533eb8ceec8764ca45dd551fa05",
+   "raw_last_close": 626.45,
+   "adj_first_close": 618.1,
+   "adj_last_close": 626.45
+  },
+  {
+   "symbol": "KINGFA",
+   "eval_date": "2024-04-08",
+   "lookback": 282,
+   "raw_sha256": "03cc41801064fc4d75ddf8511ad334ea7f54cdd5ce2dd2dab9bbfd7fa149cad6",
+   "adj_sha256": "0788fc2284148a18f3fe90054951aff2a09cb7455ad62930fee1b032a33bdbe4",
+   "raw_last_close": 1862.2,
+   "adj_first_close": 1368.05,
+   "adj_last_close": 1862.2
+  },
+  {
+   "symbol": "KINGFA",
+   "eval_date": "2020-01-28",
+   "lookback": 282,
+   "raw_sha256": "76379e3843f286ca5015a303f55638eb961eb850058df2d308300198cac697b9",
+   "adj_sha256": "d09ccfa5dcb06584a4a0970c83ed8e7fc62f22597ef50276980fe9bd7d6bca0d",
+   "raw_last_close": 680.7,
+   "adj_first_close": 719.0,
+   "adj_last_close": 680.7
+  },
+  {
+   "symbol": "KARMAENG",
+   "eval_date": "2023-07-21",
+   "lookback": 282,
+   "raw_sha256": "e0daca4cdb377b4435499e562416c7cd2dc99af0dc0be80fcb381321e3a01944",
+   "adj_sha256": "4e2a9d12cd6528730e2a975942344e6cedf036d5ce4615b27b30cc7d096f662b",
+   "raw_last_close": 41.4,
+   "adj_first_close": 14.5,
+   "adj_last_close": 41.4
+  },
+  {
+   "symbol": "KARMAENG",
+   "eval_date": "2017-08-22",
+   "lookback": 282,
+   "raw_sha256": "0f01ca747f1844368990453f20f816a1f10adba0087f9a6ff09a607347c77eea",
+   "adj_sha256": "89cf1d2dbd23fd0656b57117c66f4f95ec3d9899404421a96e6f89b2d03ed2ab",
+   "raw_last_close": 36.0,
+   "adj_first_close": 17.2,
+   "adj_last_close": 36.0
+  },
+  {
+   "symbol": "KARMAENG",
+   "eval_date": "2022-04-11",
+   "lookback": 282,
+   "raw_sha256": "5a9fc74f69432e7e90d4820f50457dd56d3a073fdbbefb559713b91033877d7d",
+   "adj_sha256": "559063b45a1cbdd804f5a7a5b8ed305fa357eef4840a7e344b6b7e407fb0b638",
+   "raw_last_close": 32.7,
+   "adj_first_close": 8.6,
+   "adj_last_close": 32.7
+  },
+  {
+   "symbol": "GULPOLY",
+   "eval_date": "2026-06-10",
+   "lookback": 282,
+   "raw_sha256": "ca44e83b841a659514cde4f3dbaa6c48e6ac3bc4fb3a0678a20ceb353648619d",
+   "adj_sha256": "9114047de2e1559eaf5235a93b8d6ed63642d2131086e05d3de95a0efb264672",
+   "raw_last_close": 204.85,
+   "adj_first_close": 207.4,
+   "adj_last_close": 204.85
+  },
+  {
+   "symbol": "GULPOLY",
+   "eval_date": "2019-08-30",
+   "lookback": 282,
+   "raw_sha256": "8f15f2a648d03aabf36d8ec91742a85e6ee2c4304336edf6ecc57e6dd0c87d46",
+   "adj_sha256": "161371a73bc9599efa026100383bba1bbc40ddca813926ebb06ad47f9aaba426",
+   "raw_last_close": 46.75,
+   "adj_first_close": 56.0,
+   "adj_last_close": 46.75
+  },
+  {
+   "symbol": "GULPOLY",
+   "eval_date": "2016-06-07",
+   "lookback": 282,
+   "raw_sha256": "d41ef259e2a8de0fa48ea938760efced1dd03b3d40a60ebeded164ef759b8667",
+   "adj_sha256": "e14f6227aebe5351707b828e41ac6ea4aaf3907f11c19f9e356585af58aea5f8",
+   "raw_last_close": 334.75,
+   "adj_first_close": 312.95,
+   "adj_last_close": 334.75
+  },
+  {
+   "symbol": "SHK",
+   "eval_date": "2016-09-27",
+   "lookback": 214,
+   "raw_sha256": "1844f5be233e98ce5d4aa0d9c3ae7f3a96d5c0bf6bb2602c1811dc1da29f677c",
+   "adj_sha256": "e553d2e371b24d9ebb1ade8089a737118452fc3010180db466cccae9f7e56938",
+   "raw_last_close": 309.6,
+   "adj_first_close": 208.25,
+   "adj_last_close": 309.6
+  },
+  {
+   "symbol": "SHK",
+   "eval_date": "2023-10-27",
+   "lookback": 282,
+   "raw_sha256": "5c53cbfb7f161270bebac6ec8309aed68542e2524e89a88a7b3ae1f0bc14e99a",
+   "adj_sha256": "1878c16f1d13e17813fb20df1576280a60bf3ba12ef9a5995333336d0a8183da",
+   "raw_last_close": 141.05,
+   "adj_first_close": 150.1,
+   "adj_last_close": 141.05
+  },
+  {
+   "symbol": "SHK",
+   "eval_date": "2020-07-24",
+   "lookback": 282,
+   "raw_sha256": "af51b2cdd7a78d3f9eb8a778b0d13a8edd83278f43e814cef0263ab634d3709b",
+   "adj_sha256": "bb46e44676aad0fd2d86f6ff9a7f099ff91959d6d2d7b5116ad1bd5849a09d04",
+   "raw_last_close": 76.75,
+   "adj_first_close": 153.75,
+   "adj_last_close": 76.75
+  },
+  {
+   "symbol": "TI",
+   "eval_date": "2017-06-13",
+   "lookback": 282,
+   "raw_sha256": "db10783bb3f60669b29719559ef98e0de131e47ff98f5e91cc741b63082a6dd8",
+   "adj_sha256": "5823816bb18b67e8c2446cfcd54fca448e9427b9c9c19c4cf0ec3843acc3bac5",
+   "raw_last_close": 11.35,
+   "adj_first_close": 17.4,
+   "adj_last_close": 11.35
+  },
+  {
+   "symbol": "TI",
+   "eval_date": "2022-09-13",
+   "lookback": 282,
+   "raw_sha256": "e8c2c8ede1b04d4a9c2878747d813bbfdb26ecff6459bd2d7ab103ab21175d78",
+   "adj_sha256": "e9081df64129c7add17adba820ca7eb5e36a2c12ca6573953d4653908ee0e1f3",
+   "raw_last_close": 79.85,
+   "adj_first_close": 28.2,
+   "adj_last_close": 79.85
+  },
+  {
+   "symbol": "TI",
+   "eval_date": "2025-02-20",
+   "lookback": 282,
+   "raw_sha256": "29b76050e762eb447645591c865e51fcb111dfc00f4516dcd3967469fe0e19a5",
+   "adj_sha256": "fd02e67ad50d50ef5f9340fc3084eec8c836264d7fabc7b217b7209f32221889",
+   "raw_last_close": 255.4,
+   "adj_first_close": 250.65,
+   "adj_last_close": 255.4
+  },
+  {
+   "symbol": "JISLDVREQS",
+   "eval_date": "2016-07-19",
+   "lookback": 282,
+   "raw_sha256": "7da772e68fa8211ecce11361b185c58c7554232a24beb240be6f58f19a3b61a2",
+   "adj_sha256": "84cfb455fe394950baf197f139732e1ac261965fa65b20d4789dcd3e92751fc9",
+   "raw_last_close": 45.75,
+   "adj_first_close": 38.2,
+   "adj_last_close": 45.75
+  },
+  {
+   "symbol": "JISLDVREQS",
+   "eval_date": "2025-01-24",
+   "lookback": 282,
+   "raw_sha256": "a1e3d9691ed0def9a99264b27490d430a2b9d4f60e7b459bb3e48bdb49b20f65",
+   "adj_sha256": "3a54bdbaa2e0c7132c9e5fdf4bb6b7bb0ccaf9eec2cf202386aa2cfad62a3263",
+   "raw_last_close": 37.29,
+   "adj_first_close": 34.05,
+   "adj_last_close": 37.29
+  },
+  {
+   "symbol": "JISLDVREQS",
+   "eval_date": "2022-07-11",
+   "lookback": 282,
+   "raw_sha256": "b4ec0e6ccb9f451e7fe0f3d579f05bdc7ea199948a92c0ec28aff328e219bc65",
+   "adj_sha256": "01e219a67e25a19b00d4e8e0657a0fe1fefe66696ba6d61571b58015e178f954",
+   "raw_last_close": 19.85,
+   "adj_first_close": 9.95,
+   "adj_last_close": 19.85
+  },
+  {
+   "symbol": "MCX",
+   "eval_date": "2020-03-03",
+   "lookback": 282,
+   "raw_sha256": "87b0323838598cd1dea106e06d3cd15e5a4dcc136b4764bb5b7b75907599521e",
+   "adj_sha256": "599844a9a16a514e9a18f087089f81003a1a269ccdff494988cdffbf6cfcaeab",
+   "raw_last_close": 1318.3,
+   "adj_first_close": 754.25,
+   "adj_last_close": 1318.3
+  },
+  {
+   "symbol": "MCX",
+   "eval_date": "2020-05-06",
+   "lookback": 282,
+   "raw_sha256": "5960515aa4cff70c9a7de671b2fa5cbd2ed69a127f2673604135a8c7c8551142",
+   "adj_sha256": "a6eb2ee092d7d768a579c82f9e9141760d963ea05a6e7a39b58b6ceb440e635c",
+   "raw_last_close": 1085.75,
+   "adj_first_close": 743.1,
+   "adj_last_close": 1085.75
+  },
+  {
+   "symbol": "MCX",
+   "eval_date": "2023-07-25",
+   "lookback": 282,
+   "raw_sha256": "b0aca033821f7c5bb90b438b955f5189e15694dd1e88911ab122028e9d6bfc2d",
+   "adj_sha256": "6db9115a49250c8c135f0d906a28a5ec837b552505977471e2d536fd4e95cc9b",
+   "raw_last_close": 1665.3,
+   "adj_first_close": 1308.95,
+   "adj_last_close": 1665.3
+  },
+  {
+   "symbol": "MODIRUBBER",
+   "eval_date": "2024-12-18",
+   "lookback": 69,
+   "raw_sha256": "32686c2a4bc9bd32a0415d85de751fd9b663f5cd1c7555e7ee362fbe8b9da229",
+   "adj_sha256": "248ae54852798251b3cd0079e25d7d2fe144c1eaa372ca0c507593cc1216e898",
+   "raw_last_close": 129.68,
+   "adj_first_close": 90.25,
+   "adj_last_close": 129.68
+  },
+  {
+   "symbol": "MODIRUBBER",
+   "eval_date": "2026-10-14",
+   "lookback": 282,
+   "raw_sha256": "d0d1cb17889fd5ef99c2b9873d6a070be8703b3331c8a299103aacc05eb788ea",
+   "adj_sha256": "cad08158c01e6407ffdb5e2153d9aec2cfb95fb8fa64cffde42e4d071c1464b4",
+   "raw_last_close": 118.82,
+   "adj_first_close": 115.66,
+   "adj_last_close": 118.82
+  },
+  {
+   "symbol": "MODIRUBBER",
+   "eval_date": "2025-09-17",
+   "lookback": 189,
+   "raw_sha256": "ae7b0b99cbc7c00967c21e7085dd06b28bc7a0d7ecd4f93a6fbf80b3818c2dc6",
+   "adj_sha256": "f70d844a26ba384a48ba8471d5ea9e3ddaf6aa944fc4ea31e9684af46f52c822",
+   "raw_last_close": 116.68,
+   "adj_first_close": 90.25,
+   "adj_last_close": 116.68
+  },
+  {
+   "symbol": "NIFTYBETF",
+   "eval_date": "2024-02-01",
+   "lookback": 4,
+   "raw_sha256": "6e184b13c8e4548e55135b66ab08318b1874cb4e801600e8aa989d878f5e3219",
+   "adj_sha256": "d6d32e3ddaf6231fc864c680afd214d493cf20f6801df13a9f973dd806c1f271",
+   "raw_last_close": 216.79,
+   "adj_first_close": 217.65,
+   "adj_last_close": 216.79
+  },
+  {
+   "symbol": "NIFTYBETF",
+   "eval_date": "2025-08-20",
+   "lookback": 282,
+   "raw_sha256": "40749602ed59be253e51d2204df89362eef8f7a7b9de8c7b1bd5ec71e5a059d4",
+   "adj_sha256": "b686b7a20b8fc570b1bb3d11c76ee7cd2428d68a0d15ec98eda39ebcc1f405ee",
+   "raw_last_close": 255.86,
+   "adj_first_close": 245.04,
+   "adj_last_close": 255.86
+  },
+  {
+   "symbol": "NIFTYBETF",
+   "eval_date": "2026-02-12",
+   "lookback": 282,
+   "raw_sha256": "f3f251277c130fd36e7343cc231402f37d27f0594ccd12708539622bca247717",
+   "adj_sha256": "a531392a1c8af8e7508c122dda1f119c834f147ea17039c0cda233a16ad95d28",
+   "raw_last_close": 263.73,
+   "adj_first_close": 240.37,
+   "adj_last_close": 263.73
+  },
+  {
+   "symbol": "LAKSHMIEFL",
+   "eval_date": "2016-08-26",
+   "lookback": 282,
+   "raw_sha256": "d50994d3a8990aaea370897f8cc0b451b02650d073fb62432a7faa6eb93e132f",
+   "adj_sha256": "fd1ba320007c50a42026feb7e85252733e2a3a351ac25add4137d3613230a47a",
+   "raw_last_close": 36.6,
+   "adj_first_close": 8.85,
+   "adj_last_close": 36.6
+  },
+  {
+   "symbol": "LAKSHMIEFL",
+   "eval_date": "2017-09-25",
+   "lookback": 282,
+   "raw_sha256": "df486b696e3cd31c25ccf3fd7c3387750ae29bc896ee0139a9692360a4483877",
+   "adj_sha256": "895bb22d4947636ddf58e43f0468a68583d21ab44b85846cb81a900f8caf7846",
+   "raw_last_close": 32.25,
+   "adj_first_close": 35.25,
+   "adj_last_close": 32.25
+  },
+  {
+   "symbol": "LAKSHMIEFL",
+   "eval_date": "2013-12-17",
+   "lookback": 180,
+   "raw_sha256": "7985332016133044fbcfb3c87090056621e41bfe60c6716e4b78891e21603eeb",
+   "adj_sha256": "b38cd73450521ecfb6ad2f1f6a4e190cca3306e1acca57aca4b26d754c627679",
+   "raw_last_close": 19.3,
+   "adj_first_close": 24.0,
+   "adj_last_close": 19.3
+  },
+  {
+   "symbol": "NH",
+   "eval_date": "2024-10-17",
+   "lookback": 282,
+   "raw_sha256": "33cb49abb646956f94898b33cc6df89b9dffe2a13a29213ab90149e38bfa72da",
+   "adj_sha256": "d7cfa0f435cf061969d433d3feaf3751d971b96bc19dabd449ac0921a0378828",
+   "raw_last_close": 1283.0,
+   "adj_first_close": 1023.95,
+   "adj_last_close": 1283.0
+  },
+  {
+   "symbol": "NH",
+   "eval_date": "2026-06-24",
+   "lookback": 282,
+   "raw_sha256": "5740873c323b264ffce8bf596d25cac2612a611318d36a6e3537d9acb3a34086",
+   "adj_sha256": "5f8c67083c518ca79ea248318887d8246a53e795985ec61928685d2d5c15ad40",
+   "raw_last_close": 1958.5,
+   "adj_first_close": 1821.8,
+   "adj_last_close": 1958.5
+  },
+  {
+   "symbol": "NH",
+   "eval_date": "2016-03-01",
+   "lookback": 39,
+   "raw_sha256": "3e18d754b4d67bc6a9a8ce292f724b3e392af83ceabe74dbb34b28b25462fb49",
+   "adj_sha256": "04b44437fff5c2b7280b988b842e504c3e712a0b697e3a0464d96d01ee5959d1",
+   "raw_last_close": 295.4,
+   "adj_first_close": 336.95,
+   "adj_last_close": 295.4
+  },
+  {
+   "symbol": "TATAELXSI",
+   "eval_date": "2026-02-17",
+   "lookback": 282,
+   "raw_sha256": "cb9b73bca78231e3e3e3f8bdbcd2273731f428b10dbe5c63f6e0860c4de9f215",
+   "adj_sha256": "1fbd0ff5532b34f6699e2cf81a4f3602a4acc16c20e520ab8de386c871490902",
+   "raw_last_close": 4919.0,
+   "adj_first_close": 6743.75,
+   "adj_last_close": 4919.0
+  },
+  {
+   "symbol": "TATAELXSI",
+   "eval_date": "2019-09-16",
+   "lookback": 282,
+   "raw_sha256": "4dba0035b584e384e6608fb0fc5233f540460f482f1443916923e61c80c6736c",
+   "adj_sha256": "aac448671c21b08a73aa261a1b03c8f45384becb04c300446c4cef5cc26ff822",
+   "raw_last_close": 661.5,
+   "adj_first_close": 1394.5,
+   "adj_last_close": 661.5
+  },
+  {
+   "symbol": "TATAELXSI",
+   "eval_date": "2023-12-11",
+   "lookback": 282,
+   "raw_sha256": "4b7098b0625b758ed135d5c2f074045b407c03674c1b44ca36b8f65e862d0c61",
+   "adj_sha256": "12d50b4447a3ba2259edff009bbcf8d079bbb22472d023041f7005988870f6f1",
+   "raw_last_close": 8446.25,
+   "adj_first_close": 7261.3,
+   "adj_last_close": 8446.25
+  },
+  {
+   "symbol": "GLAXO",
+   "eval_date": "2016-03-08",
+   "lookback": 282,
+   "raw_sha256": "2cefd24b5d25561e5ebeeddafb8030f868e33a197317bcfa989ece8fe12b838b",
+   "adj_sha256": "5aba9bfc2d862ecc620a386eb4e549fe79183fab45febe5656a7b8a3e8fbf6a1",
+   "raw_last_close": 3204.0,
+   "adj_first_close": 3173.8,
+   "adj_last_close": 3204.0
+  },
+  {
+   "symbol": "GLAXO",
+   "eval_date": "2016-02-16",
+   "lookback": 282,
+   "raw_sha256": "f5c391b37d8b6f9cc79c535988ae21f5b3a14cc45225889fbb7e7c0d51b1d723",
+   "adj_sha256": "bb56414754a9bc3aa7bddbfa0ea90c2d6c7c5528ba6ee995c411ae14524c89e3",
+   "raw_last_close": 3179.8,
+   "adj_first_close": 3187.3,
+   "adj_last_close": 3179.8
+  },
+  {
+   "symbol": "GLAXO",
+   "eval_date": "2023-01-04",
+   "lookback": 282,
+   "raw_sha256": "882cec1954fe11d080988b7167d618161cbd24f9956b543593a7b1a55858cc1c",
+   "adj_sha256": "73bc57304637fcf620a88fea060fc0251eb68834c8097fee94afc933fb038f81",
+   "raw_last_close": 1301.95,
+   "adj_first_close": 1639.7,
+   "adj_last_close": 1301.95
+  },
+  {
+   "symbol": "MONNETISPA",
+   "eval_date": "2014-12-24",
+   "lookback": 282,
+   "raw_sha256": "d79ce68483025ea8cc52bc53a0b359148bab2640578c04cda53066fd02001ea0",
+   "adj_sha256": "6a44f9c443adf086c0108665f65b33ceace619139f57eb0c51428829fbd6a044",
+   "raw_last_close": 63.45,
+   "adj_first_close": 131.7,
+   "adj_last_close": 63.45
+  },
+  {
+   "symbol": "MONNETISPA",
+   "eval_date": "2013-07-25",
+   "lookback": 144,
+   "raw_sha256": "27ddb7ee140c655cf92d849ccbe8810a6f748d268e891b8b51a550b0d2c47677",
+   "adj_sha256": "cad0afd81df183d52549795a009c395e17dfa5d723c4f018af995e0b8a660efa",
+   "raw_last_close": 113.55,
+   "adj_first_close": 281.6,
+   "adj_last_close": 113.55
+  },
+  {
+   "symbol": "MONNETISPA",
+   "eval_date": "2017-12-14",
+   "lookback": 282,
+   "raw_sha256": "60f8b2ae4517db1e8f4b91139cb343a846025cb5b4e507281fb9dc673af592d4",
+   "adj_sha256": "93d3be78d1b95b61c94ca71b30f643c21ccef559503e600afb633b254b4e774b",
+   "raw_last_close": 33.35,
+   "adj_first_close": 24.55,
+   "adj_last_close": 33.35
+  },
+  {
+   "symbol": "SAMMAANCAP",
+   "eval_date": "2018-03-06",
+   "lookback": 282,
+   "raw_sha256": "596e803ab5da51e228d9092c2f8ca6114a1b501f9857b5f48af8b9ede98a84b4",
+   "adj_sha256": "c79e9132dd3c484d68f66cfdd172a0c7cae82173f380a83c68305be0f6482f75",
+   "raw_last_close": 1238.75,
+   "adj_first_close": 766.1,
+   "adj_last_close": 1238.75
+  },
+  {
+   "symbol": "SAMMAANCAP",
+   "eval_date": "2017-09-14",
+   "lookback": 282,
+   "raw_sha256": "7f53f0609a0f3986190915e6c07ec31207ed9c19a7789bcf57be57d59767a957",
+   "adj_sha256": "d3f679e665ec29be5c48770e001b54468375f39e6c1227ba556389b31dd874f8",
+   "raw_last_close": 1264.8,
+   "adj_first_close": 775.35,
+   "adj_last_close": 1264.8
+  },
+  {
+   "symbol": "SAMMAANCAP",
+   "eval_date": "2026-02-09",
+   "lookback": 282,
+   "raw_sha256": "e3c5e0571affec520a56758ff45b58fd2d868f04762c55e3261802283d742801",
+   "adj_sha256": "63a252f93ca665df8b61882947f6fe8df054e52f7208c0a0731247ac5840431e",
+   "raw_last_close": 149.14,
+   "adj_first_close": 149.41,
+   "adj_last_close": 149.14
+  },
+  {
+   "symbol": "LINDEINDIA",
+   "eval_date": "2017-09-12",
+   "lookback": 282,
+   "raw_sha256": "868c38d6a0203bf31c90f5185b5ae60851cf596336a68e6e5041ebd0250c0e1b",
+   "adj_sha256": "57fb4c4753fa3168d59b5aa5f1d2b0923a4c6e68596a73097a8d743028a8e419",
+   "raw_last_close": 408.3,
+   "adj_first_close": 335.55,
+   "adj_last_close": 408.3
+  },
+  {
+   "symbol": "LINDEINDIA",
+   "eval_date": "2014-11-26",
+   "lookback": 282,
+   "raw_sha256": "6f657efcfafc544e2a9aa7989eb189fdd575bf9e547b6d4a16c490ebe2d2af3b",
+   "adj_sha256": "17abd6361414d147eb2f9e77ff10c7a3c6fbe13a82448b2b89d075172b2a14cd",
+   "raw_last_close": 408.75,
+   "adj_first_close": 274.15,
+   "adj_last_close": 408.75
+  },
+  {
+   "symbol": "LINDEINDIA",
+   "eval_date": "2026-08-07",
+   "lookback": 282,
+   "raw_sha256": "5583c14f16cfcbc1cb72f555eb18c2ef48e86c5f26c30500b1c4229b37acadda",
+   "adj_sha256": "25afe853b3338da3c09984485aa510d3c5c2e5603854874f889520fa15239c29",
+   "raw_last_close": 7112.5,
+   "adj_first_close": 6732.5,
+   "adj_last_close": 7112.5
+  },
+  {
+   "symbol": "ANTELOPUS",
+   "eval_date": "2019-04-09",
+   "lookback": 282,
+   "raw_sha256": "099a5933f49a396af1a26b016dfeea25e3ea1f283935202e53636ffbad0bb836",
+   "adj_sha256": "34c691a3a5c05002f9da036ba0a5b36bc16bb7d524a73aa4a50d58550bb3766b",
+   "raw_last_close": 192.3,
+   "adj_first_close": 208.85,
+   "adj_last_close": 192.3
+  },
+  {
+   "symbol": "ANTELOPUS",
+   "eval_date": "2015-12-21",
+   "lookback": 282,
+   "raw_sha256": "c5031a486674e19467844194315f108ae843f719a684e60bd859c4160f239bd9",
+   "adj_sha256": "04f1620654b64ac07c45a55a8d4e0441dd5101dcf6d8d10107ed497eb1f3b517",
+   "raw_last_close": 219.15,
+   "adj_first_close": 483.9,
+   "adj_last_close": 219.15
+  },
+  {
+   "symbol": "ANTELOPUS",
+   "eval_date": "2026-02-18",
+   "lookback": 282,
+   "raw_sha256": "aff73bad12db9e0af9392b2e2568c7cd3f2ea934d23223f0b4e9d57bd33150c8",
+   "adj_sha256": "71a811689e3a8bb23c66fe75b167cb70a413ed03908edcb4d5e21fd2092760dd",
+   "raw_last_close": 589.35,
+   "adj_first_close": 867.6,
+   "adj_last_close": 589.35
+  },
+  {
+   "symbol": "BEML",
+   "eval_date": "2015-04-08",
+   "lookback": 282,
+   "raw_sha256": "57741482a1db82443f392560ced17c507561b109d3b577a50a008fd330d91161",
+   "adj_sha256": "8afdc19f1717dcfbe8d379137740e5860afa9b268208f0f316312a3c3b80392f",
+   "raw_last_close": 1159.05,
+   "adj_first_close": 220.2,
+   "adj_last_close": 1159.05
+  },
+  {
+   "symbol": "BEML",
+   "eval_date": "2026-02-11",
+   "lookback": 282,
+   "raw_sha256": "a8e56961e63e40841813bc2ee2de59879d8c0add06588fb79aa28994cb5e2b0e",
+   "adj_sha256": "8e70273d900c089880628dbde0d1bd14c32e5c5827186d1e50073c7958c89a48",
+   "raw_last_close": 1767.6,
+   "adj_first_close": 2005.65,
+   "adj_last_close": 1767.6
+  },
+  {
+   "symbol": "BEML",
+   "eval_date": "2020-02-25",
+   "lookback": 282,
+   "raw_sha256": "a6abd77ea3e9685820059870909716e2de730b5720470a712b575bb0064fbab1",
+   "adj_sha256": "fe6b2fa6e86ad54085d242793e2a140fb75159e68b2941232f7883476f56bd17",
+   "raw_last_close": 850.55,
+   "adj_first_close": 880.6,
+   "adj_last_close": 850.55
+  }
+ ]
+}

@@ -170,41 +170,38 @@ def test_repo_yaml_documents_dated_amendment_made_before_new_selection_runs():
     assert am[0]["made_before_any_new_selection_run"] is True
 
 
-# ----------------------------------------------------------------------------- decision Q5: the engine's single-ticket path equals the legacy path_sim
+# ----------------------------------------------------------------------------- decision Q5: the engine's single-ticket path equals the frozen legacy path_sim
 @pytest.mark.parametrize("with_split", [False, True])
-def test_engine_path_equals_legacy_path_sim_for_the_same_ticket(with_split):
+def test_engine_path_equals_the_frozen_legacy_path_sim_for_the_same_ticket(with_split):
     """Same ticket, same lake: fill, shares, split rebasing, breakeven stop, exit price/date/reason and P&L of ``engine.path.simulate_ticket`` (with a dummy policy that only moves
-    the stop to entry after +1R, which is all the old lifecycle does on this path) equal the legacy ``backtest.path_sim`` result."""
-    from backtest.path_sim import simulate_position_path
-    from engine_core.candidate_builder import build_candidate_dicts
-    from engine_core.risk_sizing import RiskAndSizingEngine
+    the stop to entry after +1R, which is all the old lifecycle does on this path) equal what the legacy ``backtest.path_sim`` returned (frozen in tests/golden before it was deleted)."""
+    from dataclasses import replace
     from stockbot.config.shared import load_shared_config
     from stockbot.data.asof import AsOfView
     from stockbot.engine.path import simulate_ticket
     from stockbot.engine.types import Ticket
+    from tests.fixtures import synth_lake as sl
     from tests.fixtures.dummies import FixedPolicy
+    from tests.fixtures.golden import legacy
 
+    g = legacy()["path_sim"]["split" if with_split else "plain"]
+    res = g["result"]
+    assert res["ok"]
     s = _session()
-    cfg = _build(s, action=("SPLIT", 1.0, 2.0), factor=0.5) if with_split else _build(s)
-    sd, ed = DATES[9], DATES[10]
-    cand = build_candidate_dicts(s, cfg, ["SYNTH"], sd)[0]
-    setup = RiskAndSizingEngine(cfg).compute_setup("SYNTH", sd, cand["adjusted_ohlcv"], cand["raw_ohlcv"], 1_000_000.0, [], sector=cand["sector"])
-    legacy = simulate_position_path(s, cfg, "SYNTH", setup, ed, DATES[17], {d: (False, True) for d in DATES}, equity=1_000_000.0, cash=1_000_000.0)
-    assert legacy["ok"]
-
-    from dataclasses import replace
+    sl.build(s, action=("SPLIT", 1.0, 2.0), factor=0.5) if with_split else sl.build(s)
     base = load_shared_config()                                         # the legacy test config differs from production: no slippage, 5% gap-up cap, its own costs
-    ex, c = cfg["execution"], cfg["costs"]
+    ex, c = g["execution"], g["costs"]
     shared = replace(base, execution=replace(base.execution, entry_slippage_pct=ex["entry_slippage_pct"], exit_slippage_pct=ex["exit_slippage_pct"], max_entry_gap_up_pct=ex["max_entry_gap_up_pct"]),
                      costs=replace(base.costs, stt_buy_pct=c["stt_buy_pct"], stt_sell_pct=c["stt_sell_pct"], brokerage_per_order_inr=c["brokerage_per_order_inr"], exchange_txn_pct=c["exchange_txn_pct"],
                                    sebi_fee_pct=c["sebi_fee_pct"], stamp_duty_buy_pct=c["stamp_duty_buy_pct"], gst_pct=c["gst_pct"], dp_charge_per_sell_inr=c["dp_charge_per_sell_inr"],
                                    stcg_tax_pct=c["stcg_tax_pct"]))
     conn = s.connection().connection                                   # the DBAPI connection of the in-memory lake
-    t = Ticket("t", "s", "SYNTH", None, sd, setup.entry_price, setup.live_stop_loss, setup.initial_resistance_target, 0, 0.0, 0.0, sd)
-    trade, exits, why = simulate_ticket(t, [d for d in DATES if d <= DATES[17]], lambda d: AsOfView(conn, d), shared_config=shared, policy=FixedPolicy(breakeven_r=1.0), equity=1_000_000.0)
+    sd = sl.DATES[9]
+    t = Ticket("t", "s", "SYNTH", None, sd, g["ticket"]["entry"], g["ticket"]["stop"], g["ticket"]["target"], 0, 0.0, 0.0, sd)
+    trade, exits, why = simulate_ticket(t, [d for d in sl.DATES if d <= sl.DATES[17]], lambda d: AsOfView(conn, d), shared_config=shared, policy=FixedPolicy(breakeven_r=1.0), equity=1_000_000.0)
     assert why == "CLOSED"
     # a split halves the stored entry price; the legacy result reports the pre-split fill price
-    assert trade.entry_price * (2.0 if with_split else 1.0) == pytest.approx(legacy["fill_price"], rel=1e-12) and trade.exit_date == legacy["exit_date"] and trade.exit_reason == legacy["exit_reason"]
-    assert trade.shares_initial == pytest.approx(legacy["shares"] * (2.0 if with_split else 1.0))
-    for ours, theirs in ((trade.gross_pnl, legacy["pnl_gross"]), (trade.costs, legacy["costs"]), (trade.net_pnl, legacy["pnl_net"]), (trade.risk_inr, legacy["risk_inr"])):
+    assert trade.entry_price * (2.0 if with_split else 1.0) == pytest.approx(res["fill_price"], rel=1e-12) and trade.exit_date.isoformat() == res["exit_date"] and trade.exit_reason == res["exit_reason"]
+    assert trade.shares_initial == pytest.approx(res["shares"] * (2.0 if with_split else 1.0))
+    for ours, theirs in ((trade.gross_pnl, res["pnl_gross"]), (trade.costs, res["costs"]), (trade.net_pnl, res["pnl_net"]), (trade.risk_inr, res["risk_inr"])):
         assert ours == pytest.approx(theirs, rel=1e-9)

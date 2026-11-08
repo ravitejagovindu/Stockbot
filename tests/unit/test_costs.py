@@ -1,7 +1,6 @@
 """stockbot.risk.costs: hand-derived values at the current shared rates; shared-config and legacy-dict construction agree."""
 import pytest
 
-from stockbot.config.legacy_loader import load_config
 from stockbot.config.shared import load_shared_config
 from stockbot.risk.costs import CostModel
 
@@ -28,5 +27,7 @@ def test_tax_on_gain():
     assert taxed.tax_on_gain(1000) == 150.0 and taxed.tax_on_gain(-1000) == 0.0 and taxed.tax_on_gain(0) == 0.0
 
 
-def test_shared_and_legacy_construction_agree():
-    assert CostModel.from_shared(load_shared_config().costs) == CostModel.from_config(load_config())
+def test_shared_construction_equals_the_frozen_legacy_cost_model():
+    from tests.fixtures.golden import legacy
+    m = CostModel.from_shared(load_shared_config().costs)
+    assert {k: getattr(m, k) for k in legacy()["legacy_cost_model"]} == legacy()["legacy_cost_model"]

@@ -107,8 +107,6 @@ def check(root: Path):
 # (importer, imported-name-prefix) -> phase that removes the edge.  Importer is a module name; imported is the exact dotted name found.
 LEGACY_ALLOWLIST = {
     ("stockbot.engine.corporate_action_events", "engine_core.lifecycle_rules"): "Phase 6 (engine; rescale_for_action and PosState move)",
-    # the golden engine scan compares the as-of view with the OLD engine path (build_candidate_dicts) and reads the ORM models; both disappear with engine_core / data.db in Phase 10
-    ("stockbot.data_checks.f2_engine_scan", "engine_core.candidate_builder"): "Phase 10 (engine scan reads through the as-of view once engine_core is deleted)",
     # live: routers moved unmodified and flagged for rework; pipeline/lock/state still legacy
 }
 # non-stockbot legacy .py files still under the top-level data/ folder -> phase that removes/moves them

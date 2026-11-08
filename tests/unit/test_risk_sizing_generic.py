@@ -4,7 +4,6 @@ import random
 
 import pytest
 
-from engine_core.lifecycle_rules import plan_entry_fill
 from stockbot.risk.sizing import size_position
 
 
@@ -41,20 +40,17 @@ def test_invalid_inputs_raise(kw):
         size_position(**base)
 
 
-def test_agrees_with_plan_entry_fill_on_a_random_grid():
-    rng = random.Random(11)
+def test_agrees_with_the_frozen_fill_time_sizing_of_the_legacy_code_on_3000_random_cases():
+    """The old ``plan_entry_fill`` sized these 3,000 cases (frozen in tests/golden before engine_core was deleted); the fill-time form decided every executed trade."""
+    from tests.fixtures.golden import legacy
+    cases = legacy()["sizing"]
+    assert len(cases) == 3000
     n = 0
-    for _ in range(3000):
-        equity = rng.choice([1e5, 1e6, 2.5e6, 987_000.0, 1_234_567.0])
-        risk_pct = rng.choice([0.25, 0.5, 1.0, 1.5, 2.0])
-        nxt = rng.uniform(20, 3000)
-        stop = nxt * rng.uniform(0.6, 0.97)
-        plan = plan_entry_fill(ticket_entry=nxt, stop=stop, target=nxt * 3, next_open=nxt, equity=equity, risk_pct=risk_pct, slippage_pct=0.10,
-                               max_gap_up_pct=3.0, min_rr=0.0)
-        if not plan.ok:
+    for c in cases:
+        if not c["ok"]:
             continue
-        mine = size_position(equity=equity, risk_pct=risk_pct, entry=plan.fill_price, stop=stop)
-        assert mine.shares == plan.shares, (equity, risk_pct, nxt, stop)
+        mine = size_position(equity=c["equity"], risk_pct=c["risk_pct"], entry=c["fill_price"], stop=c["stop"])
+        assert mine.shares == c["shares"], c
         n += 1
     assert n > 2500
 

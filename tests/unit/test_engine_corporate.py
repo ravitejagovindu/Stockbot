@@ -5,10 +5,7 @@ from datetime import date
 
 import pytest
 
-from engine_core.lifecycle_rules import PosState
 from stockbot.engine.corporate import apply_actions, due_actions
-from stockbot.engine.corporate_action_events import apply_actions_to_position as legacy_apply
-from stockbot.engine.corporate_action_events import due_actions as legacy_due
 from stockbot.engine.types import Position
 from tests.fixtures import mini_lake
 from tests.fixtures.dummies import FixedPolicy, ScriptedStrategy, make_spec
@@ -56,25 +53,23 @@ def test_an_action_is_applied_once_and_dividends_are_ignored():
     assert due_actions(a, date(2020, 1, 1), date(2020, 2, 2)) == []                                      # not after the as-of date
 
 
-def test_equal_to_the_legacy_f3_module_on_a_random_grid():
-    rng = random.Random(11)
-    kinds = ["SPLIT", "BONUS", "DIVIDEND", "MERGER", "RIGHTS"]
-    for _ in range(400):
-        sh = rng.randint(1, 5000)
-        entry = rng.uniform(20, 900)
-        stop = entry * rng.uniform(0.8, 0.98)
-        hh = entry * rng.uniform(1.0, 1.3)
-        acts = [act(date(2020, 2, 1 + i), rng.choice(kinds), rng.randint(1, 5), rng.randint(1, 6)) for i in range(rng.randint(0, 3))]
-        ex_price = entry * rng.uniform(0.3, 1.0)
-        p = position(entry_price=entry, initial_stop=stop, live_stop=stop, highest_high=hh, target=entry * 1.3, shares_remaining=sh, shares_initial=float(sh), last_close=entry)
-        old = PosState(entry_price=entry, initial_stop=stop, live_stop=stop, target=entry * 1.3, highest_high=hh, shares_remaining=sh)
-        new = apply_actions(p, [a for a in due_actions(acts, date(2020, 1, 1), date(2020, 3, 1))], ex_price)
-        ref = legacy_apply(old, legacy_due(acts, date(2020, 1, 1), date(2020, 3, 1)), ex_price)
-        assert new.position.shares_remaining == ref.pos.shares_remaining
-        for f in ("entry_price", "initial_stop", "live_stop", "target", "highest_high"):
-            assert getattr(new.position, f) == pytest.approx(getattr(ref.pos, f), rel=1e-12)
-        assert new.fractional_cash == pytest.approx(ref.fractional_shares * ex_price, rel=1e-9, abs=1e-9)
-        assert new.total_factor == pytest.approx(ref.total_factor) and list(new.applied) == ref.applied and list(new.review) == ref.review
+def test_equal_to_the_frozen_answers_of_the_legacy_f3_module_on_400_random_cases():
+    """The old ``corporate_action_events`` module answered these 400 cases (frozen in tests/golden before it was deleted)."""
+    from tests.fixtures.golden import legacy
+    cases = legacy()["corporate"]
+    assert len(cases) == 400
+    for c in cases:
+        acts = [{**a, "ex_date": date.fromisoformat(a["ex_date"])} for a in c["actions"]]
+        p = position(entry_price=c["entry"], initial_stop=c["stop"], live_stop=c["stop"], highest_high=c["hh"], target=c["entry"] * 1.3, shares_remaining=c["shares"],
+                     shares_initial=float(c["shares"]), last_close=c["entry"])
+        new = apply_actions(p, due_actions(acts, date(2020, 1, 1), date(2020, 3, 1)), c["ex_price"])
+        ref = c["out"]
+        assert new.position.shares_remaining == ref["shares"]
+        for f, k in (("entry_price", "entry"), ("initial_stop", "initial_stop"), ("live_stop", "live_stop"), ("target", "target"), ("highest_high", "hh")):
+            assert getattr(new.position, f) == pytest.approx(ref[k], rel=1e-12)
+        assert new.fractional_cash == pytest.approx(ref["fractional_shares"] * c["ex_price"], rel=1e-9, abs=1e-9)
+        assert new.total_factor == pytest.approx(ref["factor"]) and list(new.applied) == ref["applied"] and list(new.review) == ref["review"]
+    assert sum(bool(c["out"]["applied"]) for c in cases) > 100 and sum(bool(c["out"]["review"]) for c in cases) > 50
 
 
 def _split_lake(tmp_path, with_split):
