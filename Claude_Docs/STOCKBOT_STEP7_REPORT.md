@@ -27,8 +27,8 @@ I tried to append it (`--only-held`) and the harness denied writing to the share
 ## 3. Post-adjustment scan through the engine path (`get_adjusted_series` via the candidate builder's query shape)
 Real DB without DOLPHIN: large moves 764 -> **266** (499 removed, 1 created, MBAPL). Rehearsal with DOLPHIN: 267 / 2. Equivalence with `build_candidate_dicts`: 120 samples, 0 mismatches. Remaining: 208 after gaps in the EQ series, 40 near unadjusted events, 18 residual. (`engine_scan_real.md/.csv`)
 
-## 4. 58 verification rows through the engine path
-**58 / 58 PASS** (`verification_engine_path.csv`; data test `STOCKBOT_DATA_TESTS=1 pytest tests/data_integrity`). First run had 3 FAILs, both my verification inputs, not the log: (a) EASEMYTRIP 2022-11-21 listed the combined factor 0.125 on both rows, so the product was squared; corrected to per-row 0.5 and 0.25 (test added); (b) the TATAMOTORS demerger is stored under lake symbol TATAMOTORS with feed symbol TMPV and the verifier looked up only by feed symbol; lookup widened. Raw-only ADTV/market-cap test passes (3 tests).
+## 4. 57 verification rows through the engine path
+**57 / 57 PASS** (`verification_engine_path.csv`; data test `STOCKBOT_DATA_TESTS=1 pytest tests/data_integrity`). First run had 3 FAILs, both my verification inputs, not the log: (a) EASEMYTRIP 2022-11-21 listed the combined factor 0.125 on both rows, so the product was squared; corrected to per-row 0.5 and 0.25 (test added); (b) the TATAMOTORS demerger is stored under lake symbol TATAMOTORS with feed symbol TMPV and the verifier looked up only by feed symbol; lookup widened. Raw-only ADTV/market-cap test passes (3 tests).
 
 ## 5. Universe rules (each with tests, `test_universe_rules_f2.py`, 6 pass)
 ETF/fund exclusion (INF ISIN, 511 symbols in `data/reference/fund_etf_symbols.csv`) and listing date from the first raw trading day (`securities_master` untouched; names on the lake's first day count as seasoned).

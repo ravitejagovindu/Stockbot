@@ -6,7 +6,7 @@ Produced as asked: revised tiers, the events-vs-rows table, the post-adjustment 
 | Item | State |
 |---|---|
 | Swap, symbol mapping, post-swap checks (Step 3) | accepted by the reviewer |
-| Step 4 tiers, Step 5 eligibility, Step 6 verification list | done; tiers revised under the reviewer's rule (this file); verification list 58/58 PASS |
+| Step 4 tiers, Step 5 eligibility, Step 6 verification list | done; tiers revised under the reviewer's rule (this file); verification list 57/57 PASS |
 | Revised tiers, events vs rows, post-adjustment scan, nine dispositions | done (sections 1-5) |
 | ETF exclusion (INF ISINs), listing-date rule | approved, not yet implemented (section 6); neither changes the load |
 | STOP A: load into `corporate_actions_log` | **waiting for the reviewer's approval; table still empty** |

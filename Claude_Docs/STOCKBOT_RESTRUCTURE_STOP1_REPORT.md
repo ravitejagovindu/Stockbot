@@ -6,7 +6,7 @@ Date 2026-11-08. Branch `restructure` (from master `41b22ce`); tag `pre-restruct
 - Tag `pre-restructure` (annotated) pushed; branch `restructure` created.
 - Golden baseline recorded in `docs/restructure/BASELINE.md`:
   - G1 **329 passed, 63 skipped, 0 failed**.
-  - G2 env-gated suite **392 passed, 0 skipped** (21 m 44 s; includes the 58 verification rows through the engine path and both real-DB baseline tests). Engine scan: 1,607 names, large moves 764 → **267 remaining, 499 removed, 2 created**; 120 candidate-path samples, 0 mismatches.
+  - G2 env-gated suite **392 passed, 0 skipped** (21 m 44 s; includes the 57 verification rows (plus the "log is loaded" test = 58 tests) through the engine path and both real-DB baseline tests). Engine scan: 1,607 names, large moves 764 → **267 remaining, 499 removed, 2 created**; 120 candidate-path samples, 0 mismatches.
   - G3 fixture baseline 6 passed.
   - G4 `finsight.db` sha256 `dcade465…b752`, mtime 2026-11-08 12:38:02, 3,432,767,488 bytes; re-checked after all runs: **unchanged**.
 - Backups: newest `Backups\finsight_pre_step12_2026-11-08.db` (sha256 verified, integrity ok). **It predates the Step 12 tables** (earnings collection, ASM/GSM snapshot), so those tables exist only in the live file. I did not make another copy (single-backup policy); say if you want one.

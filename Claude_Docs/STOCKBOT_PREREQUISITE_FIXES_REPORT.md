@@ -40,7 +40,7 @@ Pure test suite (everything except `tests/unit/test_baseline_reproducibility.py`
 | 18 | `750015c` | F2 parser | Abbreviated subjects ("Fv Splt Frm", "Bon x:y", "Spl Rs.5tors.2", "Right Issue") were dropped silently; 11 tests failed before. |
 | 19 | `a050132` | F2 Step 4 | Evidence tiers for split/bonus events; 6 tests failed before. |
 | 20 | `63c2882` | F2 Step 5 | ADTV-eligible symbols, triage and dispositions of the large moves. |
-| 21 | `bebd08f` | F2 Step 6 | Verification list result columns (58/58 PASS). |
+| 21 | `bebd08f` | F2 Step 6 | Verification list result columns (57/57 PASS). |
 | 22 | `4692d7b` | docs | Steps 4-6 report (`STOCKBOT_STEP4_6_REPORT.md`). |
 
 Not in git: `finsight.db` (ignored) including the new `market_data_lake_staging` and `bhavcopy_fetch_log` tables, and the backup `F:\Projects\Ravi\Backups\finsight_pre_F2_2026-11-06.db`. Working tree clean after commit 9. Pure suite at commit 9: **235 passed** (the 236 quoted above was counted before the last edits; not reconciled).

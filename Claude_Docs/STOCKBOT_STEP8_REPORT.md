@@ -7,7 +7,7 @@ Log row: `symbol=DOLPHIN, ex_date=2024-01-25, SPLIT 1:10 (ratio_numerator=1, rat
 notes `feed_symbol=DOLPHIN; Face Value Split (Sub-Division) - From Rs 10/- Per Share To Re 1/- Per Share`,
 evidence `yahoo factor 0.1000 vs logged 0.1000 (within 3%); across the gap: last close 2023-09-06 vs first close 2024-04-15 (222 calendar days)`.
 Second sources used: company BSE filing (record/ex-date 25 Jan 2024), Trendlyne split page, press (BSE 1,826.85 on 24 Jan -> ~182.7 on 25 Jan).
-Confirmed: total rows **22,997** (not 22,998: 22,996 + 1), SPLIT 452, price-moving 915, engine scan **267 remaining / 2 created** (499 removed), 58/58 verification rows still pass, equivalence 0 mismatches.
+Confirmed: total rows **22,997** (not 22,998: 22,996 + 1), SPLIT 452, price-moving 915, engine scan **267 remaining / 2 created** (499 removed), 57/57 verification rows still pass, equivalence 0 mismatches.
 
 ## 2. ESCORTS test — understood, legitimate, re-baselined (commit 8a19b40)
 (a) Bars 2019-12-01..2020-01-20: Dec 2019 rows are the untouched pre-2020 raw rows (source NULL, identical to staging). From 2020-01-01 the OLD lake held Yahoo rows
