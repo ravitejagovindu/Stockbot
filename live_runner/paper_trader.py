@@ -10,7 +10,7 @@ from data.db.models import CorporateActionsLog, DailyWatchlist, MarketDataLake
 from stockbot.risk.costs import CostModel
 from engine_core.equity import paper_cash, paper_equity
 from engine_core.lifecycle_rules import plan_entry_fill
-from engine_core.mode import current_mode
+from stockbot.config.mode import current_mode
 from engine_core.position_service import open_position
 
 

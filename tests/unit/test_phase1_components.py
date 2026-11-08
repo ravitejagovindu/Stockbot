@@ -1,5 +1,5 @@
 """Unit tests for Phase 1 components:
-- engine_core/mode.py
+- stockbot/config/mode.py
 - stockbot/risk/sector_map.py
 - engine_core/entry_filters.py
 - engine_core/regime_gates.py
@@ -11,7 +11,7 @@ import pandas as pd
 import pytest
 from unittest.mock import MagicMock
 
-from engine_core.mode import current_mode
+from stockbot.config.mode import current_mode
 from stockbot.risk.sector_map import sector_for
 from engine_core.entry_filters import (
     passes_trend_filter,

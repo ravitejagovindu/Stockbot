@@ -18,7 +18,7 @@ def get_portfolio():
     """
     cfg = load_config()
     risk_cfg = cfg["risk"]
-    from engine_core.mode import current_mode
+    from stockbot.config.mode import current_mode
     mode = current_mode(cfg)
 
     with get_session() as session:

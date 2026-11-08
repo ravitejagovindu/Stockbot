@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 
-LOGS_DIR = Path(__file__).parent / "logs"
+LOGS_DIR = Path(__file__).resolve().parents[2] / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOGS_DIR / "finsight.jsonl"
 

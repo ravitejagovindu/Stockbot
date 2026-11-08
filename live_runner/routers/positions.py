@@ -38,7 +38,7 @@ def open_position_endpoint(req: OpenPositionRequest):
     """LIVE only. Records a trade you ALREADY executed in your broker terminal. Sends nothing to any broker."""
     from config import load_config
     from stockbot.risk.costs import CostModel
-    from engine_core.mode import current_mode
+    from stockbot.config.mode import current_mode
     from engine_core.position_service import open_position
     from data.db.models import DailyWatchlist
 
@@ -78,7 +78,7 @@ def close_position(req: ClosePositionRequest):
     in their Kite terminal. The engine records the trade for analytics.
     """
     from config import load_config
-    from engine_core.mode import current_mode
+    from stockbot.config.mode import current_mode
 
     cfg = load_config()
     if current_mode(cfg) == "PAPER":

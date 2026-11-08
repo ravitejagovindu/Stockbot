@@ -92,7 +92,7 @@ class EODPipeline:
                 logger.info(f"[PIPELINE] Regime: ACTIVE (Nifty: {regime_state.nifty_close:.0f}, VIX: {regime_state.vix_close:.1f})")
 
             # ── Step 2.5: Paper Trader (PAPER mode only) ──────────────────────
-            from engine_core.mode import current_mode
+            from stockbot.config.mode import current_mode
             mode = current_mode(self.config)
             if mode == "PAPER":
                 from live_runner.paper_trader import expire_stale_tickets, open_pending_tickets
@@ -273,7 +273,7 @@ class EODPipeline:
             return []
 
         # Get current open positions for heat cap evaluation
-        from engine_core.mode import current_mode
+        from stockbot.config.mode import current_mode
         mode = current_mode(self.config)
         current_positions = self._get_open_positions_for_heat_cap(mode)
 
@@ -319,7 +319,7 @@ class EODPipeline:
         """Returns open positions as plain dicts for heat cap calculation."""
         from data.db.models import ActivePosition
         if mode is None:
-            from engine_core.mode import current_mode
+            from stockbot.config.mode import current_mode
             mode = current_mode(self.config)
         positions = self.session.query(ActivePosition).filter(ActivePosition.mode == mode).all()
         return [

@@ -27,7 +27,7 @@ from datetime import datetime
 from pathlib import Path
 
 from config import load_config
-from engine_core.mode import current_mode
+from stockbot.config.mode import current_mode
 
 BASE_DIR = Path(__file__).resolve().parent
 AUTHORIZED_FILE = BASE_DIR / "authorized_deployment.json"

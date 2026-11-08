@@ -19,7 +19,7 @@ def health_check():
 
     auth_info = read_authorized_info()
     from config import load_config
-    from engine_core.mode import current_mode
+    from stockbot.config.mode import current_mode
     try:
         cfg = load_config()
         mode = current_mode(cfg)
