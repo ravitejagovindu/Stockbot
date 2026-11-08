@@ -1,0 +1,17 @@
+{
+  "trades": 16976,
+  "sessions": 1676,
+  "sessions_with_pool": 1134,
+  "dropped": {
+    "artifact_move": 15,
+    "bad_stop": 19,
+    "no_fill_bar": 0
+  },
+  "mean_hold_sessions": 19.363454288407162,
+  "mean_trade_return_pct_of_equity": 0.041910177274454875,
+  "mean_R_net": 0.041910177274454875,
+  "median_R_net": 0.00699193192443169,
+  "sd_R_net": 0.8095363847082448,
+  "share_winners": 0.5041823751178134,
+  "seconds": 106
+}
