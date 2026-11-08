@@ -49,7 +49,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 OUTPUTS_DIR = PROJECT_ROOT / "backtest" / "outputs"
 DECISION_FILE = OUTPUTS_DIR / "selection_decision.json"
 TRIAL_LEDGER = OUTPUTS_DIR / "trial_ledger.csv"
-PRE_REG_YAML = PROJECT_ROOT / "backtest" / "pre_registered_configs.yaml"
+PRE_REG_YAML = PROJECT_ROOT / "stockbot" / "validation" / "ledger" / "records" / "pre_registered_configs.yaml"
 
 # Pre-registered adjacency graph (must match pre_registered_configs.yaml)
 ADJACENCY_GRAPH: Dict[str, List[str]] = {
@@ -74,10 +74,10 @@ GATE_MIN_EXPECTANCY_R = 0.15          # Gate 5: net expectancy in R
 
 BOOTSTRAP_REPLICATIONS = 10000
 
-# F6: the registry ledger (hash-chained, committed) is always backtest/outputs/trial_ledger.csv, even when a
+# F6: the registry ledger (hash-chained, committed) is always stockbot/validation/ledger/records/trial_ledger.csv (moved from backtest/outputs in Phase 7), even when a
 # diagnostic run reads/writes another outputs folder. Dry runs / alternate folders are logged in the exploratory log.
-REGISTRY_LEDGER = PROJECT_ROOT / "backtest" / "outputs" / "trial_ledger.csv"
-EXPLORATORY_LOG = PROJECT_ROOT / "backtest" / "outputs" / "trial_ledger_exploratory.csv"
+REGISTRY_LEDGER = PROJECT_ROOT / "stockbot" / "validation" / "ledger" / "records" / "trial_ledger.csv"
+EXPLORATORY_LOG = PROJECT_ROOT / "stockbot" / "validation" / "ledger" / "records" / "trial_ledger_exploratory.csv"
 
 
 def gate_parameters() -> Dict[str, Any]:

@@ -65,7 +65,7 @@ def lock_env(tmp_path, monkeypatch):
     import scripts.select_candidate as sc
 
     yml = tmp_path / "pre_registered_configs.yaml"
-    shutil.copy(Path("backtest/pre_registered_configs.yaml"), yml)
+    shutil.copy(Path("stockbot/validation/ledger/records/pre_registered_configs.yaml"), yml)
     ledger = tmp_path / "trial_ledger.csv"
     monkeypatch.setattr(sc, "PRE_REG_YAML", yml)
     monkeypatch.setattr(sc, "REGISTRY_LEDGER", ledger)
@@ -164,7 +164,7 @@ def test_legacy_row_is_preserved_and_chained(lock_env):
 
 
 def test_repo_yaml_documents_dated_amendment_made_before_new_selection_runs():
-    doc = yaml.safe_load(Path("backtest/pre_registered_configs.yaml").read_text(encoding="utf-8"))
+    doc = yaml.safe_load(Path("stockbot/validation/ledger/records/pre_registered_configs.yaml").read_text(encoding="utf-8"))
     am = doc.get("amendments") or []
     assert am and am[0]["date"] == "2026-11-06"
     assert am[0]["made_before_any_new_selection_run"] is True

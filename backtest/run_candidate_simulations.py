@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("candidate_runner")
 
 OUTPUT_DIR = ROOT / "backtest" / "outputs"
-YAML_PATH = ROOT / "backtest" / "pre_registered_configs.yaml"
+YAML_PATH = ROOT / "stockbot" / "validation" / "ledger" / "records" / "pre_registered_configs.yaml"
 
 
 def load_registered_configs() -> dict:

@@ -1,0 +1,5 @@
+BEFORE the move (HEAD 398bd90)
+verify_ledger(backtest/outputs/trial_ledger.csv): OK, 2 rows, last row_hash 869d1bd13d592ce635bed70c10081d6b2037a79272f64dabe21819a9152125d1
+sha256 backtest/outputs/trial_ledger.csv: bc6927bf4de1e14924d06d42cc19a4a4fa18a5721c61775e67545dfd685d25e6  (text-normalised: 5e036ce6e40fe58f8b5031d12df5b28492f07bc6c9c0025c2d126a28aba395f5)
+sha256 backtest/outputs/trial_ledger_exploratory.csv: 090c1c178bc434a1fa0778a97aa94b5f0abe320f03513090cab0891f8dbe2049  (text-normalised: 89518e6b020e4463d0db9501d39972a5c1f74b5808b57ca1e85ee73b6adb6d55)
+sha256 backtest/pre_registered_configs.yaml: 18931c4f9640c0cc7bde31310f3ce4e44e0409c7af93de51b19acf9b30cba4f4  (text-normalised: 18931c4f9640c0cc7bde31310f3ce4e44e0409c7af93de51b19acf9b30cba4f4)

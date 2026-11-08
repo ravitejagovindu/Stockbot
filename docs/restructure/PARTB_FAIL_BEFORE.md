@@ -87,3 +87,6 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_engine_backtest.py::test_the_run_manifest_records_what_reproduces_the_run | stockbot/backtest/manifest.py | config hash does not depend on the config | passes clean / FAILS mutated |
 | tests/unit/test_engine_backtest.py::test_the_run_manifest_records_what_reproduces_the_run | stockbot/backtest/manifest.py | overlay declarations missing from the manifest | passes clean / FAILS mutated |
 | tests/unit/test_engine_backtest.py::test_the_run_manifest_records_what_reproduces_the_run | stockbot/backtest/manifest.py | strategy config hash missing | passes clean / FAILS mutated |
+| tests/unit/test_ledger_yaml_hash.py::test_the_trial_ledger_chain_verifies_at_its_validation_location_and_names_no_path | stockbot/validation/ledger/records/trial_ledger.csv | a ledger row altered after the move | passes clean / FAILS mutated |
+| tests/unit/test_ledger_yaml_hash.py::test_the_exploratory_ledger_is_unchanged_and_has_no_chain | stockbot/validation/ledger/records/trial_ledger_exploratory.csv | the exploratory ledger altered | passes clean / FAILS mutated |
+| tests/unit/test_ledger_yaml_hash.py::test_pre_registered_configs_yaml_matches_the_ledger_hash | stockbot/validation/ledger/records/pre_registered_configs.yaml | pre-registration yaml edited | passes clean / FAILS mutated |
