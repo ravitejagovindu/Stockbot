@@ -24,7 +24,11 @@ if str(_ROOT) not in sys.path:
 from stockbot.config.legacy_loader import load_config
 from data.db.connection import get_session
 from stockbot.validation.trade_metrics import metrics_from_trades, trades_from_log
-from live_runner.git_lock import read_authorized_info
+
+def read_authorized_info() -> dict:
+    """The Git-SHA deployment lock (and its authorized_at date) was dropped in restructure Phase 4: no authorization date is available."""
+    return {}
+
 
 
 def load_backtest_baseline(audit_path: Path) -> Dict[str, float]:

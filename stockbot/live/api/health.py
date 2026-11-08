@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from live_runner.git_lock import read_authorized_info
 from stockbot.live.idempotency import IdempotencyGuard
 from data.db.connection import get_session
 
@@ -17,8 +16,7 @@ def health_check():
         guard = IdempotencyGuard(session)
         last_run = guard.get_last_run()
 
-    auth_info = read_authorized_info()
-    from stockbot.config.legacy_loader import load_config
+    auth_info: dict = {}      # the Git-SHA deployment lock was dropped in restructure Phase 4; keys kept so the UI contract is unchanged{n}    from stockbot.config.legacy_loader import load_config
     from stockbot.config.mode import current_mode
     try:
         cfg = load_config()

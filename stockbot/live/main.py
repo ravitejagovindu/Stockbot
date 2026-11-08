@@ -40,9 +40,7 @@ async def lifespan(app: FastAPI):
     logger.info("FInsight Trading Engine — Starting Up")
     logger.info("=" * 60)
 
-    # Step 1: Verify Git-SHA lock (kills process if violated)
-    from live_runner.git_lock import verify_git_lock
-    verify_git_lock()
+    # (Step 1, the Git-SHA deployment lock, was dropped in restructure Phase 4; its design returns in the strategy phase)
 
     # Step 2: Initialize database
     from data.db.connection import init_db

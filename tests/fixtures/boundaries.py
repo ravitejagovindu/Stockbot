@@ -119,7 +119,6 @@ LEGACY_ALLOWLIST = {
     ("stockbot.live.api.analytics", "data.db.connection"): "Phase 9 (live package)",
     ("stockbot.live.api.analytics", "engine_core.analytics_loop"): "Phase 9 (live package)",
     ("stockbot.live.api.health", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.api.health", "live_runner.git_lock"): "Phase 4 (git lock dropped)",
     ("stockbot.live.api.ledger", "data.db.connection"): "Phase 9 (live package)",
     ("stockbot.live.api.ledger", "data.db.models"): "Phase 9 (live package)",
     ("stockbot.live.api.ledger", "engine_core.account_ledger"): "Phase 9 (live package)",
@@ -134,10 +133,8 @@ LEGACY_ALLOWLIST = {
     ("stockbot.live.api.watchlist", "data.db.connection"): "Phase 9 (live package)",
     ("stockbot.live.idempotency", "data.db.models"): "Phase 9 (live package; state store)",
     ("stockbot.live.main", "data.db.connection"): "Phase 9 (live package)",
-    ("stockbot.live.main", "live_runner.git_lock"): "Phase 4 (git lock dropped)",
     ("stockbot.live.scheduler", "data.db.connection"): "Phase 9 (live package)",
     ("stockbot.live.scheduler", "data.db.models"): "Phase 9 (live package)",
-    ("stockbot.live.scheduler", "live_runner.git_lock"): "Phase 4 (git lock dropped)",
     ("stockbot.live.scheduler", "live_runner.pipeline"): "Phase 6/9 (EOD runner replaced)",
 }
 # non-stockbot legacy .py files still under the top-level data/ folder -> phase that removes/moves them
