@@ -1,4 +1,6 @@
-"""data/ingestion/pit_shares.py — point-in-time shares outstanding (F2b).
+"""NOT USED (F2b closed 2026-11-08: failed its pre-registered spot-check bar; the table is not loaded and the screener does not read it). Kept for the record - see docs/data_audit/DATA_KNOWN_ISSUES.md KI-001.
+
+data/ingestion/pit_shares.py — point-in-time shares outstanding (F2b).
 
 shares(t) = anchor shares  x  M(t) / M(anchor_date),  M(t) = product of 1/factor over every change dated <= t.
 For the usual case the anchor is the current issued size (a Yahoo snapshot of 2026-10-02): the count before a 1:10 split (price factor 0.1) is a tenth of the count after.

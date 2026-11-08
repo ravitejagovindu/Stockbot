@@ -50,7 +50,9 @@ class SharesOutstanding(Base):
 
 
 class SharesOutstandingPIT(Base):
-    """Point-in-time shares outstanding derived (F2b) from the current issued size walked back through the corporate-action log.
+    """NOT USED (F2b closed: failed its spot-check bar; table never loaded, screener does not read it).
+
+    Point-in-time shares outstanding derived (F2b) from the current issued size walked back through the corporate-action log.
 
     One row per segment: ``shares_count`` holds from ``effective_date`` until the next row.  ``reliable`` is 0 for segments dated
     before an event the log cannot adjust (merger, demerger, large rights, unsupported split/bonus): the derived count is not trusted there.

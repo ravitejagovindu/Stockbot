@@ -1,4 +1,6 @@
-"""F2b spot-check: derived shares vs shareholding filings for 20 fixed (symbol, date) pairs.  Pass bar fixed in advance (reviewer D3):
+"""NOT USED (F2b closed 2026-11-08: failed its pre-registered spot-check bar; the table is not loaded and the screener does not read it). Kept for the record - see docs/data_audit/DATA_KNOWN_ISSUES.md KI-001.
+
+F2b spot-check: derived shares vs shareholding filings for 20 fixed (symbol, date) pairs.  Pass bar fixed in advance (reviewer D3):
 median |error| <= 5% and 90th percentile <= 15%.  Also reports whether the Rs5,000 cr market-cap gate decision would differ.  Read-only."""
 import sqlite3, sys
 from datetime import date

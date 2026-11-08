@@ -1,4 +1,6 @@
-"""scripts/f2b_build_pit_shares.py — derive point-in-time shares outstanding for every lake equity symbol (F2b).
+"""NOT USED (F2b closed 2026-11-08: failed its pre-registered spot-check bar; the table is not loaded and the screener does not read it). Kept for the record - see docs/data_audit/DATA_KNOWN_ISSUES.md KI-001.
+
+scripts/f2b_build_pit_shares.py — derive point-in-time shares outstanding for every lake equity symbol (F2b).
 
 Anchors, in order: (1) the current issued size (``shares_outstanding``, Yahoo snapshot of 2026-10-02); (2) a count read from a filing
 (``data/reference/pit_shares_anchors.csv``: symbol, anchor_date, shares_count, source); (3) a same-ISIN successor's count at the predecessor's last

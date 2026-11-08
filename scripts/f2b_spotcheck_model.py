@@ -1,4 +1,6 @@
-"""Model values for the F2b spot-check: derived shares for fixed (symbol, date) pairs, built from the snapshot anchor exactly as the table will be."""
+"""NOT USED (F2b closed 2026-11-08: failed its pre-registered spot-check bar; the table is not loaded and the screener does not read it). Kept for the record - see docs/data_audit/DATA_KNOWN_ISSUES.md KI-001.
+
+Model values for the F2b spot-check: derived shares for fixed (symbol, date) pairs, built from the snapshot anchor exactly as the table will be."""
 import sqlite3, sys
 from datetime import date
 from pathlib import Path
