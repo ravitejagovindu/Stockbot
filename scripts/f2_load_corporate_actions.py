@@ -24,7 +24,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from scripts.f2_load_plan import lake_symbol      # noqa: E402
+from stockbot.data.ingestion.lake_symbols import lake_symbol      # noqa: E402
 
 OUT = ROOT / "docs" / "data_audit"
 SOURCE = "NSE corporates-corporateActions API (F2 Step 7)"

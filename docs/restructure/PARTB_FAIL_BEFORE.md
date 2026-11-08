@@ -110,3 +110,6 @@ Each row: the test, the code file, the mutation that breaks it, and the result (
 | tests/unit/test_validation_random_baseline.py::test_paired_difference_and_significance_follow_the_data | stockbot/validation/paired_stats.py | median used for the paired difference | passes clean / FAILS mutated |
 | tests/unit/test_validation_random_baseline.py::test_paired_difference_and_significance_follow_the_data | stockbot/validation/paired_stats.py | significance threshold removed | passes clean / FAILS mutated |
 | tests/unit/test_validation_random_baseline.py::test_trimmed_mean_and_report | stockbot/validation/paired_stats.py | nothing trimmed | passes clean / FAILS mutated |
+| tests/unit/test_lake_symbols.py::test_the_mapping_in_force_on_the_ex_date_wins | stockbot/data/ingestion/lake_symbols.py | range end ignored | passes clean / FAILS mutated |
+| tests/unit/test_lake_symbols.py::test_outside_every_range_the_latest_mapping_is_used | stockbot/data/ingestion/lake_symbols.py | wrong fallback mapping | passes clean / FAILS mutated |
+| tests/unit/test_lake_symbols.py::test_without_an_isin_or_a_mapping_the_feed_symbol_is_kept | stockbot/data/ingestion/lake_symbols.py | feed symbol dropped | passes clean / FAILS mutated |

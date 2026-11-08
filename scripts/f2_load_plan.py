@@ -18,21 +18,12 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from stockbot.data.ingestion.lake_symbols import lake_symbol        # noqa: E402  (moved to the package in Phase 8)
+
 OUT = ROOT / "docs" / "data_audit"
 PRICE_TIERS = ("STRONG", "WEAK", "WEAK_DIRECTIONAL")
 THR, MIN_PX = 0.40, 5.0
-
-
-def lake_symbol(imap: pd.DataFrame, isin, sym: str, ex: str) -> str:
-    """Symbol under which the event's company sits in the lake after the ISIN->canonical mapping."""
-    if isinstance(isin, str):
-        m = imap[(imap["isin"] == isin) & (imap["first_date"] <= ex) & (imap["last_date"] >= ex)]
-        if len(m):
-            return m["canonical_symbol"].iloc[0]
-        m = imap[imap["isin"] == isin].sort_values("last_date")
-        if len(m):
-            return m["canonical_symbol"].iloc[-1]
-    return sym
 
 
 def main() -> int:
