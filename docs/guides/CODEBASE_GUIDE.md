@@ -295,6 +295,7 @@ Subpackage `stockbot.validation.ledger` (`__init__.py` holds the writers; the re
 |---|---|
 | `check_all.py` | `py scripts/check_all.py [--data] [--final]`: runs G1, G3, G5, G6 (and G2 with `--data`) and prints G4's file size and mtime. |
 | `data_catalogue.py` | Writes `docs/guides/data_catalogue.md`: machine-measured facts about every table (read-only). |
+| `momentum_signal_count.py` | Counts-only study of the draft momentum rule (eligible, trend and candidate counts, data-quality counts, a mechanical occupancy model). A study tool, not a strategy; takes the shared eligibility function as an argument because this package may not import `universe`. Reads only through `AsOfView`; computes no return. |
 | `copy_detector.py` | Flags dates whose rows copy the previous session (holiday copies). |
 | `f2_engine_scan.py` | Post-adjustment scan of large price moves through the real adjustment path, via the as-of view. |
 | `f2_verify_engine_path.py` | Runs every row of the verified-corporate-action list through the as-of view. |
@@ -323,6 +324,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/ingest_raw_bhavcopy_range.py` | Downloads Bhavcopy for a date range into the staging table. | manual | `stockbot.data.ingestion.ingest_raw_bhavcopy_range` |
 | `scripts/check_all.py` | All golden checks. | manual | `stockbot.data_checks.check_all` |
 | `scripts/gen_data_catalogue.py` | Regenerates `docs/guides/data_catalogue.md` from the database (read-only). | manual | `stockbot.data_checks.data_catalogue` |
+| `scripts/signal_count_momentum.py` | Counts-only signal study of the draft momentum rule (read-only; hashes `finsight.db` before and after). Injects the shared eligibility rule. | manual | `stockbot.data_checks.momentum_signal_count` |
 | `scripts/paper_report.py` | Paper-trading criteria report. | manual | `stockbot.live.paper_report` |
 | `scripts/preflight_spot_check.py` | Data and adjustment spot checks. | manual | `stockbot.data_checks.preflight_spot_check` |
 | `scripts/earnings_coverage.py` | Earnings coverage report. | manual | `stockbot.data_checks.earnings_coverage` |
