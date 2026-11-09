@@ -6,7 +6,7 @@ from datetime import date, timedelta
 
 import pandas as pd
 
-from scripts.f2_build_isin_symbol_map import build
+from stockbot.data.ingestion.f2_build_isin_symbol_map import build
 
 DDL = """
 create table market_data_lake_staging(symbol text, trade_date text, open_raw real, high_raw real, low_raw real,

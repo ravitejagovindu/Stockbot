@@ -1,0 +1,78 @@
+"""Phase 3 equivalence tests on the REAL lake (STOCKBOT_DATA_TESTS=1): the as-of view must give the same numbers as the current engine paths.
+
+  1. 120 (symbol, eval_date) samples (40 symbols x 3 dates, rng seed 7, as in stockbot/data_checks/f2_engine_scan.py): view.raw_bars / adjusted_bars equal
+     build_candidate_dicts' raw_ohlcv / adjusted_ohlcv (0 mismatches required).
+  2. The 57 verification rows (data/reference/verified_corporate_actions.csv) go through the view and PASS the same checks as
+     scripts/f2_verify_engine_path.verify_row; the engine factor on the bar before the ex-date equals the original engine path's factor.
+"""
+from __future__ import annotations
+
+import os
+import sqlite3
+from datetime import date, timedelta
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+
+DB = Path(os.environ.get("STOCKBOT_DB") or Path(__file__).resolve().parents[2] / "finsight.db")
+RUN = os.environ.get("STOCKBOT_DATA_TESTS") == "1"
+if RUN and not DB.exists():
+    raise RuntimeError(f"STOCKBOT_DATA_TESTS=1 but the database {DB} does not exist")
+pytestmark = pytest.mark.skipif(not RUN, reason="needs STOCKBOT_DATA_TESTS=1 and the real database")
+
+V = Path(__file__).resolve().parents[2] / "data/reference/verified_corporate_actions.csv"
+ROWS = list(pd.read_csv(V).itertuples()) if V.exists() else []
+
+
+@pytest.fixture(scope="module")
+def conn():
+    from stockbot.data.lake import open_lake
+    c = open_lake(DB)
+    yield c
+    c.close()
+
+
+@pytest.fixture(scope="module")
+def orm_session():
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
+    return Session(create_engine(f"sqlite:///file:{Path(DB).as_posix()}?mode=ro&uri=true", connect_args={"check_same_thread": False}))
+
+
+@pytest.mark.parametrize("r", ROWS, ids=[f"{r.symbol}-{r.ex_date}-{r.action_type}" for r in ROWS])
+def test_verification_row_through_the_view(conn, orm_session, r):
+    from sqlalchemy import or_, select
+    from stockbot.data.db.models import CorporateActionsLog
+    from stockbot.data.adjustments import action_factor
+    from stockbot.data.asof import AsOfView
+    v = pd.read_csv(V)
+    same = v[(v.symbol == r.symbol) & (v.ex_date == r.ex_date) & v.action_type.isin(["SPLIT", "BONUS"])]
+    expected = float(np.prod(same["expected_factor"])) if r.action_type in ("SPLIT", "BONUS") else 1.0
+    ex = date.fromisoformat(r.ex_date)
+    logs = orm_session.execute(select(CorporateActionsLog).where(CorporateActionsLog.ex_date == ex)
+                               .where(or_(CorporateActionsLog.symbol == r.symbol, CorporateActionsLog.notes.like(f"%feed_symbol={r.symbol};%")))).scalars().all()
+    mine = [c for c in logs if c.action_type == r.action_type]
+    assert mine, "no log row of that type for this feed symbol and ex-date"
+    lake_sym = mine[0].symbol
+    nxt = conn.execute("select min(trade_date) from market_data_lake where symbol=? and trade_date>=?", (lake_sym, ex.isoformat())).fetchone()[0]
+    assert nxt, f"no lake rows on/after the ex-date for {lake_sym}"
+    view = AsOfView(conn, date.fromisoformat(nxt))                   # the first session on/after the ex-date: nothing later is needed
+    raw = view.raw_bars(lake_sym, None, start=ex - timedelta(days=60))
+    adj = view.adjusted_bars(lake_sym, None, start=ex - timedelta(days=60))
+    before = [d for d in raw.index if d < ex]
+    after = [d for d in raw.index if d >= ex]
+    assert before and after, "no bars on both sides of the ex-date in the lake"
+    p, o = before[-1], after[0]
+    f_view = float(adj.loc[p, "close_adj"] / raw.loc[p, "close_raw"])
+    # the same number the original engine path gave (frozen before engine_core was deleted: tests/golden/verification_old_path.csv, rounded to 6 decimals there)
+    frozen = pd.read_csv(Path(__file__).resolve().parents[1] / "golden" / "verification_old_path.csv")
+    f = frozen[(frozen.symbol == r.symbol) & (frozen.ex_date == r.ex_date) & (frozen.action_type == r.action_type)]
+    assert len(f) == 1 and abs(round(f_view, 6) - float(f.iloc[0]["engine_factor_prev_bar"])) < 1e-9, (f_view, f.to_dict("records"))
+    if r.action_type in ("SPLIT", "BONUS"):
+        prod = float(np.prod([action_factor(a) for a in view.corporate_actions(lake_sym) if a["ex_date"] == ex and a["action_type"] in ("SPLIT", "BONUS")]))
+        assert abs(prod / expected - 1) < 0.01 and abs(f_view / expected - 1) < 0.01
+        assert abs(float(adj.loc[o, "close_adj"] / adj.loc[p, "close_adj"]) - 1) < 0.25
+    else:
+        assert abs(f_view - 1.0) < 1e-9 and not any(a["action_type"] in ("SPLIT", "BONUS") and a["ex_date"] == ex for a in view.corporate_actions(lake_sym))

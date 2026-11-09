@@ -1,0 +1,58 @@
+symbol,ex_date,action_type,category,result,note,lake_symbol,engine_factor_prev_bar,raw_move,adjusted_move,log_rows
+SBIN,2014-11-20,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,SBIN,0.1,0.1021,1.0208,SPLIT:1.0/10.0:WEAK
+ICICIBANK,2014-12-04,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,ICICIBANK,0.2,0.2019,1.0094,SPLIT:2.0/10.0:WEAK
+AXISBANK,2014-07-28,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,AXISBANK,0.2,0.1991,0.9955,SPLIT:2.0/10.0:WEAK
+PNB,2014-12-18,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,PNB,0.2,0.2081,1.0405,SPLIT:2.0/10.0:WEAK
+BANKBARODA,2015-01-22,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BANKBARODA,0.2,0.1985,0.9923,SPLIT:2.0/10.0:WEAK
+HAVELLS,2014-08-26,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,HAVELLS,0.2,0.219,1.0949,SPLIT:1.0/5.0:WEAK
+HDFCBANK,2019-09-19,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,HDFCBANK,0.5,0.5033,1.0066,SPLIT:1.0/2.0:WEAK
+EICHERMOT,2020-08-24,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,EICHERMOT,0.1,0.1003,1.0029,SPLIT:1.0/10.0:STRONG
+IRCTC,2021-10-28,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,IRCTC,0.2,0.2212,1.1059,SPLIT:2.0/10.0:STRONG
+TATASTEEL,2022-07-28,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,TATASTEEL,0.1,0.1046,1.046,SPLIT:1.0/10.0:STRONG
+NESTLEIND,2024-01-05,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,NESTLEIND,0.1,0.0983,0.9833,SPLIT:1.0/10.0:STRONG
+PERSISTENT,2024-03-28,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,PERSISTENT,0.5,0.4919,0.9839,SPLIT:5.0/10.0:STRONG
+DRREDDY,2024-10-28,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,DRREDDY,0.2,0.2013,1.0066,SPLIT:1.0/5.0:STRONG
+COFORGE,2025-06-04,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,COFORGE,0.2,0.2029,1.0145,SPLIT:2.0/10.0:STRONG
+KOTAKBANK,2026-01-14,SPLIT,standard_split,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,KOTAKBANK,0.2,0.1974,0.9871,SPLIT:1.0/5.0:STRONG
+RELIANCE,2017-09-07,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,RELIANCE,0.5,0.4972,0.9944,BONUS:1.0/1.0:WEAK
+RELIANCE,2024-10-28,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,RELIANCE,0.5,0.5024,1.0049,BONUS:1.0/1.0:STRONG
+TCS,2018-05-31,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,TCS,0.5,0.4954,0.9909,BONUS:1.0/1.0:WEAK
+INFY,2014-12-02,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,INFY,0.5,0.4889,0.9778,BONUS:1.0/1.0:WEAK
+INFY,2018-09-04,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,INFY,0.5,0.514,1.0279,BONUS:1.0/1.0:WEAK
+WIPRO,2017-06-13,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,WIPRO,0.5,0.4921,0.9841,BONUS:1.0/1.0:WEAK
+WIPRO,2019-03-06,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,WIPRO,0.75,0.7631,1.0174,BONUS:1.0/3.0:WEAK
+WIPRO,2024-12-03,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,WIPRO,0.5,0.4989,0.9979,BONUS:1.0/1.0:STRONG
+HCLTECH,2015-03-19,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,HCLTECH,0.5,0.4882,0.9765,BONUS:1.0/1.0:WEAK
+HCLTECH,2019-12-05,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,HCLTECH,0.5,0.4984,0.9967,BONUS:1.0/1.0:WEAK
+M&M,2017-12-21,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,M&M,0.5,0.4814,0.9628,BONUS:1.0/1.0:WEAK
+GAIL,2019-07-09,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,GAIL,0.5,0.4869,0.9738,BONUS:1.0/1.0:WEAK
+ONGC,2016-12-15,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,ONGC,0.666667,0.6762,1.0143,BONUS:1.0/2.0:WEAK
+LT,2017-07-13,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,LT,0.666667,0.6755,1.0133,BONUS:1.0/2.0:WEAK
+ITC,2016-07-01,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,ITC,0.666667,0.685,1.0275,BONUS:1.0/2.0:WEAK
+KOTAKBANK,2015-07-08,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,KOTAKBANK,0.5,0.496,0.992,BONUS:1.0/1.0:WEAK
+BERGEPAINT,2016-07-15,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BERGEPAINT,0.714286,0.7028,0.9839,BONUS:2.0/5.0:WEAK
+HDFCBANK,2025-08-26,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,HDFCBANK,0.5,0.4956,0.9912,BONUS:1.0/1.0:STRONG
+NESTLEIND,2025-08-08,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,NESTLEIND,0.5,0.4907,0.9814,BONUS:1.0/1.0:STRONG
+PIDILITIND,2025-09-23,BONUS,standard_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,PIDILITIND,0.5,0.4902,0.9804,BONUS:1.0/1.0:STRONG
+BAJFINANCE,2016-09-08,BONUS,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BAJFINANCE,0.1,0.1021,1.0206,"SPLIT:2.0/10.0:WEAK,BONUS:1.0/1.0:WEAK"
+BAJFINANCE,2016-09-08,SPLIT,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BAJFINANCE,0.1,0.1021,1.0206,"SPLIT:2.0/10.0:WEAK,BONUS:1.0/1.0:WEAK"
+BAJFINANCE,2025-06-16,BONUS,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BAJFINANCE,0.1,0.1005,1.0053,"BONUS:4.0/1.0:STRONG,SPLIT:1.0/2.0:STRONG"
+BAJFINANCE,2025-06-16,SPLIT,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BAJFINANCE,0.1,0.1005,1.0053,"BONUS:4.0/1.0:STRONG,SPLIT:1.0/2.0:STRONG"
+BAJAJFINSV,2022-09-13,BONUS,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BAJAJFINSV,0.1,0.1041,1.0414,"SPLIT:1.0/5.0:STRONG,BONUS:1.0/1.0:STRONG"
+BAJAJFINSV,2022-09-13,SPLIT,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,BAJAJFINSV,0.1,0.1041,1.0414,"SPLIT:1.0/5.0:STRONG,BONUS:1.0/1.0:STRONG"
+TECHM,2015-03-19,BONUS,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,TECHM,0.25,0.2454,0.9815,"SPLIT:5.0/10.0:WEAK,BONUS:1.0/1.0:WEAK"
+TECHM,2015-03-19,SPLIT,same_date_split_and_bonus,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,TECHM,0.25,0.2454,0.9815,"SPLIT:5.0/10.0:WEAK,BONUS:1.0/1.0:WEAK"
+RELIANCE,2023-07-20,DEMERGER,demerger,PASS,engine factor on the bar before the ex-date = 1.000000 (not price-moving),RELIANCE,1.0,0.9219,0.9219,DEMERGER:None/None:NOT_PRICE_MOVING
+ITC,2025-01-06,DEMERGER,demerger,PASS,engine factor on the bar before the ex-date = 1.000000 (not price-moving),ITC,1.0,0.9191,0.9191,DEMERGER:None/None:NOT_PRICE_MOVING
+SIEMENS,2025-04-07,DEMERGER,demerger,PASS,engine factor on the bar before the ex-date = 1.000000 (not price-moving),SIEMENS,1.0,0.5707,0.5707,DEMERGER:None/None:NOT_PRICE_MOVING
+RELIANCE,2020-05-13,RIGHTS,rights,PASS,engine factor on the bar before the ex-date = 1.000000 (not price-moving),RELIANCE,1.0,1.0116,1.0116,RIGHTS:1.0/15.0:NOT_PRICE_MOVING
+TATACONSUM,2024-07-26,RIGHTS,rights,PASS,engine factor on the bar before the ex-date = 1.000000 (not price-moving),TATACONSUM,1.0,0.9919,0.9919,RIGHTS:1.0/26.0:NOT_PRICE_MOVING
+GRASIM,2024-01-10,RIGHTS,rights,PASS,engine factor on the bar before the ex-date = 1.000000 (not price-moving),GRASIM,1.0,1.0022,1.0022,RIGHTS:6.0/179.0:NOT_PRICE_MOVING
+TATAMOTORS,2025-10-14,DEMERGER,symbol_change,PASS,"engine factor on the bar before the ex-date = 1.000000 (not price-moving); lake rows {'TATAMOTORS': 3173, 'TMPV': 243}",TATAMOTORS,1.0,0.5985,0.5985,DEMERGER:None/None:NOT_PRICE_MOVING
+EASEMYTRIP,2022-02-28,BONUS,same_year_split_and_bonus_different_dates,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,EASEMYTRIP,0.5,0.5225,1.045,BONUS:1.0/1.0:STRONG
+EASEMYTRIP,2022-11-21,SPLIT,same_year_split_and_bonus_different_dates,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,EASEMYTRIP,0.125,0.15,1.2002,"SPLIT:1.0/2.0:STRONG,BONUS:3.0/1.0:STRONG"
+EASEMYTRIP,2022-11-21,BONUS,same_year_split_and_bonus_different_dates,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,EASEMYTRIP,0.125,0.15,1.2002,"SPLIT:1.0/2.0:STRONG,BONUS:3.0/1.0:STRONG"
+KPIGREEN,2024-02-15,BONUS,same_year_split_and_bonus_different_dates,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,KPIGREEN,0.666667,0.7,1.05,BONUS:1.0/2.0:STRONG
+KPIGREEN,2024-07-18,SPLIT,same_year_split_and_bonus_different_dates,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,KPIGREEN,0.5,0.525,1.05,SPLIT:5.0/10.0:STRONG
+AQYLON,2026-03-05,SPLIT,relisted_or_suspended,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,AQYLON,0.1,0.105,1.0497,SPLIT:1.0/10.0:STRONG
+AVANTIFEED,2015-11-26,SPLIT,relisted_or_suspended,PASS,log factor ok=True; engine factor ok=True; adjusted move within 25%=True,AVANTIFEED,0.2,0.1978,0.9888,SPLIT:2.0/10.0:WEAK

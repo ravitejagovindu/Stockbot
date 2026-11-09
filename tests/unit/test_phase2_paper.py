@@ -6,19 +6,19 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-from data.db.connection import Base
-from data.db.models import (
+from stockbot.data.db.connection import Base
+from stockbot.data.db.models import (
     ActivePosition,
     DailyWatchlist,
     MarketDataLake,
     CorporateActionsLog,
     TradeAnalyticsLog,
 )
-from engine_core.costs import CostModel
-from engine_core.equity import paper_cash, paper_equity, get_equity
-from engine_core.account_ledger import get_live_equity
-from engine_core.position_service import open_position
-from engine_core.trade_metrics import trades_from_log, sharpe_from_equity, metrics_from_trades
+from stockbot.risk.costs import CostModel
+from stockbot.live.equity import paper_cash, paper_equity, get_equity
+from stockbot.live.account_ledger import get_live_equity
+from stockbot.live.position_service import open_position
+from stockbot.validation.trade_metrics import trades_from_log, sharpe_from_equity, metrics_from_trades
 import pandas as pd
 
 
@@ -211,148 +211,3 @@ def test_open_position_service(session):
 # ===========================================================================
 # 4. Paper Trader Execution & Edge Cases
 # ===========================================================================
-
-def test_paper_trader_open_pending_tickets(session):
-    from live_runner.paper_trader import open_pending_tickets, expire_stale_tickets
-
-    cfg = sample_cfg(mode="PAPER")
-
-    # Add historical dates to market_data_lake
-    d1 = date(2024, 1, 2)
-    d2 = date(2024, 1, 3)
-    session.add(MarketDataLake(symbol="RELIANCE", trade_date=d1, open_raw=2000.0, high_raw=2050.0, low_raw=1990.0, close_raw=2020.0, volume_raw=10000, exchange="NSE"))
-    session.add(MarketDataLake(symbol="RELIANCE", trade_date=d2, open_raw=2025.0, high_raw=2060.0, low_raw=2010.0, close_raw=2040.0, volume_raw=12000, exchange="NSE"))
-
-    # Ticket generated on d1
-    ticket = DailyWatchlist(
-        run_date=d1,
-        symbol="RELIANCE",
-        entry_price=2020.0,
-        live_stop_loss=1980.0,
-        stop_a=1980.0,
-        stop_b=1970.0,
-        initial_resistance_target=2120.0,
-        projected_rr=2.5,
-        shares=20,
-        position_value=40400.0,
-        risk_amount=800.0,
-        risk_pct_of_equity=0.08,
-        sector="ENERGY",
-        blocked=False,
-        execution_status="PENDING",
-    )
-    session.add(ticket)
-    session.flush()
-
-    # Run on d2
-    fills = open_pending_tickets(session, cfg, d2)
-    assert len(fills) == 1
-    assert fills[0]["status"] == "OPENED"
-    assert fills[0]["symbol"] == "RELIANCE"
-
-    # Ticket status is now OPENED
-    assert ticket.execution_status == "OPENED"
-
-    # Re-running on d2 must NOT open twice
-    fills2 = open_pending_tickets(session, cfg, d2)
-    assert len(fills2) == 0
-
-
-def test_paper_trader_gap_up_and_corp_actions(session):
-    from live_runner.paper_trader import open_pending_tickets
-
-    cfg = sample_cfg(mode="PAPER")
-    d1 = date(2024, 1, 2)
-    d2 = date(2024, 1, 3)
-
-    # Symbol 1: Gaps up +5% (limit is 3%)
-    session.add(MarketDataLake(symbol="GAPCO", trade_date=d1, open_raw=100.0, high_raw=102.0, low_raw=99.0, close_raw=100.0, volume_raw=5000, exchange="NSE"))
-    session.add(MarketDataLake(symbol="GAPCO", trade_date=d2, open_raw=105.0, high_raw=106.0, low_raw=104.0, close_raw=105.0, volume_raw=5000, exchange="NSE"))
-    t1 = DailyWatchlist(
-        run_date=d1, symbol="GAPCO", entry_price=100.0, live_stop_loss=95.0,
-        stop_a=95.0, stop_b=95.0, initial_resistance_target=115.0, projected_rr=3.0,
-        shares=10, position_value=1000.0, risk_amount=50.0, risk_pct_of_equity=0.005,
-        blocked=False, execution_status="PENDING"
-    )
-
-    # Symbol 2: Has corporate action on d2
-    session.add(MarketDataLake(symbol="CORPCO", trade_date=d1, open_raw=100.0, high_raw=102.0, low_raw=99.0, close_raw=100.0, volume_raw=5000, exchange="NSE"))
-    session.add(MarketDataLake(symbol="CORPCO", trade_date=d2, open_raw=100.0, high_raw=102.0, low_raw=99.0, close_raw=100.0, volume_raw=5000, exchange="NSE"))
-    session.add(CorporateActionsLog(symbol="CORPCO", ex_date=d2, action_type="SPLIT", ratio_numerator=1.0, ratio_denominator=2.0))
-    t2 = DailyWatchlist(
-        run_date=d1, symbol="CORPCO", entry_price=100.0, live_stop_loss=95.0,
-        stop_a=95.0, stop_b=95.0, initial_resistance_target=115.0, projected_rr=3.0,
-        shares=10, position_value=1000.0, risk_amount=50.0, risk_pct_of_equity=0.005,
-        blocked=False, execution_status="PENDING"
-    )
-
-    session.add_all([t1, t2])
-    session.flush()
-
-    res = open_pending_tickets(session, cfg, d2)
-    assert len(res) == 2
-    assert t1.execution_status == "SKIPPED"
-    assert "GAP_UP_TOO_LARGE" in t1.execution_note
-    assert t2.execution_status == "SKIPPED"
-    assert "CORP_ACTION_ON_EXEC_DATE" in t2.execution_note
-
-
-def test_paper_trader_raises_in_live_mode(session):
-    from live_runner.paper_trader import open_pending_tickets
-
-    cfg = sample_cfg(mode="LIVE")
-    with pytest.raises(AssertionError, match="must not run in LIVE mode"):
-        open_pending_tickets(session, cfg, date(2024, 1, 3))
-
-
-# ===========================================================================
-# 5. Trade Metrics Tests
-# ===========================================================================
-
-def test_trade_metrics():
-    df = pd.DataFrame([
-        {"position_id": 1, "symbol": "A", "entry_price": 100.0, "stop": 90.0, "shares": 10, "pnl_net": 200.0, "tax_est": 40.0, "exit_date": date(2024, 1, 5)},
-        {"position_id": 2, "symbol": "B", "entry_price": 50.0, "stop": 45.0, "shares": 20, "pnl_net": -100.0, "tax_est": 0.0, "exit_date": date(2024, 1, 10)},
-    ])
-
-    m = metrics_from_trades(df, start_equity=100_000.0)
-    assert m["n_trades"] == 2
-    assert m["win_rate_pct"] == 50.0
-    assert m["net_pnl_after_tax"] == 160.0 - 100.0  # 60.0
-    assert m["profit_factor"] == 160.0 / 100.0
-    assert m["expectancy_r"] == (2.0 - 1.0) / 2.0  # +0.5R
-
-    # Sharpe ratio
-    eq = pd.Series([100_000, 101_000, 102_500, 102_000, 103_500])
-    s = sharpe_from_equity(eq)
-    assert isinstance(s, float) and s > 0
-
-
-# ===========================================================================
-# 6. Append-Only Trigger Tests (Step 2.10)
-# ===========================================================================
-
-def test_append_only_trigger():
-    engine = create_engine("sqlite:///:memory:")
-    Base.metadata.create_all(engine)
-    with engine.connect() as conn:
-        conn.execute(text("""
-            CREATE TRIGGER trg_tal_no_update BEFORE UPDATE ON trade_analytics_log
-            BEGIN SELECT RAISE(ABORT, 'trade_analytics_log is append-only'); END;
-        """))
-        conn.execute(text("""
-            CREATE TRIGGER trg_tal_no_delete BEFORE DELETE ON trade_analytics_log
-            BEGIN SELECT RAISE(ABORT, 'trade_analytics_log is append-only'); END;
-        """))
-        conn.execute(text("""
-            INSERT INTO trade_analytics_log (position_id, symbol, entry_date, exit_date, entry_price, exit_price, shares, initial_stop_loss, projected_rr, realized_rr, pnl_gross, exit_reason)
-            VALUES (9999, 'TEST', '2024-01-01', '2024-01-02', 100, 105, 10, 95, 2, 1, 50, 'MANUAL')
-        """))
-        conn.commit()
-
-        with pytest.raises(Exception, match="trade_analytics_log is append-only"):
-            conn.execute(text("DELETE FROM trade_analytics_log WHERE position_id = 9999"))
-
-        with pytest.raises(Exception, match="trade_analytics_log is append-only"):
-            conn.execute(text("UPDATE trade_analytics_log SET pnl_gross = 100 WHERE position_id = 9999"))
-

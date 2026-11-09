@@ -1,156 +1,52 @@
-"""
-FInsight Trading Engine — README
-"""
+# StockBot (FInsight trading engine)
 
-# FInsight Trading Engine
+A local, end-of-day research and decision-support system for Indian equities. It generates **trade tickets for a human to act on**; it never sends an order to any broker and contains no order-routing code (`tests/unit/test_regulatory_barrier.py` scans the whole code base for it). SEBI's algorithmic-trading rules are the reason: there is no buy button anywhere.
 
-A local, SEBI-compliant end-of-day stock screening and trade management system for Indian equities.
+**State of the project after the restructure:** the machinery is finished and strategy-independent; **no strategy exists in the tree.** The previous strategy was tested, rejected (six pre-registered configurations, none passed the gates) and removed; it lives in git tag `pre-restructure`. Everything a new strategy needs is shared: one data view, one decision function, one risk layer, one validation package. Read `docs/ARCHITECTURE.md` first, then `docs/restructure/ENGINE_CONTRACT.md`.
 
-## ⚠️ Compliance Notice
-
-This engine is designed in full compliance with **SEBI's April 2026 algorithmic trading regulations**. It **never routes automated orders**. It generates Trade Tickets which the user executes manually in their Kite terminal. There is no "Buy" or "Invest" button.
-
----
-
-## Architecture
-
+## Layout
 ```
-finsight/
-├── engine_core/          # Shared stateless quant logic (imported by both backtest + live runner)
-├── data/                 # Data ingestion pipelines and DB layer
-├── backtest/             # Bifurcated backtest pipeline (Pass 1 → Scrape → Verify → Pass 2)
-├── live_runner/          # FastAPI EOD runner (fires at 5 PM IST daily)
-├── ui/                   # React dashboard (Trade Tickets, portfolio, analytics)
-├── strategy_config.yaml  # All numeric parameters — Git-tracked
-├── authorize_live.py     # Deployment authorization script
-└── authorized_deployment.json  # Git-SHA lock file (committed after authorization)
+stockbot/            all code (config, data, universe, risk, engine, strategies, backtest, live, validation, data_checks)
+  config/shared.yaml   the only configuration: runtime mode, execution assumptions, costs, portfolio risk limits, universe rules, validation gates, paper criteria
+scripts/             thin command-line wrappers (python -m style) + scripts/provenance (one-off tools kept because reports cite them)
+tests/               unit, integration, data_integrity (needs the real database, read-only), fixtures, golden (results frozen from the old code)
+docs/                architecture, data and validation docs, data_audit reports, archive (old specs), restructure (the restructure record)
+data/                reference and F9 data files
+backtest/            kept result files only (no code); see backtest/README.md
+ui/                  React dashboard (not touched by the restructure)
 ```
 
----
-
-## Quick Start
-
-### 1. Setup
-
+## Setup
 ```bash
-# Clone and enter project
-git clone <repo>
-cd finsight
-
-# Install Python dependencies
 python -m pip install -r requirements.txt
-
-# Copy and fill environment variables
-copy .env.template .env
-# Edit .env with your Kite API key, access token, and account equity
+copy .env.template .env        # fill in what you use (data keys); nothing here can place an order
 ```
+`finsight.db` (the price lake, about 3.4 GB) is not in git. Engine, backtest, validation and live decision code open it **read-only** (`stockbot.data.lake.open_lake`: SQLite `mode=ro` + `query_only`). Only the ingestion tools write to it. The live state is a separate database (`state/live_state.db`).
 
-### 2. Initialize Database
-
-```bash
-python -c "from data.db.connection import init_db; init_db()"
-```
-
-### 3. Ingest Historical Data
-
-```bash
-# Ingest full historical OHLCV (2010–present)
-python -m data.ingestion.ohlcv_ingestor --from 2010-01-01 --to today
-
-# Refresh surveillance and earnings data
-python -m data.ingestion.asm_gsm_refresher
-python -m data.ingestion.earnings_calendar_ingestor
-```
-
-### 4. Run Backtest
-
-```bash
-# Pass 1: Naive run (ignores ASM/GSM and earnings)
-python backtest/run_backtest.py --pass1
-
-# Bifurcated scrape (get historical ASM/GSM and earnings data)
-python backtest/run_backtest.py --scrape
-
-# MANUAL STEP: Open backtest/outputs/pending_asm_gsm_matches.csv
-# Review each PDF URL, verify/reject dates, set status to VERIFIED or REJECTED
-
-# Pass 2: Compliant run (using verified data)
-python backtest/run_backtest.py --pass2
-
-# Generate audit ledger
-python backtest/run_backtest.py --audit
-```
-
-### 5. Authorize for Live Trading
-
-```bash
-# Only run this after Pass 2 passes the dual gate (< 15% drawdown, beats Nifty)
-python authorize_live.py --confirm-ledger=backtest/outputs/audit.json
-```
-
-### 6. Start Live Engine
-
-```bash
-# Start the FastAPI EOD runner (verifies Git-SHA lock on startup)
-python -m live_runner.main
-
-# Start the React dashboard
-cd ui
-npm run dev
-# Open http://localhost:5173
-```
-
----
-
-## Daily Workflow
-
-1. **5:00 PM IST** — Engine fires automatically
-2. Check the **Dashboard** for kill switch status and portfolio heat
-3. Check the **Watchlist** for today's approved Trade Tickets
-4. If setups are approved: manually enter them in **Kite terminal**
-5. Monitor **Portfolio** page for position state changes and earnings alerts
-6. When closing a position: use the **Close Position** button in the Portfolio page (for analytics tracking)
-
----
-
-## Re-Authorization After Code Changes
-
-Any change to `engine_core/`, `strategy_config.yaml`, or `data/` requires:
-
-```bash
-# 1. Run the backtest again (or at minimum Pass 2)
-python backtest/run_backtest.py --pass2 --audit
-
-# 2. Re-authorize
-python authorize_live.py --confirm-ledger=backtest/outputs/audit.json
-```
-
----
-
-## Strategy Parameters
-
-All parameters are in [`strategy_config.yaml`](strategy_config.yaml). Key values:
-
-| Parameter | Value |
+## Everyday commands
+| what | command |
 |---|---|
-| Min Market Cap | ₹5,000 cr |
-| Min 20-day ADTV | ₹25 cr |
-| Min Listing Age | 252 trading days |
-| Nifty Kill Switch | Below 200-day SMA OR VIX > 20 |
-| Re-entry Hysteresis | 3 sessions: Nifty > 50-SMA AND VIX < 18 |
-| Stop Loss | Max of: Entry − 1.5×ATR14 or Donchian Low(20) |
-| Max Loss Per Trade | 1% of total equity |
-| Min R:R | 1:1.5 |
-| Max Positions | 10 |
-| Max Portfolio Risk | 10% of equity |
-| Max Sector Exposure | 15% of allocated capital |
-| Time Decay | 15 sessions to 1:1 → manual exit flag |
-| Trailing Stop | 2×ATR below highest high (ratchet) |
+| all fast checks (unit suite, fixture baseline, import boundaries, engine parity/lookahead/idempotency/determinism/isolation) | `py scripts/check_all.py` |
+| plus the real-database golden checks (long; read-only) | `py scripts/check_all.py --data` |
+| final acceptance (also requires the import-boundary allowlists to be empty) | `py scripts/check_all.py --data --final` |
+| ingest prices for a date range (its own step, BEFORE the EOD run) | `py scripts/ingest_raw_bhavcopy_range.py --start 2026-10-01 --end 2026-10-31` (see `--help`) |
+| run the EOD decision step for one date (mode gate, freshness check, decide, state store, ticket file) | `py scripts/run_eod.py [--date YYYY-MM-DD] [--mode PAPER]` |
+| daily health check (stale data, state store vs journal, state behind the lake) | `py scripts/daily_health_check.py` |
+| daily ASM/GSM snapshot (forward history; none exists before 2026-11-08) | `py scripts/snapshot_asm_gsm.py` |
+| start the API for the dashboard and the 17:00 / 19:00 IST scheduler | `python -m stockbot.live.main` then `cd ui && npm run dev` |
 
----
+`runtime.mode` in `stockbot/config/shared.yaml` is **PAPER** by default. LIVE refuses to run unless a registered strategy has status `live` and a `validation_ref`, and fails closed without an ASM/GSM snapshot for the date.
 
-## Running Tests
+## The rules this code base enforces (each one is a test)
+* Layers: `tests/unit/test_import_boundaries.py` (a violation fails the build; seeded violations prove it fails). No strategy imports another, no engine/strategy code gets a database connection, no network library in backtest/engine/risk/strategies.
+* Point-in-time: market data reaches decision code only through `AsOfView(conn, as_of)`; asking for a later bar raises; changing every later row changes no earlier decision.
+* One decision function for backtest and live; parity over 71 sessions; the same live date twice changes nothing.
+* Shared gates and costs: a strategy cannot override them. Parameters of one strategy live in its `StrategySpec` only.
+* Trials are counted: the hash-chained trial ledger (`stockbot/validation/ledger/records`) records every pre-registration; a family of strategies is registered and its results recorded together, so multiplicity corrections cannot lose a member.
+* Data limits are written down: `docs/data_audit/DATA_KNOWN_ISSUES.md` (KI-001 shares outstanding is not point-in-time and the market-cap gate is parked; KI-002 trade rate vs the gates; KI-003 no ASM/GSM history; KI-004 and others).
 
-```bash
-python -m pytest tests/ -v --cov=engine_core --cov=live_runner
-```
+## Before any strategy goes live
+`docs/restructure/PRE_LIVE_LIST.md` lists what was deliberately left undone (correction replay for late operator reports, the mandate's 10 positions / 10% total risk versus the 12 / 15% in `shared.yaml`, an earnings alert, a drawdown guard, an operator reconciliation command line, and the legacy dashboard tables that are not connected to the new state store).
+
+## History
+The restructure was done in reviewed stops (`Claude_Docs/STOCKBOT_RESTRUCTURE_STOP1..5_REPORT.md`); `docs/restructure/` keeps the plan decisions, the engine contract, the file inventory, the list of every removed test with its reason, and the fail-before evidence for each new test.

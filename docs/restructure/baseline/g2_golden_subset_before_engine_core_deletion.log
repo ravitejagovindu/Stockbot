@@ -1,0 +1,10 @@
+........................................................................ [ 61%]
+..............................................                           [100%]
+============================= slowest 5 durations =============================
+2636.37s call     tests/data_integrity/test_golden_frozen.py::test_the_scan_through_the_view_reproduces_the_frozen_old_path_result
+215.96s call     tests/data_integrity/test_asof_view_real_db.py::test_120_samples_view_equals_build_candidate_dicts
+1.09s call     tests/data_integrity/test_golden_frozen.py::test_the_frozen_120_samples_equal_the_view_bit_for_bit
+0.20s call     tests/data_integrity/test_corporate_actions_real_db.py::test_verification_row_through_the_engine_path[SBIN-2014-11-20-SPLIT]
+0.06s call     tests/data_integrity/test_corporate_actions_real_db.py::test_the_log_is_loaded
+118 passed in 2857.80s (0:47:37)
+done

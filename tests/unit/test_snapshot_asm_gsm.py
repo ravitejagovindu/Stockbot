@@ -1,12 +1,10 @@
-"""scripts/snapshot_asm_gsm.py: parsing, idempotence, failure handling.  No network (fetch is replaced)."""
+"""stockbot/data/ingestion/snapshot_asm_gsm.py: parsing, idempotence, failure handling.  No network (fetch is replaced)."""
 import json
 import sqlite3
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts"))
-import snapshot_asm_gsm as snap  # noqa: E402
+from stockbot.data.ingestion import snapshot_asm_gsm as snap
 
 ASM = {"longterm": {"data": [{"asmSurvIndicator": "Stage I", "asmTime": "08-Nov-2026", "companyName": "A", "isin": "INE1", "survCode": "LTASM - I (13)", "survDesc": "d", "symbol": "AAA", "srno": 1}]},
        "shortterm": {"data": [{"asmSurvIndicator": "Stage II", "asmTime": "08-Nov-2026", "companyName": "B", "isin": "INE2", "survCode": "STASM - II", "survDesc": "d", "symbol": "BBB", "srno": 1}]}}

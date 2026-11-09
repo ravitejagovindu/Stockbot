@@ -6,7 +6,7 @@ from datetime import date, timedelta
 
 import pandas as pd
 
-from scripts.f2_split_rename_links import find_links
+from stockbot.data_checks.f2_split_rename_links import find_links
 
 
 def _db(tmp_path, a_price, b_price):

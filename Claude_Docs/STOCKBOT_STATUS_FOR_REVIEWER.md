@@ -15,7 +15,7 @@ Where to read the detail: `STOCKBOT_STEP1_RESULTS.md` (holiday copies, ISIN map)
 | 3 Swap and post-swap checks | **done, all checks pass** (2,829,905 Yahoo rows archived, 3,110,289 raw rows inserted, 8,034 special-session rows and 51 index rows added, 353,088 rows relabelled by the ISIN map, untouched rows checksum-identical, 0 duplicates, Nifty/VIX gap-free, calendar data tests pass) |
 | 4 Corporate-action fixes | **done**: parser fixes (two rounds, 16 tests failed before), evidence tiers (STRONG 427 / WEAK 327 / UNSUPPORTED 375 of 1,129 events), old-symbol queries already covered by the original dump, DVL window checked |
 | 5 Eligible symbols | **done**: 1,743 symbols pass the ₹25 crore gate (63 are ETFs/funds), 889 large moves triaged, 122 relevant, 9 for manual judgement |
-| 6 Verification list | **done**: 58/58 PASS, split+bonus-different-dates and relisted cases added |
+| 6 Verification list | **done**: 57/57 PASS, split+bonus-different-dates and relisted cases added |
 | STOP A | **reached; reviewer asked for revised tiers, reconciliation, scan and dispositions: delivered in `STOCKBOT_STOP_A_RESPONSE.md`, waiting for approval of the load** |
 | 7 Load and integration tests | not started (after STOP A) |
 | STOP B, F2b, F9 study, AMD-002 | not started |

@@ -6,7 +6,7 @@ from datetime import date
 import pandas as pd
 import pytest
 
-from scripts.ingest_raw_bhavcopy_range import candidate_urls, parse_bhavcopy
+from stockbot.data.ingestion.ingest_raw_bhavcopy_range import candidate_urls, parse_bhavcopy
 
 
 def test_legacy_layout():
@@ -70,19 +70,19 @@ def _full_csv(date1: str) -> str:
 
 
 def test_holiday_served_with_previous_session_file_is_not_accepted():
-    from scripts.ingest_raw_bhavcopy_range import fetch_day
+    from stockbot.data.ingestion.ingest_raw_bhavcopy_range import fetch_day
     df, status, info = fetch_day(_FakeSession(_full_csv("01-Oct-2019")), date(2019, 10, 2))  # file says 1 Oct, asked 2 Oct
     assert df is None and status == "HOLIDAY_OR_MISSING"
 
 
 def test_file_whose_date_matches_is_accepted():
-    from scripts.ingest_raw_bhavcopy_range import fetch_day
+    from stockbot.data.ingestion.ingest_raw_bhavcopy_range import fetch_day
     df, status, info = fetch_day(_FakeSession(_full_csv("02-Oct-2019")), date(2019, 10, 2))
     assert status == "OK" and list(df["trade_date"].unique()) == ["2019-10-02"]
 
 
 def test_extract_file_date_all_layouts():
-    from scripts.ingest_raw_bhavcopy_range import extract_file_date
+    from stockbot.data.ingestion.ingest_raw_bhavcopy_range import extract_file_date
     assert extract_file_date(pd.DataFrame({"DATE1": [" 01-Oct-2019"]})) == date(2019, 10, 1)
     assert extract_file_date(pd.DataFrame({"TIMESTAMP": ["02-JAN-2020"]})) == date(2020, 1, 2)
     assert extract_file_date(pd.DataFrame({"TradDt": ["2026-09-30"]})) == date(2026, 9, 30)

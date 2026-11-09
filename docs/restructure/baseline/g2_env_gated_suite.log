@@ -1,0 +1,26 @@
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 55%]
+........................................................................ [ 73%]
+........................................................................ [ 91%]
+................................                                         [100%]
+============================== warnings summary ===============================
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:166: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top40 = apply_rs_rank_percentile(cands, 40.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:169: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top50 = apply_rs_rank_percentile(cands, 50.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:172: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, None)) == 10
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\StockBot\tests\unit\test_phase1_components.py:173: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, 100.0)) == 10
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+392 passed, 4 warnings in 1303.94s (0:21:43)
+done 0

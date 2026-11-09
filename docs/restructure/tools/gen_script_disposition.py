@@ -1,0 +1,96 @@
+"""docs/restructure/tools/gen_script_disposition.py - writes docs/restructure/SCRIPT_DISPOSITION.md (Phase 8 script disposition table) from INVENTORY.csv and the tree as it is now."""
+import ast
+import csv
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[3]
+inv = list(csv.DictReader(open(ROOT / "docs/restructure/INVENTORY.csv", encoding="utf-8")))
+LEGACY = ("engine_core", "data.db", "live_runner", "backtest", "config", "logging_config")
+
+
+def where_now(path: str):
+    p = Path(path)
+    if (ROOT / p).exists():
+        return path, ("thin wrapper" if (ROOT / p).read_text(encoding="utf-8", errors="ignore").startswith('"""Thin command-line wrapper') else "unchanged")
+    stem = p.name
+    if stem == "__init__.py":
+        return "(package marker)", "moved"
+    for cand in list((ROOT / "stockbot").rglob(stem)) + list((ROOT / "scripts" / "provenance").rglob(stem)):
+        return str(cand.relative_to(ROOT)).replace("\\", "/"), "moved"
+    return "-", "gone"
+
+
+def legacy_deps(rel: str):
+    f = ROOT / rel
+    if not f.exists() or f.suffix != ".py":
+        return ""
+    try:
+        t = ast.parse(f.read_text(encoding="utf-8"))
+    except SyntaxError:
+        return "?"
+    names = set()
+    for n in ast.walk(t):
+        mods = [a.name for a in n.names] if isinstance(n, ast.Import) else ([n.module] if isinstance(n, ast.ImportFrom) and n.module and n.level == 0 else [])
+        for m in mods:
+            if m.split(".")[0] in ("engine_core", "live_runner") or m.startswith("data.db") or m.startswith("backtest.") or m in ("config", "logging_config"):
+                names.add(m.split(".")[0] if not m.startswith("data.db") else "data.db")
+    return ", ".join(sorted(names))
+
+
+rows = []
+for r in inv:
+    path = r["path"]
+    if not (path.startswith(("scripts/", "backtest/")) or (path.startswith("data/") and path.endswith(".py"))) or "outputs" in path or path.endswith((".yaml", ".md", ".csv")):
+        continue
+    now, how = where_now(path)
+    if how == "thin wrapper" or path == "scripts/f2_copy_detector.py":
+        pk = next(iter((ROOT / "stockbot").rglob(Path(path).name)), None)
+        if pk:
+            now, how = f"{str(pk.relative_to(ROOT)).replace(chr(92), '/')} (wrapper at {path})", "moved"
+    cat = r["category"]
+    if cat == "delete":
+        nxt = "Phase 10: delete (replaced; reports cite tag `pre-restructure`)"
+    elif cat == "old-strategy":
+        nxt = "Phase 10: leaves the tree with the old strategy (tag `pre-restructure`)"
+    elif how == "moved" and "provenance" in now:
+        nxt = "kept as provenance" + ("; leaves in Phase 10 with the legacy modules it imports" if legacy_deps(now) else "")
+    elif how == "moved":
+        nxt = "done (package module; thin wrapper in scripts/)"
+    else:
+        nxt = {"rewrite": "Phase 9/10 (rewrite)", "undecided": "decide at STOP 4", "keep-as-is": "keep"}.get(cat, cat)
+    if how == "moved" and "wrapper at" in now:
+        nxt = "done: logic in the package, the old command line still works"
+    if how == "moved" and not path.startswith(("scripts/", "data/")):
+        nxt = "done (moved to the package in an earlier phase)"
+    special = {
+        "backtest/path_sim.py": "replaced by `engine.path.simulate_ticket` (equivalence test in test_f6_baseline_and_locks); leaves in Phase 10 with engine_core",
+        "backtest/simulator.py": "replaced by `stockbot.backtest.runner` (parity-tested); the legacy loop stays until G2/G3 no longer need it; leaves in Phase 10",
+        "backtest/run_backtest.py": "Phase 10: leaves with the legacy loop (its job is `stockbot.backtest.runner`)",
+        "scripts/f2_copy_detector.py": "done in Phase 2: logic in `stockbot/data_checks/copy_detector.py`; this file is a thin wrapper",
+        "scripts/paper_report.py": "Phase 9: moves to `live` (Q8: paper criteria are shared, in live)",
+        "scripts/daily_health_check.py": "Phase 9: rewritten for the state store",
+        "data/__init__.py": "removed in Phase 9.1 (data/ holds data files only)",
+        "data/db/__init__.py": "moved to stockbot/data/db in Phase 9.1",
+        "data/db/connection.py": "moved to stockbot/data/db/connection.py in Phase 9.1 (used by ingestion and the legacy dashboard tables; the engine never sees it)",
+        "data/db/models.py": "moved to stockbot/data/db/models.py in Phase 9.1 (ORM for ingestion and the legacy dashboard tables)",
+    }
+    nxt = special.get(path, nxt)
+    if how == "gone":
+        why = {"old-strategy": "the old strategy's code or analysis", "delete": "replaced / invalid (F8 scrapers, git lock, ad-hoc counters)", "rewrite": "replaced by new code (runner, adapters, config)",
+               "undecided": "replaced by engine.path / stockbot.live", "provenance": "provenance not kept (see scripts/provenance/README.md)", "move": "moved or removed"}.get(cat, cat)
+        nxt = f"DELETED in Phase 10 ({why}); tag `pre-restructure`"
+    rows.append((path, cat, now, how, legacy_deps(now) if now != "-" else "", nxt))
+
+extra = [("scripts/merge_asm_gsm_snapshots.py", "added in prep (not in INVENTORY)"), ("scripts/check_all.py", "added in Phase 8"), ("scripts/f9_trade_library.py", "-")]
+out = ["# Script disposition after Phase 8", "",
+       "Generated by `docs/restructure/tools/gen_script_disposition.py` from INVENTORY.csv and the current tree. `how`: **moved** = logic now in a package (a thin `scripts/` wrapper keeps the command line), "
+       "**unchanged** = still at the old path, **thin wrapper** = the old path is now only a wrapper. `legacy deps` = imports of old top-level modules still present in the file (they block deletion of those modules until the file leaves).", "",
+       "| old path | inventory category | now | how | legacy deps | what happens next |", "|---|---|---|---|---|---|"]
+for p, cat, now, how, deps, nxt in rows:
+    out.append(f"| `{p}` | {cat} | `{now}` | {how} | {deps or '-'} | {nxt} |")
+out += ["", f"Total rows: {len(rows)} (the inventory rows for scripts/, backtest/ and the legacy .py files under data/).", "",
+        "Added after the inventory: `scripts/merge_asm_gsm_snapshots.py` (logic in `stockbot/data/ingestion/`, wrapper in scripts/), `scripts/check_all.py` (logic in `stockbot/data_checks/check_all.py`).",
+        "", "Deviation from the inventory: `scripts/f9_trade_library.py` was marked *move to validation* but builds its library with the OLD exit rules (`engine_core.lifecycle_rules`), so it is kept as provenance; "
+        "`validate_max_t`, `f9_power_study` and `f9_report` moved. Reviewer: confirm."]
+(ROOT / "docs/restructure/SCRIPT_DISPOSITION.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+print(len(rows), "rows")

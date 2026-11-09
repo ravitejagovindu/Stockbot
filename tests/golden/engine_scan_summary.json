@@ -1,0 +1,15 @@
+{
+ "as_of": "2026-09-30",
+ "created": 2,
+ "large_after": 267,
+ "large_before": 764,
+ "min_price": 5.0,
+ "names_scanned": 1607,
+ "remaining_by_category": {
+  "after_gap_in_EQ_series": 209,
+  "near_unadjusted_event": 40,
+  "residual_no_explanation": 18
+ },
+ "removed": 499,
+ "threshold": 0.4
+}

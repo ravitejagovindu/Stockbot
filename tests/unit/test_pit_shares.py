@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from data.ingestion.pit_shares import derive_segments, shares_on
+from scripts.provenance.pit_shares import derive_segments, shares_on
 
 EX = date(2024, 3, 1)
 
@@ -48,7 +48,7 @@ def test_no_events_gives_a_flat_reliable_series_and_a_bad_factor_is_rejected():
 
 
 # ---- D1: rights walk-back, 45-day band, anchors ------------------------------------------------------------
-from data.ingestion.pit_shares import parse_rights_ratio, rights_factor
+from scripts.provenance.pit_shares import parse_rights_ratio, rights_factor
 
 
 def test_rights_ratio_parses_only_when_unambiguous():

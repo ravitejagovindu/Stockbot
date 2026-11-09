@@ -1,0 +1,37 @@
+........................................................................ [ 18%]
+........................................................................ [ 36%]
+........................................................................ [ 55%]
+........................................................................ [ 73%]
+........................................................................ [ 91%]
+................................                                         [100%]
+============================== warnings summary ===============================
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\wt_pre_restructure\tests\unit\test_phase1_components.py:166: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top40 = apply_rs_rank_percentile(cands, 40.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\wt_pre_restructure\tests\unit\test_phase1_components.py:169: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    top50 = apply_rs_rank_percentile(cands, 50.0)
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\wt_pre_restructure\tests\unit\test_phase1_components.py:172: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, None)) == 10
+
+tests/unit/test_phase1_components.py::test_apply_rs_rank_percentile_deprecated
+  F:\Projects\Ravi\wt_pre_restructure\tests\unit\test_phase1_components.py:173: DeprecationWarning: apply_rs_rank_percentile is deprecated. Use compute_universe_rs_cutoff for broad universe filtering.
+    assert len(apply_rs_rank_percentile(cands, 100.0)) == 10
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 10 durations =============================
+444.88s call     tests/data_integrity/test_baseline_real_db.py::test_real_db_simulator_and_funnel_agreement
+149.75s call     tests/data_integrity/test_baseline_real_db.py::test_real_db_active_simulator_mini_window_jan_feb_2020
+36.87s call     tests/data_integrity/test_calendar_integrity.py::test_staging_dates_are_nifty_dates_or_documented_special_sessions
+5.98s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_with_ar1_autocorrelation
+3.14s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_on_pure_noise
+2.34s call     tests/unit/test_snapshot_asm_gsm.py::test_touches_only_its_own_tables
+2.34s call     tests/unit/test_snapshot_asm_gsm.py::test_stores_both_lists_and_is_idempotent
+1.44s call     tests/unit/test_phase3_backtest.py::test_audit_generator_summarize_and_generate
+1.36s call     tests/unit/test_raw_only_liquidity.py::test_every_adtv_and_market_cap_call_site_uses_raw_inputs
+1.23s call     tests/unit/test_max_t_bootstrap.py::test_empirical_fwer_is_reproducible
+392 passed, 4 warnings in 699.17s (0:11:39)
+done 0

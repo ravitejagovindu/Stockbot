@@ -1,4 +1,4 @@
-"""F1 — explicit gross / net / after-tax R metrics (single definition in engine_core.trade_metrics)."""
+"""F1 — explicit gross / net / after-tax R metrics (single definition in stockbot.validation.trade_metrics)."""
 from __future__ import annotations
 
 import math
@@ -7,7 +7,7 @@ from datetime import date, timedelta
 import pandas as pd
 import pytest
 
-from engine_core.trade_metrics import add_r_columns, compute_trade_r
+from stockbot.risk.r_metrics import add_r_columns, compute_trade_r
 
 
 def test_compute_trade_r_with_partial_exit_hand_computed():
@@ -47,7 +47,7 @@ def test_dataframe_and_scalar_agree():
 
 def _sim_fixture(session):
     """Same synthetic series as the sim-vs-live golden master (entry 102 on day 10, gap-stop on day 17)."""
-    from data.db.models import MarketDataLake, SharesOutstanding
+    from stockbot.data.db.models import MarketDataLake, SharesOutstanding
     from tests.integration.test_sim_vs_live_rules import _get_base_config
 
     cfg = _get_base_config()
@@ -78,30 +78,13 @@ def _sim_fixture(session):
 def session():
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
-    from data.db.connection import Base
+    from stockbot.data.db.connection import Base
     eng = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
     Base.metadata.create_all(eng)
     s = sessionmaker(bind=eng)()
     yield s
     s.close()
     eng.dispose()
-
-
-def test_simulator_writes_explicit_r_columns_net_differs_from_gross(session):
-    from backtest.simulator import Simulator
-
-    cfg, dates = _sim_fixture(session)
-    cfg["costs"]["stcg_tax_pct"] = 20.0
-    res = Simulator(cfg, session).run(dates[0], dates[17], 1_000_000.0)
-    t = res.trades.iloc[0]
-    for col in ("risk_inr", "gross_r", "net_r", "net_r_after_tax"):
-        assert col in res.trades.columns, col
-    assert t["costs"] > 0
-    assert t["risk_inr"] == pytest.approx(t["shares"] * (t["entry_price"] - t["stop"]))
-    assert t["gross_r"] == pytest.approx(t["pnl_gross"] / t["risk_inr"])
-    assert t["net_r"] == pytest.approx(t["pnl_net"] / t["risk_inr"])
-    assert t["net_r"] < t["gross_r"]
-    assert t["gross_r"] == pytest.approx(t["realized_r"])  # deprecated alias
 
 
 def _trades(net_equals_gross: bool) -> pd.DataFrame:
@@ -117,7 +100,7 @@ def _trades(net_equals_gross: bool) -> pd.DataFrame:
 
 
 def test_select_candidate_rejects_missing_r_column():
-    from scripts.select_candidate import require_r_columns
+    from scripts.provenance.select_candidate import require_r_columns
 
     df = _trades(False).drop(columns=["net_r"])
     with pytest.raises(ValueError, match="net_r"):
@@ -125,7 +108,7 @@ def test_select_candidate_rejects_missing_r_column():
 
 
 def test_select_candidate_rejects_legacy_file_without_gross_r():
-    from scripts.select_candidate import require_r_columns
+    from scripts.provenance.select_candidate import require_r_columns
 
     df = _trades(False).drop(columns=["gross_r"])
     with pytest.raises(ValueError, match="gross_r"):
@@ -133,7 +116,7 @@ def test_select_candidate_rejects_legacy_file_without_gross_r():
 
 
 def test_select_candidate_rejects_net_equal_gross_with_costs():
-    from scripts.select_candidate import require_r_columns
+    from scripts.provenance.select_candidate import require_r_columns
 
     with pytest.raises(ValueError, match="identical"):
         require_r_columns(_trades(True))
@@ -141,20 +124,10 @@ def test_select_candidate_rejects_net_equal_gross_with_costs():
 
 
 def test_max_t_series_builders_require_explicit_column():
-    from engine_core.max_t_bootstrap import build_weekly_actual_series
+    from stockbot.validation.max_t_bootstrap import build_weekly_actual_series
 
     df = _trades(False).drop(columns=["net_r"])
     with pytest.raises(ValueError, match="net_r"):
         build_weekly_actual_series(df)
 
 
-def test_baseline_and_simulator_share_the_same_r_function(session):
-    """Same inputs -> same R whether produced by the Simulator row or the baseline's add_r_columns path."""
-    from backtest.simulator import Simulator
-
-    cfg, dates = _sim_fixture(session)
-    res = Simulator(cfg, session).run(dates[0], dates[17], 1_000_000.0)
-    legacy_shape = res.trades.drop(columns=["risk_inr", "gross_r", "net_r", "net_r_after_tax"])
-    again = add_r_columns(legacy_shape)  # what scripts/redesigned_random_baseline.load_actual_trades does
-    for k in ("gross_r", "net_r", "net_r_after_tax"):
-        assert again[k].iloc[0] == pytest.approx(res.trades[k].iloc[0])

@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.f2_copy_detector import copy_dates, special_sessions
+from stockbot.data_checks.copy_detector import copy_dates, special_sessions
 
 DB = Path(os.environ.get("STOCKBOT_DB") or Path(__file__).resolve().parents[2] / "finsight.db")
 RUN = os.environ.get("STOCKBOT_DATA_TESTS") == "1"
