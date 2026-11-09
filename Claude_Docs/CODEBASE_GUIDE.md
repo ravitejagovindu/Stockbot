@@ -2,6 +2,8 @@
 
 A reading guide for the owner. It describes the repository as it is on `master` (tag `post-restructure`), written from the code, not from older documents. Plain words first, exact names after. Nothing here is a recommendation and nothing here describes a strategy: **no strategy exists in the tree.**
 
+A picture version, for reading by clicking instead of scrolling, is `docs/guides/codebase_guide.html` (open it from the folder; it needs no internet). This text stays the detailed reference.
+
 How to keep it honest: `tests/unit/test_guides_consistent.py` fails if a package, module or script is missing from this guide, or if a file path named in it does not exist. The companion guide for the database is `docs/guides/DATA_GUIDE.md`.
 
 Contents: A overview, B repo map, C packages, D scripts, E tests, F other folders, G how a strategy plugs in, H configuration, I diagrams, J glossary, K "where do I look when...".
@@ -295,6 +297,7 @@ Subpackage `stockbot.validation.ledger` (`__init__.py` holds the writers; the re
 |---|---|
 | `check_all.py` | `py scripts/check_all.py [--data] [--final]`: runs G1, G3, G5, G6 (and G2 with `--data`) and prints G4's file size and mtime. |
 | `data_catalogue.py` | Writes `docs/guides/data_catalogue.md`: machine-measured facts about every table (read-only). |
+| `guide_html.py` | Builds `docs/guides/codebase_guide.html` (the interactive picture version of this guide) from `docs/guides/codebase_guide_data.json` and `docs/guides/codebase_guide_template.html`. Standard library only. |
 | `copy_detector.py` | Flags dates whose rows copy the previous session (holiday copies). |
 | `f2_engine_scan.py` | Post-adjustment scan of large price moves through the real adjustment path, via the as-of view. |
 | `f2_verify_engine_path.py` | Runs every row of the verified-corporate-action list through the as-of view. |
@@ -323,6 +326,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/ingest_raw_bhavcopy_range.py` | Downloads Bhavcopy for a date range into the staging table. | manual | `stockbot.data.ingestion.ingest_raw_bhavcopy_range` |
 | `scripts/check_all.py` | All golden checks. | manual | `stockbot.data_checks.check_all` |
 | `scripts/gen_data_catalogue.py` | Regenerates `docs/guides/data_catalogue.md` from the database (read-only). | manual | `stockbot.data_checks.data_catalogue` |
+| `scripts/build_guide_html.py` | Rebuilds `docs/guides/codebase_guide.html` from its JSON and template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.guide_html` |
 | `scripts/paper_report.py` | Paper-trading criteria report. | manual | `stockbot.live.paper_report` |
 | `scripts/preflight_spot_check.py` | Data and adjustment spot checks. | manual | `stockbot.data_checks.preflight_spot_check` |
 | `scripts/earnings_coverage.py` | Earnings coverage report. | manual | `stockbot.data_checks.earnings_coverage` |
@@ -396,7 +400,7 @@ All tests are under `tests/` and run with pytest (`pytest.ini`). The "golden che
 ## F. Other folders
 
 - **`data/reference/`** (read by code and by checks; details per file in DATA_GUIDE section H): `sector_map.csv` (sector per symbol), `fund_etf_symbols.csv` (names excluded as funds), `isin_symbol_map.csv`, `special_sessions.csv`, `verified_corporate_actions.csv`, `unadjusted_events.csv`, `held_events.csv`, `corporate_actions_evidence.csv`, `nse_corporate_actions_raw.csv`, `EQUITY_L.csv`, `f2_symbols.txt`, `pit_shares_anchors.csv`, `pit_shares_spotcheck_filings.csv`. `data/f9/` holds the power-study results.
-- **`docs/`**: `docs/ARCHITECTURE.md` (layers and flow), `docs/restructure/` (`ENGINE_CONTRACT.md` is the written specification of `decide`; `PRE_LIVE_LIST.md` is what must be done before any strategy goes live; `REMOVED_TESTS.md`; `BASELINE.md`), `docs/data_audit/` (reports and `DATA_KNOWN_ISSUES.md`), `docs/F9_PREREGISTRATION.md`, `docs/F9_POWER_RESULTS.md`, `docs/MAXT_VALIDATION.md`, `docs/ASM_GSM_SNAPSHOT.md`, `docs/EARNINGS_COLLECTION.md`, `docs/archive/` (old specifications), `docs/guides/` (these guides and the machine-measured `data_catalogue.md`).
+- **`docs/`**: `docs/ARCHITECTURE.md` (layers and flow), `docs/restructure/` (`ENGINE_CONTRACT.md` is the written specification of `decide`; `PRE_LIVE_LIST.md` is what must be done before any strategy goes live; `REMOVED_TESTS.md`; `BASELINE.md`), `docs/data_audit/` (reports and `DATA_KNOWN_ISSUES.md`), `docs/F9_PREREGISTRATION.md`, `docs/F9_POWER_RESULTS.md`, `docs/MAXT_VALIDATION.md`, `docs/ASM_GSM_SNAPSHOT.md`, `docs/EARNINGS_COLLECTION.md`, `docs/archive/` (old specifications), `docs/guides/` (these guides, the picture version `codebase_guide.html` with its `codebase_guide_data.json`, and the machine-measured `data_catalogue.md`).
 - **`backtest/`**: result files only, kept on purpose. `backtest/outputs/selection_decision.json` is the official decision of the rejected six-configuration search ("NONE": no candidate passed all gates). `backtest/outputs_recomputed_net/` holds the 27 files of the net-R recomputation of those six configurations. A folder `backtest/bifurcated_scraper/` may exist on your disk; it is git-ignored leftover from two invalid scrapers and is not part of the repository.
 - **Ledgers** (`stockbot/validation/ledger/records/`): `trial_ledger.csv` is hash-chained so editing an old row is detectable (`verify_ledger`); `trial_ledger_exploratory.csv` has no chain and is pinned by a sha256 recorded in the restructure documents; rows are never edited. Their purpose is to count attempts: a result that survived many attempts is worth less, and the count is what the multiple-testing correction uses.
 - **`ui/`**: the React dashboard. Pages `Dashboard.tsx`, `Portfolio.tsx`, `Watchlist.tsx`, `Analytics.tsx` call the FastAPI routers of `stockbot.live.api`. It was not touched by the restructure and is not connected to the new state store (`docs/restructure/PRE_LIVE_LIST.md` item 7). Start it with `cd ui && npm run dev`.

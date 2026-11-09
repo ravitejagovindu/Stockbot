@@ -1,0 +1,1808 @@
+{
+ "meta": {
+  "title": "StockBot: the picture guide",
+  "subtitle": "Click to see how the code fits together. The long text version is docs/guides/CODEBASE_GUIDE.md.",
+  "banner": "Strategies only propose. Everything else is shared.",
+  "guide_file": "docs/guides/CODEBASE_GUIDE.md",
+  "example_note": "Example, not real data: every number in the examples is made up.",
+  "built_at": "2026-11-09",
+  "built_from_commit": "22b5372",
+  "source": "docs/guides/CODEBASE_GUIDE.md"
+ },
+ "views": [
+  {
+   "id": "big",
+   "label": "Big picture"
+  },
+  {
+   "id": "map",
+   "label": "Package map"
+  },
+  {
+   "id": "imports",
+   "label": "Who can import whom"
+  },
+  {
+   "id": "engine",
+   "label": "A day in the engine"
+  },
+  {
+   "id": "lanes",
+   "label": "Backtest vs Live"
+  },
+  {
+   "id": "trade",
+   "label": "Life of a trade"
+  },
+  {
+   "id": "add",
+   "label": "Add a strategy"
+  },
+  {
+   "id": "validation",
+   "label": "Validation"
+  },
+  {
+   "id": "where",
+   "label": "Where do I look?"
+  },
+  {
+   "id": "glossary",
+   "label": "Glossary"
+  }
+ ],
+ "packages": [
+  {
+   "id": "config",
+   "name": "stockbot.config",
+   "kind": "package",
+   "path": "stockbot/config",
+   "daily": true,
+   "pos": [
+    370,
+    470
+   ],
+   "oneline": "Settings and file locations. Imports nothing else.",
+   "meaning": "Where every shared setting and every file location comes from. It sits at the very bottom, so everyone can read it and it depends on no one.",
+   "modules": [
+    {
+     "n": "shared.yaml",
+     "path": "stockbot/config/shared.yaml",
+     "d": "The one settings file: mode, costs, risk limits, universe rules, gates."
+    },
+    {
+     "n": "shared.py",
+     "path": "stockbot/config/shared.py",
+     "d": "Loads and validates the settings; unknown keys fail loudly."
+    },
+    {
+     "n": "paths.py",
+     "path": "stockbot/config/paths.py",
+     "d": "The only place that knows where the lake and state files live."
+    },
+    {
+     "n": "mode.py",
+     "path": "stockbot/config/mode.py",
+     "d": "Resolves PAPER or LIVE."
+    }
+   ],
+   "reads": "shared.yaml and the environment variables STOCKBOT_DB, STOCKBOT_STATE_DB, STOCKBOT_TICKETS_DIR.",
+   "writes": "Nothing (logging writes under logs/ when used).",
+   "extra_called_by": "Almost every package.",
+   "may_import": [],
+   "not_reason": "Config is read by everyone, so it cannot depend on anyone.",
+   "read_more": "C.1",
+   "source": "stockbot/config/shared.py"
+  },
+  {
+   "id": "data",
+   "name": "stockbot.data",
+   "kind": "package",
+   "path": "stockbot/data",
+   "daily": true,
+   "pos": [
+    370,
+    350
+   ],
+   "oneline": "Market data: stored, fetched, and read through a dated window.",
+   "meaning": "Everything about market data: how it is fetched and stored, and how it is read safely. The AsOfView is the only way code above this layer sees prices, and it refuses to show anything after the date being decided.",
+   "modules": [
+    {
+     "n": "lake.py",
+     "path": "stockbot/data/lake.py",
+     "d": "Opens finsight.db read-only, so a write raises an error."
+    },
+    {
+     "n": "asof.py",
+     "path": "stockbot/data/asof.py",
+     "d": "AsOfView: the point-in-time window onto the lake."
+    },
+    {
+     "n": "adjustments.py",
+     "path": "stockbot/data/adjustments.py",
+     "d": "Adjusts raw prices for splits and bonuses, in memory only."
+    },
+    {
+     "n": "indicators.py",
+     "path": "stockbot/data/indicators.py",
+     "d": "Plain indicator functions (sma, atr, donchian)."
+    },
+    {
+     "n": "ingestion/",
+     "path": "stockbot/data/ingestion",
+     "d": "The only code that fetches from NSE and writes market data."
+    }
+   ],
+   "subpackages": [
+    {
+     "name": "stockbot.data.db",
+     "path": "stockbot/data/db",
+     "d": "Older ORM layer used by the dashboard side."
+    },
+    {
+     "name": "stockbot.data.ingestion",
+     "path": "stockbot/data/ingestion",
+     "d": "Downloaders and loaders for prices, corporate actions, earnings, ASM/GSM."
+    }
+   ],
+   "reads": "The lake (read-only); NSE web sources (ingestion only); data/reference/*.csv.",
+   "writes": "Only ingestion and stockbot.data.db write finsight.db.",
+   "extra_called_by": "Scripts for ingestion.",
+   "may_import": [
+    "config"
+   ],
+   "not_reason": "Data is the only door to the database; it must not depend on the rules that use it.",
+   "read_more": "C.2",
+   "source": "stockbot/data/asof.py::AsOfView"
+  },
+  {
+   "id": "universe",
+   "name": "stockbot.universe",
+   "kind": "package",
+   "path": "stockbot/universe",
+   "daily": false,
+   "pos": [
+    130,
+    250
+   ],
+   "oneline": "Which stocks may a strategy even look at.",
+   "meaning": "The shared rules for which stocks are eligible today. Every strategy gets the same list, and a strategy may only make it stricter.",
+   "modules": [
+    {
+     "n": "eligibility.py",
+     "path": "stockbot/universe/eligibility.py",
+     "d": "eligible_symbols: not a fund, enough turnover, old enough, not under ASM/GSM."
+    },
+    {
+     "n": "exclusions.py",
+     "path": "stockbot/universe/exclusions.py",
+     "d": "Older loader of exclusion files (used by a test only)."
+    }
+   ],
+   "reads": "Only through an AsOfView it is given.",
+   "writes": "Nothing.",
+   "extra_called_by": "",
+   "may_import": [
+    "config",
+    "data"
+   ],
+   "not_reason": "Universe is shared rules on top of data; sizing, the engine and the runners sit above it.",
+   "read_more": "C.3",
+   "source": "stockbot/universe/eligibility.py::eligible_symbols"
+  },
+  {
+   "id": "risk",
+   "name": "stockbot.risk",
+   "kind": "package",
+   "path": "stockbot/risk",
+   "daily": false,
+   "pos": [
+    370,
+    250
+   ],
+   "oneline": "How many shares, portfolio limits, costs, and what R means.",
+   "meaning": "Position sizing, portfolio limits, trading costs and the single definition of R. Pure arithmetic with no knowledge of any strategy.",
+   "modules": [
+    {
+     "n": "sizing.py",
+     "path": "stockbot/risk/sizing.py",
+     "d": "size_position: shares from the risk budget and the stop distance."
+    },
+    {
+     "n": "caps.py",
+     "path": "stockbot/risk/caps.py",
+     "d": "Position-count, total-risk and sector caps."
+    },
+    {
+     "n": "arbitration.py",
+     "path": "stockbot/risk/arbitration.py",
+     "d": "Admits proposals from all strategies against one set of caps."
+    },
+    {
+     "n": "costs.py",
+     "path": "stockbot/risk/costs.py",
+     "d": "The Indian cost stack: STT, fees, stamp duty, GST, DP charge."
+    },
+    {
+     "n": "r_metrics.py",
+     "path": "stockbot/risk/r_metrics.py",
+     "d": "The one definition of R."
+    }
+   ],
+   "reads": "Numbers passed in.",
+   "writes": "Nothing.",
+   "extra_called_by": "",
+   "may_import": [
+    "config",
+    "data"
+   ],
+   "not_reason": "Risk is plain arithmetic; it must not know about universe rules, the engine or any runner.",
+   "read_more": "C.4",
+   "source": "stockbot/risk/sizing.py::size_position"
+  },
+  {
+   "id": "engine",
+   "name": "stockbot.engine",
+   "kind": "package",
+   "path": "stockbot/engine",
+   "daily": false,
+   "pos": [
+    370,
+    140
+   ],
+   "oneline": "The heart: one pure decide() for one session.",
+   "meaning": "One function, decide(), takes the portfolio as it stood after yesterday and the market as of today's close, and returns what happened and what to do tomorrow. Backtest and live both call it.",
+   "modules": [
+    {
+     "n": "decide.py",
+     "path": "stockbot/engine/decide.py",
+     "d": "decide(): the one decision function for one session."
+    },
+    {
+     "n": "fills.py",
+     "path": "stockbot/engine/fills.py",
+     "d": "The shared fill rule: next open, gap rules, slippage."
+    },
+    {
+     "n": "stepping.py",
+     "path": "stockbot/engine/stepping.py",
+     "d": "Advances an open position through one bar in one fixed order."
+    },
+    {
+     "n": "corporate.py",
+     "path": "stockbot/engine/corporate.py",
+     "d": "Splits and bonuses on open positions; anything else is HOLD."
+    },
+    {
+     "n": "apply.py",
+     "path": "stockbot/engine/apply.py",
+     "d": "Folds a session's decisions into the new State."
+    },
+    {
+     "n": "types.py",
+     "path": "stockbot/engine/types.py",
+     "d": "Plain frozen types: Position, Ticket, State, Decisions."
+    }
+   ],
+   "reads": "The AsOfView it is handed, the shared config, the State.",
+   "writes": "Nothing outside its return value.",
+   "extra_called_by": "Tests.",
+   "may_import": [
+    "config",
+    "data",
+    "universe",
+    "risk",
+    "strategies"
+   ],
+   "not_reason": "The engine must not know who calls it: backtest, live and validation sit above it.",
+   "read_more": "C.5",
+   "source": "stockbot/engine/decide.py::decide"
+  },
+  {
+   "id": "strategies",
+   "name": "stockbot.strategies",
+   "kind": "package",
+   "path": "stockbot/strategies",
+   "daily": false,
+   "pos": [
+    610,
+    250
+   ],
+   "oneline": "The interface a strategy must satisfy. No strategy exists here.",
+   "meaning": "The interface a strategy must satisfy, its description (StrategySpec) and a registry. There are no strategy files in the tree today.",
+   "modules": [
+    {
+     "n": "base.py",
+     "path": "stockbot/strategies/base.py",
+     "d": "Proposal, and the Strategy and Overlay protocols."
+    },
+    {
+     "n": "spec.py",
+     "path": "stockbot/strategies/spec.py",
+     "d": "StrategySpec: identity, parameters, exit policy, status, with a config hash."
+    },
+    {
+     "n": "registry.py",
+     "path": "stockbot/strategies/registry.py",
+     "d": "StrategyRegistry and the (empty) default_registry."
+    }
+   ],
+   "reads": "Nothing.",
+   "writes": "Nothing.",
+   "extra_called_by": "A future strategy module imports base.py and spec.py.",
+   "may_import": [
+    "data"
+   ],
+   "not_reason": "A strategy only proposes: it may see data only through the view, and nothing else.",
+   "read_more": "C.6",
+   "source": "stockbot/strategies/base.py::Proposal"
+  },
+  {
+   "id": "backtest",
+   "name": "stockbot.backtest",
+   "kind": "package",
+   "path": "stockbot/backtest",
+   "daily": false,
+   "pos": [
+    60,
+    30
+   ],
+   "oneline": "Replays a date window through the engine.",
+   "meaning": "Runs the engine over a date window on the read-only lake. It contains no decision logic of its own.",
+   "modules": [
+    {
+     "n": "runner.py",
+     "path": "stockbot/backtest/runner.py",
+     "d": "run_backtest: one decide() call per session, then closes what is open."
+    },
+    {
+     "n": "manifest.py",
+     "path": "stockbot/backtest/manifest.py",
+     "d": "Records what is needed to reproduce a run."
+    },
+    {
+     "n": "no_network.py",
+     "path": "stockbot/backtest/no_network.py",
+     "d": "Makes any network access raise during a run."
+    }
+   ],
+   "reads": "The lake (read-only).",
+   "writes": "Nothing (returns a BacktestResult).",
+   "extra_called_by": "Tests and a future research script.",
+   "may_import": [
+    "config",
+    "data",
+    "universe",
+    "risk",
+    "engine",
+    "strategies"
+   ],
+   "not_reason": "A backtest must never reach live code or validation; validation sits above it.",
+   "read_more": "C.7",
+   "source": "stockbot/backtest/runner.py::run_backtest"
+  },
+  {
+   "id": "live",
+   "name": "stockbot.live",
+   "kind": "package",
+   "path": "stockbot/live",
+   "daily": true,
+   "pos": [
+    680,
+    30
+   ],
+   "oneline": "The daily end-of-day run and the older dashboard API.",
+   "meaning": "Checks the day's data is there, applies the operator's reports, calls decide() once per unseen session, journals it and writes a ticket file. It never ingests data and never talks to a broker.",
+   "modules": [
+    {
+     "n": "runner.py",
+     "path": "stockbot/live/runner.py",
+     "d": "run_eod: mode gate, freshness check, adapter, ticket file."
+    },
+    {
+     "n": "adapter.py",
+     "path": "stockbot/live/adapter.py",
+     "d": "LiveAdapter: reports first, then decide() per missed session."
+    },
+    {
+     "n": "state_store.py",
+     "path": "stockbot/live/state_store.py",
+     "d": "The separate live state database; append-only journal."
+    },
+    {
+     "n": "health_check.py",
+     "path": "stockbot/live/health_check.py",
+     "d": "Read-only daily health check."
+    },
+    {
+     "n": "scheduler.py",
+     "path": "stockbot/live/scheduler.py",
+     "d": "Daily job that calls run_eod."
+    }
+   ],
+   "subpackages": [
+    {
+     "name": "stockbot.live.api",
+     "path": "stockbot/live/api",
+     "d": "FastAPI routers for the dashboard (older tables)."
+    }
+   ],
+   "reads": "The lake (read-only), the state database, the ASM/GSM snapshot table.",
+   "writes": "state/live_state.db and state/tickets/tickets_<date>.json.",
+   "extra_called_by": "scripts/run_eod.py, scripts/daily_health_check.py.",
+   "may_import": [
+    "config",
+    "data",
+    "universe",
+    "risk",
+    "engine",
+    "strategies",
+    "validation"
+   ],
+   "temporary_edges": [
+    "validation"
+   ],
+   "not_reason": "Live must never use backtest code: the two share only the engine.",
+   "read_more": "C.8",
+   "source": "stockbot/live/runner.py::run_eod"
+  },
+  {
+   "id": "validation",
+   "name": "stockbot.validation",
+   "kind": "package",
+   "path": "stockbot/validation",
+   "daily": false,
+   "pos": [
+    370,
+    30
+   ],
+   "oneline": "How results are judged and attempts are counted.",
+   "meaning": "A matched-random baseline, paired statistics, the multiple-testing bootstrap (Max-T), the pre-registration lock and the trial ledger. Together they say how much a result is worth.",
+   "modules": [
+    {
+     "n": "random_baseline.py",
+     "path": "stockbot/validation/random_baseline.py",
+     "d": "Random entries matched to each trade, run through the same engine path."
+    },
+    {
+     "n": "paired_stats.py",
+     "path": "stockbot/validation/paired_stats.py",
+     "d": "Actual versus random, paired."
+    },
+    {
+     "n": "max_t_bootstrap.py",
+     "path": "stockbot/validation/max_t_bootstrap.py",
+     "d": "Max-T bootstrap across several configurations."
+    },
+    {
+     "n": "prereg_lock.py",
+     "path": "stockbot/validation/prereg_lock.py",
+     "d": "Hash lock and hash-chained ledger primitives."
+    }
+   ],
+   "subpackages": [
+    {
+     "name": "stockbot.validation.ledger",
+     "path": "stockbot/validation/ledger",
+     "d": "Writers for the trial ledgers; records live in records/."
+    }
+   ],
+   "reads": "Backtest results, trade tables, ledger records.",
+   "writes": "Ledger rows (append-only) and docs/F9_POWER_RESULTS.md.",
+   "extra_called_by": "Research scripts and tests.",
+   "may_import": [
+    "config",
+    "data",
+    "risk",
+    "backtest",
+    "engine",
+    "universe"
+   ],
+   "not_reason": "Validation judges results from outside; it must not touch live code or strategies.",
+   "read_more": "C.9",
+   "source": "stockbot/validation/prereg_lock.py"
+  },
+  {
+   "id": "data_checks",
+   "name": "stockbot.data_checks",
+   "kind": "package",
+   "path": "stockbot/data_checks",
+   "daily": false,
+   "pos": [
+    680,
+    350
+   ],
+   "oneline": "Read-only checks of the data, and the golden-check runner.",
+   "meaning": "Read-only checks of the data and of corporate-action handling, plus the one entry point that runs all golden checks. It is not part of any run path.",
+   "modules": [
+    {
+     "n": "check_all.py",
+     "path": "stockbot/data_checks/check_all.py",
+     "d": "Runs G1, G3, G5, G6 (G2 with --data)."
+    },
+    {
+     "n": "data_catalogue.py",
+     "path": "stockbot/data_checks/data_catalogue.py",
+     "d": "Measures every table and writes data_catalogue.md."
+    },
+    {
+     "n": "guide_html.py",
+     "path": "stockbot/data_checks/guide_html.py",
+     "d": "Builds this picture guide from its JSON."
+    },
+    {
+     "n": "preflight.py",
+     "path": "stockbot/data_checks/preflight.py",
+     "d": "Spot checks of data and adjustments."
+    }
+   ],
+   "reads": "The lake (read-only), data/reference/*.csv, tests/golden/.",
+   "writes": "Report files under docs/data_audit/ and docs/guides/.",
+   "extra_called_by": "The scripts.",
+   "may_import": [
+    "config",
+    "data"
+   ],
+   "not_reason": "Checks only read config and data; they are not part of any run path.",
+   "read_more": "C.10",
+   "source": "stockbot/data_checks/check_all.py"
+  },
+  {
+   "id": "scripts",
+   "name": "scripts/",
+   "kind": "folder",
+   "path": "scripts",
+   "daily": true,
+   "pos": [
+    60,
+    575
+   ],
+   "oneline": "One file per command you can type.",
+   "meaning": "Thin command-line wrappers: each is a few lines that call one function inside stockbot/. The daily ones are run_eod.py, daily_health_check.py and snapshot_asm_gsm.py.",
+   "modules": [
+    {
+     "n": "run_eod.py",
+     "path": "scripts/run_eod.py",
+     "d": "The end-of-day decision step for one date."
+    },
+    {
+     "n": "daily_health_check.py",
+     "path": "scripts/daily_health_check.py",
+     "d": "Read-only health check of the live side."
+    },
+    {
+     "n": "snapshot_asm_gsm.py",
+     "path": "scripts/snapshot_asm_gsm.py",
+     "d": "Stores NSE's ASM and GSM lists (intended daily)."
+    },
+    {
+     "n": "check_all.py",
+     "path": "scripts/check_all.py",
+     "d": "All golden checks."
+    },
+    {
+     "n": "build_guide_html.py",
+     "path": "scripts/build_guide_html.py",
+     "d": "Rebuilds this picture guide."
+    },
+    {
+     "n": "provenance/",
+     "path": "scripts/provenance",
+     "d": "Old one-off tools kept as history."
+    }
+   ],
+   "reads": "Whatever the function it calls reads.",
+   "writes": "Whatever that function writes.",
+   "extra_called_by": "You, from a terminal. No scheduled task exists on this machine.",
+   "may_import": [],
+   "not_reason": "",
+   "read_more": "D",
+   "source": "docs/guides/CODEBASE_GUIDE.md"
+  },
+  {
+   "id": "tests",
+   "name": "tests/",
+   "kind": "folder",
+   "path": "tests",
+   "daily": false,
+   "pos": [
+    290,
+    575
+   ],
+   "oneline": "The checks that keep the rules true.",
+   "meaning": "Unit and integration tests on small synthetic data, tests against the real database, and frozen golden results. They also enforce the import rules.",
+   "modules": [
+    {
+     "n": "unit/",
+     "path": "tests/unit",
+     "d": "Behaviour of every module on small synthetic data."
+    },
+    {
+     "n": "data_integrity/",
+     "path": "tests/data_integrity",
+     "d": "Real-database tests (read-only, env-gated)."
+    },
+    {
+     "n": "golden/",
+     "path": "tests/golden",
+     "d": "Results frozen from the old code, with SHA256SUMS."
+    },
+    {
+     "n": "fixtures/",
+     "path": "tests/fixtures",
+     "d": "Synthetic lakes, dummy strategies, the import-rule table."
+    }
+   ],
+   "reads": "The code, and the real lake when STOCKBOT_DATA_TESTS=1.",
+   "writes": "Nothing in the repository.",
+   "extra_called_by": "pytest, scripts/check_all.py.",
+   "may_import": [],
+   "not_reason": "",
+   "read_more": "E",
+   "source": "tests/unit/test_import_boundaries.py"
+  },
+  {
+   "id": "docs",
+   "name": "docs/",
+   "kind": "folder",
+   "path": "docs",
+   "daily": false,
+   "pos": [
+    520,
+    575
+   ],
+   "oneline": "Written records and these guides.",
+   "meaning": "Architecture, the restructure record, data-audit reports, and the guides. The engine contract and the before-live list are the two to know.",
+   "modules": [
+    {
+     "n": "ARCHITECTURE.md",
+     "path": "docs/ARCHITECTURE.md",
+     "d": "The layers and the flow."
+    },
+    {
+     "n": "restructure/ENGINE_CONTRACT.md",
+     "path": "docs/restructure/ENGINE_CONTRACT.md",
+     "d": "The written specification of decide()."
+    },
+    {
+     "n": "restructure/PRE_LIVE_LIST.md",
+     "path": "docs/restructure/PRE_LIVE_LIST.md",
+     "d": "What must be done before any strategy goes live."
+    },
+    {
+     "n": "guides/",
+     "path": "docs/guides",
+     "d": "The codebase and data guides."
+    }
+   ],
+   "reads": "Nothing reads it except tests that check the guides.",
+   "writes": "Reports are written here by some checks.",
+   "extra_called_by": "People.",
+   "may_import": [],
+   "not_reason": "",
+   "read_more": "F",
+   "source": "docs/ARCHITECTURE.md"
+  },
+  {
+   "id": "data_dir",
+   "name": "data/",
+   "kind": "folder",
+   "path": "data",
+   "daily": false,
+   "pos": [
+    750,
+    575
+   ],
+   "oneline": "Small reference files the code reads.",
+   "meaning": "data/reference/ holds the small csv files the code reads, such as the sector map and the verified corporate actions. data/f9/ holds power-study results.",
+   "modules": [
+    {
+     "n": "reference/sector_map.csv",
+     "path": "data/reference/sector_map.csv",
+     "d": "Sector per symbol."
+    },
+    {
+     "n": "reference/verified_corporate_actions.csv",
+     "path": "data/reference/verified_corporate_actions.csv",
+     "d": "The verified corporate-action list."
+    },
+    {
+     "n": "f9/",
+     "path": "data/f9",
+     "d": "Results of the power study."
+    }
+   ],
+   "reads": "Read by data, live and the checks.",
+   "writes": "Written only by one-off tools.",
+   "extra_called_by": "",
+   "may_import": [],
+   "not_reason": "",
+   "read_more": "F",
+   "source": "data/reference/sector_map.csv"
+  }
+ ],
+ "pair_reasons": {
+  "engine>backtest": "The engine is below the runners: it must not know who calls it.",
+  "engine>live": "The engine is below the runners: it must not know who calls it.",
+  "engine>validation": "The engine is below validation: it must not know who judges it.",
+  "live>backtest": "Live and backtest share only the engine, so they cannot differ in logic.",
+  "validation>live": "Validation judges results; it must not reach into the daily run.",
+  "validation>strategies": "Validation judges strategies from outside; it must not import one.",
+  "backtest>live": "A backtest must never touch the daily run.",
+  "backtest>validation": "Validation sits above backtest and reads its results.",
+  "strategies>engine": "A strategy never sees the engine: it only proposes.",
+  "strategies>risk": "A strategy never sizes: sizing is shared.",
+  "strategies>universe": "A strategy never builds its own universe: eligibility is shared.",
+  "strategies>live": "A strategy never sees the live run or the portfolio.",
+  "strategies>backtest": "A strategy never sees the runner that calls it.",
+  "strategies>validation": "A strategy never sees how it is judged.",
+  "strategies>config": "A strategy cannot read or override the shared settings.",
+  "strategies>data_checks": "A strategy has nothing to do with the data checks."
+ },
+ "strategy_rule": {
+  "text": "No strategy imports another strategy. Each one is built to run alone, so results are comparable and one cannot lean on another.",
+  "source": "tests/unit/test_import_boundaries.py"
+ },
+ "extra_rules": [
+  {
+   "text": "backtest, engine, strategies and risk may not import any network library.",
+   "source": "tests/fixtures/boundaries.py"
+  },
+  {
+   "text": "engine and strategies may not import sqlite3 or sqlalchemy: they can never hold a database connection.",
+   "source": "tests/fixtures/boundaries.py"
+  },
+  {
+   "text": "live importing validation is a temporary edge; it must disappear when the dashboard routers are reworked.",
+   "source": "docs/restructure/PRE_LIVE_LIST.md"
+  }
+ ],
+ "blocks": [
+  {
+   "id": "data",
+   "title": "Data",
+   "packages": [
+    "data"
+   ],
+   "primary": "data",
+   "pos": [
+    20,
+    60,
+    200,
+    90
+   ],
+   "status": "exists",
+   "plain": "Prices, corporate actions and surveillance lists in one database, read only through a dated window.",
+   "source": "stockbot/data/asof.py::AsOfView"
+  },
+  {
+   "id": "strategy",
+   "title": "Strategy",
+   "packages": [
+    "strategies"
+   ],
+   "primary": "strategies",
+   "pos": [
+    20,
+    270,
+    200,
+    90
+   ],
+   "status": "exists",
+   "plain": "Looks at today's close and proposes: a symbol and a stop. Nothing else. No strategy exists in the tree yet.",
+   "source": "stockbot/strategies/base.py::Proposal"
+  },
+  {
+   "id": "engine",
+   "title": "Engine and shared rules",
+   "packages": [
+    "engine",
+    "universe",
+    "risk"
+   ],
+   "primary": "engine",
+   "pos": [
+    350,
+    165,
+    200,
+    110
+   ],
+   "status": "exists",
+   "plain": "Decides who is eligible, how many shares, whether there is room, the fill, the stop and the costs. Same for every strategy.",
+   "source": "stockbot/engine/decide.py::decide"
+  },
+  {
+   "id": "validation",
+   "title": "Validation",
+   "packages": [
+    "validation"
+   ],
+   "primary": "validation",
+   "pos": [
+    350,
+    20,
+    200,
+    80
+   ],
+   "status": "exists",
+   "plain": "Counts every attempt and compares results with random entries. The pass rules are checked by a person: no code applies them yet (planned).",
+   "source": "stockbot/validation/prereg_lock.py"
+  },
+  {
+   "id": "runners",
+   "title": "Backtest / Live runners",
+   "packages": [
+    "backtest",
+    "live"
+   ],
+   "primary": "live",
+   "pos": [
+    680,
+    60,
+    200,
+    90
+   ],
+   "status": "exists",
+   "plain": "Backtest replays history. Live runs the same step on the newest close. Both call decide().",
+   "source": "stockbot/backtest/runner.py::run_backtest"
+  },
+  {
+   "id": "outputs",
+   "title": "Outputs / Tickets",
+   "packages": [
+    "live"
+   ],
+   "primary": "live",
+   "pos": [
+    680,
+    270,
+    200,
+    90
+   ],
+   "status": "exists",
+   "plain": "A ticket file of suggestions, and a state database. A person decides. Nothing is ever sent to a broker.",
+   "source": "stockbot/live/runner.py::write_tickets"
+  }
+ ],
+ "block_arrows": [
+  {
+   "from": "data",
+   "to": "engine",
+   "label": "dated view"
+  },
+  {
+   "from": "strategy",
+   "to": "engine",
+   "label": "proposals"
+  },
+  {
+   "from": "runners",
+   "to": "engine",
+   "label": "call decide()"
+  },
+  {
+   "from": "engine",
+   "to": "outputs",
+   "label": "tickets"
+  },
+  {
+   "from": "runners",
+   "to": "validation",
+   "label": "results"
+  }
+ ],
+ "engine_steps": [
+  {
+   "id": "validate",
+   "n": 1,
+   "title": "Check the inputs",
+   "pkg": "engine",
+   "source": "stockbot/engine/decide.py::_validate_session",
+   "plain": "Is today the very next session after the state's date? If not, stop: decide() handles exactly one session.",
+   "inp": "Date, State, the dated view",
+   "out": "Nothing, or an error",
+   "example": "State is at Day 1. Today is Day 2, the next session. Fine.",
+   "detail": "Also checks: no duplicate strategy ids, and every exit policy named by a strategy or an open position is known.",
+   "track": "waiting: ticket from Day 1"
+  },
+  {
+   "id": "overlays",
+   "n": 2,
+   "title": "Overlays",
+   "pkg": "engine",
+   "source": "stockbot/engine/decide.py::decide",
+   "plain": "Market-wide signals (such as an on/off switch) are evaluated once, before anything else. None exist yet.",
+   "inp": "The view, overlay memory",
+   "out": "Signals for the strategies that declared them",
+   "example": "No overlay declared, so nothing to compute.",
+   "detail": "A declared overlay that is missing or has the wrong version raises an error.",
+   "track": "waiting: ticket from Day 1"
+  },
+  {
+   "id": "fills",
+   "n": 3,
+   "title": "Fill yesterday's tickets",
+   "pkg": "engine",
+   "source": "stockbot/engine/fills.py::fill_ticket",
+   "plain": "Each ticket from yesterday fills at today's open plus slippage, unless a gap or a corporate action rules it out.",
+   "inp": "Pending tickets, today's open",
+   "out": "New positions, less cash",
+   "example": "EXAMPLECO ticket, stop 190.00. Open 201.00, fill 201.40 (0.2% slippage). 877 shares.",
+   "detail": "Shares are sized from the fill price, not the signal price. The reasons a ticket is not filled: no bar or already held, corporate action that day, gap through the stop, gap up too large.",
+   "track": "bought 877 at 201.40"
+  },
+  {
+   "id": "corporate",
+   "n": 4,
+   "title": "Corporate actions",
+   "pkg": "engine",
+   "source": "stockbot/engine/corporate.py::apply_actions",
+   "plain": "A split or bonus today rescales each position's price and shares. Any other kind puts the position on HOLD.",
+   "inp": "Each position, today's actions",
+   "out": "Rescaled position, or a HOLD flag",
+   "example": "Nothing today for EXAMPLECO. A 2-for-1 split would turn 877 shares at 201.40 into 1,754 at 100.70.",
+   "detail": "The code does steps 4 and 5 together, one position at a time: actions first, then the bar.",
+   "track": "877 shares, no action"
+  },
+  {
+   "id": "step",
+   "n": 5,
+   "title": "Step through today's bar",
+   "pkg": "engine",
+   "source": "stockbot/engine/stepping.py::step_position",
+   "plain": "Each open position meets today's bar in a fixed order: pending exit at the open, stop against the low, then the exit policy may raise the stop.",
+   "inp": "Position, today's bar",
+   "out": "Still open, or an exit and cash",
+   "example": "Low 195.00 is above the stop 190.00, so EXAMPLECO stays open. Close 203.00.",
+   "detail": "A position filled today is stepped through today's bar too, so a stop can be hit on the entry day. A stop never moves down.",
+   "track": "open, stop 190.00"
+  },
+  {
+   "id": "eligibility",
+   "n": 6,
+   "title": "Who is eligible?",
+   "pkg": "universe",
+   "source": "stockbot/universe/eligibility.py::eligible_symbols",
+   "plain": "Shared rules decide which stocks a strategy may look at: not a fund, enough turnover, old enough, not under ASM/GSM.",
+   "inp": "The view, universe rules",
+   "out": "List of eligible symbols",
+   "example": "EXAMPLECO: turnover well above the minimum, listed for years. Eligible.",
+   "detail": "A strategy may make the list stricter, never looser. The code computes this per strategy, just before that strategy proposes.",
+   "track": "eligible"
+  },
+  {
+   "id": "propose",
+   "n": 7,
+   "title": "Strategies propose",
+   "pkg": "strategies",
+   "source": "stockbot/strategies/base.py::Strategy",
+   "plain": "Each strategy sees only the eligible list and the view. It returns proposals: symbol, reference price, stop.",
+   "inp": "Eligible list, the view",
+   "out": "Proposals",
+   "example": "A made-up strategy proposes EXAMPLECO: reference 203.00, stop 193.00. It cannot know the stock is already held.",
+   "detail": "A proposal for a symbol not on the eligible list is blocked as NOT_ELIGIBLE.",
+   "track": "proposed again"
+  },
+  {
+   "id": "size",
+   "n": 8,
+   "title": "Size it",
+   "pkg": "risk",
+   "source": "stockbot/risk/sizing.py::size_position",
+   "plain": "Shares equal the risk budget divided by the distance from entry to stop. The same formula for every strategy.",
+   "inp": "Equity, risk %, entry, stop",
+   "out": "Shares and rupees at risk",
+   "example": "Equity 1,000,000; risk 1% = 10,000; 10,000 / (203.00 - 193.00) = 1,000 shares.",
+   "detail": "Equity here is cash plus open positions after today's moves.",
+   "track": "sized: 1,000 shares"
+  },
+  {
+   "id": "arbitrate",
+   "n": 9,
+   "title": "Arbitrate",
+   "pkg": "risk",
+   "source": "stockbot/risk/arbitration.py::arbitrate",
+   "plain": "Proposals from all strategies meet one set of portfolio caps, in a fixed order. A symbol already held is refused.",
+   "inp": "Sized proposals, open positions",
+   "out": "Accepted or blocked, with a reason",
+   "example": "EXAMPLECO is already held, so: blocked, ALREADY_HELD.",
+   "detail": "Caps: number of positions, total portfolio risk %, sector exposure %.",
+   "track": "blocked: already held"
+  },
+  {
+   "id": "decisions",
+   "n": 10,
+   "title": "Decisions and new State",
+   "pkg": "engine",
+   "source": "stockbot/engine/apply.py::apply_decisions",
+   "plain": "Everything that happened is packed into Decisions. Applying them to the old State gives tomorrow's State.",
+   "inp": "All of the above",
+   "out": "Decisions, new State",
+   "example": "1 fill, 0 exits, 0 new tickets, 1 blocked (ALREADY_HELD). One position carried forward.",
+   "detail": "State is the fold of Decisions, so replaying the decisions rebuilds the state exactly.",
+   "track": "carried forward as a position"
+  }
+ ],
+ "backtest_lane": [
+  {
+   "id": "b1",
+   "n": 1,
+   "title": "Choose window and start",
+   "side": "pre",
+   "source": "stockbot/backtest/runner.py::run_backtest",
+   "plain": "A start date, an end date, starting equity and the strategies to run.",
+   "detail": "Called by tests or a research script. There is no strategy in the tree yet, so today only test strategies run."
+  },
+  {
+   "id": "b2",
+   "n": 2,
+   "title": "Lake read-only, no network",
+   "side": "pre",
+   "source": "stockbot/backtest/no_network.py::network_forbidden",
+   "plain": "The database opens read-only and any network access during the run raises an error.",
+   "detail": "The guard patches the socket layer for the duration of the run."
+  },
+  {
+   "id": "b3",
+   "n": 3,
+   "title": "For each session: dated view",
+   "side": "pre",
+   "source": "stockbot/data/asof.py::AsOfView",
+   "plain": "For each trading day, build a view that cannot show anything later than that day.",
+   "detail": "Asking for a bar after the date raises FutureDataError."
+  },
+  {
+   "id": "b4",
+   "n": 4,
+   "title": "Close what is open at the end",
+   "side": "post",
+   "source": "stockbot/backtest/runner.py::run_backtest",
+   "plain": "At the end of the window, any open position is closed so every trade has a result.",
+   "detail": "Then the result is returned with every Decisions object."
+  },
+  {
+   "id": "b5",
+   "n": 5,
+   "title": "Result and manifest",
+   "side": "post",
+   "source": "stockbot/backtest/manifest.py::run_manifest",
+   "plain": "A BacktestResult, plus a manifest: config hash, strategy hashes, git SHA.",
+   "detail": "The manifest is what lets someone reproduce the run later."
+  }
+ ],
+ "live_lane": [
+  {
+   "id": "l1",
+   "n": 1,
+   "title": "Mode gate",
+   "side": "pre",
+   "source": "stockbot/live/runner.py::strategies_for_mode",
+   "plain": "PAPER by default. LIVE needs a strategy with status live and a validation reference.",
+   "detail": "With an empty book, a daily run produces no tickets by design."
+  },
+  {
+   "id": "l2",
+   "n": 2,
+   "title": "Is today's data there?",
+   "side": "pre",
+   "source": "stockbot/live/runner.py::check_freshness",
+   "plain": "Refuses to run if the day's prices are not in the lake yet (DataFreshnessError).",
+   "detail": "Nothing in the repository appends new sessions to the lake today; see DATA_GUIDE section I."
+  },
+  {
+   "id": "l3",
+   "n": 3,
+   "title": "Load the ASM/GSM list",
+   "side": "pre",
+   "source": "stockbot/live/runner.py::load_asm_ranges",
+   "plain": "Reads the day's surveillance snapshot. LIVE mode fails closed if it is missing.",
+   "detail": "Raises SurveillanceDataMissing in LIVE; PAPER continues without it."
+  },
+  {
+   "id": "l4",
+   "n": 4,
+   "title": "Operator reports first",
+   "side": "pre",
+   "source": "stockbot/live/adapter.py::LiveAdapter",
+   "plain": "The operator's real fills and exits are applied before the engine thinks, because reality overrides the guess.",
+   "detail": "Report types: FillReport, ExitReport, NotTakenReport."
+  },
+  {
+   "id": "l5",
+   "n": 5,
+   "title": "Journal it",
+   "side": "post",
+   "source": "stockbot/live/state_store.py::StateStore",
+   "plain": "Decisions go into an append-only journal. Running the same date again changes nothing.",
+   "detail": "rebuild() must equal load(): the journal is the truth."
+  },
+  {
+   "id": "l6",
+   "n": 6,
+   "title": "Write the ticket file",
+   "side": "post",
+   "source": "stockbot/live/runner.py::write_tickets",
+   "plain": "One file per session: state/tickets/tickets_<date>.json, with tickets, blocked items and flags.",
+   "detail": "The file says: suggestions for the operator, nothing is sent to any broker."
+  },
+  {
+   "id": "l7",
+   "n": 7,
+   "title": "A person reads and reports back",
+   "side": "post",
+   "source": "stockbot/engine/reports.py::FillReport",
+   "plain": "The operator decides whether to act, and reports real fills and exits for the next run.",
+   "detail": "This is the only human step in the loop."
+  }
+ ],
+ "shared_box": {
+  "title": "decide()",
+  "plain": "The same function in both lanes.",
+  "source": "stockbot/engine/decide.py::decide",
+  "detail": "Backtest calls it in strict mode (errors stop the run). Live calls it with strict off and mode live, so one broken strategy is flagged instead of stopping the day. Otherwise the decisions must be identical: tests/unit/test_engine_live.py compares them day by day.",
+  "check": "tests/unit/test_engine_live.py"
+ },
+ "trade_steps": [
+  {
+   "id": "t1",
+   "n": 1,
+   "title": "Proposed",
+   "state": "Proposed",
+   "source": "stockbot/strategies/base.py::Proposal",
+   "plain": "A strategy proposes a symbol with a reference price and a stop. It is only an idea.",
+   "tags": [],
+   "example": "EXAMPLECO, reference 203.00, stop 193.00.",
+   "pkg": "strategies"
+  },
+  {
+   "id": "t2",
+   "n": 2,
+   "title": "Sized and capped",
+   "state": "Sized",
+   "source": "stockbot/risk/caps.py",
+   "plain": "Shared code sizes it and checks the portfolio caps. If it does not fit, it is Blocked and recorded.",
+   "tags": [
+    "caps"
+   ],
+   "example": "1,000 shares. Caps: room for one more position. Accepted.",
+   "pkg": "risk"
+  },
+  {
+   "id": "t3",
+   "n": 3,
+   "title": "Ticket",
+   "state": "Ticket",
+   "source": "stockbot/engine/types.py::Ticket",
+   "plain": "An accepted proposal becomes a ticket and waits one night in the State.",
+   "tags": [],
+   "example": "Ticket sits in State.pending until the next open.",
+   "pkg": "engine"
+  },
+  {
+   "id": "t4",
+   "n": 4,
+   "title": "Filled at the next open",
+   "state": "Filled",
+   "source": "stockbot/engine/fills.py::fill_ticket",
+   "plain": "Filled at the open plus entry slippage. A gap through the stop, or too big a gap up, drops it (NotFilled).",
+   "tags": [
+    "slippage",
+    "cost"
+   ],
+   "example": "Open 205.00, fill 205.41 with 0.2% slippage. Buy costs are charged.",
+   "pkg": "engine"
+  },
+  {
+   "id": "t5",
+   "n": 5,
+   "title": "Stepped on the same bar",
+   "state": "Filled",
+   "source": "stockbot/engine/stepping.py::step_position",
+   "plain": "A new position is stepped through its entry bar at once, so the stop can be hit on day one.",
+   "tags": [],
+   "example": "Entry-day low 199.00 is above the stop 193.00. Still open.",
+   "pkg": "engine"
+  },
+  {
+   "id": "t6",
+   "n": 6,
+   "title": "Stop moves up",
+   "state": "Open",
+   "source": "stockbot/engine/exit_policy.py::ExitPolicy",
+   "plain": "Each session the exit policy may raise the stop. A stop can never move down.",
+   "tags": [],
+   "example": "Stop raised 193.00 to 198.00 after a good week.",
+   "pkg": "engine"
+  },
+  {
+   "id": "t7",
+   "n": 7,
+   "title": "Exit",
+   "state": "Closed",
+   "source": "stockbot/engine/stepping.py::step_position",
+   "plain": "The stop is hit, a limit fills, or a market exit goes out at the next open. Exit slippage and sell costs apply.",
+   "tags": [
+    "slippage",
+    "cost"
+   ],
+   "example": "Stop 198.00 hit. Fill at min(open, stop) less 0.2% exit slippage.",
+   "pkg": "engine"
+  },
+  {
+   "id": "t8",
+   "n": 8,
+   "title": "Closed trade",
+   "state": "Done",
+   "source": "stockbot/risk/r_metrics.py",
+   "plain": "A ClosedTrade record: gross profit, costs, net profit and R (profit divided by the amount risked).",
+   "tags": [
+    "cost"
+   ],
+   "example": "Net +2.1R after costs. (Made-up number.)",
+   "pkg": "risk"
+  }
+ ],
+ "trade_side_states": [
+  {
+   "id": "blocked",
+   "title": "Blocked",
+   "after": "t2",
+   "plain": "Not eligible, sizing fails, or caps are full. Recorded with a reason.",
+   "source": "stockbot/risk/arbitration.py::arbitrate"
+  },
+  {
+   "id": "notfilled",
+   "title": "Not filled",
+   "after": "t4",
+   "plain": "Gap through the stop, gap up too large, corporate action that day, already held, or no bar.",
+   "source": "stockbot/engine/fills.py::fill_ticket"
+  }
+ ],
+ "trade_tags": {
+  "caps": "Portfolio caps apply here: positions, total risk %, sector %.",
+  "slippage": "Slippage applies here (entry or exit).",
+  "cost": "Trading costs are charged here (STT, fees, stamp duty, GST, DP charge)."
+ },
+ "add_items": [
+  {
+   "id": "a1",
+   "title": "Strategy file",
+   "path": "stockbot/strategies",
+   "source": "stockbot/strategies/base.py",
+   "plain": "A new module in stockbot/strategies/ that imports only the interface.",
+   "skeleton": [
+    "# stockbot/strategies/<your_id>.py  (a NEW file, one strategy per file)",
+    "# import ONLY: Proposal from stockbot.strategies.base, StrategySpec from stockbot.strategies.spec",
+    "# class with:",
+    "#   propose(view, eligible, as_of, strategy_state, overlays) -> (list of Proposal, new strategy_state)",
+    "#   confirm_fill(proposal, fill_price, view) -> None to accept, or a reason string",
+    "# Its memory lives in strategy_state (plain data), never in an attribute.",
+    "# It must NOT: open a database, read the clock, import another strategy, size positions."
+   ]
+  },
+  {
+   "id": "a2",
+   "title": "StrategySpec",
+   "path": "stockbot/strategies/spec.py",
+   "source": "stockbot/strategies/spec.py::StrategySpec",
+   "plain": "The strategy's identity card: id, version, own parameters, exit policy, status.",
+   "skeleton": [
+    "# SPEC = StrategySpec(id=..., version=..., params={...}, exit_policy=..., status=...)",
+    "# id: lower-case, 2 to 40 characters.  version: MAJOR.MINOR.PATCH",
+    "# params: only the strategy's OWN settings; shared sections (costs, portfolio_risk ...) are rejected",
+    "# status: research, paper or live. live is refused without validation_ref",
+    "# config_hash(): any change to any field changes the hash, and the hash goes in the ledger"
+   ]
+  },
+  {
+   "id": "a3",
+   "title": "Exit policy",
+   "path": "stockbot/engine/exit_policy.py",
+   "source": "stockbot/engine/exit_policy.py::ExitPolicy",
+   "plain": "How the stop moves and when to ask for an exit. Where this file lives is not fixed yet (planned, with the first strategy).",
+   "skeleton": [
+    "# Satisfies the ExitPolicy interface in stockbot/engine/exit_policy.py:",
+    "#   initial_state(position, view)",
+    "#   step(position, bar, view, ctx) -> PolicyActions   (new stop, exit requests, own state)",
+    "#   on_corporate_action(exit_state, factor)",
+    "# The policy decides WHAT; the engine's step_position decides HOW, in one fixed order.",
+    "# A stop can never move down."
+   ]
+  },
+  {
+   "id": "a4",
+   "title": "Registry line",
+   "path": "stockbot/strategies/registry.py",
+   "source": "stockbot/strategies/registry.py::StrategyRegistry",
+   "plain": "One line that registers the spec. Duplicate ids are rejected.",
+   "skeleton": [
+    "# default_registry.register(SPEC)",
+    "# rejects a duplicate id; today the registry is empty",
+    "# tests/unit/test_no_strategy_in_the_tree.py will (rightly) fail: that tripwire is a reviewed decision"
+   ]
+  },
+  {
+   "id": "a5",
+   "title": "Pre-registration",
+   "path": "stockbot/validation/ledger/records/pre_registered_configs.yaml",
+   "source": "stockbot/validation/prereg_lock.py",
+   "plain": "Write down the configurations and the pass rules, and hash them, before looking at any result.",
+   "skeleton": [
+    "# 1. list the configurations and gate parameters in pre_registered_configs.yaml",
+    "# 2. register(ledger=..., yaml_path=..., gate_params=..., candidate_ids=..., git_sha=...)",
+    "# 3. the number of attempts is now fixed in the hash-chained trial ledger",
+    "# Rows are only ever appended; an edited row breaks the chain."
+   ]
+  },
+  {
+   "id": "a6",
+   "title": "Tests",
+   "path": "tests/unit",
+   "source": "tests/unit/test_strategy_spec.py",
+   "plain": "Tests for the new strategy, and the existing guards must stay green.",
+   "skeleton": [
+    "# a new tests/unit/test_<your_id>.py on a synthetic lake (tests/fixtures/)",
+    "# must stay green: test_import_boundaries.py, test_strategy_spec.py, test_engine_decide.py",
+    "# a failing test is fixed in the code, never by editing an expected value"
+   ]
+  }
+ ],
+ "never_items": [
+  {
+   "id": "n1",
+   "title": "shared.yaml",
+   "path": "stockbot/config/shared.yaml",
+   "source": "stockbot/config/shared.yaml",
+   "plain": "Costs, risk limits, universe rules and gates are shared. A strategy cannot override them.",
+   "why": "Otherwise two strategies could not be compared."
+  },
+  {
+   "id": "n2",
+   "title": "engine, risk, universe",
+   "path": "stockbot/engine",
+   "source": "stockbot/engine/decide.py",
+   "plain": "Fills, stops, sizing, caps and eligibility are shared code.",
+   "why": "One rule set for every strategy and for the random baseline."
+  },
+  {
+   "id": "n3",
+   "title": "Ledger rows",
+   "path": "stockbot/validation/ledger/records/trial_ledger.csv",
+   "source": "stockbot/validation/prereg_lock.py",
+   "plain": "Rows are only appended, never edited.",
+   "why": "The count of attempts is the evidence."
+  },
+  {
+   "id": "n4",
+   "title": "finsight.db",
+   "path": "stockbot/data/lake.py",
+   "source": "stockbot/data/lake.py::open_lake",
+   "plain": "The price database is opened read-only. Tests prove it is unchanged.",
+   "why": "G4 compares its hash and modified time."
+  },
+  {
+   "id": "n5",
+   "title": "Import rules",
+   "path": "tests/fixtures/boundaries.py",
+   "source": "tests/fixtures/boundaries.py",
+   "plain": "Do not edit the rule table to make an import pass.",
+   "why": "The table is the architecture."
+  },
+  {
+   "id": "n6",
+   "title": "Another strategy",
+   "path": "stockbot/strategies",
+   "source": "tests/unit/test_import_boundaries.py",
+   "plain": "No strategy imports or reads another strategy.",
+   "why": "Each strategy must be judged alone."
+  }
+ ],
+ "validation_steps": [
+  {
+   "id": "v1",
+   "n": 1,
+   "title": "Pre-register",
+   "q": "What exactly are we testing, and what counts as a pass?",
+   "source": "stockbot/validation/ledger/records/pre_registered_configs.yaml",
+   "status": "exists",
+   "plain": "Configurations and gates are written down before any result is seen.",
+   "pkg": "validation"
+  },
+  {
+   "id": "v2",
+   "n": 2,
+   "title": "Hash lock",
+   "q": "Can the plan be changed afterwards without anyone noticing?",
+   "source": "stockbot/validation/prereg_lock.py",
+   "status": "exists",
+   "plain": "prereg_lock hashes the yaml and the gate parameters.",
+   "pkg": "validation"
+  },
+  {
+   "id": "v3",
+   "n": 3,
+   "title": "Trial ledger",
+   "q": "How many attempts have been made?",
+   "source": "stockbot/validation/ledger/records/trial_ledger.csv",
+   "status": "exists",
+   "plain": "Every attempt is a row in a hash-chained ledger. Dry runs count too (record_exploratory).",
+   "pkg": "validation"
+  },
+  {
+   "id": "v4",
+   "n": 4,
+   "title": "Backtest",
+   "q": "What would it have done in history?",
+   "source": "stockbot/backtest/runner.py::run_backtest",
+   "status": "exists",
+   "plain": "Each registered configuration runs through the same engine.",
+   "pkg": "backtest"
+  },
+  {
+   "id": "v5",
+   "n": 5,
+   "title": "Matched-random baseline",
+   "q": "Is it better than random entries under identical rules?",
+   "source": "stockbot/validation/random_baseline.py::draw_matched_random",
+   "status": "exists",
+   "plain": "Random entries matched to each real trade, run through the same fills, stops and costs.",
+   "pkg": "validation"
+  },
+  {
+   "id": "v6",
+   "n": 6,
+   "title": "Paired weekly advantage",
+   "q": "By how much, week by week?",
+   "source": "stockbot/validation/paired_stats.py::paired_statistics",
+   "status": "exists",
+   "plain": "Strategy minus random, paired by week.",
+   "pkg": "validation"
+  },
+  {
+   "id": "v7",
+   "n": 7,
+   "title": "Max-T bootstrap",
+   "q": "After trying K configurations, is the best one still real?",
+   "source": "stockbot/validation/max_t_bootstrap.py::WestfallYoungMaxTBootstrap",
+   "status": "exists",
+   "plain": "A bootstrap across all K configurations that adjusts for having tried several.",
+   "pkg": "validation"
+  },
+  {
+   "id": "v8",
+   "n": 8,
+   "title": "Gates",
+   "q": "Does it clear the pass rules?",
+   "source": "stockbot/config/shared.yaml",
+   "status": "planned",
+   "plain": "validation_gates are settings only. No code applies them yet (planned); a person compares.",
+   "pkg": "config"
+  },
+  {
+   "id": "v9",
+   "n": 9,
+   "title": "Status",
+   "q": "May it run, and in which mode?",
+   "source": "stockbot/strategies/spec.py::StrategySpec",
+   "status": "exists",
+   "plain": "A person sets StrategySpec.status and validation_ref. No code promotes a strategy.",
+   "pkg": "strategies"
+  }
+ ],
+ "symptoms": [
+  {
+   "id": "s1",
+   "symptom": "A fill price looks wrong",
+   "look": [
+    "stockbot/engine/fills.py",
+    "stockbot/config/shared.yaml"
+   ],
+   "tip": "fill_ticket: open times (1 + entry slippage), gap rules. Then compare raw and adjusted bars.",
+   "source": "stockbot/engine/fills.py::fill_ticket"
+  },
+  {
+   "id": "s2",
+   "symptom": "A stop was hit when it should not have been (or the reverse)",
+   "look": [
+    "stockbot/engine/stepping.py",
+    "stockbot/engine/corporate.py"
+   ],
+   "tip": "The stop is checked against the bar's low, entry bar included. Check for a corporate action that day.",
+   "source": "stockbot/engine/stepping.py::step_position"
+  },
+  {
+   "id": "s3",
+   "symptom": "A symbol is missing from the eligible list",
+   "look": [
+    "stockbot/universe/eligibility.py",
+    "stockbot/data/asof.py"
+   ],
+   "tip": "Fund, turnover, listing age, ASM/GSM. Did it trade that day? The lake holds the EQ series only.",
+   "source": "stockbot/universe/eligibility.py::eligible_symbols"
+  },
+  {
+   "id": "s4",
+   "symptom": "Prices jump as if there were an error",
+   "look": [
+    "data/reference/verified_corporate_actions.csv",
+    "scripts/f2_engine_scan.py"
+   ],
+   "tip": "Look at corporate_actions_log for that symbol and ex-date (DATA_GUIDE section E).",
+   "source": "scripts/f2_engine_scan.py"
+  },
+  {
+   "id": "s5",
+   "symptom": "The daily run did nothing",
+   "look": [
+    "scripts/run_eod.py",
+    "stockbot/live/runner.py"
+   ],
+   "tip": "DataFreshnessError: the date is not in the lake yet. ModeError: LIVE with no live strategy. An empty book means no tickets by design.",
+   "source": "stockbot/live/runner.py::run_eod"
+  },
+  {
+   "id": "s6",
+   "symptom": "The run says REFUSED",
+   "look": [
+    "stockbot/live/eod_cli.py"
+   ],
+   "tip": "Exit code 2: mode, freshness, or a missing ASM/GSM snapshot in LIVE.",
+   "source": "stockbot/live/eod_cli.py"
+  },
+  {
+   "id": "s7",
+   "symptom": "The live state looks wrong",
+   "look": [
+    "scripts/daily_health_check.py",
+    "stockbot/live/state_store.py"
+   ],
+   "tip": "StateStore.rebuild() must equal load(). Table journal in state/live_state.db.",
+   "source": "stockbot/live/state_store.py::StateStore"
+  },
+  {
+   "id": "s8",
+   "symptom": "A ticket is missing from the file",
+   "look": [
+    "stockbot/live/runner.py"
+   ],
+   "tip": "blocked and flags in state/tickets/tickets_<date>.json give a reason for each blocked proposal.",
+   "source": "stockbot/live/runner.py::write_tickets"
+  },
+  {
+   "id": "s9",
+   "symptom": "A number differs between backtest and live",
+   "look": [
+    "tests/unit/test_engine_live.py",
+    "stockbot/engine/decide.py"
+   ],
+   "tip": "They must not. The test compares decisions day by day; only mode and strict differ.",
+   "source": "tests/unit/test_engine_live.py"
+  },
+  {
+   "id": "s10",
+   "symptom": "An import is refused by the build",
+   "look": [
+    "tests/unit/test_import_boundaries.py",
+    "tests/fixtures/boundaries.py"
+   ],
+   "tip": "See the Who can import whom view. Never edit the table to pass.",
+   "source": "tests/fixtures/boundaries.py"
+  },
+  {
+   "id": "s11",
+   "symptom": "A test is skipped",
+   "look": [
+    "scripts/check_all.py",
+    "tests/data_integrity"
+   ],
+   "tip": "It is env-gated: STOCKBOT_DATA_TESTS=1 (real database) or STOCKBOT_FINAL_CHECK=1.",
+   "source": "stockbot/data_checks/check_all.py"
+  },
+  {
+   "id": "s12",
+   "symptom": "I need to know what is in a database table",
+   "look": [
+    "docs/guides/DATA_GUIDE.md",
+    "docs/guides/data_catalogue.md"
+   ],
+   "tip": "DATA_GUIDE section C and the machine-measured catalogue.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "id": "s13",
+   "symptom": "The database may have been written",
+   "look": [
+    "docs/restructure/BASELINE.md",
+    "scripts/check_all.py"
+   ],
+   "tip": "G4: compare sha256 of finsight.db with the baseline; check_all prints size and modified time.",
+   "source": "docs/restructure/BASELINE.md"
+  },
+  {
+   "id": "s14",
+   "symptom": "What was left undone before live?",
+   "look": [
+    "docs/restructure/PRE_LIVE_LIST.md"
+   ],
+   "tip": "The numbered list of things to finish before any strategy goes live.",
+   "source": "docs/restructure/PRE_LIVE_LIST.md"
+  }
+ ],
+ "glossary": [
+  {
+   "term": "session",
+   "def": "One trading day. The calendar is the dates of the Nifty 50 series in the lake.",
+   "source": "stockbot/data/asof.py::AsOfView"
+  },
+  {
+   "term": "as-of",
+   "def": "The date a question is asked from. An AsOfView answers as the world looked at that day's close, and refuses to show later data.",
+   "source": "stockbot/data/asof.py::AsOfView"
+  },
+  {
+   "term": "ADTV",
+   "def": "Average daily traded value: raw close times raw volume, averaged over 20 sessions, in rupees.",
+   "source": "stockbot/data/adjustments.py::compute_adtv"
+  },
+  {
+   "term": "R",
+   "def": "The amount risked on a trade: shares times (entry minus initial stop). A profit of 2R is twice the amount risked.",
+   "source": "stockbot/risk/r_metrics.py"
+  },
+  {
+   "term": "ex-date",
+   "def": "The first day a stock trades without the right to a corporate action such as a split or bonus.",
+   "source": "stockbot/engine/corporate.py"
+  },
+  {
+   "term": "arbitration",
+   "def": "Admitting proposals from several strategies against one set of portfolio caps in a fixed order. A symbol already held is refused.",
+   "source": "stockbot/risk/arbitration.py::arbitrate"
+  },
+  {
+   "term": "prereg",
+   "def": "Pre-registration: writing the configurations and pass rules down, and hashing them, before looking at results.",
+   "source": "stockbot/validation/prereg_lock.py"
+  },
+  {
+   "term": "ledger",
+   "def": "The append-only record of every attempt, hash-chained so an edit is detectable.",
+   "source": "stockbot/validation/ledger/records/trial_ledger.csv"
+  },
+  {
+   "term": "ticket",
+   "def": "A suggestion for the operator: symbol, planned shares, reference price, stop. Created at one close, filled in the simulation at the next open.",
+   "source": "stockbot/engine/types.py::Ticket"
+  },
+  {
+   "term": "PIT",
+   "def": "Point-in-time: using only what was knowable on the as-of date. A single current snapshot, such as today's share count, is not PIT.",
+   "source": "stockbot/data/asof.py::AsOfView"
+  },
+  {
+   "term": "EQ series",
+   "def": "NSE's ordinary equity segment. The lake holds EQ rows only, so a name in another segment shows up as a long absence.",
+   "source": "docs/restructure/PRE_LIVE_LIST.md"
+  },
+  {
+   "term": "overlay",
+   "def": "A shared signal evaluated once before everything else, such as a market-wide switch. None exists yet.",
+   "source": "stockbot/strategies/base.py"
+  },
+  {
+   "term": "HOLD",
+   "def": "A position the engine cannot rescale after a corporate action (merger, demerger, rights). It is flagged and left out of trade statistics.",
+   "source": "stockbot/engine/corporate.py::apply_actions"
+  },
+  {
+   "term": "ASM/GSM",
+   "def": "NSE's Additional and Graded Surveillance Measures lists. A name on today's list is excluded.",
+   "source": "stockbot/universe/eligibility.py"
+  },
+  {
+   "term": "lake",
+   "def": "finsight.db, the price database. Opened read-only by all decision code.",
+   "source": "stockbot/data/lake.py::open_lake"
+  },
+  {
+   "term": "State",
+   "def": "The whole portfolio memory after a session: cash, open positions, pending tickets.",
+   "source": "stockbot/engine/types.py"
+  },
+  {
+   "term": "Decisions",
+   "def": "What happened in one session: fills, exits, new tickets, blocked items, flags. State is the fold of Decisions.",
+   "source": "stockbot/engine/types.py"
+  },
+  {
+   "term": "pure",
+   "def": "A pure function has no database, network, clock or randomness of its own: the same inputs always give the same outputs.",
+   "source": "stockbot/engine/decide.py::decide"
+  },
+  {
+   "term": "idempotent",
+   "def": "Running it again with the same input changes nothing.",
+   "source": "stockbot/live/adapter.py"
+  },
+  {
+   "term": "slippage",
+   "def": "The assumed gap between the price you expect and the price you get, applied on entry and on exit.",
+   "source": "stockbot/engine/fills.py"
+  },
+  {
+   "term": "stop",
+   "def": "The price at which a position is sold to limit the loss. It may be raised, never lowered.",
+   "source": "stockbot/engine/stepping.py::step_position"
+  },
+  {
+   "term": "exit policy",
+   "def": "The rule for moving the stop and asking for exits. The policy decides what; the engine decides how.",
+   "source": "stockbot/engine/exit_policy.py::ExitPolicy"
+  },
+  {
+   "term": "StrategySpec",
+   "def": "A strategy's identity card: id, version, parameters, exit policy, status. Its hash goes in the ledger.",
+   "source": "stockbot/strategies/spec.py::StrategySpec"
+  },
+  {
+   "term": "strict",
+   "def": "decide(strict=True): any error stops the run (backtest). strict=False flags it and carries on (live).",
+   "source": "stockbot/engine/decide.py::decide"
+  },
+  {
+   "term": "Max-T",
+   "def": "A bootstrap that adjusts for having tried several configurations, so the best of K is not over-trusted.",
+   "source": "stockbot/validation/max_t_bootstrap.py::WestfallYoungMaxTBootstrap"
+  },
+  {
+   "term": "matched-random baseline",
+   "def": "Random entries matched to each real trade and run through identical rules: what luck alone would have earned.",
+   "source": "stockbot/validation/random_baseline.py::draw_matched_random"
+  },
+  {
+   "term": "golden check",
+   "def": "One of the named test groups G1 to G6 used to prove nothing drifted.",
+   "source": "stockbot/data_checks/check_all.py"
+  },
+  {
+   "term": "env-gated",
+   "def": "A test that is skipped unless an environment variable is set, because it needs the real database or takes minutes.",
+   "source": "tests/unit/test_guides_consistent.py"
+  },
+  {
+   "term": "Bhavcopy",
+   "def": "NSE's end-of-day price file for all listed securities.",
+   "source": "stockbot/data/ingestion/ingest_raw_bhavcopy_range.py"
+  },
+  {
+   "term": "corporate action",
+   "def": "A split, bonus, dividend, merger or similar event. Splits and bonuses adjust prices; others put an open position on HOLD.",
+   "source": "stockbot/engine/corporate.py"
+  },
+  {
+   "term": "AsOfView",
+   "def": "The dated window onto the lake. The only way code above the data layer reads market data.",
+   "source": "stockbot/data/asof.py::AsOfView"
+  },
+  {
+   "term": "PAPER",
+   "def": "The default mode: the daily run produces suggestions only and no strategy needs to be live.",
+   "source": "stockbot/live/runner.py::strategies_for_mode"
+  },
+  {
+   "term": "eligible",
+   "def": "Allowed by the shared universe rules: not a fund, enough turnover, old enough, not under ASM/GSM.",
+   "source": "stockbot/universe/eligibility.py::eligible_symbols"
+  },
+  {
+   "term": "caps",
+   "def": "Three portfolio limits: number of positions, total risk %, and sector exposure %.",
+   "source": "stockbot/risk/caps.py"
+  },
+  {
+   "term": "registry",
+   "def": "The list of registered strategies. Empty today.",
+   "source": "stockbot/strategies/registry.py::StrategyRegistry"
+  }
+ ]
+}
