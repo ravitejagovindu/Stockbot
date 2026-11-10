@@ -69,13 +69,13 @@ These are the rules enforced by `tests/unit/test_import_boundaries.py` (rule tab
 | `stockbot.universe` | config, data | risk, engine, strategies, backtest, live, validation |
 | `stockbot.risk` | config, data | universe, engine, strategies, backtest, live, validation |
 | `stockbot.engine` | config, data, universe, risk, strategies (only `strategies.base` and registry) | backtest, live, validation |
-| `stockbot.strategies` | data (view types only) | everything else |
+| `stockbot.strategies` | data (view types only), plus the one module `stockbot.engine.exit_policy` (the exit-policy interface types, so a strategy can own an exit policy) | everything else, including the shared library `stockbot.engine.exit_policies` |
 | `stockbot.backtest` | config, data, universe, risk, engine, strategies | live, validation |
 | `stockbot.live` | config, data, universe, risk, engine, strategies, validation | backtest |
 | `stockbot.validation` | config, data, risk, backtest, engine, universe | live, strategies |
 | `stockbot.data_checks` | config, data | all others |
 
-Extra rules in the same test: no strategy imports another strategy; `backtest`, `engine`, `strategies` and `risk` may not import a network library (`requests`, `urllib`, `yfinance`, `socket` ...); `engine` and `strategies` may not import `sqlite3` or `sqlalchemy` (they can never hold a database connection); nothing in `stockbot/` edits `sys.path`; nothing imports the old top-level modules. `live` importing `validation` is a temporary edge (it exists only because the old dashboard routers use trade-metrics reporting): it must disappear when the routers are reworked, see `docs/restructure/PRE_LIVE_LIST.md` item 7. `tests/unit/test_every_module_imports_alone.py` checks that every module imports in a fresh interpreter.
+Extra rules in the same test: no strategy imports another strategy (`base`, `registry` and `spec` are shared interface code, not strategies); `backtest`, `engine`, `strategies` and `risk` may not import a network library (`requests`, `urllib`, `yfinance`, `socket` ...); `engine` and `strategies` may not import `sqlite3` or `sqlalchemy` (they can never hold a database connection); nothing in `stockbot/` edits `sys.path`; nothing imports the old top-level modules. `live` importing `validation` is a temporary edge (it exists only because the old dashboard routers use trade-metrics reporting): it must disappear when the routers are reworked, see `docs/restructure/PRE_LIVE_LIST.md` item 7. `tests/unit/test_every_module_imports_alone.py` checks that every module imports in a fresh interpreter.
 
 ### C.1 `stockbot.config`
 
@@ -193,7 +193,8 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 | `fills.py` | `fill_ticket`: the shared fill rule (next open, gap rules, slippage, sizing from the fill price). |
 | `stepping.py` | `step_position`: advances one open position through one bar in one fixed order (market exit, stop, policy, limit and market requests). |
 | `exit_policy.py` | The exit-policy interface and its small data types (`Bar`, `MarketAtNextOpen`, `Limit`, `StepContext`, `PolicyActions`, `ExitPolicy`). |
-| `corporate.py` | Splits and bonuses on open positions: rescale prices and shares, cash for fractions; anything else puts the position on HOLD. |
+| `corporate.py` | Splits and bonuses on open positions: rescale prices, shares and a queued exit, cash for fractions; anything else puts the position on HOLD. |
+| `stockbot/engine/exit_policies/` (package `stockbot.engine.exit_policies`) | The shared library of exit policies: `fixed_hold.py` (`FixedHold`, id `fixed_hold_<N>`), `trailing_stop.py` (`TrailingStop`, id `trailing_pct_<P>`) and `registry.py` (`resolve(policy_id)`, `policies_for(specs, extra=None)`). It imports only the interface. Plain-English guide: `docs/exit_policies/EXIT_POLICIES.md`. |
 | `reports.py` | Operator reports in live (`FillReport`, `ExitReport`, `NotTakenReport`) turned into `ReportEffect`s that change the state. |
 | `path.py` | `simulate_ticket`: one position's path under the same fill and stepping rules (used by the matched-random baseline). |
 
@@ -210,7 +211,7 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 
 ### C.6 `stockbot.strategies`
 
-**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. **There are no strategy files here.** A strategy would live in its own module in this package and import only the interface.
+**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. **There are no strategy files here.** A strategy would live in its own module in this package and import only the interface; it may also define its own exit policy there, importing only `stockbot.engine.exit_policy`.
 
 | module | purpose |
 |---|---|
@@ -444,7 +445,7 @@ class ToyStrategy:
 | `version` | `MAJOR.MINOR.PATCH` |
 | `params` | the strategy's own parameters (JSON-serialisable); may not contain a shared section such as `costs` or `portfolio_risk` |
 | `universe_overrides` | may only raise `min_adtv_cr` and `min_listing_age_trading_days`; the parked market-cap rule cannot be overridden |
-| `exit_policy` | id of the exit policy it uses (required); the runner looks it up in the `policies` mapping |
+| `exit_policy` | id of the exit policy it uses (required): a library id (`fixed_hold_20`, `trailing_pct_10`) or a strategy-owned id; resolved by `policies_for` |
 | `status` | `research`, `paper` or `live` |
 | `prereg_ref` | reference to the pre-registration record (optional) |
 | `validation_ref` | reference to the validation record; **required when status is `live`** |
@@ -456,7 +457,7 @@ class ToyStrategy:
 
 **`Strategy` protocol** (`stockbot/strategies/base.py`): `propose(view, eligible, as_of, strategy_state, overlays) -> (proposals, new_strategy_state)` and `confirm_fill(proposal, fill_price, view) -> None or a reject reason`. A `Proposal` carries `strategy_id`, `symbol`, `signal_date`, `reference_price` (the signal-day close), `stop` (a price; shared code never derives one), optional `target`, `rank` (meaningful only within one strategy) and `metadata`. The strategy's own memory goes in `strategy_state` (plain data), never in an attribute.
 
-**`ExitPolicy`** (`stockbot/engine/exit_policy.py`): `initial_state(position, view)`, `step(position, bar, view, ctx) -> PolicyActions` (a new stop, requested exits as `MarketAtNextOpen` or `Limit`, its own state) and `on_corporate_action(exit_state, factor)`. The policy decides *what*; the engine's `step_position` decides *how*, in one fixed order that is identical for every policy and for the random baseline. A stop can never move down.
+**`ExitPolicy`** (`stockbot/engine/exit_policy.py`): `initial_state(position, view)`, `step(position, bar, view, ctx) -> PolicyActions` (a new stop, requested exits as `MarketAtNextOpen` or `Limit`, its own state) and `on_corporate_action(exit_state, factor)`. The policy decides *what*; the engine's `step_position` decides *how*, in one fixed order that is identical for every policy and for the random baseline. A stop can never move down. Two reusable policies are in the shared library `stockbot.engine.exit_policies`, chosen by id in `StrategySpec.exit_policy`: `fixed_hold_<N>` (exit at the open of session N+1; the entry session is session 1) and `trailing_pct_<P>` (a stop trailing P% below the highest close since entry, from the next bar). `policies_for(specs, extra=None)` builds the `policies` mapping (`run_backtest(..., policies=None)` and `Book.from_strategies` use it). A strategy that needs something special writes its own policy inside its own folder, importing only `stockbot.engine.exit_policy`. Details: `docs/exit_policies/EXIT_POLICIES.md`.
 
 **`Overlay`** (`stockbot/strategies/base.py`): `evaluate(view, overlay_state) -> (signal, new_overlay_state)`, evaluated once per session before anything else, for context such as a market-wide switch. A strategy declares which overlays it uses in `StrategySpec.overlays`; a missing or version-mismatched overlay raises `EngineInputError`. No real overlay exists yet (the old macro kill switch is kept as provenance).
 
