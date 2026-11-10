@@ -1,6 +1,6 @@
 # StockBot codebase guide
 
-A reading guide for the owner. It describes the repository as it is on `master` (tag `post-restructure`), written from the code, not from older documents. Plain words first, exact names after. Nothing here is a recommendation and nothing here describes a strategy: **no strategy exists in the tree.**
+A reading guide for the owner. It describes the repository as it is on `master` (tag `post-restructure`), written from the code, not from older documents. Plain words first, exact names after. Nothing here is a recommendation. **The only strategy in the tree is `near_52w_high` (status `research`, branch `near-52w-high`, not merged); `master` has none.**
 
 A picture version, for reading by clicking instead of scrolling, is `docs/guides/codebase_guide.html` (open it from the folder; it needs no internet). This text stays the detailed reference.
 
@@ -211,13 +211,14 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 
 ### C.6 `stockbot.strategies`
 
-**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. **There are no strategy files here.** A strategy would live in its own module in this package and import only the interface; it may also define its own exit policy there, importing only `stockbot.engine.exit_policy`.
+**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. A strategy lives in its own folder in this package and imports only the interface; it may also define its own exit policy there, importing only `stockbot.engine.exit_policy`. **One strategy folder exists, `stockbot/strategies/near_52w_high/` (research status; the no-strategy test allows exactly that one folder and one class).**
 
 | module | purpose |
 |---|---|
 | `base.py` | `Proposal`, and the `Strategy` and `Overlay` protocols. |
 | `spec.py` | `StrategySpec` (identity, parameters, exit policy, status, references) with strict validation and a configuration hash. |
 | `registry.py` | `StrategyRegistry` and the (empty) `default_registry`. |
+| `stockbot/strategies/near_52w_high/` | The near-52-week-high strategy (`strategy.py`: `SPEC`, `NearHighStrategy`, `register`; `__init__.py` re-exports them). Long-only; proposes the top 25 names whose adjusted close is within 5% of the highest adjusted close of the last 252 bars (gap guard, ties by ADTV then symbol, an explicit ordinal rank), stop 0.85 x the signal-day adjusted close, exit policy `fixed_hold_40` from the shared library. Every number is in `SPEC.params`. Registered only when `register(registry)` is called, so `default_registry` stays empty. |
 
 - **Reads/writes:** nothing. **Called by:** the engine and runner use the protocols; a future strategy module would import `base.py` and `spec.py`.
 - **Imports:** data view types only. Standard library otherwise.
@@ -332,6 +333,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/build_data_guide_html.py` | Rebuilds `docs/guides/data_guide.html` from its JSON, the catalogue export and the template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.data_guide_html` |
 | `scripts/build_guide_html.py` | Rebuilds `docs/guides/codebase_guide.html` from its JSON and template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.guide_html` |
 | `scripts/signal_count_near_high.py` | Counts-only signal study of the near-52-week-high rule (read-only; hashes `finsight.db` before and after). Injects the shared eligibility rule. | manual | `stockbot.data_checks.near_high_signal_count` |
+| `scripts/research_near_52w_high.py` | Research wiring: one `run_backtest` of `near_52w_high` with the shared config, the library policy its spec names and the live sector lookup. Prints the plan; runs only with `--execute`; no sweep. | manual | `stockbot.backtest.runner`, `stockbot.strategies.near_52w_high` |
 | `scripts/paper_report.py` | Paper-trading criteria report. | manual | `stockbot.live.paper_report` |
 | `scripts/preflight_spot_check.py` | Data and adjustment spot checks. | manual | `stockbot.data_checks.preflight_spot_check` |
 | `scripts/earnings_coverage.py` | Earnings coverage report. | manual | `stockbot.data_checks.earnings_coverage` |
@@ -463,7 +465,7 @@ class ToyStrategy:
 
 **`Overlay`** (`stockbot/strategies/base.py`): `evaluate(view, overlay_state) -> (signal, new_overlay_state)`, evaluated once per session before anything else, for context such as a market-wide switch. A strategy declares which overlays it uses in `StrategySpec.overlays`; a missing or version-mismatched overlay raises `EngineInputError`. No real overlay exists yet (the old macro kill switch is kept as provenance).
 
-**Registry** (`stockbot/strategies/registry.py`): `default_registry.register(spec)` rejects duplicate ids; `get`, `ids`, `all`. Today it is empty.
+**Registry** (`stockbot/strategies/registry.py`): `default_registry.register(spec)` rejects duplicate ids; `get`, `ids`, `all`. Today it is empty: `near_52w_high.register(registry)` adds the spec to a registry the caller passes, and nothing calls it on the default registry.
 
 **Lifecycle and gates.**
 - `research`: backtests only. `paper`: runs in PAPER mode in the live package. `live`: runs in LIVE mode; the spec cannot even be built without a `validation_ref`, and `strategies_for_mode` refuses LIVE with no live strategy.

@@ -81,7 +81,7 @@ def test_status_research_cannot_run_in_live_or_paper_and_registration_is_explici
     b = Book.from_strategies([s])
     with pytest.raises(ModeError):
         strategies_for_mode(b, "LIVE")
-    assert strategies_for_mode(b, "PAPER") == [] and strategies_for_mode(b, "BACKTEST") == []
+    assert strategies_for_mode(b, "PAPER") == []                       # research strategies never run in the live package (PAPER or LIVE)
     with pytest.raises(SpecError):
         replace(SPEC, status="live")                                  # a live spec needs a validation_ref
     reg = StrategyRegistry()
@@ -187,13 +187,13 @@ def test_the_stop_is_0_85_times_the_signal_day_adjusted_close_in_the_as_of_basis
     series = {"SPL": L.rise(150, 0.0022) * (1 + 0.002 * rng.standard_normal(L.N))}
     p = tmp_path / "lake.db"
     ds = L.build(p, series, splits={"SPL": (280, 1, 5)})
-    for j in (270, 290):
+    for j, basis in ((270, 1.0), (290, 0.2)):                                      # the as-of basis is the price level in force on the as-of date: after the 1:5 split it is 0.2 x the old level
         (x,), _ = propose(p, ds, j, series)
-        close_adj = float(series["SPL"][j])                                        # the adjusted truth on the signal day, in the as-of basis
-        assert x.reference_price == pytest.approx(close_adj, rel=1e-12) and x.stop == pytest.approx(0.85 * close_adj, rel=1e-12)
-        assert x.signal_date == ds[j] and x.strategy_id == "near_52w_high" and x.target is None
-    raw_close_after = float(series["SPL"][290]) * 0.2
-    assert abs(propose(p, ds, 290, series)[0][0].stop - 0.85 * raw_close_after) > 1.0     # not a stop in raw (post-split) prices
+        close_asof = float(series["SPL"][j]) * basis
+        assert x.reference_price == pytest.approx(close_asof, rel=1e-12) and x.stop == pytest.approx(0.85 * close_asof, rel=1e-12)
+        assert x.signal_date == ds[j] and x.strategy_id == "near_52w_high" and x.target is None and x.stop < x.reference_price
+    raw_close_290 = float(series["SPL"][290]) * 0.2                                # what the raw lake holds on the signal day: equal to the as-of basis after the split
+    assert propose(p, ds, 290, series)[0][0].stop == pytest.approx(0.85 * raw_close_290, rel=1e-12)
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------ no look-ahead
@@ -305,3 +305,23 @@ def test_determinism_and_idempotency_through_the_engine_on_the_fixture_lake(engi
     d1, s1 = decide(ds[262], st, AsOfView(conn, ds[262]), [s], CFG, EventData(sectors=SECTORS), policies=pol)
     d2, s2 = decide(ds[262], st, AsOfView(conn, ds[262]), [s], CFG, EventData(sectors=SECTORS), policies=pol)       # the same session from the same state: the same bytes
     assert d1.to_json() == d2.to_json() and s1.to_json() == s2.to_json()
+
+
+def test_the_strategy_and_the_stop_1_study_tool_rank_the_same_names_in_the_same_order(tmp_path):
+    """The study tool (data_checks) and the strategy are two implementations of one rule; on the study's fixture lake they must agree on every session."""
+    from stockbot.config.shared import load_shared_config
+    from stockbot.data_checks import near_high_signal_count as M
+    from stockbot.universe.eligibility import eligible_symbols
+    from tests.fixtures import near_high_lake as F
+    cfg = load_shared_config()
+    p = tmp_path / "lake.db"
+    ds, _ = F.build(p)
+    conn = open_lake(p)
+    s = NearHighStrategy()
+    for j in (251, 270, 300, 329):
+        view = AsOfView(conn, ds[j])
+        elig = eligible_symbols(view, cfg.universe)
+        study = M.snapshot(view, elig)["ranked"][:25]
+        props, _ = s.propose(view, elig, ds[j], {}, {})
+        assert [(x.symbol, x.metadata["nearness"]) for x in props] == study and study
+    conn.close()
