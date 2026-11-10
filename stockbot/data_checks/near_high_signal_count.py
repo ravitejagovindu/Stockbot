@@ -173,7 +173,6 @@ def run_study(conn, eligible_fn: Callable, *, start: Optional[date] = None, end:
     unadj_types: Counter = Counter()
     bin_total, exact_total = [0] * (len(BINS) - 1), 0
     first_valid = first_cand = first_12 = None
-    earliest_252nd_bar = None
     plain = Occupancy(len(sess), max_positions)
     capped = Occupancy(len(sess), max_positions, pos_pct=pos_pct, sector_cap_pct=sector_cap_pct)
     t0 = time.time()
@@ -186,13 +185,6 @@ def run_study(conn, eligible_fn: Callable, *, start: Optional[date] = None, end:
         tb = time.perf_counter()
         s = snapshot(view, elig)
         tc = time.perf_counter()
-        if j == 0:                                                         # date on which the earliest-listed eligible name reached its 252nd bar (bars before the calendar start included)
-            firsts = []
-            for sym in elig:
-                allb = view.raw_bars(sym, lookback=None)
-                if len(allb) >= WINDOW:
-                    firsts.append(allb.index[WINDOW - 1])
-            earliest_252nd_bar = min(firsts) if firsts else None
         top = s["ranked"][:TOP_N]
         plain.step(j, top)
         capped.step(j, top)
@@ -219,7 +211,7 @@ def run_study(conn, eligible_fn: Callable, *, start: Optional[date] = None, end:
     mk = lambda o: [dict(symbol=e[0], signal=sess[e[1]], entry=sess[e[2]], planned_exit=(sess[e[3]] if e[3] < len(sess) else None), nearness=e[4]) for e in o.entries]  # noqa: E731
     return dict(sessions=sess, rows=rows, ever=ever, unadj_types=dict(unadj_types), bin_total=bin_total, exact_total=exact_total, first_valid=first_valid, first_candidate=first_cand,
                 first_12_candidates=first_12, calendar_first=sess[0] if sess else None, calendar_252nd_session=(sess[WINDOW - 1] if len(sess) >= WINDOW else None),
-                earliest_252nd_bar=earliest_252nd_bar, entries=mk(plain), entries_capped=mk(capped), unrealised_signals=plain.unrealised_signals,
+                entries=mk(plain), entries_capped=mk(capped), unrealised_signals=plain.unrealised_signals,
                 params=dict(max_positions=max_positions, risk_pct=risk_pct, sector_cap_pct=sector_cap_pct, position_pct_of_equity=pos_pct), seconds=time.time() - t0)
 
 
@@ -289,7 +281,6 @@ def summarise(res: dict, measured: Optional[date] = None) -> dict:
         calendar=dict(first_session=str(res["calendar_first"]) if res["calendar_first"] else None, last_session=str(res["sessions"][-1]) if res["sessions"] else None,
                       n_sessions=len(res["sessions"]), calendar_252nd_session=str(res["calendar_252nd_session"]) if res["calendar_252nd_session"] else None),
         first_valid_nearness_date_with_prior_bars=str(res["first_valid"]) if res["first_valid"] else None,
-        earliest_252nd_bar_of_a_name_eligible_on_first_session=str(res["earliest_252nd_bar"]) if res["earliest_252nd_bar"] else None,
         first_valid_nearness_date_calendar_only=str(res["calendar_252nd_session"]) if res["calendar_252nd_session"] else None,
         first_candidate_date=str(res["first_candidate"]) if res["first_candidate"] else None,
         first_date_with_cap_candidates=str(res["first_12_candidates"]) if res["first_12_candidates"] else None,
@@ -317,7 +308,6 @@ def render_markdown(sm: dict) -> str:
                f"Caps: {json.dumps(sm['params'])}.", ""]
     L += [f"## (a) First date the rule can produce a valid nearness (252 bars) (measured {m})", "",
           f"- using bars before the calendar start (first session with at least one eligible name with 252 own bars that passes the gap guard): **{sm['first_valid_nearness_date_with_prior_bars']}**",
-          f"  - the earliest date on which a name eligible on the first calendar session had its 252nd bar: {sm['earliest_252nd_bar_of_a_name_eligible_on_first_session']}",
           f"- counting only calendar sessions (252nd session of the Nifty calendar, first session {sm['calendar']['first_session']}): **{sm['first_valid_nearness_date_calendar_only']}**",
           f"- first session with at least one candidate (nearness >= 0.95): {sm['first_candidate_date']}; first with at least {sm['params']['max_positions']}: {sm['first_date_with_cap_candidates']}", ""]
 

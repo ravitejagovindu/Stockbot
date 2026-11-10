@@ -62,7 +62,6 @@ def test_first_valid_date_is_the_252nd_bar(lake, study):
     assert study["first_valid"] == ds[FIRST] == study["calendar_252nd_session"]
     assert study["calendar_first"] == ds[0] and len(study["sessions"]) == F.N
     assert M.summarise(study)["first_valid_nearness_date_calendar_only"] == str(ds[FIRST])
-    assert study["earliest_252nd_bar"] is None                     # the fixture has no bars before its calendar start, so no name has 252 bars on the first session
 
 
 def test_nearness_matches_an_independent_computation(lake):
