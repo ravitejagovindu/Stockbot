@@ -1,0 +1,8480 @@
+{
+ "measured": "2026-11-10",
+ "rule": {
+  "window": 252,
+  "min_bars": 250,
+  "threshold": 0.95,
+  "top_n": 25,
+  "stop_fraction": 0.85,
+  "hold_sessions": 40
+ },
+ "params": {
+  "max_positions": 12,
+  "risk_pct": 1.0,
+  "sector_cap_pct": 15.0,
+  "position_pct_of_equity": 6.666666666666665
+ },
+ "calendar": {
+  "first_session": "2015-11-09",
+  "last_session": "2026-10-16",
+  "n_sessions": 2710,
+  "calendar_252nd_session": "2016-11-17"
+ },
+ "first_valid_nearness_date_with_prior_bars": "2015-11-09",
+ "first_valid_nearness_date_calendar_only": "2016-11-17",
+ "first_candidate_date": "2015-11-09",
+ "first_date_with_cap_candidates": "2015-11-24",
+ "groups": {
+  "2015": {
+   "sessions": 36,
+   "first": "2015-11-09",
+   "last": "2015-12-31",
+   "stats": {
+    "eligible": {
+     "median": 135.5,
+     "p5": 130.75,
+     "p95": 142.75,
+     "min": 130.0,
+     "max": 146.0,
+     "mean": 135.88888888888889
+    },
+    "short": {
+     "median": 3.0,
+     "p5": 2.0,
+     "p95": 4.0,
+     "min": 2.0,
+     "max": 4.0,
+     "mean": 2.9444444444444446
+    },
+    "gap_dropped": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "valid": {
+     "median": 132.0,
+     "p5": 127.75,
+     "p95": 140.75,
+     "min": 127.0,
+     "max": 144.0,
+     "mean": 132.94444444444446
+    },
+    "candidates": {
+     "median": 12.0,
+     "p5": 5.75,
+     "p95": 32.0,
+     "min": 4.0,
+     "max": 34.0,
+     "mean": 15.25
+    },
+    "proposed": {
+     "median": 12.0,
+     "p5": 5.75,
+     "p95": 25.0,
+     "min": 4.0,
+     "max": 25.0,
+     "mean": 14.305555555555555
+    },
+    "exact_one": {
+     "median": 2.0,
+     "p5": 0.0,
+     "p95": 8.25,
+     "min": 0.0,
+     "max": 9.0,
+     "mean": 2.8055555555555554
+    },
+    "split_in": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 14.0,
+     "min": 10.0,
+     "max": 16.0,
+     "mean": 12.166666666666666
+    },
+    "unadj_in": {
+     "median": 6.0,
+     "p5": 6.0,
+     "p95": 7.0,
+     "min": 6.0,
+     "max": 7.0,
+     "mean": 6.305555555555555
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 0.0,
+     "max": 12.0,
+     "mean": 11.527777777777779
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 9.0,
+     "p95": 12.0,
+     "min": 0.0,
+     "max": 12.0,
+     "mean": 11.277777777777779
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 3.0,
+     "min": 0.0,
+     "max": 3.0,
+     "mean": 0.4444444444444444
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 0.0,
+     "max": 79.99999999999999,
+     "mean": 76.85185185185183
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 59.999999999999986,
+     "p95": 79.99999999999999,
+     "min": 0.0,
+     "max": 79.99999999999999,
+     "mean": 75.18518518518518
+    },
+    "t_elig": {
+     "median": 2.0609079499263316,
+     "p5": 1.8628478747559711,
+     "p95": 3.3859641747549176,
+     "min": 1.8481785003095865,
+     "max": 41.97633949993178,
+     "mean": 3.292151605568102
+    },
+    "t_score": {
+     "median": 0.5201670499518514,
+     "p5": 0.4857170251198113,
+     "p95": 0.5904847999336198,
+     "min": 0.47997270012274384,
+     "max": 1.0199237000197172,
+     "mean": 0.535818611129394
+    }
+   },
+   "sessions_with_any_candidate": 36,
+   "sessions_with_cap_candidates": 20,
+   "sessions_full": 32,
+   "share_sessions_full": 0.8888888888888888,
+   "sessions_full_capped": 28,
+   "sessions_with_sector_block": 8,
+   "sector_blocks_total": 16,
+   "entries": 12,
+   "entries_per_month": 7.0,
+   "entries_capped": 12,
+   "entries_capped_per_month": 7.0,
+   "concentration": {
+    "entries": 12,
+    "distinct_symbols": 12,
+    "top_symbol": "AUROPHARMA",
+    "top_symbol_share": 0.08333333333333333,
+    "top10_share": 0.8333333333333334,
+    "sector_entries": {
+     "UNKNOWN": 4,
+     "HEALTHCARE": 2,
+     "IT": 2,
+     "FINANCIALS": 2,
+     "AUTO": 1,
+     "CONSUMER": 1
+    },
+    "symbols_without_sector": 4,
+    "entries_without_sector": 4
+   },
+   "concentration_capped": {
+    "entries": 12,
+    "distinct_symbols": 12,
+    "top_symbol": "AUROPHARMA",
+    "top_symbol_share": 0.08333333333333333,
+    "top10_share": 0.8333333333333334,
+    "sector_entries": {
+     "HEALTHCARE": 2,
+     "IT": 2,
+     "UNKNOWN": 2,
+     "CONSUMER": 2,
+     "FINANCIALS": 2,
+     "AUTO": 1,
+     "INDUSTRIALS": 1
+    },
+    "symbols_without_sector": 2,
+    "entries_without_sector": 2
+   }
+  },
+  "2016": {
+   "sessions": 247,
+   "first": "2016-01-01",
+   "last": "2016-12-30",
+   "stats": {
+    "eligible": {
+     "median": 144.0,
+     "p5": 128.0,
+     "p95": 172.7,
+     "min": 123.0,
+     "max": 177.0,
+     "mean": 149.10526315789474
+    },
+    "short": {
+     "median": 1.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 3.0,
+     "mean": 0.8663967611336032
+    },
+    "gap_dropped": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 1.0,
+     "min": 0.0,
+     "max": 1.0,
+     "mean": 0.145748987854251
+    },
+    "valid": {
+     "median": 142.0,
+     "p5": 126.0,
+     "p95": 170.0,
+     "min": 121.0,
+     "max": 174.0,
+     "mean": 148.0931174089069
+    },
+    "candidates": {
+     "median": 26.0,
+     "p5": 5.0,
+     "p95": 77.0,
+     "min": 1.0,
+     "max": 90.0,
+     "mean": 33.931174089068826
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 5.0,
+     "p95": 25.0,
+     "min": 1.0,
+     "max": 25.0,
+     "mean": 18.85425101214575
+    },
+    "exact_one": {
+     "median": 6.0,
+     "p5": 0.0,
+     "p95": 25.0,
+     "min": 0.0,
+     "max": 43.0,
+     "mean": 7.611336032388664
+    },
+    "split_in": {
+     "median": 10.0,
+     "p5": 8.0,
+     "p95": 12.0,
+     "min": 7.0,
+     "max": 13.0,
+     "mean": 10.404858299595142
+    },
+    "unadj_in": {
+     "median": 7.0,
+     "p5": 4.0,
+     "p95": 13.0,
+     "min": 4.0,
+     "max": 13.0,
+     "mean": 7.955465587044534
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 2.0,
+     "max": 12.0,
+     "mean": 11.65991902834008
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 11.0,
+     "p95": 12.0,
+     "min": 3.0,
+     "max": 12.0,
+     "mean": 11.651821862348179
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 3.0,
+     "min": 0.0,
+     "max": 7.0,
+     "mean": 0.3117408906882591
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 13.33333333333333,
+     "max": 79.99999999999999,
+     "mean": 77.7327935222672
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 73.33333333333331,
+     "p95": 79.99999999999999,
+     "min": 19.999999999999996,
+     "max": 79.99999999999999,
+     "mean": 77.6788124156545
+    },
+    "t_elig": {
+     "median": 1.9913810002617538,
+     "p5": 1.849269599886611,
+     "p95": 2.3248894798103716,
+     "min": 1.770600900053978,
+     "max": 3.0364796998910606,
+     "mean": 2.0385221821757464
+    },
+    "t_score": {
+     "median": 0.5549252997152507,
+     "p5": 0.47425283985212446,
+     "p95": 0.651644549984485,
+     "min": 0.41843640012666583,
+     "max": 0.8864520001225173,
+     "mean": 0.5607379408918984
+    }
+   },
+   "sessions_with_any_candidate": 247,
+   "sessions_with_cap_candidates": 187,
+   "sessions_full": 220,
+   "share_sessions_full": 0.8906882591093117,
+   "sessions_full_capped": 211,
+   "sessions_with_sector_block": 24,
+   "sector_blocks_total": 77,
+   "entries": 72,
+   "entries_per_month": 6.121457489878542,
+   "entries_capped": 72,
+   "entries_capped_per_month": 6.121457489878542,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 54,
+    "top_symbol": "BAJFINANCE",
+    "top_symbol_share": 0.06944444444444445,
+    "top10_share": 0.3333333333333333,
+    "sector_entries": {
+     "FINANCIALS": 18,
+     "UNKNOWN": 17,
+     "ENERGY": 10,
+     "CONSUMER": 7,
+     "METALS": 7,
+     "AUTO": 4,
+     "INDUSTRIALS": 2,
+     "CHEMICALS": 2,
+     "HEALTHCARE": 2,
+     "REALTY": 2,
+     "IT": 1
+    },
+    "symbols_without_sector": 16,
+    "entries_without_sector": 17
+   },
+   "concentration_capped": {
+    "entries": 72,
+    "distinct_symbols": 51,
+    "top_symbol": "BAJFINANCE",
+    "top_symbol_share": 0.06944444444444445,
+    "top10_share": 0.3472222222222222,
+    "sector_entries": {
+     "FINANCIALS": 12,
+     "UNKNOWN": 10,
+     "ENERGY": 9,
+     "CONSUMER": 9,
+     "AUTO": 8,
+     "METALS": 5,
+     "INDUSTRIALS": 4,
+     "HEALTHCARE": 4,
+     "CHEMICALS": 4,
+     "REALTY": 3,
+     "TELECOM": 2,
+     "IT": 2
+    },
+    "symbols_without_sector": 9,
+    "entries_without_sector": 10
+   }
+  },
+  "2017": {
+   "sessions": 248,
+   "first": "2017-01-02",
+   "last": "2017-12-29",
+   "stats": {
+    "eligible": {
+     "median": 200.5,
+     "p5": 152.4,
+     "p95": 249.0,
+     "min": 138.0,
+     "max": 252.0,
+     "mean": 201.1733870967742
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "gap_dropped": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 4.0,
+     "mean": 0.45564516129032256
+    },
+    "valid": {
+     "median": 200.0,
+     "p5": 152.4,
+     "p95": 247.0,
+     "min": 138.0,
+     "max": 251.0,
+     "mean": 200.71774193548387
+    },
+    "candidates": {
+     "median": 73.5,
+     "p5": 31.35,
+     "p95": 108.64999999999998,
+     "min": 11.0,
+     "max": 118.0,
+     "mean": 72.42338709677419
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 25.0,
+     "p95": 25.0,
+     "min": 11.0,
+     "max": 25.0,
+     "mean": 24.782258064516128
+    },
+    "exact_one": {
+     "median": 15.0,
+     "p5": 2.3500000000000014,
+     "p95": 32.64999999999998,
+     "min": 0.0,
+     "max": 47.0,
+     "mean": 15.975806451612904
+    },
+    "split_in": {
+     "median": 20.0,
+     "p5": 14.0,
+     "p95": 27.0,
+     "min": 11.0,
+     "max": 29.0,
+     "mean": 19.955645161290324
+    },
+    "unadj_in": {
+     "median": 13.0,
+     "p5": 10.0,
+     "p95": 15.0,
+     "min": 9.0,
+     "max": 16.0,
+     "mean": 12.899193548387096
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 11.0,
+     "p95": 12.0,
+     "min": 4.0,
+     "max": 12.0,
+     "mean": 11.709677419354838
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 11.0,
+     "p95": 12.0,
+     "min": 4.0,
+     "max": 12.0,
+     "mean": 11.709677419354838
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.6499999999999773,
+     "min": 0.0,
+     "max": 11.0,
+     "mean": 0.21370967741935484
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 73.33333333333331,
+     "p95": 79.99999999999999,
+     "min": 26.66666666666666,
+     "max": 79.99999999999999,
+     "mean": 78.06451612903226
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 73.33333333333331,
+     "p95": 79.99999999999999,
+     "min": 26.66666666666666,
+     "max": 79.99999999999999,
+     "mean": 78.06451612903226
+    },
+    "t_elig": {
+     "median": 2.0107171500567347,
+     "p5": 1.8691467748722062,
+     "p95": 2.2713039249181746,
+     "min": 1.8126190002076328,
+     "max": 2.666609600186348,
+     "mean": 2.0411345641252643
+    },
+    "t_score": {
+     "median": 0.7290034000761807,
+     "p5": 0.5755576201714575,
+     "p95": 0.8967176098842173,
+     "min": 0.5097158998250961,
+     "max": 1.1188412997871637,
+     "mean": 0.7368278342708494
+    }
+   },
+   "sessions_with_any_candidate": 248,
+   "sessions_with_cap_candidates": 247,
+   "sessions_full": 224,
+   "share_sessions_full": 0.9032258064516129,
+   "sessions_full_capped": 218,
+   "sessions_with_sector_block": 13,
+   "sector_blocks_total": 53,
+   "entries": 72,
+   "entries_per_month": 6.096774193548387,
+   "entries_capped": 72,
+   "entries_capped_per_month": 6.096774193548387,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 62,
+    "top_symbol": "ADANIPORTS",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.2777777777777778,
+    "sector_entries": {
+     "UNKNOWN": 21,
+     "ENERGY": 8,
+     "INDUSTRIALS": 8,
+     "FINANCIALS": 8,
+     "SERVICES": 6,
+     "METALS": 5,
+     "AUTO": 4,
+     "HEALTHCARE": 3,
+     "CONSUMER": 3,
+     "TELECOM": 2,
+     "REALTY": 2,
+     "DIVERSIFIED": 1,
+     "TEXTILES": 1
+    },
+    "symbols_without_sector": 18,
+    "entries_without_sector": 21
+   },
+   "concentration_capped": {
+    "entries": 72,
+    "distinct_symbols": 64,
+    "top_symbol": "BRITANNIA",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.25,
+    "sector_entries": {
+     "UNKNOWN": 12,
+     "FINANCIALS": 9,
+     "METALS": 8,
+     "ENERGY": 7,
+     "INDUSTRIALS": 7,
+     "CONSUMER": 7,
+     "AUTO": 6,
+     "SERVICES": 4,
+     "HEALTHCARE": 3,
+     "TELECOM": 3,
+     "CHEMICALS": 2,
+     "REALTY": 2,
+     "DIVERSIFIED": 1,
+     "IT": 1
+    },
+    "symbols_without_sector": 12,
+    "entries_without_sector": 12
+   }
+  },
+  "2018": {
+   "sessions": 246,
+   "first": "2018-01-01",
+   "last": "2018-12-31",
+   "stats": {
+    "eligible": {
+     "median": 212.0,
+     "p5": 190.0,
+     "p95": 268.0,
+     "min": 188.0,
+     "max": 274.0,
+     "mean": 215.71138211382114
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "gap_dropped": {
+     "median": 2.0,
+     "p5": 1.0,
+     "p95": 4.0,
+     "min": 1.0,
+     "max": 7.0,
+     "mean": 2.491869918699187
+    },
+    "valid": {
+     "median": 210.0,
+     "p5": 188.0,
+     "p95": 264.0,
+     "min": 186.0,
+     "max": 271.0,
+     "mean": 213.21951219512195
+    },
+    "candidates": {
+     "median": 30.0,
+     "p5": 3.25,
+     "p95": 92.75,
+     "min": 0.0,
+     "max": 144.0,
+     "mean": 34.47560975609756
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 3.25,
+     "p95": 25.0,
+     "min": 0.0,
+     "max": 25.0,
+     "mean": 20.117886178861788
+    },
+    "exact_one": {
+     "median": 5.0,
+     "p5": 0.0,
+     "p95": 21.75,
+     "min": 0.0,
+     "max": 52.0,
+     "mean": 7.073170731707317
+    },
+    "split_in": {
+     "median": 23.0,
+     "p5": 12.0,
+     "p95": 27.0,
+     "min": 11.0,
+     "max": 29.0,
+     "mean": 20.556910569105693
+    },
+    "unadj_in": {
+     "median": 14.0,
+     "p5": 11.0,
+     "p95": 18.75,
+     "min": 10.0,
+     "max": 20.0,
+     "mean": 14.369918699186991
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 9.0,
+     "p95": 12.0,
+     "min": 4.0,
+     "max": 12.0,
+     "mean": 11.59349593495935
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 9.0,
+     "p95": 12.0,
+     "min": 4.0,
+     "max": 12.0,
+     "mean": 11.552845528455284
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 13.0,
+     "mean": 0.3943089430894309
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 59.999999999999986,
+     "p95": 79.99999999999999,
+     "min": 26.66666666666666,
+     "max": 79.99999999999999,
+     "mean": 77.289972899729
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 59.999999999999986,
+     "p95": 79.99999999999999,
+     "min": 26.66666666666666,
+     "max": 79.99999999999999,
+     "mean": 77.01897018970189
+    },
+    "t_elig": {
+     "median": 2.114003000082448,
+     "p5": 1.9463192998664454,
+     "p95": 2.4914162500062957,
+     "min": 1.7946414002217352,
+     "max": 3.1604655999690294,
+     "mean": 2.150122533296803
+    },
+    "t_score": {
+     "median": 0.7646796500775963,
+     "p5": 0.6820535748265684,
+     "p95": 0.9669344499707222,
+     "min": 0.6702439999207854,
+     "max": 1.1039009001106024,
+     "mean": 0.7826672992006519
+    }
+   },
+   "sessions_with_any_candidate": 244,
+   "sessions_with_cap_candidates": 206,
+   "sessions_full": 215,
+   "share_sessions_full": 0.8739837398373984,
+   "sessions_full_capped": 204,
+   "sessions_with_sector_block": 25,
+   "sector_blocks_total": 97,
+   "entries": 72,
+   "entries_per_month": 6.146341463414634,
+   "entries_capped": 72,
+   "entries_capped_per_month": 6.146341463414634,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 57,
+    "top_symbol": "GODREJCP",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.3194444444444444,
+    "sector_entries": {
+     "UNKNOWN": 16,
+     "HEALTHCARE": 12,
+     "IT": 11,
+     "CONSUMER": 10,
+     "FINANCIALS": 9,
+     "INDUSTRIALS": 5,
+     "AUTO": 3,
+     "SERVICES": 2,
+     "ENERGY": 2,
+     "METALS": 1,
+     "REALTY": 1
+    },
+    "symbols_without_sector": 14,
+    "entries_without_sector": 16
+   },
+   "concentration_capped": {
+    "entries": 72,
+    "distinct_symbols": 54,
+    "top_symbol": "JUBLFOOD",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.3333333333333333,
+    "sector_entries": {
+     "FINANCIALS": 10,
+     "CONSUMER": 10,
+     "UNKNOWN": 9,
+     "IT": 8,
+     "HEALTHCARE": 7,
+     "AUTO": 6,
+     "INDUSTRIALS": 5,
+     "SERVICES": 4,
+     "REALTY": 4,
+     "METALS": 3,
+     "ENERGY": 2,
+     "TEXTILES": 1,
+     "DIVERSIFIED": 1,
+     "CHEMICALS": 1,
+     "TELECOM": 1
+    },
+    "symbols_without_sector": 8,
+    "entries_without_sector": 9
+   }
+  },
+  "2019": {
+   "sessions": 245,
+   "first": "2019-01-01",
+   "last": "2019-12-31",
+   "stats": {
+    "eligible": {
+     "median": 184.0,
+     "p5": 166.2,
+     "p95": 211.79999999999998,
+     "min": 161.0,
+     "max": 216.0,
+     "mean": 183.8938775510204
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "gap_dropped": {
+     "median": 1.0,
+     "p5": 0.0,
+     "p95": 3.0,
+     "min": 0.0,
+     "max": 4.0,
+     "mean": 1.1918367346938776
+    },
+    "valid": {
+     "median": 181.0,
+     "p5": 166.0,
+     "p95": 209.0,
+     "min": 161.0,
+     "max": 213.0,
+     "mean": 182.70204081632653
+    },
+    "candidates": {
+     "median": 31.0,
+     "p5": 13.0,
+     "p95": 48.0,
+     "min": 8.0,
+     "max": 54.0,
+     "mean": 29.718367346938777
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 13.0,
+     "p95": 25.0,
+     "min": 8.0,
+     "max": 25.0,
+     "mean": 21.86530612244898
+    },
+    "exact_one": {
+     "median": 4.0,
+     "p5": 0.0,
+     "p95": 15.0,
+     "min": 0.0,
+     "max": 21.0,
+     "mean": 5.314285714285714
+    },
+    "split_in": {
+     "median": 11.0,
+     "p5": 9.0,
+     "p95": 14.0,
+     "min": 9.0,
+     "max": 16.0,
+     "mean": 10.910204081632653
+    },
+    "unadj_in": {
+     "median": 18.0,
+     "p5": 12.200000000000001,
+     "p95": 20.0,
+     "min": 12.0,
+     "max": 21.0,
+     "mean": 17.440816326530612
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 11.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.706122448979592
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 11.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.69795918367347
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 3.0,
+     "min": 0.0,
+     "max": 10.0,
+     "mean": 0.4326530612244898
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 73.33333333333331,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 78.04081632653062
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 73.33333333333331,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 77.98639455782312
+    },
+    "t_elig": {
+     "median": 2.4794942997395992,
+     "p5": 2.1371197200380267,
+     "p95": 3.6454633200541124,
+     "min": 2.0212305998429656,
+     "max": 4.290186400059611,
+     "mean": 2.6419112261175655
+    },
+    "t_score": {
+     "median": 0.7075865003280342,
+     "p5": 0.6424038801342249,
+     "p95": 0.8040705401450395,
+     "min": 0.6226816000416875,
+     "max": 0.8779018996283412,
+     "mean": 0.7139551257239465
+    }
+   },
+   "sessions_with_any_candidate": 245,
+   "sessions_with_cap_candidates": 240,
+   "sessions_full": 197,
+   "share_sessions_full": 0.8040816326530612,
+   "sessions_full_capped": 189,
+   "sessions_with_sector_block": 41,
+   "sector_blocks_total": 106,
+   "entries": 72,
+   "entries_per_month": 6.171428571428572,
+   "entries_capped": 72,
+   "entries_capped_per_month": 6.171428571428572,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 57,
+    "top_symbol": "BATAINDIA",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.2916666666666667,
+    "sector_entries": {
+     "FINANCIALS": 23,
+     "CONSUMER": 14,
+     "UNKNOWN": 8,
+     "HEALTHCARE": 5,
+     "ENERGY": 5,
+     "SERVICES": 4,
+     "IT": 4,
+     "CHEMICALS": 4,
+     "TELECOM": 2,
+     "METALS": 1,
+     "AUTO": 1,
+     "REALTY": 1
+    },
+    "symbols_without_sector": 7,
+    "entries_without_sector": 8
+   },
+   "concentration_capped": {
+    "entries": 72,
+    "distinct_symbols": 51,
+    "top_symbol": "NAUKRI",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.3055555555555556,
+    "sector_entries": {
+     "FINANCIALS": 12,
+     "CONSUMER": 10,
+     "UNKNOWN": 7,
+     "SERVICES": 7,
+     "ENERGY": 7,
+     "HEALTHCARE": 6,
+     "IT": 6,
+     "CHEMICALS": 5,
+     "METALS": 4,
+     "TELECOM": 3,
+     "INDUSTRIALS": 3,
+     "AUTO": 1,
+     "REALTY": 1
+    },
+    "symbols_without_sector": 6,
+    "entries_without_sector": 7
+   }
+  },
+  "2020": {
+   "sessions": 252,
+   "first": "2020-01-01",
+   "last": "2020-12-31",
+   "stats": {
+    "eligible": {
+     "median": 193.0,
+     "p5": 168.55,
+     "p95": 251.45,
+     "min": 160.0,
+     "max": 259.0,
+     "mean": 201.04761904761904
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "gap_dropped": {
+     "median": 1.0,
+     "p5": 0.0,
+     "p95": 4.0,
+     "min": 0.0,
+     "max": 5.0,
+     "mean": 1.4365079365079365
+    },
+    "valid": {
+     "median": 192.0,
+     "p5": 167.55,
+     "p95": 248.45,
+     "min": 160.0,
+     "max": 257.0,
+     "mean": 199.61111111111111
+    },
+    "candidates": {
+     "median": 39.5,
+     "p5": 2.0,
+     "p95": 93.89999999999998,
+     "min": 0.0,
+     "max": 109.0,
+     "mean": 40.932539682539684
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 2.0,
+     "p95": 25.0,
+     "min": 0.0,
+     "max": 25.0,
+     "mean": 21.099206349206348
+    },
+    "exact_one": {
+     "median": 8.0,
+     "p5": 0.0,
+     "p95": 27.44999999999999,
+     "min": 0.0,
+     "max": 36.0,
+     "mean": 10.246031746031745
+    },
+    "split_in": {
+     "median": 6.0,
+     "p5": 3.0,
+     "p95": 10.0,
+     "min": 3.0,
+     "max": 10.0,
+     "mean": 5.928571428571429
+    },
+    "unadj_in": {
+     "median": 11.0,
+     "p5": 9.0,
+     "p95": 17.0,
+     "min": 7.0,
+     "max": 20.0,
+     "mean": 11.722222222222221
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 8.0,
+     "p95": 12.0,
+     "min": 7.0,
+     "max": 12.0,
+     "mean": 11.48015873015873
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 9.0,
+     "p95": 12.0,
+     "min": 7.0,
+     "max": 12.0,
+     "mean": 11.353174603174603
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 7.899999999999977,
+     "min": 0.0,
+     "max": 16.0,
+     "mean": 0.9761904761904762
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 53.33333333333332,
+     "p95": 79.99999999999999,
+     "min": 46.66666666666666,
+     "max": 79.99999999999999,
+     "mean": 76.53439153439153
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 59.999999999999986,
+     "p95": 79.99999999999999,
+     "min": 46.66666666666666,
+     "max": 79.99999999999999,
+     "mean": 75.68783068783068
+    },
+    "t_elig": {
+     "median": 3.851770550245419,
+     "p5": 3.1849408600479365,
+     "p95": 4.68297480486799,
+     "min": 2.5248309997841716,
+     "max": 5.592426899820566,
+     "mean": 3.877211535299596
+    },
+    "t_score": {
+     "median": 0.7993356001097709,
+     "p5": 0.6652343997731804,
+     "p95": 1.0061135201714932,
+     "min": 0.564871700014919,
+     "max": 1.1234351000748575,
+     "mean": 0.8156653258151242
+    }
+   },
+   "sessions_with_any_candidate": 243,
+   "sessions_with_cap_candidates": 220,
+   "sessions_full": 192,
+   "share_sessions_full": 0.7619047619047619,
+   "sessions_full_capped": 171,
+   "sessions_with_sector_block": 51,
+   "sector_blocks_total": 246,
+   "entries": 77,
+   "entries_per_month": 6.416666666666667,
+   "entries_capped": 77,
+   "entries_capped_per_month": 6.416666666666667,
+   "concentration": {
+    "entries": 77,
+    "distinct_symbols": 58,
+    "top_symbol": "ADANIGREEN",
+    "top_symbol_share": 0.03896103896103896,
+    "top10_share": 0.3116883116883117,
+    "sector_entries": {
+     "HEALTHCARE": 17,
+     "UNKNOWN": 14,
+     "CONSUMER": 14,
+     "ENERGY": 7,
+     "INDUSTRIALS": 6,
+     "SERVICES": 5,
+     "METALS": 4,
+     "FINANCIALS": 3,
+     "CHEMICALS": 3,
+     "IT": 2,
+     "AUTO": 2
+    },
+    "symbols_without_sector": 12,
+    "entries_without_sector": 14
+   },
+   "concentration_capped": {
+    "entries": 77,
+    "distinct_symbols": 63,
+    "top_symbol": "ASIANPAINT",
+    "top_symbol_share": 0.03896103896103896,
+    "top10_share": 0.2857142857142857,
+    "sector_entries": {
+     "UNKNOWN": 12,
+     "CONSUMER": 11,
+     "HEALTHCARE": 9,
+     "SERVICES": 6,
+     "METALS": 6,
+     "CHEMICALS": 6,
+     "ENERGY": 6,
+     "FINANCIALS": 5,
+     "AUTO": 5,
+     "INDUSTRIALS": 5,
+     "IT": 4,
+     "TELECOM": 2
+    },
+    "symbols_without_sector": 12,
+    "entries_without_sector": 12
+   }
+  },
+  "2021": {
+   "sessions": 248,
+   "first": "2021-01-01",
+   "last": "2021-12-31",
+   "stats": {
+    "eligible": {
+     "median": 304.0,
+     "p5": 260.35,
+     "p95": 361.0,
+     "min": 248.0,
+     "max": 373.0,
+     "mean": 309.8024193548387
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "gap_dropped": {
+     "median": 5.0,
+     "p5": 2.0,
+     "p95": 14.0,
+     "min": 0.0,
+     "max": 16.0,
+     "mean": 6.375
+    },
+    "valid": {
+     "median": 296.0,
+     "p5": 258.35,
+     "p95": 355.65,
+     "min": 244.0,
+     "max": 368.0,
+     "mean": 303.4274193548387
+    },
+    "candidates": {
+     "median": 112.5,
+     "p5": 33.35,
+     "p95": 180.64999999999998,
+     "min": 11.0,
+     "max": 221.0,
+     "mean": 109.42338709677419
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 25.0,
+     "p95": 25.0,
+     "min": 11.0,
+     "max": 25.0,
+     "mean": 24.89516129032258
+    },
+    "exact_one": {
+     "median": 28.0,
+     "p5": 5.0,
+     "p95": 59.64999999999998,
+     "min": 0.0,
+     "max": 78.0,
+     "mean": 29.391129032258064
+    },
+    "split_in": {
+     "median": 9.0,
+     "p5": 5.0,
+     "p95": 12.0,
+     "min": 4.0,
+     "max": 13.0,
+     "mean": 8.75
+    },
+    "unadj_in": {
+     "median": 15.0,
+     "p5": 9.350000000000001,
+     "p95": 22.0,
+     "min": 7.0,
+     "max": 24.0,
+     "mean": 14.830645161290322
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.705645161290322
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 9.0,
+     "max": 12.0,
+     "mean": 11.709677419354838
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 1.0,
+     "min": 0.0,
+     "max": 5.0,
+     "mean": 0.12903225806451613
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 78.03763440860214
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 59.999999999999986,
+     "max": 79.99999999999999,
+     "mean": 78.06451612903226
+    },
+    "t_elig": {
+     "median": 4.163757450180128,
+     "p5": 3.349414049857296,
+     "p95": 4.909561555157414,
+     "min": 2.488741199951619,
+     "max": 7.3505565002560616,
+     "mean": 4.187541446791241
+    },
+    "t_score": {
+     "median": 1.1962712001986802,
+     "p5": 1.0192632798105479,
+     "p95": 1.3987796551780776,
+     "min": 0.8266382999718189,
+     "max": 1.5877968999557197,
+     "mean": 1.2020985713611627
+    }
+   },
+   "sessions_with_any_candidate": 248,
+   "sessions_with_cap_candidates": 247,
+   "sessions_full": 205,
+   "share_sessions_full": 0.8266129032258065,
+   "sessions_full_capped": 206,
+   "sessions_with_sector_block": 23,
+   "sector_blocks_total": 32,
+   "entries": 74,
+   "entries_per_month": 6.266129032258064,
+   "entries_capped": 72,
+   "entries_capped_per_month": 6.096774193548387,
+   "concentration": {
+    "entries": 74,
+    "distinct_symbols": 53,
+    "top_symbol": "ADANIENT",
+    "top_symbol_share": 0.05405405405405406,
+    "top10_share": 0.33783783783783783,
+    "sector_entries": {
+     "UNKNOWN": 18,
+     "INDUSTRIALS": 11,
+     "CONSUMER": 7,
+     "METALS": 7,
+     "HEALTHCARE": 7,
+     "ENERGY": 6,
+     "FINANCIALS": 6,
+     "CHEMICALS": 3,
+     "IT": 3,
+     "SERVICES": 2,
+     "REALTY": 2,
+     "DIVERSIFIED": 1,
+     "TELECOM": 1
+    },
+    "symbols_without_sector": 13,
+    "entries_without_sector": 18
+   },
+   "concentration_capped": {
+    "entries": 72,
+    "distinct_symbols": 57,
+    "top_symbol": "ADANIENT",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.3055555555555556,
+    "sector_entries": {
+     "UNKNOWN": 11,
+     "HEALTHCARE": 8,
+     "METALS": 7,
+     "FINANCIALS": 7,
+     "INDUSTRIALS": 7,
+     "CONSUMER": 7,
+     "ENERGY": 6,
+     "IT": 5,
+     "AUTO": 3,
+     "SERVICES": 3,
+     "CHEMICALS": 3,
+     "REALTY": 3,
+     "DIVERSIFIED": 1,
+     "TELECOM": 1
+    },
+    "symbols_without_sector": 9,
+    "entries_without_sector": 11
+   }
+  },
+  "2022": {
+   "sessions": 248,
+   "first": "2022-01-03",
+   "last": "2022-12-30",
+   "stats": {
+    "eligible": {
+     "median": 308.5,
+     "p5": 252.35,
+     "p95": 343.65,
+     "min": 241.0,
+     "max": 358.0,
+     "mean": 305.7903225806452
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "gap_dropped": {
+     "median": 19.0,
+     "p5": 12.0,
+     "p95": 26.0,
+     "min": 10.0,
+     "max": 29.0,
+     "mean": 18.911290322580644
+    },
+    "valid": {
+     "median": 288.0,
+     "p5": 234.4,
+     "p95": 323.0,
+     "min": 227.0,
+     "max": 333.0,
+     "mean": 286.8790322580645
+    },
+    "candidates": {
+     "median": 47.0,
+     "p5": 8.0,
+     "p95": 92.64999999999998,
+     "min": 0.0,
+     "max": 105.0,
+     "mean": 46.528225806451616
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 8.0,
+     "p95": 25.0,
+     "min": 0.0,
+     "max": 25.0,
+     "mean": 21.818548387096776
+    },
+    "exact_one": {
+     "median": 10.0,
+     "p5": 0.0,
+     "p95": 29.649999999999977,
+     "min": 0.0,
+     "max": 37.0,
+     "mean": 11.266129032258064
+    },
+    "split_in": {
+     "median": 15.0,
+     "p5": 11.0,
+     "p95": 19.0,
+     "min": 9.0,
+     "max": 22.0,
+     "mean": 15.004032258064516
+    },
+    "unadj_in": {
+     "median": 9.0,
+     "p5": 7.0,
+     "p95": 13.0,
+     "min": 6.0,
+     "max": 15.0,
+     "mean": 9.850806451612904
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.705645161290322
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 9.0,
+     "max": 12.0,
+     "mean": 11.669354838709678
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 3.0,
+     "min": 0.0,
+     "max": 12.0,
+     "mean": 0.4475806451612903
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 78.03763440860214
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 59.999999999999986,
+     "max": 79.99999999999999,
+     "mean": 77.79569892473117
+    },
+    "t_elig": {
+     "median": 4.463982499670237,
+     "p5": 3.815136224986054,
+     "p95": 5.291586905159055,
+     "min": 3.0639420999214053,
+     "max": 6.802335599903017,
+     "mean": 4.522115018949168
+    },
+    "t_score": {
+     "median": 1.2049931499641389,
+     "p5": 1.0122671152232214,
+     "p95": 1.3739412248367442,
+     "min": 0.9420353001914918,
+     "max": 1.5913571999408305,
+     "mean": 1.2066258270060644
+    }
+   },
+   "sessions_with_any_candidate": 247,
+   "sessions_with_cap_candidates": 220,
+   "sessions_full": 211,
+   "share_sessions_full": 0.8508064516129032,
+   "sessions_full_capped": 195,
+   "sessions_with_sector_block": 28,
+   "sector_blocks_total": 111,
+   "entries": 72,
+   "entries_per_month": 6.096774193548387,
+   "entries_capped": 71,
+   "entries_capped_per_month": 6.012096774193548,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 64,
+    "top_symbol": "ABB",
+    "top_symbol_share": 0.027777777777777776,
+    "top10_share": 0.25,
+    "sector_entries": {
+     "INDUSTRIALS": 16,
+     "UNKNOWN": 11,
+     "FINANCIALS": 11,
+     "CONSUMER": 8,
+     "AUTO": 7,
+     "METALS": 6,
+     "ENERGY": 5,
+     "HEALTHCARE": 3,
+     "REALTY": 2,
+     "CHEMICALS": 1,
+     "TELECOM": 1,
+     "SERVICES": 1
+    },
+    "symbols_without_sector": 11,
+    "entries_without_sector": 11
+   },
+   "concentration_capped": {
+    "entries": 71,
+    "distinct_symbols": 62,
+    "top_symbol": "CUMMINSIND",
+    "top_symbol_share": 0.04225352112676056,
+    "top10_share": 0.2676056338028169,
+    "sector_entries": {
+     "INDUSTRIALS": 10,
+     "FINANCIALS": 10,
+     "CONSUMER": 9,
+     "UNKNOWN": 9,
+     "AUTO": 8,
+     "METALS": 5,
+     "ENERGY": 4,
+     "SERVICES": 4,
+     "CHEMICALS": 3,
+     "HEALTHCARE": 3,
+     "REALTY": 2,
+     "TELECOM": 2,
+     "IT": 1,
+     "TEXTILES": 1
+    },
+    "symbols_without_sector": 9,
+    "entries_without_sector": 9
+   }
+  },
+  "2023": {
+   "sessions": 246,
+   "first": "2023-01-02",
+   "last": "2023-12-29",
+   "stats": {
+    "eligible": {
+     "median": 391.0,
+     "p5": 278.25,
+     "p95": 489.75,
+     "min": 272.0,
+     "max": 516.0,
+     "mean": 378.0121951219512
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 1.0,
+     "mean": 0.032520325203252036
+    },
+    "gap_dropped": {
+     "median": 10.0,
+     "p5": 5.0,
+     "p95": 16.75,
+     "min": 4.0,
+     "max": 21.0,
+     "mean": 10.317073170731707
+    },
+    "valid": {
+     "median": 380.0,
+     "p5": 272.0,
+     "p95": 474.75,
+     "min": 265.0,
+     "max": 501.0,
+     "mean": 367.6626016260163
+    },
+    "candidates": {
+     "median": 152.5,
+     "p5": 29.25,
+     "p95": 264.75,
+     "min": 22.0,
+     "max": 301.0,
+     "mean": 135.5487804878049
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 25.0,
+     "p95": 25.0,
+     "min": 22.0,
+     "max": 25.0,
+     "mean": 24.959349593495936
+    },
+    "exact_one": {
+     "median": 29.0,
+     "p5": 3.0,
+     "p95": 82.75,
+     "min": 0.0,
+     "max": 113.0,
+     "mean": 33.577235772357724
+    },
+    "split_in": {
+     "median": 17.0,
+     "p5": 14.0,
+     "p95": 20.0,
+     "min": 11.0,
+     "max": 22.0,
+     "mean": 17.040650406504064
+    },
+    "unadj_in": {
+     "median": 13.0,
+     "p5": 9.0,
+     "p95": 18.0,
+     "min": 8.0,
+     "max": 20.0,
+     "mean": 13.544715447154472
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.707317073170731
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 9.0,
+     "max": 12.0,
+     "mean": 11.707317073170731
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 8.0,
+     "mean": 0.25203252032520324
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 78.04878048780486
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 59.999999999999986,
+     "max": 79.99999999999999,
+     "mean": 78.04878048780488
+    },
+    "t_elig": {
+     "median": 4.765494750114158,
+     "p5": 4.054928699973971,
+     "p95": 5.564397875103168,
+     "min": 3.11249090032652,
+     "max": 6.529400900006294,
+     "mean": 4.765658343502328
+    },
+    "t_score": {
+     "median": 1.4847605000250041,
+     "p5": 1.1109874001704156,
+     "p95": 1.8525288252858445,
+     "min": 1.0389788998290896,
+     "max": 2.1176024000160396,
+     "mean": 1.4596261325125712
+    }
+   },
+   "sessions_with_any_candidate": 246,
+   "sessions_with_cap_candidates": 246,
+   "sessions_full": 210,
+   "share_sessions_full": 0.8536585365853658,
+   "sessions_full_capped": 198,
+   "sessions_with_sector_block": 26,
+   "sector_blocks_total": 62,
+   "entries": 72,
+   "entries_per_month": 6.146341463414634,
+   "entries_capped": 72,
+   "entries_capped_per_month": 6.146341463414634,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 61,
+    "top_symbol": "APLAPOLLO",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.2916666666666667,
+    "sector_entries": {
+     "UNKNOWN": 16,
+     "INDUSTRIALS": 15,
+     "FINANCIALS": 8,
+     "REALTY": 7,
+     "AUTO": 6,
+     "HEALTHCARE": 6,
+     "IT": 3,
+     "CONSUMER": 3,
+     "ENERGY": 3,
+     "CHEMICALS": 3,
+     "METALS": 2
+    },
+    "symbols_without_sector": 14,
+    "entries_without_sector": 16
+   },
+   "concentration_capped": {
+    "entries": 72,
+    "distinct_symbols": 60,
+    "top_symbol": "APARINDS",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.3055555555555556,
+    "sector_entries": {
+     "INDUSTRIALS": 12,
+     "UNKNOWN": 9,
+     "CONSUMER": 8,
+     "HEALTHCARE": 8,
+     "REALTY": 7,
+     "FINANCIALS": 7,
+     "AUTO": 6,
+     "SERVICES": 4,
+     "METALS": 3,
+     "IT": 3,
+     "CHEMICALS": 2,
+     "ENERGY": 2,
+     "TELECOM": 1
+    },
+    "symbols_without_sector": 9,
+    "entries_without_sector": 9
+   }
+  },
+  "2024": {
+   "sessions": 249,
+   "first": "2024-01-01",
+   "last": "2024-12-31",
+   "stats": {
+    "eligible": {
+     "median": 527.0,
+     "p5": 468.0,
+     "p95": 605.6,
+     "min": 456.0,
+     "max": 617.0,
+     "mean": 533.5863453815261
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 1.0,
+     "min": 0.0,
+     "max": 1.0,
+     "mean": 0.12048192771084337
+    },
+    "gap_dropped": {
+     "median": 23.0,
+     "p5": 11.4,
+     "p95": 35.0,
+     "min": 10.0,
+     "max": 38.0,
+     "mean": 23.244979919678716
+    },
+    "valid": {
+     "median": 508.0,
+     "p5": 453.0,
+     "p95": 574.0,
+     "min": 445.0,
+     "max": 586.0,
+     "mean": 510.22088353413653
+    },
+    "candidates": {
+     "median": 172.0,
+     "p5": 48.2,
+     "p95": 300.0,
+     "min": 21.0,
+     "max": 343.0,
+     "mean": 170.8995983935743
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 25.0,
+     "p95": 25.0,
+     "min": 21.0,
+     "max": 25.0,
+     "mean": 24.983935742971887
+    },
+    "exact_one": {
+     "median": 42.0,
+     "p5": 5.4,
+     "p95": 92.0,
+     "min": 0.0,
+     "max": 135.0,
+     "mean": 44.69076305220884
+    },
+    "split_in": {
+     "median": 24.0,
+     "p5": 17.0,
+     "p95": 31.0,
+     "min": 16.0,
+     "max": 33.0,
+     "mean": 23.3574297188755
+    },
+    "unadj_in": {
+     "median": 22.0,
+     "p5": 18.0,
+     "p95": 29.0,
+     "min": 16.0,
+     "max": 33.0,
+     "mean": 22.481927710843372
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.710843373493976
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 9.0,
+     "max": 12.0,
+     "mean": 11.710843373493976
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 8.0,
+     "mean": 0.28112449799196787
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 78.0722891566265
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 59.999999999999986,
+     "max": 79.99999999999999,
+     "mean": 78.07228915662651
+    },
+    "t_elig": {
+     "median": 4.327027699910104,
+     "p5": 3.773438979778439,
+     "p95": 6.18694323990494,
+     "min": 3.6013130000792444,
+     "max": 17.92903620004654,
+     "mean": 4.674406146989709
+    },
+    "t_score": {
+     "median": 2.097612800076604,
+     "p5": 1.7782307198271154,
+     "p95": 2.4345048600807786,
+     "min": 1.7084196996875107,
+     "max": 3.6857874002307653,
+     "mean": 2.110042565055266
+    }
+   },
+   "sessions_with_any_candidate": 249,
+   "sessions_with_cap_candidates": 249,
+   "sessions_full": 213,
+   "share_sessions_full": 0.8554216867469879,
+   "sessions_full_capped": 201,
+   "sessions_with_sector_block": 24,
+   "sector_blocks_total": 70,
+   "entries": 72,
+   "entries_per_month": 6.072289156626506,
+   "entries_capped": 73,
+   "entries_capped_per_month": 6.156626506024097,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 57,
+    "top_symbol": "360ONE",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.3194444444444444,
+    "sector_entries": {
+     "UNKNOWN": 27,
+     "HEALTHCARE": 6,
+     "FINANCIALS": 6,
+     "INDUSTRIALS": 6,
+     "CONSUMER": 5,
+     "REALTY": 5,
+     "SERVICES": 4,
+     "TELECOM": 3,
+     "IT": 3,
+     "METALS": 2,
+     "ENERGY": 2,
+     "AUTO": 2,
+     "CHEMICALS": 1
+    },
+    "symbols_without_sector": 25,
+    "entries_without_sector": 27
+   },
+   "concentration_capped": {
+    "entries": 73,
+    "distinct_symbols": 55,
+    "top_symbol": "360ONE",
+    "top_symbol_share": 0.0547945205479452,
+    "top10_share": 0.3424657534246575,
+    "sector_entries": {
+     "UNKNOWN": 11,
+     "FINANCIALS": 10,
+     "CONSUMER": 8,
+     "REALTY": 7,
+     "HEALTHCARE": 7,
+     "INDUSTRIALS": 7,
+     "CHEMICALS": 5,
+     "SERVICES": 4,
+     "AUTO": 4,
+     "ENERGY": 3,
+     "IT": 3,
+     "METALS": 2,
+     "TELECOM": 2
+    },
+    "symbols_without_sector": 11,
+    "entries_without_sector": 11
+   }
+  },
+  "2025": {
+   "sessions": 249,
+   "first": "2025-01-01",
+   "last": "2025-12-31",
+   "stats": {
+    "eligible": {
+     "median": 495.0,
+     "p5": 457.0,
+     "p95": 534.6,
+     "min": 449.0,
+     "max": 557.0,
+     "mean": 494.5261044176707
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 2.0,
+     "mean": 0.570281124497992
+    },
+    "gap_dropped": {
+     "median": 24.0,
+     "p5": 18.0,
+     "p95": 32.0,
+     "min": 15.0,
+     "max": 38.0,
+     "mean": 24.056224899598394
+    },
+    "valid": {
+     "median": 470.0,
+     "p5": 438.0,
+     "p95": 509.0,
+     "min": 430.0,
+     "max": 529.0,
+     "mean": 469.8995983935743
+    },
+    "candidates": {
+     "median": 75.0,
+     "p5": 13.0,
+     "p95": 119.0,
+     "min": 4.0,
+     "max": 132.0,
+     "mean": 68.33734939759036
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 13.0,
+     "p95": 25.0,
+     "min": 4.0,
+     "max": 25.0,
+     "mean": 23.309236947791163
+    },
+    "exact_one": {
+     "median": 14.0,
+     "p5": 1.0,
+     "p95": 31.0,
+     "min": 0.0,
+     "max": 38.0,
+     "mean": 14.409638554216867
+    },
+    "split_in": {
+     "median": 32.0,
+     "p5": 27.0,
+     "p95": 39.0,
+     "min": 25.0,
+     "max": 41.0,
+     "mean": 32.024096385542165
+    },
+    "unadj_in": {
+     "median": 14.0,
+     "p5": 10.0,
+     "p95": 20.0,
+     "min": 9.0,
+     "max": 23.0,
+     "mean": 14.132530120481928
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.710843373493976
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 9.0,
+     "max": 12.0,
+     "mean": 11.706827309236948
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 7.0,
+     "mean": 0.2891566265060241
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 78.07228915662651
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 59.999999999999986,
+     "max": 79.99999999999999,
+     "mean": 78.04551539491297
+    },
+    "t_elig": {
+     "median": 3.986480999737978,
+     "p5": 3.3523968399502335,
+     "p95": 4.66289421999827,
+     "min": 2.8321765000000596,
+     "max": 5.356228200253099,
+     "mean": 4.023269495569603
+    },
+    "t_score": {
+     "median": 2.3196634999476373,
+     "p5": 2.108340839948505,
+     "p95": 2.651041360106319,
+     "min": 1.973699999973178,
+     "max": 2.978832599706948,
+     "mean": 2.3524686783013573
+    }
+   },
+   "sessions_with_any_candidate": 249,
+   "sessions_with_cap_candidates": 240,
+   "sessions_full": 213,
+   "share_sessions_full": 0.8554216867469879,
+   "sessions_full_capped": 200,
+   "sessions_with_sector_block": 31,
+   "sector_blocks_total": 72,
+   "entries": 72,
+   "entries_per_month": 6.072289156626506,
+   "entries_capped": 73,
+   "entries_capped_per_month": 6.156626506024097,
+   "concentration": {
+    "entries": 72,
+    "distinct_symbols": 61,
+    "top_symbol": "BAJFINANCE",
+    "top_symbol_share": 0.041666666666666664,
+    "top10_share": 0.2916666666666667,
+    "sector_entries": {
+     "FINANCIALS": 21,
+     "UNKNOWN": 15,
+     "INDUSTRIALS": 6,
+     "CHEMICALS": 5,
+     "METALS": 5,
+     "SERVICES": 4,
+     "HEALTHCARE": 4,
+     "AUTO": 4,
+     "CONSUMER": 3,
+     "TELECOM": 2,
+     "IT": 2,
+     "REALTY": 1
+    },
+    "symbols_without_sector": 14,
+    "entries_without_sector": 15
+   },
+   "concentration_capped": {
+    "entries": 73,
+    "distinct_symbols": 62,
+    "top_symbol": "BIOCON",
+    "top_symbol_share": 0.0273972602739726,
+    "top10_share": 0.273972602739726,
+    "sector_entries": {
+     "FINANCIALS": 12,
+     "UNKNOWN": 11,
+     "INDUSTRIALS": 8,
+     "HEALTHCARE": 7,
+     "AUTO": 7,
+     "CHEMICALS": 5,
+     "METALS": 5,
+     "SERVICES": 5,
+     "CONSUMER": 4,
+     "TELECOM": 4,
+     "IT": 3,
+     "REALTY": 1,
+     "ENERGY": 1
+    },
+    "symbols_without_sector": 10,
+    "entries_without_sector": 11
+   }
+  },
+  "2026": {
+   "sessions": 196,
+   "first": "2026-01-01",
+   "last": "2026-10-16",
+   "stats": {
+    "eligible": {
+     "median": 585.5,
+     "p5": 471.0,
+     "p95": 626.0,
+     "min": 460.0,
+     "max": 635.0,
+     "mean": 561.8724489795918
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 1.0,
+     "min": 0.0,
+     "max": 2.0,
+     "mean": 0.14795918367346939
+    },
+    "gap_dropped": {
+     "median": 21.0,
+     "p5": 13.75,
+     "p95": 31.0,
+     "min": 11.0,
+     "max": 36.0,
+     "mean": 21.112244897959183
+    },
+    "valid": {
+     "median": 564.5,
+     "p5": 456.0,
+     "p95": 597.0,
+     "min": 445.0,
+     "max": 604.0,
+     "mean": 540.6122448979592
+    },
+    "candidates": {
+     "median": 117.0,
+     "p5": 28.5,
+     "p95": 163.5,
+     "min": 10.0,
+     "max": 186.0,
+     "mean": 107.57142857142857
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 25.0,
+     "p95": 25.0,
+     "min": 10.0,
+     "max": 25.0,
+     "mean": 24.744897959183675
+    },
+    "exact_one": {
+     "median": 27.0,
+     "p5": 3.0,
+     "p95": 50.25,
+     "min": 0.0,
+     "max": 70.0,
+     "mean": 26.081632653061224
+    },
+    "split_in": {
+     "median": 38.0,
+     "p5": 29.0,
+     "p95": 42.0,
+     "min": 24.0,
+     "max": 44.0,
+     "mean": 37.357142857142854
+    },
+    "unadj_in": {
+     "median": 16.0,
+     "p5": 11.0,
+     "p95": 21.0,
+     "min": 10.0,
+     "max": 22.0,
+     "mean": 15.974489795918368
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 8.0,
+     "max": 12.0,
+     "mean": 11.693877551020408
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 9.0,
+     "max": 12.0,
+     "mean": 11.704081632653061
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 1.25,
+     "min": 0.0,
+     "max": 4.0,
+     "mean": 0.21428571428571427
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 53.33333333333332,
+     "max": 79.99999999999999,
+     "mean": 77.95918367346938
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 59.999999999999986,
+     "max": 79.99999999999999,
+     "mean": 78.02721088435374
+    },
+    "t_elig": {
+     "median": 3.521126499865204,
+     "p5": 3.1565110250376165,
+     "p95": 4.421308975084685,
+     "min": 3.05298459995538,
+     "max": 6.008233199827373,
+     "mean": 3.6644816066575596
+    },
+    "t_score": {
+     "median": 2.307367700152099,
+     "p5": 1.9662759753409773,
+     "p95": 2.5041942500974983,
+     "min": 1.7747371001169086,
+     "max": 2.668588399887085,
+     "mean": 2.2525829872453813
+    }
+   },
+   "sessions_with_any_candidate": 196,
+   "sessions_with_cap_candidates": 195,
+   "sessions_full": 166,
+   "share_sessions_full": 0.8469387755102041,
+   "sessions_full_capped": 158,
+   "sessions_with_sector_block": 22,
+   "sector_blocks_total": 42,
+   "entries": 59,
+   "entries_per_month": 6.321428571428571,
+   "entries_capped": 58,
+   "entries_capped_per_month": 6.2142857142857135,
+   "concentration": {
+    "entries": 59,
+    "distinct_symbols": 51,
+    "top_symbol": "AETHER",
+    "top_symbol_share": 0.03389830508474576,
+    "top10_share": 0.3050847457627119,
+    "sector_entries": {
+     "UNKNOWN": 15,
+     "INDUSTRIALS": 10,
+     "FINANCIALS": 9,
+     "ENERGY": 8,
+     "HEALTHCARE": 7,
+     "CHEMICALS": 4,
+     "AUTO": 2,
+     "SERVICES": 2,
+     "CONSUMER": 1,
+     "METALS": 1
+    },
+    "symbols_without_sector": 15,
+    "entries_without_sector": 15
+   },
+   "concentration_capped": {
+    "entries": 58,
+    "distinct_symbols": 47,
+    "top_symbol": "AETHER",
+    "top_symbol_share": 0.05172413793103448,
+    "top10_share": 0.3620689655172414,
+    "sector_entries": {
+     "HEALTHCARE": 9,
+     "INDUSTRIALS": 9,
+     "FINANCIALS": 8,
+     "UNKNOWN": 7,
+     "CHEMICALS": 6,
+     "ENERGY": 6,
+     "AUTO": 5,
+     "SERVICES": 4,
+     "CONSUMER": 1,
+     "METALS": 1,
+     "REALTY": 1,
+     "TELECOM": 1
+    },
+    "symbols_without_sector": 7,
+    "entries_without_sector": 7
+   }
+  },
+  "2016-2026": {
+   "sessions": 2674,
+   "first": "2016-01-01",
+   "last": "2026-10-16",
+   "stats": {
+    "eligible": {
+     "median": 275.0,
+     "p5": 144.0,
+     "p95": 593.0,
+     "min": 123.0,
+     "max": 635.0,
+     "mean": 316.86163051608077
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 1.0,
+     "min": 0.0,
+     "max": 3.0,
+     "mean": 0.1581899775617053
+    },
+    "gap_dropped": {
+     "median": 5.0,
+     "p5": 0.0,
+     "p95": 29.0,
+     "min": 0.0,
+     "max": 38.0,
+     "mean": 9.775991024682124
+    },
+    "valid": {
+     "median": 267.0,
+     "p5": 143.0,
+     "p95": 565.0,
+     "min": 121.0,
+     "max": 604.0,
+     "mean": 306.92744951383696
+    },
+    "candidates": {
+     "median": 59.0,
+     "p5": 9.0,
+     "p95": 208.0,
+     "min": 0.0,
+     "max": 343.0,
+     "mean": 76.69932685115931
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 9.0,
+     "p95": 25.0,
+     "min": 0.0,
+     "max": 25.0,
+     "mean": 22.82198952879581
+    },
+    "exact_one": {
+     "median": 12.0,
+     "p5": 0.0,
+     "p95": 58.0,
+     "min": 0.0,
+     "max": 135.0,
+     "mean": 18.56282722513089
+    },
+    "split_in": {
+     "median": 16.0,
+     "p5": 5.0,
+     "p95": 38.0,
+     "min": 3.0,
+     "max": 44.0,
+     "mean": 17.927449513836947
+    },
+    "unadj_in": {
+     "median": 13.0,
+     "p5": 7.0,
+     "p95": 22.0,
+     "min": 4.0,
+     "max": 33.0,
+     "mean": 14.071428571428571
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 2.0,
+     "max": 12.0,
+     "mean": 11.670531039640988
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 3.0,
+     "max": 12.0,
+     "mean": 11.650710545998503
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 3.0,
+     "min": 0.0,
+     "max": 16.0,
+     "mean": 0.36200448765893795
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 13.33333333333333,
+     "max": 79.99999999999999,
+     "mean": 77.80354026427324
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 19.999999999999996,
+     "max": 79.99999999999999,
+     "mean": 77.67140363999002
+    },
+    "t_elig": {
+     "median": 3.766276150010526,
+     "p5": 1.9288403851911426,
+     "p95": 5.12534775994718,
+     "min": 1.770600900053978,
+     "max": 17.92903620004654,
+     "mean": 3.5075835591971334
+    },
+    "t_score": {
+     "median": 1.0940212500281632,
+     "p5": 0.5561992050847039,
+     "p95": 2.422163180122152,
+     "min": 0.41843640012666583,
+     "max": 3.6857874002307653,
+     "mean": 1.2727530449886564
+    }
+   },
+   "sessions_with_any_candidate": 2662,
+   "sessions_with_cap_candidates": 2497,
+   "sessions_full": 2266,
+   "share_sessions_full": 0.8474195961106956,
+   "sessions_full_capped": 2151,
+   "sessions_with_sector_block": 308,
+   "sector_blocks_total": 968,
+   "entries": 786,
+   "entries_per_month": 6.172774869109948,
+   "entries_capped": 784,
+   "entries_capped_per_month": 6.157068062827225,
+   "concentration": {
+    "entries": 786,
+    "distinct_symbols": 339,
+    "top_symbol": "ADANIENT",
+    "top_symbol_share": 0.017811704834605598,
+    "top10_share": 0.13231552162849872,
+    "sector_entries": {
+     "UNKNOWN": 178,
+     "FINANCIALS": 122,
+     "INDUSTRIALS": 85,
+     "CONSUMER": 75,
+     "HEALTHCARE": 72,
+     "ENERGY": 56,
+     "METALS": 41,
+     "AUTO": 35,
+     "SERVICES": 30,
+     "IT": 29,
+     "CHEMICALS": 26,
+     "REALTY": 23,
+     "TELECOM": 11,
+     "DIVERSIFIED": 2,
+     "TEXTILES": 1
+    },
+    "symbols_without_sector": 112,
+    "entries_without_sector": 178
+   },
+   "concentration_capped": {
+    "entries": 784,
+    "distinct_symbols": 311,
+    "top_symbol": "ADANIENT",
+    "top_symbol_share": 0.01913265306122449,
+    "top10_share": 0.13903061224489796,
+    "sector_entries": {
+     "UNKNOWN": 108,
+     "FINANCIALS": 102,
+     "CONSUMER": 84,
+     "INDUSTRIALS": 77,
+     "HEALTHCARE": 71,
+     "AUTO": 59,
+     "ENERGY": 53,
+     "METALS": 49,
+     "SERVICES": 45,
+     "CHEMICALS": 42,
+     "IT": 36,
+     "REALTY": 31,
+     "TELECOM": 22,
+     "DIVERSIFIED": 3,
+     "TEXTILES": 2
+    },
+    "symbols_without_sector": 78,
+    "entries_without_sector": 108
+   }
+  },
+  "ALL (from first session)": {
+   "sessions": 2710,
+   "first": "2015-11-09",
+   "last": "2026-10-16",
+   "stats": {
+    "eligible": {
+     "median": 272.0,
+     "p5": 140.0,
+     "p95": 593.0,
+     "min": 123.0,
+     "max": 635.0,
+     "mean": 314.45756457564573
+    },
+    "short": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 2.0,
+     "min": 0.0,
+     "max": 4.0,
+     "mean": 0.1952029520295203
+    },
+    "gap_dropped": {
+     "median": 5.0,
+     "p5": 0.0,
+     "p95": 29.0,
+     "min": 0.0,
+     "max": 38.0,
+     "mean": 9.646125461254613
+    },
+    "valid": {
+     "median": 265.0,
+     "p5": 139.45000000000002,
+     "p95": 565.0,
+     "min": 121.0,
+     "max": 604.0,
+     "mean": 304.61623616236164
+    },
+    "candidates": {
+     "median": 58.0,
+     "p5": 9.0,
+     "p95": 207.0,
+     "min": 0.0,
+     "max": 343.0,
+     "mean": 75.8830258302583
+    },
+    "proposed": {
+     "median": 25.0,
+     "p5": 9.0,
+     "p95": 25.0,
+     "min": 0.0,
+     "max": 25.0,
+     "mean": 22.708856088560886
+    },
+    "exact_one": {
+     "median": 12.0,
+     "p5": 0.0,
+     "p95": 57.0,
+     "min": 0.0,
+     "max": 135.0,
+     "mean": 18.35350553505535
+    },
+    "split_in": {
+     "median": 16.0,
+     "p5": 5.0,
+     "p95": 37.0,
+     "min": 3.0,
+     "max": 44.0,
+     "mean": 17.850922509225093
+    },
+    "unadj_in": {
+     "median": 13.0,
+     "p5": 7.0,
+     "p95": 22.0,
+     "min": 4.0,
+     "max": 33.0,
+     "mean": 13.968265682656826
+    },
+    "adjust_error": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 0.0,
+     "min": 0.0,
+     "max": 0.0,
+     "mean": 0.0
+    },
+    "occupancy": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 0.0,
+     "max": 12.0,
+     "mean": 11.668634686346863
+    },
+    "occupancy_capped": {
+     "median": 12.0,
+     "p5": 10.0,
+     "p95": 12.0,
+     "min": 0.0,
+     "max": 12.0,
+     "mean": 11.645756457564575
+    },
+    "sector_blocks": {
+     "median": 0.0,
+     "p5": 0.0,
+     "p95": 3.0,
+     "min": 0.0,
+     "max": 16.0,
+     "mean": 0.36309963099631
+    },
+    "invested_pct": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 0.0,
+     "max": 79.99999999999999,
+     "mean": 77.79089790897908
+    },
+    "invested_pct_capped": {
+     "median": 79.99999999999999,
+     "p5": 66.66666666666666,
+     "p95": 79.99999999999999,
+     "min": 0.0,
+     "max": 79.99999999999999,
+     "mean": 77.63837638376381
+    },
+    "t_elig": {
+     "median": 3.742998949950561,
+     "p5": 1.9262448549503461,
+     "p95": 5.124331919918768,
+     "min": 1.770600900053978,
+     "max": 41.97633949993178,
+     "mean": 3.5047217325068583
+    },
+    "t_score": {
+     "median": 1.0762159498408437,
+     "p5": 0.5348467396572232,
+     "p95": 2.4202065448276695,
+     "min": 0.41843640012666583,
+     "max": 3.6857874002307653,
+     "mean": 1.2629635100739207
+    }
+   },
+   "sessions_with_any_candidate": 2698,
+   "sessions_with_cap_candidates": 2517,
+   "sessions_full": 2298,
+   "share_sessions_full": 0.847970479704797,
+   "sessions_full_capped": 2179,
+   "sessions_with_sector_block": 316,
+   "sector_blocks_total": 984,
+   "entries": 798,
+   "entries_per_month": 6.183763837638377,
+   "entries_capped": 796,
+   "entries_capped_per_month": 6.168265682656827,
+   "concentration": {
+    "entries": 798,
+    "distinct_symbols": 341,
+    "top_symbol": "ADANIENT",
+    "top_symbol_share": 0.017543859649122806,
+    "top10_share": 0.13032581453634084,
+    "sector_entries": {
+     "UNKNOWN": 182,
+     "FINANCIALS": 124,
+     "INDUSTRIALS": 85,
+     "CONSUMER": 76,
+     "HEALTHCARE": 74,
+     "ENERGY": 56,
+     "METALS": 41,
+     "AUTO": 36,
+     "IT": 31,
+     "SERVICES": 30,
+     "CHEMICALS": 26,
+     "REALTY": 23,
+     "TELECOM": 11,
+     "DIVERSIFIED": 2,
+     "TEXTILES": 1
+    },
+    "symbols_without_sector": 114,
+    "entries_without_sector": 182
+   },
+   "concentration_capped": {
+    "entries": 796,
+    "distinct_symbols": 313,
+    "top_symbol": "ADANIENT",
+    "top_symbol_share": 0.018844221105527637,
+    "top10_share": 0.13819095477386933,
+    "sector_entries": {
+     "UNKNOWN": 110,
+     "FINANCIALS": 104,
+     "CONSUMER": 86,
+     "INDUSTRIALS": 78,
+     "HEALTHCARE": 73,
+     "AUTO": 60,
+     "ENERGY": 53,
+     "METALS": 49,
+     "SERVICES": 45,
+     "CHEMICALS": 42,
+     "IT": 38,
+     "REALTY": 31,
+     "TELECOM": 22,
+     "DIVERSIFIED": 3,
+     "TEXTILES": 2
+    },
+    "symbols_without_sector": 80,
+    "entries_without_sector": 110
+   }
+  }
+ },
+ "distinct": {
+  "eligible_ever": 1388,
+  "short_ever": 14,
+  "valid_ever": 1346,
+  "gap_dropped_ever": 284,
+  "split_in_ever": 274,
+  "unadj_in_ever": 184,
+  "adjust_error_ever": 0,
+  "candidate_ever": 1223,
+  "stale_ever": 0
+ },
+ "unadjusted_action_names_by_type_session_counts": {
+  "MERGER": 2034,
+  "DEMERGER": 3287,
+  "OTHER": 22731,
+  "RIGHTS": 9853
+ },
+ "nearness_distribution": {
+  "candidate_sessions_total": 205643,
+  "exactly_1_00": 49738,
+  "bins": {
+   "0.95 to <0.96": 30324,
+   "0.96 to <0.97": 31528,
+   "0.97 to <0.98": 32491,
+   "0.98 to <0.99": 32444,
+   "0.99 to <1.00": 29118
+  }
+ },
+ "occupancy_model": {
+  "entries_without_sector_cap": 798,
+  "entries_with_sector_cap": 796,
+  "unrealised_signals_on_last_session": 1,
+  "entries_still_open_at_end": 11
+ },
+ "entries": [
+  {
+   "symbol": "AUROPHARMA",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COFORGE",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "RAJESHEXPO",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MARUTI",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 0.9877497012122246
+  },
+  {
+   "symbol": "DISHMAN",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 0.9641555285540705
+  },
+  {
+   "symbol": "MINDTREE",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 0.9608742751545276
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 0.9601015443198645
+  },
+  {
+   "symbol": "GODREJCP",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 0.959706049417779
+  },
+  {
+   "symbol": "HDFCBANK",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 0.9547635059403721
+  },
+  {
+   "symbol": "IDBI",
+   "signal": "2015-11-09",
+   "entry": "2015-11-10",
+   "planned_exit": "2016-01-08",
+   "nearness": 0.9512058328659562
+  },
+  {
+   "symbol": "TORNTPHARM",
+   "signal": "2015-11-11",
+   "entry": "2015-11-13",
+   "planned_exit": "2016-01-12",
+   "nearness": 0.9571515151515151
+  },
+  {
+   "symbol": "STAR",
+   "signal": "2015-11-13",
+   "entry": "2015-11-16",
+   "planned_exit": "2016-01-13",
+   "nearness": 0.9519822156354205
+  },
+  {
+   "symbol": "ABIRLANUVO",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ESSAROIL",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "NILKAMAL",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TIDEWATER",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TORNTPOWER",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "IGL",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 0.9953320415712522
+  },
+  {
+   "symbol": "RAJESHEXPO",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 0.9898152700709419
+  },
+  {
+   "symbol": "MARICO",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 0.9857451403887688
+  },
+  {
+   "symbol": "PETRONET",
+   "signal": "2016-01-08",
+   "entry": "2016-01-11",
+   "planned_exit": "2016-03-09",
+   "nearness": 0.9845264727815064
+  },
+  {
+   "symbol": "JETAIRWAYS",
+   "signal": "2016-01-12",
+   "entry": "2016-01-13",
+   "planned_exit": "2016-03-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "RELIANCE",
+   "signal": "2016-01-13",
+   "entry": "2016-01-14",
+   "planned_exit": "2016-03-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "VAKRANGEE",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 0.9972498413370002
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 0.9953893442622952
+  },
+  {
+   "symbol": "JSWSTEEL",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 0.9947734457323498
+  },
+  {
+   "symbol": "HEROMOTOCO",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 0.9931766489764974
+  },
+  {
+   "symbol": "MARICO",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 0.9902550279908771
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 0.9590122940724208
+  },
+  {
+   "symbol": "INDUSINDBK",
+   "signal": "2016-03-09",
+   "entry": "2016-03-10",
+   "planned_exit": "2016-05-12",
+   "nearness": 0.9557635266441649
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2016-03-10",
+   "entry": "2016-03-11",
+   "planned_exit": "2016-05-13",
+   "nearness": 0.9690783060760316
+  },
+  {
+   "symbol": "PIDILITIND",
+   "signal": "2016-03-11",
+   "entry": "2016-03-14",
+   "planned_exit": "2016-05-16",
+   "nearness": 0.9504600141542817
+  },
+  {
+   "symbol": "BALRAMCHIN",
+   "signal": "2016-03-18",
+   "entry": "2016-03-21",
+   "planned_exit": "2016-05-23",
+   "nearness": 0.9738824711200402
+  },
+  {
+   "symbol": "RELIANCE",
+   "signal": "2016-03-18",
+   "entry": "2016-03-21",
+   "planned_exit": "2016-05-23",
+   "nearness": 0.9538932999024935
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "EMBDL",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODREJCP",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HDFCBANK",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INDUSINDBK",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PETRONET",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SHRIRAMFIN",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "UPL",
+   "signal": "2016-05-12",
+   "entry": "2016-05-13",
+   "planned_exit": "2016-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2016-05-13",
+   "entry": "2016-05-16",
+   "planned_exit": "2016-07-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFIN",
+   "signal": "2016-05-16",
+   "entry": "2016-05-17",
+   "planned_exit": "2016-07-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BIOCON",
+   "signal": "2016-05-23",
+   "entry": "2016-05-24",
+   "planned_exit": "2016-07-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HAVELLS",
+   "signal": "2016-05-23",
+   "entry": "2016-05-24",
+   "planned_exit": "2016-07-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMBUJACEM",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJFINSV",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BPCL",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HDFCBANK",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HDIL",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HEROMOTOCO",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HINDALCO",
+   "signal": "2016-07-11",
+   "entry": "2016-07-12",
+   "planned_exit": "2016-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACC",
+   "signal": "2016-07-12",
+   "entry": "2016-07-13",
+   "planned_exit": "2016-09-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ESCORTS",
+   "signal": "2016-07-13",
+   "entry": "2016-07-14",
+   "planned_exit": "2016-09-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJ-AUTO",
+   "signal": "2016-07-20",
+   "entry": "2016-07-21",
+   "planned_exit": "2016-09-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GRASIM",
+   "signal": "2016-07-20",
+   "entry": "2016-07-21",
+   "planned_exit": "2016-09-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALBK",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOTYRE",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APTECHT",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJFINSV",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CANBK",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DHFL",
+   "signal": "2016-09-08",
+   "entry": "2016-09-09",
+   "planned_exit": "2016-11-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HCC",
+   "signal": "2016-09-09",
+   "entry": "2016-09-12",
+   "planned_exit": "2016-11-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2016-09-12",
+   "entry": "2016-09-14",
+   "planned_exit": "2016-11-11",
+   "nearness": 0.9921317474839889
+  },
+  {
+   "symbol": "BIOCON",
+   "signal": "2016-09-20",
+   "entry": "2016-09-21",
+   "planned_exit": "2016-11-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DELTACORP",
+   "signal": "2016-09-20",
+   "entry": "2016-09-21",
+   "planned_exit": "2016-11-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GAIL",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "VAKRANGEE",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 0.9994247363374881
+  },
+  {
+   "symbol": "VEDL",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 0.9899931771662498
+  },
+  {
+   "symbol": "CAIRN",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 0.9895982051805017
+  },
+  {
+   "symbol": "IGL",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 0.9841835854373957
+  },
+  {
+   "symbol": "ICICIBANK",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 0.9730337078651685
+  },
+  {
+   "symbol": "INDUSINDBK",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 0.972666071863087
+  },
+  {
+   "symbol": "SBIN",
+   "signal": "2016-11-09",
+   "entry": "2016-11-10",
+   "planned_exit": "2017-01-06",
+   "nearness": 0.9688839202534003
+  },
+  {
+   "symbol": "HINDALCO",
+   "signal": "2016-11-10",
+   "entry": "2016-11-11",
+   "planned_exit": "2017-01-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2016-11-11",
+   "entry": "2016-11-15",
+   "planned_exit": "2017-01-10",
+   "nearness": 0.992093419292057
+  },
+  {
+   "symbol": "POWERGRID",
+   "signal": "2016-11-21",
+   "entry": "2016-11-22",
+   "planned_exit": "2017-01-17",
+   "nearness": 0.9593053395541732
+  },
+  {
+   "symbol": "ENGINERSIN",
+   "signal": "2016-11-21",
+   "entry": "2016-11-22",
+   "planned_exit": "2017-01-17",
+   "nearness": 0.9534555712270802
+  },
+  {
+   "symbol": "GAIL",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.9850862548692265
+  },
+  {
+   "symbol": "JUBILANT",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.9840748760215129
+  },
+  {
+   "symbol": "NTPC",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.9832134292565946
+  },
+  {
+   "symbol": "NMDC",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.9826526924466932
+  },
+  {
+   "symbol": "IOC",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.9824138420082258
+  },
+  {
+   "symbol": "IGL",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.9751690617075233
+  },
+  {
+   "symbol": "DATAMATICS",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.9744039270687237
+  },
+  {
+   "symbol": "ONGC",
+   "signal": "2017-01-06",
+   "entry": "2017-01-09",
+   "planned_exit": "2017-03-08",
+   "nearness": 0.973798076923077
+  },
+  {
+   "symbol": "BIOCON",
+   "signal": "2017-01-09",
+   "entry": "2017-01-10",
+   "planned_exit": "2017-03-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BEL",
+   "signal": "2017-01-10",
+   "entry": "2017-01-11",
+   "planned_exit": "2017-03-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPOWER",
+   "signal": "2017-01-17",
+   "entry": "2017-01-18",
+   "planned_exit": "2017-03-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KSCL",
+   "signal": "2017-01-17",
+   "entry": "2017-01-18",
+   "planned_exit": "2017-03-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "LTF",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "RAYMOND",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "YESBANK",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ESCORTS",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 0.9987867758568395
+  },
+  {
+   "symbol": "GMRAIRPORT",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 0.9939024390243903
+  },
+  {
+   "symbol": "SUNTV",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 0.9932732409525091
+  },
+  {
+   "symbol": "INDUSINDBK",
+   "signal": "2017-03-08",
+   "entry": "2017-03-09",
+   "planned_exit": "2017-05-10",
+   "nearness": 0.9900055938840201
+  },
+  {
+   "symbol": "DCBBANK",
+   "signal": "2017-03-09",
+   "entry": "2017-03-10",
+   "planned_exit": "2017-05-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JUBILANT",
+   "signal": "2017-03-10",
+   "entry": "2017-03-14",
+   "planned_exit": "2017-05-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2017-03-20",
+   "entry": "2017-03-21",
+   "planned_exit": "2017-05-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHEL",
+   "signal": "2017-03-20",
+   "entry": "2017-03-21",
+   "planned_exit": "2017-05-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BEL",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BRITANNIA",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CAPF",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CESC",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DHANI",
+   "signal": "2017-05-10",
+   "entry": "2017-05-11",
+   "planned_exit": "2017-07-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2017-05-11",
+   "entry": "2017-05-12",
+   "planned_exit": "2017-07-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALBK",
+   "signal": "2017-05-12",
+   "entry": "2017-05-15",
+   "planned_exit": "2017-07-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MIRZAINT",
+   "signal": "2017-05-19",
+   "entry": "2017-05-22",
+   "planned_exit": "2017-07-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MOTHERSON",
+   "signal": "2017-05-19",
+   "entry": "2017-05-22",
+   "planned_exit": "2017-07-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODREJIND",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JSWSTEEL",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MEP",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "RELIANCE",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SHAKTIPUMP",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TVSMOTOR",
+   "signal": "2017-07-07",
+   "entry": "2017-07-10",
+   "planned_exit": "2017-09-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BEML",
+   "signal": "2017-07-10",
+   "entry": "2017-07-11",
+   "planned_exit": "2017-09-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2017-07-11",
+   "entry": "2017-07-12",
+   "planned_exit": "2017-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACC",
+   "signal": "2017-07-18",
+   "entry": "2017-07-19",
+   "planned_exit": "2017-09-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2017-07-18",
+   "entry": "2017-07-19",
+   "planned_exit": "2017-09-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMBUJACEM",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BATAINDIA",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFIN",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOMDYEING",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CONCOR",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DHANI",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DHFL",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "FCONSUMER",
+   "signal": "2017-09-06",
+   "entry": "2017-09-07",
+   "planned_exit": "2017-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2017-09-07",
+   "entry": "2017-09-08",
+   "planned_exit": "2017-11-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2017-09-08",
+   "entry": "2017-09-11",
+   "planned_exit": "2017-11-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BBTC",
+   "signal": "2017-09-15",
+   "entry": "2017-09-18",
+   "planned_exit": "2017-11-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BRITANNIA",
+   "signal": "2017-09-15",
+   "entry": "2017-09-18",
+   "planned_exit": "2017-11-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "8KMILES",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BALKRISIND",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKINDIA",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFORG",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHOLAFIN",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CIPLA",
+   "signal": "2017-11-06",
+   "entry": "2017-11-07",
+   "planned_exit": "2018-01-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2017-11-07",
+   "entry": "2017-11-08",
+   "planned_exit": "2018-01-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2017-11-08",
+   "entry": "2017-11-09",
+   "planned_exit": "2018-01-05",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JUBLFOOD",
+   "signal": "2017-11-15",
+   "entry": "2017-11-16",
+   "planned_exit": "2018-01-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PAGEIND",
+   "signal": "2017-11-15",
+   "entry": "2017-11-16",
+   "planned_exit": "2018-01-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJELEC",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFORG",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BIOCON",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DABUR",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DREDGECORP",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "FCL",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GHCL",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GRAPHITE",
+   "signal": "2018-01-03",
+   "entry": "2018-01-04",
+   "planned_exit": "2018-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BFUTILITIE",
+   "signal": "2018-01-04",
+   "entry": "2018-01-05",
+   "planned_exit": "2018-03-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2018-01-05",
+   "entry": "2018-01-08",
+   "planned_exit": "2018-03-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CAPF",
+   "signal": "2018-01-12",
+   "entry": "2018-01-15",
+   "planned_exit": "2018-03-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CGPOWER",
+   "signal": "2018-01-12",
+   "entry": "2018-01-15",
+   "planned_exit": "2018-03-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJELEC",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 0.988339222614841
+  },
+  {
+   "symbol": "BIOCON",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 0.9824452384651234
+  },
+  {
+   "symbol": "TECHM",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 0.9784417848933977
+  },
+  {
+   "symbol": "IDBI",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 0.9757826343768456
+  },
+  {
+   "symbol": "CHOLAFIN",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 0.9756454301166707
+  },
+  {
+   "symbol": "KPIT",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 0.9751300022609088
+  },
+  {
+   "symbol": "GODREJCP",
+   "signal": "2018-03-06",
+   "entry": "2018-03-07",
+   "planned_exit": "2018-05-07",
+   "nearness": 0.9746331424481032
+  },
+  {
+   "symbol": "IPCALAB",
+   "signal": "2018-03-07",
+   "entry": "2018-03-08",
+   "planned_exit": "2018-05-08",
+   "nearness": 0.9802535703876419
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2018-03-08",
+   "entry": "2018-03-09",
+   "planned_exit": "2018-05-09",
+   "nearness": 0.9754174397031541
+  },
+  {
+   "symbol": "COFORGE",
+   "signal": "2018-03-15",
+   "entry": "2018-03-16",
+   "planned_exit": "2018-05-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFIN",
+   "signal": "2018-03-15",
+   "entry": "2018-03-16",
+   "planned_exit": "2018-05-16",
+   "nearness": 0.9968131971131314
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOMDYEING",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIVISLAB",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "EXIDEIND",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JUBLFOOD",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "M&M",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "RAYMOND",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 0.998851995761215
+  },
+  {
+   "symbol": "INDUSINDBK",
+   "signal": "2018-05-07",
+   "entry": "2018-05-08",
+   "planned_exit": "2018-07-03",
+   "nearness": 0.9956796628029505
+  },
+  {
+   "symbol": "DHANI",
+   "signal": "2018-05-08",
+   "entry": "2018-05-09",
+   "planned_exit": "2018-07-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CYIENT",
+   "signal": "2018-05-09",
+   "entry": "2018-05-10",
+   "planned_exit": "2018-07-05",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2018-05-16",
+   "entry": "2018-05-17",
+   "planned_exit": "2018-07-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFIN",
+   "signal": "2018-05-16",
+   "entry": "2018-05-17",
+   "planned_exit": "2018-07-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODREJCP",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GRAPHITE",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HEXAWARE",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HINDUNILVR",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JUBLFOOD",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "RBLBANK",
+   "signal": "2018-07-03",
+   "entry": "2018-07-04",
+   "planned_exit": "2018-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BRITANNIA",
+   "signal": "2018-07-04",
+   "entry": "2018-07-05",
+   "planned_exit": "2018-09-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TCS",
+   "signal": "2018-07-05",
+   "entry": "2018-07-06",
+   "planned_exit": "2018-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJFINSV",
+   "signal": "2018-07-12",
+   "entry": "2018-07-13",
+   "planned_exit": "2018-09-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2018-07-12",
+   "entry": "2018-07-13",
+   "planned_exit": "2018-09-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CIPLA",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COFORGE",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIVISLAB",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GLENMARK",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODREJCP",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HAVELLS",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ITC",
+   "signal": "2018-08-31",
+   "entry": "2018-09-03",
+   "planned_exit": "2018-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DHFL",
+   "signal": "2018-09-03",
+   "entry": "2018-09-04",
+   "planned_exit": "2018-11-05",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MINDTREE",
+   "signal": "2018-09-04",
+   "entry": "2018-09-05",
+   "planned_exit": "2018-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HCLTECH",
+   "signal": "2018-09-11",
+   "entry": "2018-09-12",
+   "planned_exit": "2018-11-14",
+   "nearness": 0.9966017634092579
+  },
+  {
+   "symbol": "MPHASIS",
+   "signal": "2018-09-11",
+   "entry": "2018-09-12",
+   "planned_exit": "2018-11-14",
+   "nearness": 0.9924734996256454
+  },
+  {
+   "symbol": "DIVISLAB",
+   "signal": "2018-11-02",
+   "entry": "2018-11-05",
+   "planned_exit": "2019-01-03",
+   "nearness": 0.9958154827139584
+  },
+  {
+   "symbol": "ADANIPOWER",
+   "signal": "2018-11-02",
+   "entry": "2018-11-05",
+   "planned_exit": "2019-01-03",
+   "nearness": 0.9930278884462151
+  },
+  {
+   "symbol": "ICICIBANK",
+   "signal": "2018-11-02",
+   "entry": "2018-11-05",
+   "planned_exit": "2019-01-03",
+   "nearness": 0.978332873309412
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "signal": "2018-11-02",
+   "entry": "2018-11-05",
+   "planned_exit": "2019-01-03",
+   "nearness": 0.9757133046138478
+  },
+  {
+   "symbol": "WIPRO",
+   "signal": "2018-11-05",
+   "entry": "2018-11-06",
+   "planned_exit": "2019-01-04",
+   "nearness": 0.9668854415274464
+  },
+  {
+   "symbol": "GAIL",
+   "signal": "2018-11-06",
+   "entry": "2018-11-07",
+   "planned_exit": "2019-01-07",
+   "nearness": 0.9526409344845098
+  },
+  {
+   "symbol": "GLENMARK",
+   "signal": "2018-11-07",
+   "entry": "2018-11-09",
+   "planned_exit": "2019-01-08",
+   "nearness": 0.9613606817853532
+  },
+  {
+   "symbol": "LT",
+   "signal": "2018-11-13",
+   "entry": "2018-11-14",
+   "planned_exit": "2019-01-11",
+   "nearness": 0.9556883759274526
+  },
+  {
+   "symbol": "HINDUNILVR",
+   "signal": "2018-11-14",
+   "entry": "2018-11-15",
+   "planned_exit": "2019-01-14",
+   "nearness": 0.957150030686827
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2018-11-15",
+   "entry": "2018-11-16",
+   "planned_exit": "2019-01-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MUTHOOTFIN",
+   "signal": "2018-11-15",
+   "entry": "2018-11-16",
+   "planned_exit": "2019-01-15",
+   "nearness": 0.9535026001835424
+  },
+  {
+   "symbol": "DRREDDY",
+   "signal": "2018-11-19",
+   "entry": "2018-11-20",
+   "planned_exit": "2019-01-17",
+   "nearness": 0.9605318138651472
+  },
+  {
+   "symbol": "TORNTPHARM",
+   "signal": "2019-01-03",
+   "entry": "2019-01-04",
+   "planned_exit": "2019-03-01",
+   "nearness": 0.9840045779061528
+  },
+  {
+   "symbol": "ICICIBANK",
+   "signal": "2019-01-03",
+   "entry": "2019-01-04",
+   "planned_exit": "2019-03-01",
+   "nearness": 0.9817567567567568
+  },
+  {
+   "symbol": "BATAINDIA",
+   "signal": "2019-01-03",
+   "entry": "2019-01-04",
+   "planned_exit": "2019-03-01",
+   "nearness": 0.979064039408867
+  },
+  {
+   "symbol": "COLPAL",
+   "signal": "2019-01-03",
+   "entry": "2019-01-04",
+   "planned_exit": "2019-03-01",
+   "nearness": 0.9781921030106807
+  },
+  {
+   "symbol": "PVRINOX",
+   "signal": "2019-01-04",
+   "entry": "2019-01-07",
+   "planned_exit": "2019-03-05",
+   "nearness": 0.980461811722913
+  },
+  {
+   "symbol": "ABFRL",
+   "signal": "2019-01-07",
+   "entry": "2019-01-08",
+   "planned_exit": "2019-03-06",
+   "nearness": 0.9871336669049321
+  },
+  {
+   "symbol": "AXISBANK",
+   "signal": "2019-01-08",
+   "entry": "2019-01-09",
+   "planned_exit": "2019-03-07",
+   "nearness": 0.9861374138322855
+  },
+  {
+   "symbol": "PRAJIND",
+   "signal": "2019-01-11",
+   "entry": "2019-01-14",
+   "planned_exit": "2019-03-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "NAUKRI",
+   "signal": "2019-01-14",
+   "entry": "2019-01-15",
+   "planned_exit": "2019-03-13",
+   "nearness": 0.9830102178407694
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2019-01-15",
+   "entry": "2019-01-16",
+   "planned_exit": "2019-03-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MUTHOOTFIN",
+   "signal": "2019-01-15",
+   "entry": "2019-01-16",
+   "planned_exit": "2019-03-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "WIPRO",
+   "signal": "2019-01-17",
+   "entry": "2019-01-18",
+   "planned_exit": "2019-03-18",
+   "nearness": 0.9844437921925447
+  },
+  {
+   "symbol": "BALRAMCHIN",
+   "signal": "2019-03-01",
+   "entry": "2019-03-05",
+   "planned_exit": "2019-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DHAMPURSUG",
+   "signal": "2019-03-01",
+   "entry": "2019-03-05",
+   "planned_exit": "2019-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ICICIGI",
+   "signal": "2019-03-01",
+   "entry": "2019-03-05",
+   "planned_exit": "2019-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PFC",
+   "signal": "2019-03-01",
+   "entry": "2019-03-05",
+   "planned_exit": "2019-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "UPL",
+   "signal": "2019-03-05",
+   "entry": "2019-03-06",
+   "planned_exit": "2019-05-08",
+   "nearness": 0.9976071103008204
+  },
+  {
+   "symbol": "BATAINDIA",
+   "signal": "2019-03-06",
+   "entry": "2019-03-07",
+   "planned_exit": "2019-05-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALBK",
+   "signal": "2019-03-07",
+   "entry": "2019-03-08",
+   "planned_exit": "2019-05-10",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AXISBANK",
+   "signal": "2019-03-12",
+   "entry": "2019-03-13",
+   "planned_exit": "2019-05-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODFRYPHLP",
+   "signal": "2019-03-13",
+   "entry": "2019-03-14",
+   "planned_exit": "2019-05-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JUSTDIAL",
+   "signal": "2019-03-14",
+   "entry": "2019-03-15",
+   "planned_exit": "2019-05-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MUTHOOTFIN",
+   "signal": "2019-03-14",
+   "entry": "2019-03-15",
+   "planned_exit": "2019-05-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HDFCBANK",
+   "signal": "2019-03-18",
+   "entry": "2019-03-19",
+   "planned_exit": "2019-05-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DRREDDY",
+   "signal": "2019-05-07",
+   "entry": "2019-05-08",
+   "planned_exit": "2019-07-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INDIGO",
+   "signal": "2019-05-07",
+   "entry": "2019-05-08",
+   "planned_exit": "2019-07-04",
+   "nearness": 0.9967444212655666
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2019-05-07",
+   "entry": "2019-05-08",
+   "planned_exit": "2019-07-04",
+   "nearness": 0.9931936803498379
+  },
+  {
+   "symbol": "DCBBANK",
+   "signal": "2019-05-07",
+   "entry": "2019-05-08",
+   "planned_exit": "2019-07-04",
+   "nearness": 0.9909930715935336
+  },
+  {
+   "symbol": "UPL",
+   "signal": "2019-05-08",
+   "entry": "2019-05-09",
+   "planned_exit": "2019-07-05",
+   "nearness": 0.9910341629309012
+  },
+  {
+   "symbol": "ICICIGI",
+   "signal": "2019-05-09",
+   "entry": "2019-05-10",
+   "planned_exit": "2019-07-08",
+   "nearness": 0.9879097989494655
+  },
+  {
+   "symbol": "RBLBANK",
+   "signal": "2019-05-10",
+   "entry": "2019-05-13",
+   "planned_exit": "2019-07-09",
+   "nearness": 0.9864094695309076
+  },
+  {
+   "symbol": "SRF",
+   "signal": "2019-05-15",
+   "entry": "2019-05-16",
+   "planned_exit": "2019-07-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TITAN",
+   "signal": "2019-05-16",
+   "entry": "2019-05-17",
+   "planned_exit": "2019-07-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJFINSV",
+   "signal": "2019-05-17",
+   "entry": "2019-05-20",
+   "planned_exit": "2019-07-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2019-05-17",
+   "entry": "2019-05-20",
+   "planned_exit": "2019-07-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JUSTDIAL",
+   "signal": "2019-05-21",
+   "entry": "2019-05-22",
+   "planned_exit": "2019-07-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PETRONET",
+   "signal": "2019-07-04",
+   "entry": "2019-07-05",
+   "planned_exit": "2019-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "POWERGRID",
+   "signal": "2019-07-04",
+   "entry": "2019-07-05",
+   "planned_exit": "2019-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SBILIFE",
+   "signal": "2019-07-04",
+   "entry": "2019-07-05",
+   "planned_exit": "2019-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SBIN",
+   "signal": "2019-07-04",
+   "entry": "2019-07-05",
+   "planned_exit": "2019-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "NESTLEIND",
+   "signal": "2019-07-05",
+   "entry": "2019-07-08",
+   "planned_exit": "2019-09-05",
+   "nearness": 0.9993355537261227
+  },
+  {
+   "symbol": "HDFC",
+   "signal": "2019-07-08",
+   "entry": "2019-07-09",
+   "planned_exit": "2019-09-06",
+   "nearness": 0.9906630136986301
+  },
+  {
+   "symbol": "ADANIPOWER",
+   "signal": "2019-07-09",
+   "entry": "2019-07-10",
+   "planned_exit": "2019-09-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TORNTPOWER",
+   "signal": "2019-07-12",
+   "entry": "2019-07-15",
+   "planned_exit": "2019-09-13",
+   "nearness": 0.9970831307729703
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2019-07-15",
+   "entry": "2019-07-16",
+   "planned_exit": "2019-09-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CANFINHOME",
+   "signal": "2019-07-16",
+   "entry": "2019-07-17",
+   "planned_exit": "2019-09-17",
+   "nearness": 0.9979946524064172
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2019-07-16",
+   "entry": "2019-07-17",
+   "planned_exit": "2019-09-17",
+   "nearness": 0.9942783578887141
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2019-07-18",
+   "entry": "2019-07-19",
+   "planned_exit": "2019-09-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ICICIPRULI",
+   "signal": "2019-09-04",
+   "entry": "2019-09-05",
+   "planned_exit": "2019-11-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BATAINDIA",
+   "signal": "2019-09-04",
+   "entry": "2019-09-05",
+   "planned_exit": "2019-11-06",
+   "nearness": 0.9994487142069592
+  },
+  {
+   "symbol": "PETRONET",
+   "signal": "2019-09-04",
+   "entry": "2019-09-05",
+   "planned_exit": "2019-11-06",
+   "nearness": 0.995503091624508
+  },
+  {
+   "symbol": "TCS",
+   "signal": "2019-09-04",
+   "entry": "2019-09-05",
+   "planned_exit": "2019-11-06",
+   "nearness": 0.9857108364977284
+  },
+  {
+   "symbol": "PIDILITIND",
+   "signal": "2019-09-05",
+   "entry": "2019-09-06",
+   "planned_exit": "2019-11-07",
+   "nearness": 0.987737584304108
+  },
+  {
+   "symbol": "HDFCAMC",
+   "signal": "2019-09-06",
+   "entry": "2019-09-09",
+   "planned_exit": "2019-11-08",
+   "nearness": 0.9845228669456697
+  },
+  {
+   "symbol": "MCX",
+   "signal": "2019-09-09",
+   "entry": "2019-09-11",
+   "planned_exit": "2019-11-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INDIGO",
+   "signal": "2019-09-13",
+   "entry": "2019-09-16",
+   "planned_exit": "2019-11-15",
+   "nearness": 0.9975624619134674
+  },
+  {
+   "symbol": "NESTLEIND",
+   "signal": "2019-09-16",
+   "entry": "2019-09-17",
+   "planned_exit": "2019-11-18",
+   "nearness": 0.9973398471480055
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2019-09-17",
+   "entry": "2019-09-18",
+   "planned_exit": "2019-11-19",
+   "nearness": 0.9894066535737667
+  },
+  {
+   "symbol": "BERGEPAINT",
+   "signal": "2019-09-17",
+   "entry": "2019-09-18",
+   "planned_exit": "2019-11-19",
+   "nearness": 0.9862218019721736
+  },
+  {
+   "symbol": "COLPAL",
+   "signal": "2019-09-19",
+   "entry": "2019-09-20",
+   "planned_exit": "2019-11-21",
+   "nearness": 0.9884633992036024
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2019-11-06",
+   "entry": "2019-11-07",
+   "planned_exit": "2020-01-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJ-AUTO",
+   "signal": "2019-11-06",
+   "entry": "2019-11-07",
+   "planned_exit": "2020-01-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GMRAIRPORT",
+   "signal": "2019-11-06",
+   "entry": "2019-11-07",
+   "planned_exit": "2020-01-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HINDUNILVR",
+   "signal": "2019-11-06",
+   "entry": "2019-11-07",
+   "planned_exit": "2020-01-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2019-11-07",
+   "entry": "2019-11-08",
+   "planned_exit": "2020-01-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AVANTIFEED",
+   "signal": "2019-11-08",
+   "entry": "2019-11-11",
+   "planned_exit": "2020-01-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUBANK",
+   "signal": "2019-11-11",
+   "entry": "2019-11-13",
+   "planned_exit": "2020-01-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHOLAFIN",
+   "signal": "2019-11-15",
+   "entry": "2019-11-18",
+   "planned_exit": "2020-01-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJFINSV",
+   "signal": "2019-11-18",
+   "entry": "2019-11-19",
+   "planned_exit": "2020-01-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2019-11-19",
+   "entry": "2019-11-20",
+   "planned_exit": "2020-01-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "LALPATHLAB",
+   "signal": "2019-11-19",
+   "entry": "2019-11-20",
+   "planned_exit": "2020-01-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DLF",
+   "signal": "2019-11-21",
+   "entry": "2019-11-22",
+   "planned_exit": "2020-01-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIGREEN",
+   "signal": "2020-01-06",
+   "entry": "2020-01-07",
+   "planned_exit": "2020-03-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COFORGE",
+   "signal": "2020-01-06",
+   "entry": "2020-01-07",
+   "planned_exit": "2020-03-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "RIIL",
+   "signal": "2020-01-06",
+   "entry": "2020-01-07",
+   "planned_exit": "2020-03-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JUBLFOOD",
+   "signal": "2020-01-06",
+   "entry": "2020-01-07",
+   "planned_exit": "2020-03-03",
+   "nearness": 0.9981280641806566
+  },
+  {
+   "symbol": "GMRAIRPORT",
+   "signal": "2020-01-07",
+   "entry": "2020-01-08",
+   "planned_exit": "2020-03-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GUJGASLTD",
+   "signal": "2020-01-08",
+   "entry": "2020-01-09",
+   "planned_exit": "2020-03-05",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUBANK",
+   "signal": "2020-01-09",
+   "entry": "2020-01-10",
+   "planned_exit": "2020-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APEX",
+   "signal": "2020-01-14",
+   "entry": "2020-01-15",
+   "planned_exit": "2020-03-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2020-01-15",
+   "entry": "2020-01-16",
+   "planned_exit": "2020-03-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2020-01-16",
+   "entry": "2020-01-17",
+   "planned_exit": "2020-03-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2020-01-16",
+   "entry": "2020-01-17",
+   "planned_exit": "2020-03-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BERGEPAINT",
+   "signal": "2020-01-20",
+   "entry": "2020-01-21",
+   "planned_exit": "2020-03-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AJANTPHARM",
+   "signal": "2020-03-03",
+   "entry": "2020-03-04",
+   "planned_exit": "2020-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DEEPAKNTR",
+   "signal": "2020-03-03",
+   "entry": "2020-03-04",
+   "planned_exit": "2020-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "IPCALAB",
+   "signal": "2020-03-03",
+   "entry": "2020-03-04",
+   "planned_exit": "2020-05-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIVISLAB",
+   "signal": "2020-03-03",
+   "entry": "2020-03-04",
+   "planned_exit": "2020-05-07",
+   "nearness": 0.9987419081821717
+  },
+  {
+   "symbol": "PIDILITIND",
+   "signal": "2020-03-04",
+   "entry": "2020-03-05",
+   "planned_exit": "2020-05-08",
+   "nearness": 0.9925333333333333
+  },
+  {
+   "symbol": "MFSL",
+   "signal": "2020-03-05",
+   "entry": "2020-03-06",
+   "planned_exit": "2020-05-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SANOFI",
+   "signal": "2020-03-06",
+   "entry": "2020-03-09",
+   "planned_exit": "2020-05-12",
+   "nearness": 0.9940144233938484
+  },
+  {
+   "symbol": "GSKCONS",
+   "signal": "2020-03-26",
+   "entry": "2020-03-27",
+   "planned_exit": "2020-06-01",
+   "nearness": 0.9696951262787562
+  },
+  {
+   "symbol": "HINDUNILVR",
+   "signal": "2020-03-26",
+   "entry": "2020-03-27",
+   "planned_exit": "2020-06-01",
+   "nearness": 0.9575725846912287
+  },
+  {
+   "symbol": "NESTLEIND",
+   "signal": "2020-03-31",
+   "entry": "2020-04-01",
+   "planned_exit": "2020-06-04",
+   "nearness": 0.9711380067381391
+  },
+  {
+   "symbol": "ABBOTINDIA",
+   "signal": "2020-03-31",
+   "entry": "2020-04-01",
+   "planned_exit": "2020-06-04",
+   "nearness": 0.9515923409968529
+  },
+  {
+   "symbol": "BIOCON",
+   "signal": "2020-04-07",
+   "entry": "2020-04-08",
+   "planned_exit": "2020-06-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DEEPAKNTR",
+   "signal": "2020-05-07",
+   "entry": "2020-05-08",
+   "planned_exit": "2020-07-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "IOLCP",
+   "signal": "2020-05-07",
+   "entry": "2020-05-08",
+   "planned_exit": "2020-07-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLLTD",
+   "signal": "2020-05-07",
+   "entry": "2020-05-08",
+   "planned_exit": "2020-07-06",
+   "nearness": 0.9813410008564787
+  },
+  {
+   "symbol": "TORNTPOWER",
+   "signal": "2020-05-07",
+   "entry": "2020-05-08",
+   "planned_exit": "2020-07-06",
+   "nearness": 0.9755213055303719
+  },
+  {
+   "symbol": "DRREDDY",
+   "signal": "2020-05-08",
+   "entry": "2020-05-11",
+   "planned_exit": "2020-07-07",
+   "nearness": 0.9820548215342141
+  },
+  {
+   "symbol": "RELIANCE",
+   "signal": "2020-05-11",
+   "entry": "2020-05-12",
+   "planned_exit": "2020-07-08",
+   "nearness": 0.9794092984254169
+  },
+  {
+   "symbol": "SANOFI",
+   "signal": "2020-05-12",
+   "entry": "2020-05-13",
+   "planned_exit": "2020-07-09",
+   "nearness": 0.9909534010120766
+  },
+  {
+   "symbol": "BRITANNIA",
+   "signal": "2020-06-01",
+   "entry": "2020-06-02",
+   "planned_exit": "2020-07-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIVISLAB",
+   "signal": "2020-06-01",
+   "entry": "2020-06-02",
+   "planned_exit": "2020-07-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "signal": "2020-06-04",
+   "entry": "2020-06-05",
+   "planned_exit": "2020-07-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CIPLA",
+   "signal": "2020-06-04",
+   "entry": "2020-06-05",
+   "planned_exit": "2020-07-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "LUPIN",
+   "signal": "2020-06-09",
+   "entry": "2020-06-10",
+   "planned_exit": "2020-08-05",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BALAMINES",
+   "signal": "2020-07-06",
+   "entry": "2020-07-07",
+   "planned_exit": "2020-09-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BDL",
+   "signal": "2020-07-06",
+   "entry": "2020-07-07",
+   "planned_exit": "2020-09-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ESCORTS",
+   "signal": "2020-07-06",
+   "entry": "2020-07-07",
+   "planned_exit": "2020-09-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HAL",
+   "signal": "2020-07-06",
+   "entry": "2020-07-07",
+   "planned_exit": "2020-09-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "IOLCP",
+   "signal": "2020-07-07",
+   "entry": "2020-07-08",
+   "planned_exit": "2020-09-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIXON",
+   "signal": "2020-07-08",
+   "entry": "2020-07-09",
+   "planned_exit": "2020-09-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BIOCON",
+   "signal": "2020-07-09",
+   "entry": "2020-07-10",
+   "planned_exit": "2020-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BSOFT",
+   "signal": "2020-07-28",
+   "entry": "2020-07-29",
+   "planned_exit": "2020-09-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CDSL",
+   "signal": "2020-07-28",
+   "entry": "2020-07-29",
+   "planned_exit": "2020-09-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AJANTPHARM",
+   "signal": "2020-07-31",
+   "entry": "2020-08-03",
+   "planned_exit": "2020-09-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "signal": "2020-07-31",
+   "entry": "2020-08-03",
+   "planned_exit": "2020-09-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIDRUGS",
+   "signal": "2020-08-05",
+   "entry": "2020-08-06",
+   "planned_exit": "2020-10-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIGREEN",
+   "signal": "2020-09-01",
+   "entry": "2020-09-02",
+   "planned_exit": "2020-10-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "EMAMILTD",
+   "signal": "2020-09-01",
+   "entry": "2020-09-02",
+   "planned_exit": "2020-10-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INDIAMART",
+   "signal": "2020-09-01",
+   "entry": "2020-09-02",
+   "planned_exit": "2020-10-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TATACONSUM",
+   "signal": "2020-09-01",
+   "entry": "2020-09-02",
+   "planned_exit": "2020-10-29",
+   "nearness": 0.9986345015930814
+  },
+  {
+   "symbol": "ATGL",
+   "signal": "2020-09-02",
+   "entry": "2020-09-03",
+   "planned_exit": "2020-10-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ESCORTS",
+   "signal": "2020-09-03",
+   "entry": "2020-09-04",
+   "planned_exit": "2020-11-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GRANULES",
+   "signal": "2020-09-04",
+   "entry": "2020-09-07",
+   "planned_exit": "2020-11-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "FSL",
+   "signal": "2020-09-23",
+   "entry": "2020-09-24",
+   "planned_exit": "2020-11-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HEXAWARE",
+   "signal": "2020-09-23",
+   "entry": "2020-09-24",
+   "planned_exit": "2020-11-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADVENZYMES",
+   "signal": "2020-09-28",
+   "entry": "2020-09-29",
+   "planned_exit": "2020-11-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2020-09-28",
+   "entry": "2020-09-29",
+   "planned_exit": "2020-11-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2020-10-01",
+   "entry": "2020-10-05",
+   "planned_exit": "2020-12-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIGREEN",
+   "signal": "2020-10-29",
+   "entry": "2020-10-30",
+   "planned_exit": "2020-12-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2020-10-29",
+   "entry": "2020-10-30",
+   "planned_exit": "2020-12-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AURUM",
+   "signal": "2020-10-29",
+   "entry": "2020-10-30",
+   "planned_exit": "2020-12-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BERGEPAINT",
+   "signal": "2020-10-29",
+   "entry": "2020-10-30",
+   "planned_exit": "2020-12-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMBUJACEM",
+   "signal": "2020-10-30",
+   "entry": "2020-11-02",
+   "planned_exit": "2020-12-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HAVELLS",
+   "signal": "2020-11-02",
+   "entry": "2020-11-03",
+   "planned_exit": "2020-12-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ATGL",
+   "signal": "2020-11-03",
+   "entry": "2020-11-04",
+   "planned_exit": "2021-01-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARE&M",
+   "signal": "2020-11-20",
+   "entry": "2020-11-23",
+   "planned_exit": "2021-01-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIVISLAB",
+   "signal": "2020-11-20",
+   "entry": "2020-11-23",
+   "planned_exit": "2021-01-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2020-11-25",
+   "entry": "2020-11-26",
+   "planned_exit": "2021-01-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIXON",
+   "signal": "2020-11-25",
+   "entry": "2020-11-26",
+   "planned_exit": "2021-01-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACC",
+   "signal": "2020-12-01",
+   "entry": "2020-12-02",
+   "planned_exit": "2021-01-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2020-12-29",
+   "entry": "2020-12-30",
+   "planned_exit": "2021-02-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2020-12-29",
+   "entry": "2020-12-30",
+   "planned_exit": "2021-02-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJ-AUTO",
+   "signal": "2020-12-29",
+   "entry": "2020-12-30",
+   "planned_exit": "2021-02-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BERGEPAINT",
+   "signal": "2020-12-29",
+   "entry": "2020-12-30",
+   "planned_exit": "2021-02-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAL",
+   "signal": "2020-12-30",
+   "entry": "2020-12-31",
+   "planned_exit": "2021-02-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CROMPTON",
+   "signal": "2020-12-31",
+   "entry": "2021-01-01",
+   "planned_exit": "2021-03-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2021-01-01",
+   "entry": "2021-01-04",
+   "planned_exit": "2021-03-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2021-01-20",
+   "entry": "2021-01-21",
+   "planned_exit": "2021-03-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENSOL",
+   "signal": "2021-01-20",
+   "entry": "2021-01-21",
+   "planned_exit": "2021-03-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKEM",
+   "signal": "2021-01-25",
+   "entry": "2021-01-27",
+   "planned_exit": "2021-03-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2021-01-25",
+   "entry": "2021-01-27",
+   "planned_exit": "2021-03-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ATGL",
+   "signal": "2021-01-29",
+   "entry": "2021-02-01",
+   "planned_exit": "2021-03-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2021-02-25",
+   "entry": "2021-02-26",
+   "planned_exit": "2021-04-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMBER",
+   "signal": "2021-02-25",
+   "entry": "2021-02-26",
+   "planned_exit": "2021-04-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2021-02-25",
+   "entry": "2021-02-26",
+   "planned_exit": "2021-04-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2021-02-25",
+   "entry": "2021-02-26",
+   "planned_exit": "2021-04-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABCAPITAL",
+   "signal": "2021-02-26",
+   "entry": "2021-03-01",
+   "planned_exit": "2021-05-03",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAL",
+   "signal": "2021-03-01",
+   "entry": "2021-03-02",
+   "planned_exit": "2021-05-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2021-03-02",
+   "entry": "2021-03-03",
+   "planned_exit": "2021-05-05",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACC",
+   "signal": "2021-03-22",
+   "entry": "2021-03-23",
+   "planned_exit": "2021-05-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIGREEN",
+   "signal": "2021-03-22",
+   "entry": "2021-03-23",
+   "planned_exit": "2021-05-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODREJIND",
+   "signal": "2021-03-25",
+   "entry": "2021-03-26",
+   "planned_exit": "2021-05-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "POLYCAB",
+   "signal": "2021-03-25",
+   "entry": "2021-03-26",
+   "planned_exit": "2021-05-28",
+   "nearness": 0.9934466814723122
+  },
+  {
+   "symbol": "ADANIENSOL",
+   "signal": "2021-03-31",
+   "entry": "2021-04-01",
+   "planned_exit": "2021-06-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIIND",
+   "signal": "2021-04-30",
+   "entry": "2021-05-03",
+   "planned_exit": "2021-06-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKYLAMINE",
+   "signal": "2021-04-30",
+   "entry": "2021-05-03",
+   "planned_exit": "2021-06-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BALAMINES",
+   "signal": "2021-04-30",
+   "entry": "2021-05-03",
+   "planned_exit": "2021-06-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BALRAMCHIN",
+   "signal": "2021-04-30",
+   "entry": "2021-05-03",
+   "planned_exit": "2021-06-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ATGL",
+   "signal": "2021-05-03",
+   "entry": "2021-05-04",
+   "planned_exit": "2021-06-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADVENZYMES",
+   "signal": "2021-05-04",
+   "entry": "2021-05-05",
+   "planned_exit": "2021-07-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2021-05-05",
+   "entry": "2021-05-06",
+   "planned_exit": "2021-07-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AEGISLOG",
+   "signal": "2021-05-25",
+   "entry": "2021-05-26",
+   "planned_exit": "2021-07-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2021-05-25",
+   "entry": "2021-05-26",
+   "planned_exit": "2021-07-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AGI",
+   "signal": "2021-05-28",
+   "entry": "2021-05-31",
+   "planned_exit": "2021-07-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BSE",
+   "signal": "2021-05-28",
+   "entry": "2021-05-31",
+   "planned_exit": "2021-07-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2021-06-02",
+   "entry": "2021-06-03",
+   "planned_exit": "2021-07-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2021-06-29",
+   "entry": "2021-06-30",
+   "planned_exit": "2021-08-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACC",
+   "signal": "2021-06-29",
+   "entry": "2021-06-30",
+   "planned_exit": "2021-08-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACLGATI",
+   "signal": "2021-06-29",
+   "entry": "2021-06-30",
+   "planned_exit": "2021-08-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALLCARGO",
+   "signal": "2021-06-29",
+   "entry": "2021-06-30",
+   "planned_exit": "2021-08-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2021-06-30",
+   "entry": "2021-07-01",
+   "planned_exit": "2021-08-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2021-07-01",
+   "entry": "2021-07-02",
+   "planned_exit": "2021-08-31",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACCELYA",
+   "signal": "2021-07-02",
+   "entry": "2021-07-05",
+   "planned_exit": "2021-09-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVINDFASN",
+   "signal": "2021-07-22",
+   "entry": "2021-07-23",
+   "planned_exit": "2021-09-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJFINSV",
+   "signal": "2021-07-22",
+   "entry": "2021-07-23",
+   "planned_exit": "2021-09-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKYLAMINE",
+   "signal": "2021-07-27",
+   "entry": "2021-07-28",
+   "planned_exit": "2021-09-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMBUJACEM",
+   "signal": "2021-07-27",
+   "entry": "2021-07-28",
+   "planned_exit": "2021-09-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIIND",
+   "signal": "2021-07-30",
+   "entry": "2021-08-02",
+   "planned_exit": "2021-09-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKEM",
+   "signal": "2021-08-27",
+   "entry": "2021-08-30",
+   "planned_exit": "2021-10-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BALAMINES",
+   "signal": "2021-08-27",
+   "entry": "2021-08-30",
+   "planned_exit": "2021-10-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BRITANNIA",
+   "signal": "2021-08-27",
+   "entry": "2021-08-30",
+   "planned_exit": "2021-10-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CARBORUNIV",
+   "signal": "2021-08-27",
+   "entry": "2021-08-30",
+   "planned_exit": "2021-10-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2021-08-30",
+   "entry": "2021-08-31",
+   "planned_exit": "2021-10-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2021-08-31",
+   "entry": "2021-09-01",
+   "planned_exit": "2021-10-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABBOTINDIA",
+   "signal": "2021-09-01",
+   "entry": "2021-09-02",
+   "planned_exit": "2021-11-01",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALLCARGO",
+   "signal": "2021-09-21",
+   "entry": "2021-09-22",
+   "planned_exit": "2021-11-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJELEC",
+   "signal": "2021-09-21",
+   "entry": "2021-09-22",
+   "planned_exit": "2021-11-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2021-09-24",
+   "entry": "2021-09-27",
+   "planned_exit": "2021-11-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASIANPAINT",
+   "signal": "2021-09-24",
+   "entry": "2021-09-27",
+   "planned_exit": "2021-11-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABFRL",
+   "signal": "2021-09-29",
+   "entry": "2021-09-30",
+   "planned_exit": "2021-11-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKBARODA",
+   "signal": "2021-10-27",
+   "entry": "2021-10-28",
+   "planned_exit": "2021-12-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHOLAFIN",
+   "signal": "2021-10-27",
+   "entry": "2021-10-28",
+   "planned_exit": "2021-12-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODFRYPHLP",
+   "signal": "2021-10-27",
+   "entry": "2021-10-28",
+   "planned_exit": "2021-12-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HDFC",
+   "signal": "2021-10-27",
+   "entry": "2021-10-28",
+   "planned_exit": "2021-12-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2021-10-28",
+   "entry": "2021-10-29",
+   "planned_exit": "2021-12-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CANBK",
+   "signal": "2021-10-29",
+   "entry": "2021-11-01",
+   "planned_exit": "2021-12-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2021-11-01",
+   "entry": "2021-11-02",
+   "planned_exit": "2021-12-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "NH",
+   "signal": "2021-11-22",
+   "entry": "2021-11-23",
+   "planned_exit": "2022-01-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SOLARINDS",
+   "signal": "2021-11-22",
+   "entry": "2021-11-23",
+   "planned_exit": "2022-01-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2021-11-25",
+   "entry": "2021-11-26",
+   "planned_exit": "2022-01-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2021-11-25",
+   "entry": "2021-11-26",
+   "planned_exit": "2022-01-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ELGIEQUIP",
+   "signal": "2021-11-30",
+   "entry": "2021-12-01",
+   "planned_exit": "2022-01-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACLGATI",
+   "signal": "2021-12-27",
+   "entry": "2021-12-28",
+   "planned_exit": "2022-02-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOMDYEING",
+   "signal": "2021-12-27",
+   "entry": "2021-12-28",
+   "planned_exit": "2022-02-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GMRAIRPORT",
+   "signal": "2021-12-27",
+   "entry": "2021-12-28",
+   "planned_exit": "2022-02-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INFY",
+   "signal": "2021-12-27",
+   "entry": "2021-12-28",
+   "planned_exit": "2022-02-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BSOFT",
+   "signal": "2021-12-28",
+   "entry": "2021-12-29",
+   "planned_exit": "2022-02-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ESCORTS",
+   "signal": "2021-12-29",
+   "entry": "2021-12-30",
+   "planned_exit": "2022-02-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KPITTECH",
+   "signal": "2021-12-30",
+   "entry": "2021-12-31",
+   "planned_exit": "2022-02-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2022-01-18",
+   "entry": "2022-01-19",
+   "planned_exit": "2022-03-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KAJARIACER",
+   "signal": "2022-01-18",
+   "entry": "2022-01-19",
+   "planned_exit": "2022-03-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "POWERGRID",
+   "signal": "2022-01-21",
+   "entry": "2022-01-24",
+   "planned_exit": "2022-03-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ONMOBILE",
+   "signal": "2022-01-21",
+   "entry": "2022-01-24",
+   "planned_exit": "2022-03-24",
+   "nearness": 0.998708844415752
+  },
+  {
+   "symbol": "MARUTI",
+   "signal": "2022-01-27",
+   "entry": "2022-01-28",
+   "planned_exit": "2022-03-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHOLAFIN",
+   "signal": "2022-02-23",
+   "entry": "2022-02-24",
+   "planned_exit": "2022-04-27",
+   "nearness": 0.9894447657605552
+  },
+  {
+   "symbol": "GMDCLTD",
+   "signal": "2022-02-23",
+   "entry": "2022-02-24",
+   "planned_exit": "2022-04-27",
+   "nearness": 0.9835145562960363
+  },
+  {
+   "symbol": "SHANKARA",
+   "signal": "2022-02-23",
+   "entry": "2022-02-24",
+   "planned_exit": "2022-04-27",
+   "nearness": 0.9782054910840645
+  },
+  {
+   "symbol": "VIPIND",
+   "signal": "2022-02-23",
+   "entry": "2022-02-24",
+   "planned_exit": "2022-04-27",
+   "nearness": 0.9670386519843324
+  },
+  {
+   "symbol": "HINDALCO",
+   "signal": "2022-02-25",
+   "entry": "2022-02-28",
+   "planned_exit": "2022-04-29",
+   "nearness": 0.9756052992233897
+  },
+  {
+   "symbol": "ESCORTS",
+   "signal": "2022-02-25",
+   "entry": "2022-02-28",
+   "planned_exit": "2022-04-29",
+   "nearness": 0.9613641721455326
+  },
+  {
+   "symbol": "VEDL",
+   "signal": "2022-02-28",
+   "entry": "2022-03-02",
+   "planned_exit": "2022-05-02",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANGELONE",
+   "signal": "2022-03-21",
+   "entry": "2022-03-22",
+   "planned_exit": "2022-05-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CUMMINSIND",
+   "signal": "2022-03-21",
+   "entry": "2022-03-22",
+   "planned_exit": "2022-05-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COHANCE",
+   "signal": "2022-03-24",
+   "entry": "2022-03-25",
+   "planned_exit": "2022-05-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DELTACORP",
+   "signal": "2022-03-24",
+   "entry": "2022-03-25",
+   "planned_exit": "2022-05-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2022-03-29",
+   "entry": "2022-03-30",
+   "planned_exit": "2022-05-30",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOMDYEING",
+   "signal": "2022-04-27",
+   "entry": "2022-04-28",
+   "planned_exit": "2022-06-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHENNPETRO",
+   "signal": "2022-04-27",
+   "entry": "2022-04-28",
+   "planned_exit": "2022-06-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GHCL",
+   "signal": "2022-04-27",
+   "entry": "2022-04-28",
+   "planned_exit": "2022-06-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MIRZAINT",
+   "signal": "2022-04-27",
+   "entry": "2022-04-28",
+   "planned_exit": "2022-06-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CRISIL",
+   "signal": "2022-04-29",
+   "entry": "2022-05-02",
+   "planned_exit": "2022-06-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HBLENGINE",
+   "signal": "2022-04-29",
+   "entry": "2022-05-02",
+   "planned_exit": "2022-06-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMBER",
+   "signal": "2022-05-02",
+   "entry": "2022-05-04",
+   "planned_exit": "2022-06-29",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HAL",
+   "signal": "2022-05-20",
+   "entry": "2022-05-23",
+   "planned_exit": "2022-07-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ITC",
+   "signal": "2022-05-20",
+   "entry": "2022-05-23",
+   "planned_exit": "2022-07-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PHOENIXLTD",
+   "signal": "2022-05-25",
+   "entry": "2022-05-26",
+   "planned_exit": "2022-07-21",
+   "nearness": 0.9758107389686338
+  },
+  {
+   "symbol": "M&M",
+   "signal": "2022-05-25",
+   "entry": "2022-05-26",
+   "planned_exit": "2022-07-21",
+   "nearness": 0.9667812142038946
+  },
+  {
+   "symbol": "EIDPARRY",
+   "signal": "2022-05-30",
+   "entry": "2022-05-31",
+   "planned_exit": "2022-07-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TVSMOTOR",
+   "signal": "2022-06-24",
+   "entry": "2022-06-27",
+   "planned_exit": "2022-08-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JKIL",
+   "signal": "2022-06-24",
+   "entry": "2022-06-27",
+   "planned_exit": "2022-08-24",
+   "nearness": 0.995376712328767
+  },
+  {
+   "symbol": "EICHERMOT",
+   "signal": "2022-06-24",
+   "entry": "2022-06-27",
+   "planned_exit": "2022-08-24",
+   "nearness": 0.9818833162743091
+  },
+  {
+   "symbol": "VBL",
+   "signal": "2022-06-24",
+   "entry": "2022-06-27",
+   "planned_exit": "2022-08-24",
+   "nearness": 0.9792209442714621
+  },
+  {
+   "symbol": "ELECON",
+   "signal": "2022-06-28",
+   "entry": "2022-06-29",
+   "planned_exit": "2022-08-26",
+   "nearness": 0.9697133585722011
+  },
+  {
+   "symbol": "COROMANDEL",
+   "signal": "2022-06-28",
+   "entry": "2022-06-29",
+   "planned_exit": "2022-08-26",
+   "nearness": 0.9635167771440316
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2022-06-29",
+   "entry": "2022-06-30",
+   "planned_exit": "2022-08-29",
+   "nearness": 0.9635108481262329
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2022-07-18",
+   "entry": "2022-07-19",
+   "planned_exit": "2022-09-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APARINDS",
+   "signal": "2022-07-18",
+   "entry": "2022-07-19",
+   "planned_exit": "2022-09-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2022-07-21",
+   "entry": "2022-07-22",
+   "planned_exit": "2022-09-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJ-AUTO",
+   "signal": "2022-07-21",
+   "entry": "2022-07-22",
+   "planned_exit": "2022-09-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ITC",
+   "signal": "2022-07-26",
+   "entry": "2022-07-27",
+   "planned_exit": "2022-09-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAMICRO",
+   "signal": "2022-08-24",
+   "entry": "2022-08-25",
+   "planned_exit": "2022-10-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHOLAFIN",
+   "signal": "2022-08-24",
+   "entry": "2022-08-25",
+   "planned_exit": "2022-10-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COALINDIA",
+   "signal": "2022-08-24",
+   "entry": "2022-08-25",
+   "planned_exit": "2022-10-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ELGIEQUIP",
+   "signal": "2022-08-24",
+   "entry": "2022-08-25",
+   "planned_exit": "2022-10-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKBARODA",
+   "signal": "2022-08-26",
+   "entry": "2022-08-29",
+   "planned_exit": "2022-10-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BEL",
+   "signal": "2022-08-26",
+   "entry": "2022-08-29",
+   "planned_exit": "2022-10-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AEGISLOG",
+   "signal": "2022-08-29",
+   "entry": "2022-08-30",
+   "planned_exit": "2022-10-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BDL",
+   "signal": "2022-09-16",
+   "entry": "2022-09-19",
+   "planned_exit": "2022-11-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CCL",
+   "signal": "2022-09-16",
+   "entry": "2022-09-19",
+   "planned_exit": "2022-11-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABFRL",
+   "signal": "2022-09-21",
+   "entry": "2022-09-22",
+   "planned_exit": "2022-11-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COCHINSHIP",
+   "signal": "2022-09-21",
+   "entry": "2022-09-22",
+   "planned_exit": "2022-11-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TRITURBINE",
+   "signal": "2022-09-26",
+   "entry": "2022-09-27",
+   "planned_exit": "2022-11-25",
+   "nearness": 0.9763003355704698
+  },
+  {
+   "symbol": "AXISBANK",
+   "signal": "2022-10-24",
+   "entry": "2022-10-25",
+   "planned_exit": "2022-12-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BESTAGRO",
+   "signal": "2022-10-24",
+   "entry": "2022-10-25",
+   "planned_exit": "2022-12-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CANBK",
+   "signal": "2022-10-24",
+   "entry": "2022-10-25",
+   "planned_exit": "2022-12-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CIPLA",
+   "signal": "2022-10-24",
+   "entry": "2022-10-25",
+   "planned_exit": "2022-12-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKBARODA",
+   "signal": "2022-10-27",
+   "entry": "2022-10-28",
+   "planned_exit": "2022-12-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2022-10-27",
+   "entry": "2022-10-28",
+   "planned_exit": "2022-12-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AEGISLOG",
+   "signal": "2022-10-28",
+   "entry": "2022-10-31",
+   "planned_exit": "2022-12-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CUMMINSIND",
+   "signal": "2022-11-17",
+   "entry": "2022-11-18",
+   "planned_exit": "2023-01-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ENGINERSIN",
+   "signal": "2022-11-17",
+   "entry": "2022-11-18",
+   "planned_exit": "2023-01-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKINDIA",
+   "signal": "2022-11-22",
+   "entry": "2022-11-23",
+   "planned_exit": "2023-01-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CEATLTD",
+   "signal": "2022-11-22",
+   "entry": "2022-11-23",
+   "planned_exit": "2023-01-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHEL",
+   "signal": "2022-11-25",
+   "entry": "2022-11-28",
+   "planned_exit": "2023-01-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABBOTINDIA",
+   "signal": "2022-12-22",
+   "entry": "2022-12-23",
+   "planned_exit": "2023-02-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GESHIP",
+   "signal": "2022-12-22",
+   "entry": "2022-12-23",
+   "planned_exit": "2023-02-20",
+   "nearness": 0.9888391319324836
+  },
+  {
+   "symbol": "RECLTD",
+   "signal": "2022-12-22",
+   "entry": "2022-12-23",
+   "planned_exit": "2023-02-20",
+   "nearness": 0.984251968503937
+  },
+  {
+   "symbol": "VBL",
+   "signal": "2022-12-22",
+   "entry": "2022-12-23",
+   "planned_exit": "2023-02-20",
+   "nearness": 0.9764127590352923
+  },
+  {
+   "symbol": "HDFCBANK",
+   "signal": "2022-12-26",
+   "entry": "2022-12-27",
+   "planned_exit": "2023-02-22",
+   "nearness": 0.9802677094299895
+  },
+  {
+   "symbol": "APOLLOTYRE",
+   "signal": "2022-12-26",
+   "entry": "2022-12-27",
+   "planned_exit": "2023-02-22",
+   "nearness": 0.97846670739157
+  },
+  {
+   "symbol": "JINDALSTEL",
+   "signal": "2022-12-27",
+   "entry": "2022-12-28",
+   "planned_exit": "2023-02-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CGPOWER",
+   "signal": "2023-01-13",
+   "entry": "2023-01-16",
+   "planned_exit": "2023-03-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CIEINDIA",
+   "signal": "2023-01-13",
+   "entry": "2023-01-16",
+   "planned_exit": "2023-03-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANTRAJ",
+   "signal": "2023-01-18",
+   "entry": "2023-01-19",
+   "planned_exit": "2023-03-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2023-01-18",
+   "entry": "2023-01-19",
+   "planned_exit": "2023-03-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ENGINERSIN",
+   "signal": "2023-01-23",
+   "entry": "2023-01-24",
+   "planned_exit": "2023-03-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOSCHLTD",
+   "signal": "2023-02-20",
+   "entry": "2023-02-21",
+   "planned_exit": "2023-04-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PERSISTENT",
+   "signal": "2023-02-20",
+   "entry": "2023-02-21",
+   "planned_exit": "2023-04-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SHREECEM",
+   "signal": "2023-02-20",
+   "entry": "2023-02-21",
+   "planned_exit": "2023-04-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SONATSOFTW",
+   "signal": "2023-02-20",
+   "entry": "2023-02-21",
+   "planned_exit": "2023-04-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CYIENT",
+   "signal": "2023-02-22",
+   "entry": "2023-02-23",
+   "planned_exit": "2023-04-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "IRB",
+   "signal": "2023-02-22",
+   "entry": "2023-02-23",
+   "planned_exit": "2023-04-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "EQUITASBNK",
+   "signal": "2023-02-23",
+   "entry": "2023-02-24",
+   "planned_exit": "2023-04-28",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CUMMINSIND",
+   "signal": "2023-03-15",
+   "entry": "2023-03-16",
+   "planned_exit": "2023-05-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JSL",
+   "signal": "2023-03-15",
+   "entry": "2023-03-16",
+   "planned_exit": "2023-05-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GODREJCP",
+   "signal": "2023-03-20",
+   "entry": "2023-03-21",
+   "planned_exit": "2023-05-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KPITTECH",
+   "signal": "2023-03-20",
+   "entry": "2023-03-21",
+   "planned_exit": "2023-05-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AEGISLOG",
+   "signal": "2023-03-23",
+   "entry": "2023-03-24",
+   "planned_exit": "2023-05-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANURAS",
+   "signal": "2023-04-25",
+   "entry": "2023-04-26",
+   "planned_exit": "2023-06-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJ-AUTO",
+   "signal": "2023-04-25",
+   "entry": "2023-04-26",
+   "planned_exit": "2023-06-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "FINCABLES",
+   "signal": "2023-04-25",
+   "entry": "2023-04-26",
+   "planned_exit": "2023-06-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GLENMARK",
+   "signal": "2023-04-25",
+   "entry": "2023-04-26",
+   "planned_exit": "2023-06-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKEM",
+   "signal": "2023-04-27",
+   "entry": "2023-04-28",
+   "planned_exit": "2023-06-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOTYRE",
+   "signal": "2023-04-27",
+   "entry": "2023-04-28",
+   "planned_exit": "2023-06-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2023-04-28",
+   "entry": "2023-05-02",
+   "planned_exit": "2023-06-27",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AGI",
+   "signal": "2023-05-18",
+   "entry": "2023-05-19",
+   "planned_exit": "2023-07-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUBANK",
+   "signal": "2023-05-18",
+   "entry": "2023-05-19",
+   "planned_exit": "2023-07-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BDL",
+   "signal": "2023-05-23",
+   "entry": "2023-05-24",
+   "planned_exit": "2023-07-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CANFINHOME",
+   "signal": "2023-05-23",
+   "entry": "2023-05-24",
+   "planned_exit": "2023-07-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APTECHT",
+   "signal": "2023-05-26",
+   "entry": "2023-05-29",
+   "planned_exit": "2023-07-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2023-06-22",
+   "entry": "2023-06-23",
+   "planned_exit": "2023-08-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAMICRO",
+   "signal": "2023-06-22",
+   "entry": "2023-06-23",
+   "planned_exit": "2023-08-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CMSINFO",
+   "signal": "2023-06-22",
+   "entry": "2023-06-23",
+   "planned_exit": "2023-08-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "FACT",
+   "signal": "2023-06-22",
+   "entry": "2023-06-23",
+   "planned_exit": "2023-08-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABCAPITAL",
+   "signal": "2023-06-26",
+   "entry": "2023-06-27",
+   "planned_exit": "2023-08-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANGELONE",
+   "signal": "2023-06-26",
+   "entry": "2023-06-27",
+   "planned_exit": "2023-08-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APARINDS",
+   "signal": "2023-06-27",
+   "entry": "2023-06-28",
+   "planned_exit": "2023-08-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2023-07-17",
+   "entry": "2023-07-18",
+   "planned_exit": "2023-09-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACE",
+   "signal": "2023-07-17",
+   "entry": "2023-07-18",
+   "planned_exit": "2023-09-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKEM",
+   "signal": "2023-07-20",
+   "entry": "2023-07-21",
+   "planned_exit": "2023-09-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2023-07-20",
+   "entry": "2023-07-21",
+   "planned_exit": "2023-09-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIDRUGS",
+   "signal": "2023-07-25",
+   "entry": "2023-07-26",
+   "planned_exit": "2023-09-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2023-08-22",
+   "entry": "2023-08-23",
+   "planned_exit": "2023-10-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANCOINDIA",
+   "signal": "2023-08-22",
+   "entry": "2023-08-23",
+   "planned_exit": "2023-10-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BEL",
+   "signal": "2023-08-22",
+   "entry": "2023-08-23",
+   "planned_exit": "2023-10-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFORG",
+   "signal": "2023-08-22",
+   "entry": "2023-08-23",
+   "planned_exit": "2023-10-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AIAENG",
+   "signal": "2023-08-24",
+   "entry": "2023-08-25",
+   "planned_exit": "2023-10-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2023-08-24",
+   "entry": "2023-08-25",
+   "planned_exit": "2023-10-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APARINDS",
+   "signal": "2023-08-25",
+   "entry": "2023-08-28",
+   "planned_exit": "2023-10-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AJANTPHARM",
+   "signal": "2023-09-13",
+   "entry": "2023-09-14",
+   "planned_exit": "2023-11-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANDHRAPAP",
+   "signal": "2023-09-13",
+   "entry": "2023-09-14",
+   "planned_exit": "2023-11-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJ-AUTO",
+   "signal": "2023-09-18",
+   "entry": "2023-09-20",
+   "planned_exit": "2023-11-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKBARODA",
+   "signal": "2023-09-18",
+   "entry": "2023-09-20",
+   "planned_exit": "2023-11-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AGI",
+   "signal": "2023-09-22",
+   "entry": "2023-09-25",
+   "planned_exit": "2023-11-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANGELONE",
+   "signal": "2023-10-20",
+   "entry": "2023-10-23",
+   "planned_exit": "2023-12-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BBTC",
+   "signal": "2023-10-20",
+   "entry": "2023-10-23",
+   "planned_exit": "2023-12-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOMDYEING",
+   "signal": "2023-10-20",
+   "entry": "2023-10-23",
+   "planned_exit": "2023-12-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BSE",
+   "signal": "2023-10-20",
+   "entry": "2023-10-23",
+   "planned_exit": "2023-12-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CUPID",
+   "signal": "2023-10-25",
+   "entry": "2023-10-26",
+   "planned_exit": "2023-12-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PRESTIGE",
+   "signal": "2023-10-25",
+   "entry": "2023-10-26",
+   "planned_exit": "2023-12-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CREDITACC",
+   "signal": "2023-10-26",
+   "entry": "2023-10-27",
+   "planned_exit": "2023-12-26",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2023-11-13",
+   "entry": "2023-11-15",
+   "planned_exit": "2024-01-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANTRAJ",
+   "signal": "2023-11-13",
+   "entry": "2023-11-15",
+   "planned_exit": "2024-01-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKEM",
+   "signal": "2023-11-17",
+   "entry": "2023-11-20",
+   "planned_exit": "2024-01-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2023-11-17",
+   "entry": "2023-11-20",
+   "planned_exit": "2024-01-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVINDFASN",
+   "signal": "2023-11-22",
+   "entry": "2023-11-23",
+   "planned_exit": "2024-01-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INOXWIND",
+   "signal": "2023-12-20",
+   "entry": "2023-12-21",
+   "planned_exit": "2024-02-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "OIL",
+   "signal": "2023-12-20",
+   "entry": "2023-12-21",
+   "planned_exit": "2024-02-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ONGC",
+   "signal": "2023-12-20",
+   "entry": "2023-12-21",
+   "planned_exit": "2024-02-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TATACONSUM",
+   "signal": "2023-12-20",
+   "entry": "2023-12-21",
+   "planned_exit": "2024-02-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADVENZYMES",
+   "signal": "2023-12-22",
+   "entry": "2023-12-26",
+   "planned_exit": "2024-02-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2023-12-22",
+   "entry": "2023-12-26",
+   "planned_exit": "2024-02-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIIND",
+   "signal": "2023-12-26",
+   "entry": "2023-12-27",
+   "planned_exit": "2024-02-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABBOTINDIA",
+   "signal": "2024-01-12",
+   "entry": "2024-01-15",
+   "planned_exit": "2024-03-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADSL",
+   "signal": "2024-01-12",
+   "entry": "2024-01-15",
+   "planned_exit": "2024-03-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2024-01-17",
+   "entry": "2024-01-18",
+   "planned_exit": "2024-03-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTERDM",
+   "signal": "2024-01-17",
+   "entry": "2024-01-18",
+   "planned_exit": "2024-03-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLLTD",
+   "signal": "2024-01-20",
+   "entry": "2024-01-23",
+   "planned_exit": "2024-03-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACI",
+   "signal": "2024-02-19",
+   "entry": "2024-02-20",
+   "planned_exit": "2024-04-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2024-02-19",
+   "entry": "2024-02-20",
+   "planned_exit": "2024-04-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIGREEN",
+   "signal": "2024-02-19",
+   "entry": "2024-02-20",
+   "planned_exit": "2024-04-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2024-02-19",
+   "entry": "2024-02-20",
+   "planned_exit": "2024-04-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "360ONE",
+   "signal": "2024-02-21",
+   "entry": "2024-02-22",
+   "planned_exit": "2024-04-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2024-02-21",
+   "entry": "2024-02-22",
+   "planned_exit": "2024-04-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AJMERA",
+   "signal": "2024-02-22",
+   "entry": "2024-02-23",
+   "planned_exit": "2024-04-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2024-03-12",
+   "entry": "2024-03-13",
+   "planned_exit": "2024-05-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "EMUDHRA",
+   "signal": "2024-03-12",
+   "entry": "2024-03-13",
+   "planned_exit": "2024-05-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CIGNITITEC",
+   "signal": "2024-03-15",
+   "entry": "2024-03-18",
+   "planned_exit": "2024-05-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COLPAL",
+   "signal": "2024-03-15",
+   "entry": "2024-03-18",
+   "planned_exit": "2024-05-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CGPOWER",
+   "signal": "2024-03-20",
+   "entry": "2024-03-21",
+   "planned_exit": "2024-05-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2024-04-22",
+   "entry": "2024-04-23",
+   "planned_exit": "2024-06-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARE&M",
+   "signal": "2024-04-22",
+   "entry": "2024-04-23",
+   "planned_exit": "2024-06-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAMICRO",
+   "signal": "2024-04-22",
+   "entry": "2024-04-23",
+   "planned_exit": "2024-06-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BLUESTARCO",
+   "signal": "2024-04-22",
+   "entry": "2024-04-23",
+   "planned_exit": "2024-06-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "360ONE",
+   "signal": "2024-04-24",
+   "entry": "2024-04-25",
+   "planned_exit": "2024-06-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AEGISLOG",
+   "signal": "2024-04-24",
+   "entry": "2024-04-25",
+   "planned_exit": "2024-06-24",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIIND",
+   "signal": "2024-04-25",
+   "entry": "2024-04-26",
+   "planned_exit": "2024-06-25",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2024-05-15",
+   "entry": "2024-05-16",
+   "planned_exit": "2024-07-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANTRAJ",
+   "signal": "2024-05-15",
+   "entry": "2024-05-16",
+   "planned_exit": "2024-07-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2024-05-18",
+   "entry": "2024-05-21",
+   "planned_exit": "2024-07-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "signal": "2024-05-18",
+   "entry": "2024-05-21",
+   "planned_exit": "2024-07-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2024-05-23",
+   "entry": "2024-05-24",
+   "planned_exit": "2024-07-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABCAPITAL",
+   "signal": "2024-06-20",
+   "entry": "2024-06-21",
+   "planned_exit": "2024-08-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMIORG",
+   "signal": "2024-06-20",
+   "entry": "2024-06-21",
+   "planned_exit": "2024-08-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASAL",
+   "signal": "2024-06-20",
+   "entry": "2024-06-21",
+   "planned_exit": "2024-08-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKA",
+   "signal": "2024-06-20",
+   "entry": "2024-06-21",
+   "planned_exit": "2024-08-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "3MINDIA",
+   "signal": "2024-06-24",
+   "entry": "2024-06-25",
+   "planned_exit": "2024-08-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAL",
+   "signal": "2024-06-24",
+   "entry": "2024-06-25",
+   "planned_exit": "2024-08-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARE&M",
+   "signal": "2024-06-25",
+   "entry": "2024-06-26",
+   "planned_exit": "2024-08-23",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AFFLE",
+   "signal": "2024-07-12",
+   "entry": "2024-07-15",
+   "planned_exit": "2024-09-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALEMBICLTD",
+   "signal": "2024-07-12",
+   "entry": "2024-07-15",
+   "planned_exit": "2024-09-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2024-07-18",
+   "entry": "2024-07-19",
+   "planned_exit": "2024-09-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BRITANNIA",
+   "signal": "2024-07-18",
+   "entry": "2024-07-19",
+   "planned_exit": "2024-09-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AVANTIFEED",
+   "signal": "2024-07-23",
+   "entry": "2024-07-24",
+   "planned_exit": "2024-09-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABSLAMC",
+   "signal": "2024-08-20",
+   "entry": "2024-08-21",
+   "planned_exit": "2024-10-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANTELOPUS",
+   "signal": "2024-08-20",
+   "entry": "2024-08-21",
+   "planned_exit": "2024-10-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2024-08-20",
+   "entry": "2024-08-21",
+   "planned_exit": "2024-10-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2024-08-20",
+   "entry": "2024-08-21",
+   "planned_exit": "2024-10-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALIVUS",
+   "signal": "2024-08-22",
+   "entry": "2024-08-23",
+   "planned_exit": "2024-10-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2024-08-22",
+   "entry": "2024-08-23",
+   "planned_exit": "2024-10-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AHL",
+   "signal": "2024-08-23",
+   "entry": "2024-08-26",
+   "planned_exit": "2024-10-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABREL",
+   "signal": "2024-09-11",
+   "entry": "2024-09-12",
+   "planned_exit": "2024-11-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADVENZYMES",
+   "signal": "2024-09-11",
+   "entry": "2024-09-12",
+   "planned_exit": "2024-11-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMIORG",
+   "signal": "2024-09-16",
+   "entry": "2024-09-17",
+   "planned_exit": "2024-11-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANTRAJ",
+   "signal": "2024-09-16",
+   "entry": "2024-09-17",
+   "planned_exit": "2024-11-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2024-09-19",
+   "entry": "2024-09-20",
+   "planned_exit": "2024-11-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOMDYEING",
+   "signal": "2024-10-17",
+   "entry": "2024-10-18",
+   "planned_exit": "2024-12-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CAMS",
+   "signal": "2024-10-17",
+   "entry": "2024-10-18",
+   "planned_exit": "2024-12-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CARTRADE",
+   "signal": "2024-10-17",
+   "entry": "2024-10-18",
+   "planned_exit": "2024-12-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COHANCE",
+   "signal": "2024-10-17",
+   "entry": "2024-10-18",
+   "planned_exit": "2024-12-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AMBER",
+   "signal": "2024-10-21",
+   "entry": "2024-10-22",
+   "planned_exit": "2024-12-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANUP",
+   "signal": "2024-10-21",
+   "entry": "2024-10-22",
+   "planned_exit": "2024-12-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "TECHM",
+   "signal": "2024-10-22",
+   "entry": "2024-10-23",
+   "planned_exit": "2024-12-20",
+   "nearness": 0.9972666353162473
+  },
+  {
+   "symbol": "AVALON",
+   "signal": "2024-11-08",
+   "entry": "2024-11-11",
+   "planned_exit": "2025-01-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COFORGE",
+   "signal": "2024-11-08",
+   "entry": "2024-11-11",
+   "planned_exit": "2025-01-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "PIXTRANS",
+   "signal": "2024-11-13",
+   "entry": "2024-11-14",
+   "planned_exit": "2025-01-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JSWHL",
+   "signal": "2024-11-13",
+   "entry": "2024-11-14",
+   "planned_exit": "2025-01-14",
+   "nearness": 0.9978155696474391
+  },
+  {
+   "symbol": "BANCOINDIA",
+   "signal": "2024-11-19",
+   "entry": "2024-11-21",
+   "planned_exit": "2025-01-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "360ONE",
+   "signal": "2024-12-17",
+   "entry": "2024-12-18",
+   "planned_exit": "2025-02-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANTRAJ",
+   "signal": "2024-12-17",
+   "entry": "2024-12-18",
+   "planned_exit": "2025-02-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2024-12-17",
+   "entry": "2024-12-18",
+   "planned_exit": "2025-02-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BLS",
+   "signal": "2024-12-17",
+   "entry": "2024-12-18",
+   "planned_exit": "2025-02-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AGI",
+   "signal": "2024-12-19",
+   "entry": "2024-12-20",
+   "planned_exit": "2025-02-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJHCARE",
+   "signal": "2024-12-19",
+   "entry": "2024-12-20",
+   "planned_exit": "2025-02-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CARTRADE",
+   "signal": "2024-12-20",
+   "entry": "2024-12-23",
+   "planned_exit": "2025-02-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GENESYS",
+   "signal": "2025-01-09",
+   "entry": "2025-01-10",
+   "planned_exit": "2025-03-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "NAVINFLUOR",
+   "signal": "2025-01-09",
+   "entry": "2025-01-10",
+   "planned_exit": "2025-03-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GOLDIAM",
+   "signal": "2025-01-14",
+   "entry": "2025-01-15",
+   "planned_exit": "2025-03-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INDIACEM",
+   "signal": "2025-01-14",
+   "entry": "2025-01-15",
+   "planned_exit": "2025-03-12",
+   "nearness": 0.9923774477592325
+  },
+  {
+   "symbol": "AEROFLEX",
+   "signal": "2025-01-17",
+   "entry": "2025-01-20",
+   "planned_exit": "2025-03-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIPHARM",
+   "signal": "2025-02-12",
+   "entry": "2025-02-13",
+   "planned_exit": "2025-04-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SHREECEM",
+   "signal": "2025-02-12",
+   "entry": "2025-02-13",
+   "planned_exit": "2025-04-17",
+   "nearness": 0.9941183926540643
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2025-02-12",
+   "entry": "2025-02-13",
+   "planned_exit": "2025-04-17",
+   "nearness": 0.9917353263780833
+  },
+  {
+   "symbol": "SBICARD",
+   "signal": "2025-02-12",
+   "entry": "2025-02-13",
+   "planned_exit": "2025-04-17",
+   "nearness": 0.976847143284475
+  },
+  {
+   "symbol": "REDINGTON",
+   "signal": "2025-02-14",
+   "entry": "2025-02-17",
+   "planned_exit": "2025-04-22",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "VIMTALABS",
+   "signal": "2025-02-14",
+   "entry": "2025-02-17",
+   "planned_exit": "2025-04-22",
+   "nearness": 0.9882077554986309
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2025-02-17",
+   "entry": "2025-02-18",
+   "planned_exit": "2025-04-23",
+   "nearness": 0.9902637655782688
+  },
+  {
+   "symbol": "AVANTIFEED",
+   "signal": "2025-03-07",
+   "entry": "2025-03-10",
+   "planned_exit": "2025-05-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BLUEJET",
+   "signal": "2025-03-07",
+   "entry": "2025-03-10",
+   "planned_exit": "2025-05-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CAMLINFINE",
+   "signal": "2025-03-12",
+   "entry": "2025-03-13",
+   "planned_exit": "2025-05-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SARDAEN",
+   "signal": "2025-03-12",
+   "entry": "2025-03-13",
+   "planned_exit": "2025-05-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "COROMANDEL",
+   "signal": "2025-03-18",
+   "entry": "2025-03-19",
+   "planned_exit": "2025-05-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJAJFINSV",
+   "signal": "2025-04-17",
+   "entry": "2025-04-21",
+   "planned_exit": "2025-06-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIARTL",
+   "signal": "2025-04-17",
+   "entry": "2025-04-21",
+   "planned_exit": "2025-06-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARTIHEXA",
+   "signal": "2025-04-17",
+   "entry": "2025-04-21",
+   "planned_exit": "2025-06-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHAMBLFERT",
+   "signal": "2025-04-17",
+   "entry": "2025-04-21",
+   "planned_exit": "2025-06-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AAVAS",
+   "signal": "2025-04-22",
+   "entry": "2025-04-23",
+   "planned_exit": "2025-06-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAZEN",
+   "signal": "2025-04-22",
+   "entry": "2025-04-23",
+   "planned_exit": "2025-06-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2025-04-23",
+   "entry": "2025-04-24",
+   "planned_exit": "2025-06-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANURAS",
+   "signal": "2025-05-13",
+   "entry": "2025-05-14",
+   "planned_exit": "2025-07-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2025-05-13",
+   "entry": "2025-05-14",
+   "planned_exit": "2025-07-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AIIL",
+   "signal": "2025-05-16",
+   "entry": "2025-05-19",
+   "planned_exit": "2025-07-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTERDM",
+   "signal": "2025-05-16",
+   "entry": "2025-05-19",
+   "planned_exit": "2025-07-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIPHARM",
+   "signal": "2025-05-21",
+   "entry": "2025-05-22",
+   "planned_exit": "2025-07-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABCAPITAL",
+   "signal": "2025-06-17",
+   "entry": "2025-06-18",
+   "planned_exit": "2025-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "FORCEMOT",
+   "signal": "2025-06-17",
+   "entry": "2025-06-18",
+   "planned_exit": "2025-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "INTELLECT",
+   "signal": "2025-06-17",
+   "entry": "2025-06-18",
+   "planned_exit": "2025-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "LUMAXTECH",
+   "signal": "2025-06-17",
+   "entry": "2025-06-18",
+   "planned_exit": "2025-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CEMPRO",
+   "signal": "2025-06-19",
+   "entry": "2025-06-20",
+   "planned_exit": "2025-08-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "REDINGTON",
+   "signal": "2025-06-19",
+   "entry": "2025-06-20",
+   "planned_exit": "2025-08-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUBANK",
+   "signal": "2025-06-20",
+   "entry": "2025-06-23",
+   "planned_exit": "2025-08-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "63MOONS",
+   "signal": "2025-07-09",
+   "entry": "2025-07-10",
+   "planned_exit": "2025-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DIVISLAB",
+   "signal": "2025-07-09",
+   "entry": "2025-07-10",
+   "planned_exit": "2025-09-08",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANDRATHI",
+   "signal": "2025-07-14",
+   "entry": "2025-07-15",
+   "planned_exit": "2025-09-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CARTRADE",
+   "signal": "2025-07-14",
+   "entry": "2025-07-15",
+   "planned_exit": "2025-09-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABDL",
+   "signal": "2025-07-17",
+   "entry": "2025-07-18",
+   "planned_exit": "2025-09-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AIIL",
+   "signal": "2025-08-13",
+   "entry": "2025-08-14",
+   "planned_exit": "2025-10-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APOLLOHOSP",
+   "signal": "2025-08-13",
+   "entry": "2025-08-14",
+   "planned_exit": "2025-10-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHOICEIN",
+   "signal": "2025-08-13",
+   "entry": "2025-08-14",
+   "planned_exit": "2025-10-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CRAFTSMAN",
+   "signal": "2025-08-13",
+   "entry": "2025-08-14",
+   "planned_exit": "2025-10-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABCAPITAL",
+   "signal": "2025-08-18",
+   "entry": "2025-08-19",
+   "planned_exit": "2025-10-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2025-08-18",
+   "entry": "2025-08-19",
+   "planned_exit": "2025-10-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DALBHARAT",
+   "signal": "2025-08-19",
+   "entry": "2025-08-20",
+   "planned_exit": "2025-10-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BOSCHLTD",
+   "signal": "2025-09-08",
+   "entry": "2025-09-09",
+   "planned_exit": "2025-11-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CUMMINSIND",
+   "signal": "2025-09-08",
+   "entry": "2025-09-09",
+   "planned_exit": "2025-11-07",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AFFLE",
+   "signal": "2025-09-11",
+   "entry": "2025-09-12",
+   "planned_exit": "2025-11-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BAJFINANCE",
+   "signal": "2025-09-11",
+   "entry": "2025-09-12",
+   "planned_exit": "2025-11-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AADHARHFC",
+   "signal": "2025-09-16",
+   "entry": "2025-09-17",
+   "planned_exit": "2025-11-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANDRATHI",
+   "signal": "2025-10-14",
+   "entry": "2025-10-15",
+   "planned_exit": "2025-12-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GMBREW",
+   "signal": "2025-10-14",
+   "entry": "2025-10-15",
+   "planned_exit": "2025-12-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HBLENGINE",
+   "signal": "2025-10-14",
+   "entry": "2025-10-15",
+   "planned_exit": "2025-12-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "MCX",
+   "signal": "2025-10-14",
+   "entry": "2025-10-15",
+   "planned_exit": "2025-12-12",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2025-10-16",
+   "entry": "2025-10-17",
+   "planned_exit": "2025-12-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "FORTIS",
+   "signal": "2025-10-16",
+   "entry": "2025-10-17",
+   "planned_exit": "2025-12-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASAHIINDIA",
+   "signal": "2025-10-17",
+   "entry": "2025-10-20",
+   "planned_exit": "2025-12-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABCAPITAL",
+   "signal": "2025-11-07",
+   "entry": "2025-11-10",
+   "planned_exit": "2026-01-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUBANK",
+   "signal": "2025-11-07",
+   "entry": "2025-11-10",
+   "planned_exit": "2026-01-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKINDIA",
+   "signal": "2025-11-12",
+   "entry": "2025-11-13",
+   "planned_exit": "2026-01-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHEL",
+   "signal": "2025-11-12",
+   "entry": "2025-11-13",
+   "planned_exit": "2026-01-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "3MINDIA",
+   "signal": "2025-11-17",
+   "entry": "2025-11-18",
+   "planned_exit": "2026-01-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANURAS",
+   "signal": "2025-12-12",
+   "entry": "2025-12-15",
+   "planned_exit": "2026-02-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHAPURMIN",
+   "signal": "2025-12-12",
+   "entry": "2025-12-15",
+   "planned_exit": "2026-02-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASHOKLEY",
+   "signal": "2025-12-12",
+   "entry": "2025-12-15",
+   "planned_exit": "2026-02-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CANFINHOME",
+   "signal": "2025-12-12",
+   "entry": "2025-12-15",
+   "planned_exit": "2026-02-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CUPID",
+   "signal": "2025-12-16",
+   "entry": "2025-12-17",
+   "planned_exit": "2026-02-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "JAMNAAUTO",
+   "signal": "2025-12-16",
+   "entry": "2025-12-17",
+   "planned_exit": "2026-02-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "HINDZINC",
+   "signal": "2025-12-17",
+   "entry": "2025-12-18",
+   "planned_exit": "2026-02-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AETHER",
+   "signal": "2026-01-06",
+   "entry": "2026-01-07",
+   "planned_exit": "2026-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AXISBANK",
+   "signal": "2026-01-06",
+   "entry": "2026-01-07",
+   "planned_exit": "2026-03-06",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "EMCURE",
+   "signal": "2026-01-09",
+   "entry": "2026-01-12",
+   "planned_exit": "2026-03-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "SILVERTUC",
+   "signal": "2026-01-09",
+   "entry": "2026-01-12",
+   "planned_exit": "2026-03-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BANKINDIA",
+   "signal": "2026-01-14",
+   "entry": "2026-01-16",
+   "planned_exit": "2026-03-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALKEM",
+   "signal": "2026-02-11",
+   "entry": "2026-02-12",
+   "planned_exit": "2026-04-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANURAS",
+   "signal": "2026-02-11",
+   "entry": "2026-02-12",
+   "planned_exit": "2026-04-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APLAPOLLO",
+   "signal": "2026-02-11",
+   "entry": "2026-02-12",
+   "planned_exit": "2026-04-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAL",
+   "signal": "2026-02-11",
+   "entry": "2026-02-12",
+   "planned_exit": "2026-04-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AVANTIFEED",
+   "signal": "2026-02-13",
+   "entry": "2026-02-16",
+   "planned_exit": "2026-04-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFORG",
+   "signal": "2026-02-13",
+   "entry": "2026-02-16",
+   "planned_exit": "2026-04-20",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BLISSGVS",
+   "signal": "2026-02-16",
+   "entry": "2026-02-17",
+   "planned_exit": "2026-04-21",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BEL",
+   "signal": "2026-03-06",
+   "entry": "2026-03-09",
+   "planned_exit": "2026-05-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "DATAPATTNS",
+   "signal": "2026-03-06",
+   "entry": "2026-03-09",
+   "planned_exit": "2026-05-11",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABB",
+   "signal": "2026-03-11",
+   "entry": "2026-03-12",
+   "planned_exit": "2026-05-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABSLAMC",
+   "signal": "2026-03-11",
+   "entry": "2026-03-12",
+   "planned_exit": "2026-05-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AEROFLEX",
+   "signal": "2026-03-16",
+   "entry": "2026-03-17",
+   "planned_exit": "2026-05-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENSOL",
+   "signal": "2026-04-16",
+   "entry": "2026-04-17",
+   "planned_exit": "2026-06-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPOWER",
+   "signal": "2026-04-16",
+   "entry": "2026-04-17",
+   "planned_exit": "2026-06-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUROPHARMA",
+   "signal": "2026-04-16",
+   "entry": "2026-04-17",
+   "planned_exit": "2026-06-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AZAD",
+   "signal": "2026-04-16",
+   "entry": "2026-04-17",
+   "planned_exit": "2026-06-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIGREEN",
+   "signal": "2026-04-20",
+   "entry": "2026-04-21",
+   "planned_exit": "2026-06-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2026-04-20",
+   "entry": "2026-04-21",
+   "planned_exit": "2026-06-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUBANK",
+   "signal": "2026-04-21",
+   "entry": "2026-04-22",
+   "planned_exit": "2026-06-19",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACUTAAS",
+   "signal": "2026-05-11",
+   "entry": "2026-05-12",
+   "planned_exit": "2026-07-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADVENZYMES",
+   "signal": "2026-05-11",
+   "entry": "2026-05-12",
+   "planned_exit": "2026-07-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENT",
+   "signal": "2026-05-14",
+   "entry": "2026-05-15",
+   "planned_exit": "2026-07-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AJANTPHARM",
+   "signal": "2026-05-14",
+   "entry": "2026-05-15",
+   "planned_exit": "2026-07-14",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVIND",
+   "signal": "2026-05-19",
+   "entry": "2026-05-20",
+   "planned_exit": "2026-07-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABCAPITAL",
+   "signal": "2026-06-16",
+   "entry": "2026-06-17",
+   "planned_exit": "2026-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AEGISLOG",
+   "signal": "2026-06-16",
+   "entry": "2026-06-17",
+   "planned_exit": "2026-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "APARINDS",
+   "signal": "2026-06-16",
+   "entry": "2026-06-17",
+   "planned_exit": "2026-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ASTRAMICRO",
+   "signal": "2026-06-16",
+   "entry": "2026-06-17",
+   "planned_exit": "2026-08-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ABSLAMC",
+   "signal": "2026-06-18",
+   "entry": "2026-06-19",
+   "planned_exit": "2026-08-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIPORTS",
+   "signal": "2026-06-18",
+   "entry": "2026-06-19",
+   "planned_exit": "2026-08-17",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AIAENG",
+   "signal": "2026-06-19",
+   "entry": "2026-06-22",
+   "planned_exit": "2026-08-18",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AETHER",
+   "signal": "2026-07-09",
+   "entry": "2026-07-10",
+   "planned_exit": "2026-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AKUMS",
+   "signal": "2026-07-09",
+   "entry": "2026-07-10",
+   "planned_exit": "2026-09-04",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIENSOL",
+   "signal": "2026-07-14",
+   "entry": "2026-07-15",
+   "planned_exit": "2026-09-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ADANIGREEN",
+   "signal": "2026-07-14",
+   "entry": "2026-07-15",
+   "planned_exit": "2026-09-09",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "BHARATFORG",
+   "signal": "2026-07-17",
+   "entry": "2026-07-20",
+   "planned_exit": "2026-09-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AARTIIND",
+   "signal": "2026-08-13",
+   "entry": "2026-08-14",
+   "planned_exit": "2026-10-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AJANTPHARM",
+   "signal": "2026-08-13",
+   "entry": "2026-08-14",
+   "planned_exit": "2026-10-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANANDRATHI",
+   "signal": "2026-08-13",
+   "entry": "2026-08-14",
+   "planned_exit": "2026-10-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "AUBANK",
+   "signal": "2026-08-13",
+   "entry": "2026-08-14",
+   "planned_exit": "2026-10-13",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANTHEM",
+   "signal": "2026-08-17",
+   "entry": "2026-08-18",
+   "planned_exit": "2026-10-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ARVSMART",
+   "signal": "2026-08-17",
+   "entry": "2026-08-18",
+   "planned_exit": "2026-10-15",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACE",
+   "signal": "2026-08-18",
+   "entry": "2026-08-19",
+   "planned_exit": "2026-10-16",
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ACMESOLAR",
+   "signal": "2026-09-04",
+   "entry": "2026-09-07",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ALEMBICLTD",
+   "signal": "2026-09-04",
+   "entry": "2026-09-07",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "ANTELOPUS",
+   "signal": "2026-09-09",
+   "entry": "2026-09-10",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CHENNPETRO",
+   "signal": "2026-09-09",
+   "entry": "2026-09-10",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GMMPFAUDLR",
+   "signal": "2026-09-15",
+   "entry": "2026-09-16",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CPPLUS",
+   "signal": "2026-10-13",
+   "entry": "2026-10-14",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "CYIENTDLM",
+   "signal": "2026-10-13",
+   "entry": "2026-10-14",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "GOODLUCK",
+   "signal": "2026-10-13",
+   "entry": "2026-10-14",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "NEOGEN",
+   "signal": "2026-10-13",
+   "entry": "2026-10-14",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "KOTAKBANK",
+   "signal": "2026-10-15",
+   "entry": "2026-10-16",
+   "planned_exit": null,
+   "nearness": 1.0
+  },
+  {
+   "symbol": "NAZARA",
+   "signal": "2026-10-15",
+   "entry": "2026-10-16",
+   "planned_exit": null,
+   "nearness": 1.0
+  }
+ ],
+ "run_seconds": 12922.991035461426,
+ "finsight_db": {
+  "before": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "after": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "unchanged": true
+ }
+}
