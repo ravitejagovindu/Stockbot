@@ -282,6 +282,11 @@
      "n": "types.py",
      "path": "stockbot/engine/types.py",
      "d": "Plain frozen types: Position, Ticket, State, Decisions."
+    },
+    {
+     "n": "exit_policies/",
+     "path": "stockbot/engine/exit_policies",
+     "d": "The shared library of exit policies: fixed_hold_<N> and trailing_pct_<P>, and the registry that resolves their ids."
     }
    ],
    "reads": "The AsOfView it is handed, the shared config, the State.",
@@ -296,7 +301,14 @@
    ],
    "not_reason": "The engine must not know who calls it: backtest, live and validation sit above it.",
    "read_more": "C.5",
-   "source": "stockbot/engine/decide.py::decide"
+   "source": "stockbot/engine/decide.py::decide",
+   "subpackages": [
+    {
+     "name": "stockbot.engine.exit_policies",
+     "path": "stockbot/engine/exit_policies",
+     "d": "FixedHold, TrailingStop, resolve(policy_id) and policies_for(specs, extra); imports only the exit-policy interface."
+    }
+   ]
   },
   {
    "id": "strategies",
@@ -730,7 +742,7 @@
   "validation>strategies": "Validation judges strategies from outside; it must not import one.",
   "backtest>live": "A backtest must never touch the daily run.",
   "backtest>validation": "Validation sits above backtest and reads its results.",
-  "strategies>engine": "A strategy never sees the engine: it only proposes.",
+  "strategies>engine": "A strategy never sees the engine: it only proposes. The one exception is the exit-policy interface types, so it can own an exit policy.",
   "strategies>risk": "A strategy never sizes: sizing is shared.",
   "strategies>universe": "A strategy never builds its own universe: eligibility is shared.",
   "strategies>live": "A strategy never sees the live run or the portfolio.",
@@ -740,10 +752,14 @@
   "strategies>data_checks": "A strategy has nothing to do with the data checks."
  },
  "strategy_rule": {
-  "text": "No strategy imports another strategy. Each one is built to run alone, so results are comparable and one cannot lean on another.",
+  "text": "No strategy imports another strategy. Each one is built to run alone, so results are comparable and one cannot lean on another. A strategy may import one engine module, the exit-policy interface (stockbot.engine.exit_policy), so it can own its exit policy.",
   "source": "tests/unit/test_import_boundaries.py"
  },
  "extra_rules": [
+  {
+   "text": "strategies may import stockbot.engine.exit_policy and nothing else from the engine (not the shared library stockbot.engine.exit_policies).",
+   "source": "tests/fixtures/boundaries.py"
+  },
   {
    "text": "backtest, engine, strategies and risk may not import any network library.",
    "source": "tests/fixtures/boundaries.py"
@@ -1298,15 +1314,17 @@
    "id": "a3",
    "title": "Exit policy",
    "path": "stockbot/engine/exit_policy.py",
-   "source": "stockbot/engine/exit_policy.py::ExitPolicy",
-   "plain": "How the stop moves and when to ask for an exit. Where this file lives is not fixed yet (planned, with the first strategy).",
+   "source": "stockbot/engine/exit_policies/registry.py::policies_for",
+   "plain": "How the stop moves and when to ask for an exit. Pick a shared one by id (fixed_hold_<N> or trailing_pct_<P>) in StrategySpec.exit_policy, or write your own inside your strategy folder.",
    "skeleton": [
-    "# Satisfies the ExitPolicy interface in stockbot/engine/exit_policy.py:",
-    "#   initial_state(position, view)",
-    "#   step(position, bar, view, ctx) -> PolicyActions   (new stop, exit requests, own state)",
-    "#   on_corporate_action(exit_state, factor)",
-    "# The policy decides WHAT; the engine's step_position decides HOW, in one fixed order.",
-    "# A stop can never move down."
+    "# Shared library (stockbot/engine/exit_policies): just name it in the spec, nothing to write:",
+    "#   exit_policy=\"fixed_hold_20\"   exit at the open of session 21 (the entry session is session 1)",
+    "#   exit_policy=\"trailing_pct_10\" stop trails 10% below the highest close since entry",
+    "# Your own policy: a class in stockbot/strategies/<your_id>/ that imports ONLY the interface types from",
+    "#   stockbot.engine.exit_policy (never stockbot.engine.exit_policies or another engine module), with:",
+    "#   initial_state(position, view), step(position, bar, view, ctx) -> PolicyActions, on_corporate_action(exit_state, factor)",
+    "#   and pass it to policies_for(specs, extra=[policy]); its id must not start with fixed_hold_ or trailing_pct_.",
+    "# The policy decides WHAT; the engine's step_position decides HOW, in one fixed order. A stop can never move down."
    ]
   },
   {

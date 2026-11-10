@@ -21,12 +21,15 @@ ALLOWED = {
     "universe": {"config", "data"},
     "risk": {"config", "data"},
     "engine": {"config", "data", "universe", "risk", "strategies"},
-    "strategies": {"data"},
+    "strategies": {"data"},                      # plus the single engine module in STRATEGY_ENGINE_ALLOWED
     "backtest": {"config", "data", "universe", "risk", "engine", "strategies"},
     "live": {"config", "data", "universe", "risk", "engine", "strategies", "validation"},          # never backtest; validation: trade-R reporting used by the (legacy) analytics routers
     "validation": {"config", "data", "risk", "backtest", "engine", "universe"},     # never live; risk: R definitions (Q2); engine + universe: the baseline reuses the engine stepping and the shared eligibility (Q5)
     "data_checks": {"config", "data"},
 }
+# the one engine module a strategy folder may import (exit-policy interface types for a strategy-owned policy); prefix match on dotted names, so
+# stockbot.engine.exit_policies (the shared library) and every other engine module stay forbidden
+STRATEGY_ENGINE_ALLOWED = ("stockbot.engine.exit_policy",)
 NETWORK_LIBS = {"requests", "urllib", "urllib3", "yfinance", "httpx", "aiohttp", "http", "socket", "ftplib", "smtplib"}
 DB_LIBS = {"sqlalchemy", "sqlite3"}
 NO_NETWORK_PKGS = {"backtest", "engine", "strategies", "risk"}
@@ -66,7 +69,7 @@ def edges(root: Path):
 
 def _strategy_name(mod: str):
     p = mod.split(".")
-    return p[2] if len(p) > 2 and p[1] == "strategies" and p[2] not in ("base", "registry") else None
+    return p[2] if len(p) > 2 and p[1] == "strategies" and p[2] not in ("base", "registry", "spec") else None
 
 
 def check(root: Path):
@@ -82,10 +85,12 @@ def check(root: Path):
             q = name.split(".")
             tgt = q[1] if len(q) > 1 else None
             if pkg in ALLOWED and tgt in PACKAGES and tgt != pkg and tgt not in ALLOWED[pkg]:
-                out.add((mod, name, f"{pkg} may not import {tgt}"))
+                permitted = pkg == "strategies" and tgt == "engine" and any(name == a or name.startswith(a + ".") for a in STRATEGY_ENGINE_ALLOWED)
+                if not permitted:
+                    out.add((mod, name, f"{pkg} may not import {tgt}"))
             # strategies: never another strategy; engine and the rest see only the interface (strategies.base) and the registry
             sn = _strategy_name(mod)
-            if sn and tgt == "strategies" and len(q) > 2 and q[2] not in ("base", "registry") and q[2] != sn:
+            if sn and tgt == "strategies" and len(q) > 2 and q[2] not in ("base", "registry", "spec") and q[2] != sn:
                 out.add((mod, name, "a strategy may not import another strategy"))
             if pkg in ("engine", "risk", "universe", "data", "data_checks", "validation") and tgt == "strategies" and len(q) > 2 and q[2] not in ("base", "registry"):
                 out.add((mod, name, f"{pkg} may only import strategies.base / registry"))

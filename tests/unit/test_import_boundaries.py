@@ -39,6 +39,11 @@ def test_allowlist_has_no_stale_entries_and_every_entry_names_its_removal_phase(
     ("validation_imports_live", "validation may not import live"),
     ("sys_path_hack", "sys.path edit"),
     ("legacy_import", "legacy"),
+    ("strategy_policy_imports_library", "strategies may not import engine"),
+    ("strategy_policy_imports_engine_module", "strategies may not import engine"),
+    ("strategy_policy_imports_bare_engine", "strategies may not import engine"),
+    ("strategy_imports_other_strategy_module", "a strategy may not import another strategy"),
+    ("strategy_imports_spec_lookalike", "a strategy may not import another strategy"),
 ])
 def test_seeded_violations_are_caught(case, needle):
     rules = [r for _, _, r in B.check(FIX / case)]
@@ -47,6 +52,20 @@ def test_seeded_violations_are_caught(case, needle):
 
 def test_clean_fixture_passes():
     assert B.check(FIX / "clean") == set()
+
+
+def test_a_strategy_may_import_the_shared_spec_module():
+    """spec is shared interface code (StrategySpec), not a strategy; a folder merely NAMED like it (specs) is still another strategy (seeded case above)."""
+    assert B.check(FIX / "strategy_imports_spec") == set()
+
+
+def test_a_policy_inside_a_strategy_folder_may_import_the_interface_spec_base_and_data_view_types():
+    """The exit-policy permission: stockbot.engine.exit_policy (prefix match) and nothing else of the engine; spec and base are shared strategy interface code."""
+    assert B.check(FIX / "strategy_policy_clean") == set()
+
+
+def test_the_permission_names_exactly_one_engine_module():
+    assert B.STRATEGY_ENGINE_ALLOWED == ("stockbot.engine.exit_policy",)
 
 
 def test_no_python_files_under_top_level_data_except_listed_legacy():

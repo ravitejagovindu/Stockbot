@@ -9,8 +9,8 @@ Goal: about five strategies, each developed, tested and retired without touching
 | `data` | ingestion, **read-only lake access** (`lake.py`), corporate-action adjustment, **point-in-time as-of view** (`asof.py`), shared indicators | config |
 | `universe` | eligibility rules and exclusions (ASM/GSM, earnings) | config, data |
 | `risk` | costs, sizing, heat/sector caps, cross-strategy arbitration, R definitions | config, data |
-| `engine` | one `decide()` for backtest and live; strategy interface (Phase 6) | config, data, universe, risk, strategies (interface only) |
-| `strategies` | interface and registry only; **no strategy files** (a dummy lives under `tests/`) | data (view types) |
+| `engine` | one `decide()` for backtest and live; strategy interface (Phase 6); `engine/exit_policies/`: the shared library of exit policies (`fixed_hold_<N>`, `trailing_pct_<P>`), see `docs/exit_policies/EXIT_POLICIES.md` | config, data, universe, risk, strategies (interface only) |
+| `strategies` | interface and registry only; **no strategy files** (a dummy lives under `tests/`); a strategy folder may hold the strategy's own exit policy | data (view types) and the one module `engine.exit_policy` (interface types only; never `engine.exit_policies`, the shared library) |
 | `backtest` | runner, simulated fills, network guard, run manifest | config, data, universe, risk, engine, strategies (registry) |
 | `live` | EOD runner, tickets, state DB and journal, idempotency, scheduler, API routers | config, data, universe, risk, engine, strategies, **validation (trade-R reporting only, for the legacy analytics routers)**; its own state store; **never backtest** |
 | `validation` | Max-T, prereg lock, trade-R reporting, power study, matched-random baseline, trial ledger | config, data, risk (R definitions), backtest, **engine and universe (the baseline reuses the engine stepping and the shared eligibility; reviewer decision at STOP 4)**; **never live** |
