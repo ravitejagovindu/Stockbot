@@ -1,24 +1,26 @@
 # Exit policies: status
 
-Last updated: 2026-11-10 (STOP A).
+Last updated: 2026-11-10 (STOP B).
 
-## Done
-- Branch `exit-policies` created from `origin/master` (ab6ae5b); local `master` is stale and was not used.
-- ba284c8: task brief saved as `docs/exit_policies/BRIEF.md`.
-- Design note: `Claude_Docs/STOCKBOT_EXIT_POLICIES_DESIGN.md` (no code written).
+## Done (branch exit-policies, not merged)
+- ba284c8 brief; aac4f4b design note (STOP A)
+- 2c7eac9 engine fix: pending_exit scales with shares on a split/bonus (own commit and tests)
+- a4071c9 boundaries: strategies may import stockbot.engine.exit_policy only; `spec` is not a strategy name
+- 701a1dc tests first (failing at import); a6be7e0 library, `resolve`, `policies_for`, wiring (`run_backtest(policies=None)`, `Book.from_strategies`)
+- 1328855 docs: EXIT_POLICIES.md, ARCHITECTURE row, codebase guide (md, json, rebuilt html)
+- Report: Claude_Docs/STOCKBOT_EXIT_POLICIES_REPORT.md
 
-## Open items (need a reply before STOP B)
-- `finsight.db` is absent in this environment: fingerprint and G2 cannot be done here. Where should Stage B run?
-- Engine finding: `engine/corporate.py::_rescale` does not rescale `pending_exit` (fix needs approval).
-- Boundary check treats `stockbot.strategies.spec` as a strategy (fix needs approval).
-- `Claude_Docs/STOCKBOT_MOMENTUM_GROUNDWORK_REPORT.md` is missing from the repository.
-- Confirm `highest_close` seed and the meaning of N sessions.
+## Open items
+- G2 and the finsight.db sha256/mtime check were NOT run (no database in the cloud container): owner or a local session before merge.
+- 2 G1 failures (golden file hashes, exploratory ledger hash) are pre-existing in this checkout; suspected CRLF/LF, not verified.
+- `Claude_Docs/` copies of the codebase guide are stale.
 
 ## Decisions (dated)
-- 2026-11-10: owner branch name `exit-policies` used instead of the session default; no attribution trailers in commits (owner's rule).
+- 2026-11-10: branch name exit-policies; no attribution trailers (owner).
+- 2026-11-10 (STOP A reply): build and test here, G2/fingerprint deferred; `_rescale` pending_exit fix approved; `spec` exclusion approved; highest_close seeded from entry price; N counts the entry session as 1, exit at open of session N+1; extra ids starting with fixed_hold_/trailing_pct_ rejected; no `also=`; no upper bound on N; integer percent.
 
 ## Next step
-STOP B (tests first, then implementation) after the reviewer replies.
+Reviewer reads the report; owner runs G2 and the fingerprint, then merges. No further stage started.
 
-## Limitations (so far)
-- Baseline here: G1 548 passed, 8 skipped, 4 failed (yfinance not installed, golden/ledger hash mismatch in this checkout); G3 2 passed; G2 not run (no database).
+## Limitations
+See section 7 of the report: integer percent, float prices, closed-out strategy with open positions fails loudly, seed from the fill price, no-bar sessions invisible to policies.
