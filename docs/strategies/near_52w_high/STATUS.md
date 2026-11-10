@@ -1,6 +1,6 @@
 # near_52w_high: status
 
-Last updated: 2026-11-10 (STOP 2 in progress).
+Last updated: 2026-11-11 (STOP 2 done, waiting for review).
 
 ## Done
 - Branch `near-52w-high` from origin/master 4bfc188 (the exit-policies merge).
@@ -17,9 +17,17 @@ Last updated: 2026-11-10 (STOP 2 in progress).
 6. smallest_edge_of_interest 0.15 R per trade net of costs (to be confirmed at STOP 3 against the power numbers).
 7. Full G2 at STOP 2: `STOCKBOT_DATA_TESTS=1 STOCKBOT_FINAL_CHECK=1 pytest tests`, whole folder (643 passed was the last full run).
 
-## Open items
-- Tie-break rerun of the occupancy and concentration tables (running: three date segments, cached candidate lists in `Claude_Docs/near_high_tiebreak_parts/`).
-- Full G2, G1, G3 and the report `Claude_Docs/STOCKBOT_NEAR_52W_HIGH_STOP2_REPORT.md`.
+- 656af0e tie-break rerun (counts only, cached candidate lists in `Claude_Docs/near_high_tiebreak_parts/`): entries unchanged at 6.17 a month (0.0% move, so expected_trade_rate stays 6.2); A-names 36.9% to 9.0% of entries.
+- Report: `Claude_Docs/STOCKBOT_NEAR_52W_HIGH_STOP2_REPORT.md`.
+
+## Tests and database at STOP 2
+- G1 819 passed / 8 skipped; G3 2 passed; full folder with `STOCKBOT_DATA_TESTS=1 STOCKBOT_FINAL_CHECK=1`: 948 passed (1713 s). finsight.db sha256 and mtime unchanged.
+
+## Open items (owner and reviewer)
+1. Registration form: explicit `register(registry)` (built) or also into `default_registry`.
+2. Rank as an ordinal (built) or another encoding.
+3. Confirm smallest_edge_of_interest 0.15 R at STOP 3 against the power numbers.
+4. How the TEST/TUNE labels in shared.yaml apply to window A.
 
 ## Decisions made (dated)
 - 2026-11-10: branch based on origin/master (local master was stale).
@@ -30,7 +38,7 @@ Last updated: 2026-11-10 (STOP 2 in progress).
 - 2026-11-10: `tests/unit/test_no_strategy_in_the_tree.py` changed on purpose. It used to assert that no strategy exists; it now allows exactly the folder `stockbot/strategies/near_52w_high/` and exactly the class `NearHighStrategy` in `strategy.py`, and nothing else. Every other rule in the file is unchanged (top-level files of the strategies package, empty default registry and live book, exit policies only in their two homes, any other strategy or overlay forbidden everywhere). A second strategy must be added to that file on purpose.
 
 ## Next step
-STOP 2 report, then STOP. STOP 3 (pre-registration package) only after the owner and reviewer reply.
+STOP 3 (pre-registration package) only after the owner and reviewer reply to the STOP 2 report.
 
 ## Limitations (also to be carried into the pre-registration draft)
 - Sector map: about a third of the selected symbols have no sector and share one UNKNOWN bucket, which the shared 15% cap holds to two positions at a time. Accepted; same as live.
