@@ -300,6 +300,7 @@ Subpackage `stockbot.validation.ledger` (`__init__.py` holds the writers; the re
 | `data_catalogue.py` | Writes `docs/guides/data_catalogue.md` and, with `--json`, `docs/guides/data_catalogue.json`: machine-measured facts about every table (read-only). |
 | `guide_html.py` | Builds `docs/guides/codebase_guide.html` (the interactive picture version of this guide) from `docs/guides/codebase_guide_data.json` and `docs/guides/codebase_guide_template.html`. Standard library only. |
 | `data_guide_html.py` | Builds `docs/guides/data_guide.html` (the interactive picture version of `DATA_GUIDE.md`) from `docs/guides/data_guide_data.json`, the measured export `docs/guides/data_catalogue.json` and `docs/guides/data_guide_template.html`. Standard library only; reuses `guide_html.py`. |
+| `near_high_signal_count.py` | Counts-only study of the near-52-week-high rule (eligible, gap-guard, candidate and proposed counts, data-quality counts, nearness distribution, two mechanical occupancy models, scoring runtime). A study tool, not a strategy; takes the shared eligibility function as an argument because this package may not import `universe`. Reads only through `AsOfView`; computes no return. |
 | `copy_detector.py` | Flags dates whose rows copy the previous session (holiday copies). |
 | `f2_engine_scan.py` | Post-adjustment scan of large price moves through the real adjustment path, via the as-of view. |
 | `f2_verify_engine_path.py` | Runs every row of the verified-corporate-action list through the as-of view. |
@@ -330,6 +331,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/gen_data_catalogue.py` | Regenerates `docs/guides/data_catalogue.md` from the database (read-only). | manual | `stockbot.data_checks.data_catalogue` |
 | `scripts/build_data_guide_html.py` | Rebuilds `docs/guides/data_guide.html` from its JSON, the catalogue export and the template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.data_guide_html` |
 | `scripts/build_guide_html.py` | Rebuilds `docs/guides/codebase_guide.html` from its JSON and template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.guide_html` |
+| `scripts/signal_count_near_high.py` | Counts-only signal study of the near-52-week-high rule (read-only; hashes `finsight.db` before and after). Injects the shared eligibility rule. | manual | `stockbot.data_checks.near_high_signal_count` |
 | `scripts/paper_report.py` | Paper-trading criteria report. | manual | `stockbot.live.paper_report` |
 | `scripts/preflight_spot_check.py` | Data and adjustment spot checks. | manual | `stockbot.data_checks.preflight_spot_check` |
 | `scripts/earnings_coverage.py` | Earnings coverage report. | manual | `stockbot.data_checks.earnings_coverage` |
