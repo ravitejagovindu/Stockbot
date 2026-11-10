@@ -23,6 +23,7 @@ from stockbot.data.asof import AsOfView
 from stockbot.data.lake import open_lake
 from stockbot.data.sector_map import sector_for
 from stockbot.engine.decide import EventData
+from stockbot.engine.exit_policies.registry import policies_for
 from stockbot.engine.types import Decisions, to_plain
 from stockbot.live.adapter import LiveAdapter
 from stockbot.live.state_store import StateStore
@@ -48,6 +49,11 @@ class Book:
     strategies: tuple = ()
     policies: Mapping[str, Any] = field(default_factory=dict)
     overlays: Mapping[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def from_strategies(cls, strategies, overlays: Optional[Mapping[str, Any]] = None, extra_policies=None) -> "Book":
+        """A book whose policies are built from the strategies' specs (library ids; strategy-owned policies through ``extra_policies``)."""
+        return cls(strategies=tuple(strategies), policies=policies_for([s.spec for s in strategies], extra=extra_policies), overlays=dict(overlays or {}))
 
 
 def default_book() -> Book:

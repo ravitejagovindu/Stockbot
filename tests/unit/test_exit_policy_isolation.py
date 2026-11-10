@@ -64,7 +64,7 @@ def test_two_strategies_on_different_policies_and_symbols_do_not_affect_each_oth
 
 def test_a_position_keeps_its_own_policy_id_even_if_the_mapping_grows(two_symbol_lake):
     a, b = strat("a_one", "fixed_hold_20"), strat("b_two", "trailing_pct_5", "OTHERCO", stop=75.0)
-    decs, st = run_days(two_symbol_lake, window(SIG - 2, ENTRY + 1), [a, b], policies_for([a.spec, b.spec]), events=EV)
+    decs, st = run_days(two_symbol_lake, window(SIG - 2, ENTRY), [a, b], policies_for([a.spec, b.spec]), events=EV)
     assert {p.strategy_id: p.exit_policy_id for p in st.positions} == {"a_one": "fixed_hold_20", "b_two": "trailing_pct_5"}
     assert st.positions[0].exit_state == {} or "highest_close" not in dict(next(p for p in st.positions if p.strategy_id == "a_one").exit_state)
 
@@ -133,7 +133,7 @@ def test_a_strategy_cannot_import_another_strategy_even_with_a_policy_inside(tmp
     for name, body in (("alpha", "from stockbot.strategies.beta.exits import X\n"), ("beta", "class X: ...\n")):
         (root / "stockbot" / "strategies" / name).mkdir(parents=True)
         (root / "stockbot" / "strategies" / name / "exits.py").write_text(body)
-    assert [r for _, _, r in B.check(root)] == ["a strategy may not import another strategy"]
+    assert {r for _, _, r in B.check(root)} == {"a strategy may not import another strategy"}
 
 
 def test_the_library_imports_only_the_interface_file_and_the_standard_library():

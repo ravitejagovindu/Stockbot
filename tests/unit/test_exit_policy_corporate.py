@@ -142,8 +142,13 @@ def _plain(tmp_path):
     return plain_lake(tmp_path / "plain.db")
 
 
-def test_decide_a_held_position_on_an_unsupported_action_is_flagged_and_keeps_its_state(tmp_path):
-    from tests.fixtures.policy_lakes import lake_with_action
+def test_decide_a_held_position_on_an_unsupported_action_is_flagged_kept_and_stays_unrescaled(tmp_path):
+    """RIGHTS cannot be rescaled: the engine flags it, puts the position on HOLD and leaves prices and policy state alone; the policy keeps working."""
     lake = lake_with_action(tmp_path / "r.db", mini_lake.ENTRY + 2, "RIGHTS", 1, 4)
-    c, st, decs = trade(lake, "trailing_pct_5", mini_lake.ENTRY + 4)
+    c, st, decs = trade(lake, "fixed_hold_8", mini_lake.ENTRY + 4)
     assert any(f.code == "CORPORATE_ACTION_HOLD" for d in decs for f in d.flags)
+    (p,) = st.positions
+    assert p.hold and p.live_stop == 150.0 and p.entry_price < 200
+    lake2 = lake_with_action(tmp_path / "r2.db", mini_lake.ENTRY + 1, "RIGHTS", 1, 4)
+    c2, st2, _ = trade(lake2, "trailing_pct_5", mini_lake.ENTRY + 4)
+    assert len(c2) == 1 and c2[0].excluded_ca and c2[0].exit_reason == "STOP_HIT"                 # still exits on its stop, excluded from trade statistics

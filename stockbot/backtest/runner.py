@@ -16,6 +16,7 @@ from stockbot.backtest.no_network import network_forbidden
 from stockbot.data.asof import AsOfView
 from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EventData, decide
+from stockbot.engine.exit_policies.registry import policies_for
 from stockbot.engine.types import ClosedTrade, Decisions, ExitRecord, State
 from stockbot.risk.costs import CostModel
 
@@ -30,9 +31,11 @@ class BacktestResult:
     manifest: Mapping = None        # run manifest: config hash, strategy hashes, git SHA, data snapshot id, seed (stockbot.backtest.manifest)
 
 
-def run_backtest(lake, start: date, end: date, initial_equity: float, strategies: Sequence, policies: Mapping[str, Any], shared_config, event_data: EventData, *,
+def run_backtest(lake, start: date, end: date, initial_equity: float, strategies: Sequence, policies: Optional[Mapping[str, Any]], shared_config, event_data: EventData, *,
                  overlays: Optional[Mapping[str, Any]] = None, state: Optional[State] = None, seed: Optional[int] = None) -> BacktestResult:
-    """``lake`` is a path (opened read-only here) or an already-open read-only connection from ``open_lake``."""
+    """``lake`` is a path (opened read-only here) or an already-open read-only connection from ``open_lake``. ``policies=None`` builds the mapping from the strategies' specs (library ids)."""
+    if policies is None:
+        policies = policies_for([s.spec for s in strategies])
     conn = open_lake(lake) if not hasattr(lake, "execute") else lake
     lake_file = Path(lake) if not hasattr(lake, "execute") else None
     end_view = AsOfView(conn, end)

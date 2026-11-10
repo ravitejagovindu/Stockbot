@@ -74,19 +74,20 @@ def test_the_live_state_equals_the_rebuilt_state_with_each_policy(lake, tmp_path
 
 
 def test_the_state_after_a_split_round_trips_too(tmp_path):
-    lake = lake_with_action(tmp_path / "sp.db", ENTRY + 2, "SPLIT", 1, 5)
-    s = strategy("trailing_pct_5")
+    lake = lake_with_action(tmp_path / "sp.db", ENTRY + 3, "SPLIT", 1, 5)
+    s = strategy("trailing_pct_20")
     conn = open_lake(lake)
     pol = policies_for([s.spec])
     st = State.initial(1_000_000.0)
     seen = []
-    for d in window(SIG - 2, ENTRY + 1):
+    for d in window(SIG - 2, ENTRY + 2):
         dec, st = decide(d, st, AsOfView(conn, d), [s], CFG, EVENTS, policies=pol)
     (p,) = st.positions
     before = p.exit_state["highest_close"]
-    dec, st2 = decide(DS[ENTRY + 2], st, AsOfView(conn, DS[ENTRY + 2]), [s], CFG, EVENTS, policies=pol)
-    assert State.from_json(st2.to_json()) == st2
-    assert before > 0 and (not st2.positions or st2.positions[0].exit_state["highest_close"] <= before * 0.2 + 1e-9)
+    dec, st2 = decide(DS[ENTRY + 3], st, AsOfView(conn, DS[ENTRY + 3]), [s], CFG, EVENTS, policies=pol)
+    assert State.from_json(st2.to_json()) == st2 and apply_decisions(st, Decisions.from_json(dec.to_json())) == st2
+    (q,) = st2.positions
+    assert before == pytest.approx(177.5) and q.exit_state["highest_close"] == pytest.approx(before * 0.2) and q.shares_remaining == 5 * p.shares_remaining
 
 
 @pytest.mark.parametrize("pid,own", CASES, ids=[c[0] for c in CASES])
