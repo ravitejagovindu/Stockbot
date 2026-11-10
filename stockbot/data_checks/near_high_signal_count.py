@@ -7,7 +7,7 @@ The rule (fixed numbers, never varied here):
   nearness  adjusted close[t] / max(adjusted close over the symbol's last 252 bars)   (t = as-of date; point-in-time adjusted bars from AsOfView);
   gap guard the symbol needs at least 250 bars inside the last 252 CALENDAR sessions (Nifty dates up to t). When the calendar is shorter than 252 sessions (the first
             months after 2015-11-09) the window is the whole calendar so far, and at most 2 of its sessions may be missing;
-  candidate nearness >= 0.95;  rank nearness descending, ties by symbol ascending;  proposed = top 25;
+  candidate nearness >= 0.95;  rank nearness descending, ties by higher 20-session raw ADTV (AsOfView.adtv), then symbol ascending;  proposed = top 25;
   stop = 0.85 x signal-day adjusted close;  exit = fixed 40-session hold (market exit at the open of session 41) or the stop.
 
 What it reports (all counts; every session is evaluated through ``AsOfView(conn, t)`` so no bar after ``t`` can be read):
@@ -45,6 +45,7 @@ THRESHOLD = 0.95
 TOP_N = 25
 STOP_FRACTION = 0.85
 HOLD_SESSIONS = 40
+TIE_ADTV_SESSIONS = 20   # tie-break: higher raw-price 20-session ADTV (the one eligibility uses), then symbol
 UNADJUSTED_TYPES = ("DEMERGER", "MERGER", "RIGHTS", "OTHER")     # actions the engine does not adjust prices for (DIVIDEND is not counted: it is not a price-basis event)
 FIRST_YEAR, LAST_YEAR_REPORTED = 2016, 2026
 BINS = (0.95, 0.96, 0.97, 0.98, 0.99, 1.0)
@@ -55,6 +56,25 @@ def _d(v) -> date:
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------ one session
+def order_candidates(view: AsOfView, ranked: Sequence) -> list:
+    """Candidates [(symbol, nearness)] in rank order: nearness descending; ties by higher raw 20-session ADTV (``view.adtv``; a name without one counts as 0), then symbol.
+    ADTV is fetched only for tie groups that start inside the top TOP_N (the order beyond the cut is never used)."""
+    ranked = sorted(ranked, key=lambda r: (-r[1], r[0]))
+    out: list = []
+    i = 0
+    while i < len(ranked):
+        j = i
+        while j + 1 < len(ranked) and ranked[j + 1][1] == ranked[i][1]:
+            j += 1
+        grp = ranked[i:j + 1]
+        if len(grp) > 1 and i < TOP_N:
+            adtv = {sym: (view.adtv(sym, TIE_ADTV_SESSIONS) or 0.0) for sym, _ in grp}
+            grp = sorted(grp, key=lambda r: (-adtv[r[0]], r[0]))
+        out.extend(grp)
+        i = j + 1
+    return out
+
+
 def snapshot(view: AsOfView, eligible: Sequence[str]) -> dict:
     """Counts and the ranked candidate list for ONE as-of date. Reads only through ``view`` (bounded by view.as_of)."""
     t = view.as_of
@@ -108,7 +128,7 @@ def snapshot(view: AsOfView, eligible: Sequence[str]) -> dict:
                     if BINS[i] <= near < BINS[i + 1]:
                         out["bin_counts"][i] += 1
                         break
-    out["ranked"].sort(key=lambda r: (-r[1], r[0]))
+    out["ranked"] = order_candidates(view, out["ranked"])
     return out
 
 
@@ -161,20 +181,21 @@ class Occupancy:
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------- the study
-def run_study(conn, eligible_fn: Callable, *, start: Optional[date] = None, end: date, max_positions: int = 12, risk_pct: float = 1.0, sector_cap_pct: float = 15.0,
-              max_sessions: Optional[int] = None, on_session: Optional[Callable] = None, progress: Optional[Callable] = None) -> dict:
-    """Evaluate every session in [start, end] (calendar = Nifty dates up to ``end``). ``eligible_fn(view) -> list of symbols`` is the shared eligibility rule."""
+EVER_KEYS = ("eligible", "short", "valid", "gap_dropped", "split_in", "unadj_in", "adjust_error", "candidate", "stale")
+
+
+def collect_part(conn, eligible_fn: Callable, *, start: Optional[date] = None, end: date, max_sessions: Optional[int] = None, on_session: Optional[Callable] = None,
+                 progress: Optional[Callable] = None) -> dict:
+    """Score every session in [start, end] (calendar = Nifty dates up to ``end``): per-session count rows and the top-TOP_N candidate list in rank order. No occupancy here, so
+    contiguous date segments can be scored in separate processes and joined by ``merge_parts`` and ``assemble``. ``eligible_fn(view) -> list of symbols`` is the shared eligibility rule."""
     sess = [d for d in AsOfView(conn, end).sessions() if start is None or d >= start]
     if max_sessions:
         sess = sess[:max_sessions]
-    pos_pct = risk_pct / ((1.0 - STOP_FRACTION) * 100.0) * 100.0          # position value as % of equity: risk_pct / stop distance
     rows: list = []
-    ever: dict = {k: set() for k in ("eligible", "short", "valid", "gap_dropped", "split_in", "unadj_in", "adjust_error", "candidate", "stale")}
+    tops: list = []
+    ever: dict = {k: set() for k in EVER_KEYS}
     unadj_types: Counter = Counter()
     bin_total, exact_total = [0] * (len(BINS) - 1), 0
-    first_valid = first_cand = first_12 = None
-    plain = Occupancy(len(sess), max_positions)
-    capped = Occupancy(len(sess), max_positions, pos_pct=pos_pct, sector_cap_pct=sector_cap_pct)
     t0 = time.time()
     for j, t in enumerate(sess):
         if on_session:
@@ -185,9 +206,7 @@ def run_study(conn, eligible_fn: Callable, *, start: Optional[date] = None, end:
         tb = time.perf_counter()
         s = snapshot(view, elig)
         tc = time.perf_counter()
-        top = s["ranked"][:TOP_N]
-        plain.step(j, top)
-        capped.step(j, top)
+        tops.append([(sym, near) for sym, near in s["ranked"][:TOP_N]])
         ever["eligible"].update(elig)
         for k in ("short", "valid", "gap_dropped", "split_in", "unadj_in", "adjust_error", "stale"):
             ever[k].update(s[k])
@@ -196,23 +215,76 @@ def run_study(conn, eligible_fn: Callable, *, start: Optional[date] = None, end:
         exact_total += s["exact_one"]
         for i, c in enumerate(s["bin_counts"]):
             bin_total[i] += c
-        if first_valid is None and s["valid"]:
-            first_valid = t
-        if first_cand is None and s["ranked"]:
-            first_cand = t
-        if first_12 is None and len(s["ranked"]) >= max_positions:
-            first_12 = t
         rows.append(dict(date=t, eligible=s["n_eligible"], short=len(s["short"]), stale=len(s["stale"]), gap_dropped=len(s["gap_dropped"]), valid=len(s["valid"]),
-                         candidates=len(s["ranked"]), proposed=len(top), exact_one=s["exact_one"], split_in=len(s["split_in"]), unadj_in=len(s["unadj_in"]),
-                         adjust_error=len(s["adjust_error"]), occupancy=plain.occupancy[-1], occupancy_capped=capped.occupancy[-1], sector_blocks=capped.blocks[-1],
-                         cal_len=s["cal_len"], t_elig=tb - ta, t_score=tc - tb))
+                         candidates=len(s["ranked"]), proposed=len(tops[-1]), exact_one=s["exact_one"], split_in=len(s["split_in"]), unadj_in=len(s["unadj_in"]),
+                         adjust_error=len(s["adjust_error"]), cal_len=s["cal_len"], t_elig=tb - ta, t_score=tc - tb))
         if progress and (j % 50 == 0 or j == len(sess) - 1):
             progress(j + 1, len(sess), t, time.time() - t0)
+    return dict(sessions=sess, rows=rows, tops=tops, ever=ever, unadj_types=dict(unadj_types), bin_total=bin_total, exact_total=exact_total, seconds=time.time() - t0)
+
+
+def part_to_json(part: dict) -> dict:
+    """JSON-safe form of a ``collect_part`` result (dates as ISO strings, sets as sorted lists)."""
+    out = dict(part)
+    out["sessions"] = [d.isoformat() for d in part["sessions"]]
+    out["rows"] = [{**r, "date": r["date"].isoformat()} for r in part["rows"]]
+    out["ever"] = {k: sorted(v) for k, v in part["ever"].items()}
+    return out
+
+
+def part_from_json(d: dict) -> dict:
+    out = dict(d)
+    out["sessions"] = [_d(x) for x in d["sessions"]]
+    out["rows"] = [{**r, "date": _d(r["date"])} for r in d["rows"]]
+    out["ever"] = {k: set(v) for k, v in d["ever"].items()}
+    out["tops"] = [[tuple(x) for x in t] for t in d["tops"]]
+    return out
+
+
+def merge_parts(parts: Sequence[dict]) -> dict:
+    """Join date segments into one part (in date order). Refuses overlapping segments."""
+    parts = sorted(parts, key=lambda p: p["sessions"][0])
+    for a, b in zip(parts, parts[1:]):
+        if not a["sessions"][-1] < b["sessions"][0]:
+            raise ValueError(f"segments overlap: {a['sessions'][-1]} and {b['sessions'][0]}")
+    ever = {k: set().union(*[p["ever"][k] for p in parts]) for k in EVER_KEYS}
+    unadj: Counter = Counter()
+    for p in parts:
+        unadj.update(p["unadj_types"])
+    return dict(sessions=[d for p in parts for d in p["sessions"]], rows=[r for p in parts for r in p["rows"]], tops=[t for p in parts for t in p["tops"]], ever=ever,
+                unadj_types=dict(unadj), bin_total=[sum(p["bin_total"][i] for p in parts) for i in range(len(BINS) - 1)], exact_total=sum(p["exact_total"] for p in parts),
+                seconds=sum(p["seconds"] for p in parts))
+
+
+def assemble(part: dict, *, max_positions: int = 12, risk_pct: float = 1.0, sector_cap_pct: float = 15.0) -> dict:
+    """Run the two occupancy models on a (merged) part's cached candidate lists and return the ``summarise`` input. Reads no database."""
+    sess, rows, tops = part["sessions"], part["rows"], part["tops"]
+    pos_pct = risk_pct / ((1.0 - STOP_FRACTION) * 100.0) * 100.0          # position value as % of equity: risk_pct / stop distance
+    plain = Occupancy(len(sess), max_positions)
+    capped = Occupancy(len(sess), max_positions, pos_pct=pos_pct, sector_cap_pct=sector_cap_pct)
+    first_valid = first_cand = first_12 = None
+    for j, (r, top) in enumerate(zip(rows, tops)):
+        plain.step(j, top)
+        capped.step(j, top)
+        r["occupancy"], r["occupancy_capped"], r["sector_blocks"] = plain.occupancy[-1], capped.occupancy[-1], capped.blocks[-1]
+        if first_valid is None and r["valid"]:
+            first_valid = r["date"]
+        if first_cand is None and r["candidates"]:
+            first_cand = r["date"]
+        if first_12 is None and r["candidates"] >= max_positions:
+            first_12 = r["date"]
     mk = lambda o: [dict(symbol=e[0], signal=sess[e[1]], entry=sess[e[2]], planned_exit=(sess[e[3]] if e[3] < len(sess) else None), nearness=e[4]) for e in o.entries]  # noqa: E731
-    return dict(sessions=sess, rows=rows, ever=ever, unadj_types=dict(unadj_types), bin_total=bin_total, exact_total=exact_total, first_valid=first_valid, first_candidate=first_cand,
-                first_12_candidates=first_12, calendar_first=sess[0] if sess else None, calendar_252nd_session=(sess[WINDOW - 1] if len(sess) >= WINDOW else None),
+    return dict(sessions=sess, rows=rows, ever=part["ever"], unadj_types=part["unadj_types"], bin_total=part["bin_total"], exact_total=part["exact_total"], first_valid=first_valid,
+                first_candidate=first_cand, first_12_candidates=first_12, calendar_first=sess[0] if sess else None, calendar_252nd_session=(sess[WINDOW - 1] if len(sess) >= WINDOW else None),
                 entries=mk(plain), entries_capped=mk(capped), unrealised_signals=plain.unrealised_signals,
-                params=dict(max_positions=max_positions, risk_pct=risk_pct, sector_cap_pct=sector_cap_pct, position_pct_of_equity=pos_pct), seconds=time.time() - t0)
+                params=dict(max_positions=max_positions, risk_pct=risk_pct, sector_cap_pct=sector_cap_pct, position_pct_of_equity=pos_pct), seconds=part["seconds"])
+
+
+def run_study(conn, eligible_fn: Callable, *, start: Optional[date] = None, end: date, max_positions: int = 12, risk_pct: float = 1.0, sector_cap_pct: float = 15.0,
+              max_sessions: Optional[int] = None, on_session: Optional[Callable] = None, progress: Optional[Callable] = None) -> dict:
+    """Score and model in one process: ``collect_part`` then ``assemble``."""
+    part = collect_part(conn, eligible_fn, start=start, end=end, max_sessions=max_sessions, on_session=on_session, progress=progress)
+    return assemble(part, max_positions=max_positions, risk_pct=risk_pct, sector_cap_pct=sector_cap_pct)
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- summaries
@@ -404,34 +476,60 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--start", help="first session to evaluate, YYYY-MM-DD (default: first calendar session)")
     ap.add_argument("--end", help="last session to evaluate, YYYY-MM-DD (default: today; the lake's own last session bounds it)")
     ap.add_argument("--max-sessions", type=int, help="evaluate only the first N sessions (smoke test)")
+    ap.add_argument("--part-out", help="score the sessions only and write the per-session counts and top-25 candidate lists (the cache) as JSON; no occupancy, no report")
+    ap.add_argument("--assemble", nargs="+", metavar="PART", help="no database: join cached parts (date segments), run the occupancy models and write the report")
     ap.add_argument("--out-json", help="write the summary (with the entry list) as JSON")
     ap.add_argument("--out-md", help="write the report tables as markdown (default: print to stdout)")
     ap.add_argument("--no-hash", action="store_true", help="skip the sha256 of the database file before and after (size and mtime are still compared)")
     return ap
 
 
-def cli(eligible_fn: Callable, *, max_positions: int = 12, risk_pct: float = 1.0, sector_cap_pct: float = 15.0, argv: Optional[Sequence[str]] = None) -> int:
-    args = build_parser().parse_args(argv)
-    from stockbot.config.paths import lake_path
-    lp = Path(args.lake) if args.lake else lake_path()
-    before = fingerprint(lp, with_hash=not args.no_hash) if lp.exists() else None
-    conn = open_lake(args.lake)
-    try:
-        res = run_study(conn, eligible_fn, start=_d(args.start) if args.start else None, end=_d(args.end) if args.end else date.today(), max_positions=max_positions,
-                        risk_pct=risk_pct, sector_cap_pct=sector_cap_pct, max_sessions=args.max_sessions,
-                        progress=lambda i, n, t, s: print(f"[{i}/{n}] {t} {s:.0f}s", file=sys.stderr, flush=True))
-    finally:
-        conn.close()
-    after = fingerprint(lp, with_hash=not args.no_hash)
-    sm = summarise(res)
-    sm["finsight_db"] = dict(before=before, after=after, unchanged=(before == after))
-    md = render_markdown(sm) + (f"\nfinsight.db before: {json.dumps(before)}\nfinsight.db after:  {json.dumps(after)}\nunchanged: {before == after}\n")
+def _write_report(sm: dict, fp_text: str, args) -> None:
+    md = render_markdown(sm) + fp_text
     if args.out_json:
         Path(args.out_json).write_text(json.dumps(sm, indent=1, default=str), encoding="utf-8")
     if args.out_md:
         Path(args.out_md).write_text(md, encoding="utf-8")
     else:
         print(md)
+
+
+def cli(eligible_fn: Callable, *, max_positions: int = 12, risk_pct: float = 1.0, sector_cap_pct: float = 15.0, argv: Optional[Sequence[str]] = None) -> int:
+    args = build_parser().parse_args(argv)
+    if args.assemble:                                              # cached candidate lists only: the lake is not opened
+        parts = [json.loads(Path(f).read_text(encoding="utf-8")) for f in args.assemble]
+        merged = merge_parts([part_from_json(p) for p in parts])
+        res = assemble(merged, max_positions=max_positions, risk_pct=risk_pct, sector_cap_pct=sector_cap_pct)
+        sm = summarise(res)
+        fps = [p["finsight_db"] for p in parts]
+        sm["finsight_db"] = dict(parts=fps, unchanged=all(f["unchanged"] for f in fps), source="cached parts: " + ", ".join(Path(f).name for f in args.assemble))
+        txt = "\n" + "\n".join(f"part {i}: before {json.dumps(f['before'])}\n        after  {json.dumps(f['after'])}\n        unchanged: {f['unchanged']}" for i, f in enumerate(fps)) + "\n"
+        _write_report(sm, txt, args)
+        return 0 if sm["finsight_db"]["unchanged"] else 1
+    from stockbot.config.paths import lake_path
+    lp = Path(args.lake) if args.lake else lake_path()
+    before = fingerprint(lp, with_hash=not args.no_hash) if lp.exists() else None
+    conn = open_lake(args.lake)
+    progress = lambda i, n, t, s: print(f"[{i}/{n}] {t} {s:.0f}s", file=sys.stderr, flush=True)   # noqa: E731
+    try:
+        if args.part_out:
+            part = collect_part(conn, eligible_fn, start=_d(args.start) if args.start else None, end=_d(args.end) if args.end else date.today(),
+                                max_sessions=args.max_sessions, progress=progress)
+        else:
+            res = run_study(conn, eligible_fn, start=_d(args.start) if args.start else None, end=_d(args.end) if args.end else date.today(), max_positions=max_positions,
+                            risk_pct=risk_pct, sector_cap_pct=sector_cap_pct, max_sessions=args.max_sessions, progress=progress)
+    finally:
+        conn.close()
+    after = fingerprint(lp, with_hash=not args.no_hash)
+    fp = dict(before=before, after=after, unchanged=(before == after))
+    if args.part_out:
+        out = part_to_json(part)
+        out["finsight_db"] = fp
+        Path(args.part_out).write_text(json.dumps(out, default=str), encoding="utf-8")
+        return 0 if fp["unchanged"] else 1
+    sm = summarise(res)
+    sm["finsight_db"] = fp
+    _write_report(sm, f"\nfinsight.db before: {json.dumps(before)}\nfinsight.db after:  {json.dumps(after)}\nunchanged: {before == after}\n", args)
     return 0 if before == after else 1
 
 

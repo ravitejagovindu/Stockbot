@@ -84,13 +84,36 @@ def test_threshold_edges_exactly_095_in_and_09499_out(lake):
     assert 94.99 / 100.0 < 0.95
 
 
-def test_ties_are_ranked_by_symbol_and_counted_as_exactly_one(lake):
-    s = snap(lake, 329)
-    ones = [sym for sym, n in s["ranked"] if n == 1.0]
-    assert ones == sorted(ones) and {"TIEA", "TIEB"} <= set(ones)
-    assert s["exact_one"] == len(ones)
-    nears = [n for _, n in s["ranked"]]
-    assert nears == sorted(nears, reverse=True)
+def test_ties_are_ranked_by_adtv_then_symbol_and_counted_as_exactly_one(lake):
+    _, ds, base = lake
+    for j in (260, 300, 329):
+        s = snap(lake, j)
+        ones = [sym for sym, n in s["ranked"] if n == 1.0]
+        assert s["exact_one"] == len(ones) and {"TIEA", "TIEB", "TIEC"} <= set(ones)
+        want = sorted(ones, key=lambda sym: (-F.raw_adtv(base, sym, j), sym))                  # independent: highest ADTV first, then symbol
+        assert ones == want, (j, ones, want)
+        assert ones.index("TIEB") < ones.index("TIEA") < ones.index("TIEC")                     # more volume first; equal ADTV falls back to symbol
+        nears = [n for _, n in s["ranked"]]
+        assert nears == sorted(nears, reverse=True)                                              # nearness stays the primary key
+
+
+def test_adtv_is_fetched_only_for_tie_groups_that_start_inside_the_top_cut():
+    class V:
+        def __init__(self):
+            self.calls = []
+
+        def adtv(self, sym, period):
+            self.calls.append((sym, period))
+            return {"B": 5.0, "A": 5.0, "C": 9.0, "Z1": 1.0, "Z2": 2.0}.get(sym)
+
+    v = V()
+    cands = [("A", 1.0), ("B", 1.0), ("C", 1.0)] + [(f"Y{i:02d}", 0.99 - i * 0.0001) for i in range(30)] + [("Z1", 0.96), ("Z2", 0.96)]
+    out = M.order_candidates(v, cands)
+    assert [s for s, _ in out[:3]] == ["C", "A", "B"]                      # C has the highest ADTV; A and B tie on ADTV and fall back to symbol
+    assert sorted(sym for sym, _ in v.calls) == ["A", "B", "C"] and {p for _, p in v.calls} == {20}
+    assert [s for s, _ in out[-2:]] == ["Z1", "Z2"]                          # a tie group beyond the cut is left in symbol order and costs no query
+    v2 = V()
+    assert M.order_candidates(v2, [("X", 0.97), ("W", 0.97)]) == [("W", 0.97), ("X", 0.97)]     # no ADTV on record (None counts as 0): symbol order
 
 
 def test_split_inside_the_window_is_adjusted_flagged_and_a_future_split_does_not_leak(lake):
@@ -245,3 +268,36 @@ def test_fingerprint_and_cli_leave_the_database_untouched(lake, tmp_path):
     assert rc == 0 and M.fingerprint(p) == before and before["sha256"] and len(before["sha256"]) == 64
     sm = json.loads(out_json.read_text())
     assert sm["finsight_db"]["unchanged"] is True and "measured" in out_md.read_text()
+
+
+def test_cached_segments_joined_equal_one_run(lake):
+    p, ds, _ = lake
+    conn = open_lake(p)
+    one = M.run_study(conn, ELIG, end=ds[-1], start=ds[240])
+    a = M.collect_part(conn, ELIG, end=ds[289], start=ds[240])
+    b = M.collect_part(conn, ELIG, end=ds[-1], start=ds[290])
+    conn.close()
+    a, b = M.part_from_json(json.loads(json.dumps(M.part_to_json(a)))), M.part_from_json(json.loads(json.dumps(M.part_to_json(b))))   # through JSON, as the cache is stored
+    two = M.assemble(M.merge_parts([b, a]))                                                       # order of the arguments does not matter
+    drop = lambda rows: [{k: v for k, v in r.items() if not k.startswith("t_")} for r in rows]    # noqa: E731 - timings differ run to run
+    assert drop(one["rows"]) == drop(two["rows"]) and one["entries"] == two["entries"] and one["entries_capped"] == two["entries_capped"]
+    assert one["ever"] == two["ever"] and one["bin_total"] == two["bin_total"] and one["exact_total"] == two["exact_total"] and one["unadj_types"] == two["unadj_types"]
+    with pytest.raises(ValueError):
+        M.merge_parts([a, a])
+
+
+def test_part_and_assemble_cli_modes_match_the_single_run_and_never_touch_the_database(lake, tmp_path):
+    p, ds, _ = lake
+    before = M.fingerprint(p)
+    f1, f2 = tmp_path / "a.json", tmp_path / "b.json"
+    assert M.cli(ELIG, argv=["--lake", str(p), "--end", ds[289].isoformat(), "--start", ds[240].isoformat(), "--part-out", str(f1)]) == 0
+    assert M.cli(ELIG, argv=["--lake", str(p), "--end", ds[-1].isoformat(), "--start", ds[290].isoformat(), "--part-out", str(f2)]) == 0
+    out_json, out_md = tmp_path / "all.json", tmp_path / "all.md"
+    assert M.cli(ELIG, argv=["--assemble", str(f1), str(f2), "--out-json", str(out_json), "--out-md", str(out_md)]) == 0
+    sm = json.loads(out_json.read_text())
+    conn = open_lake(p)
+    one = M.summarise(M.run_study(conn, ELIG, end=ds[-1], start=ds[240]))
+    conn.close()
+    assert sm["occupancy_model"] == one["occupancy_model"] and sm["entries"] == one["entries"] and sm["nearness_distribution"] == one["nearness_distribution"]
+    assert sm["finsight_db"]["unchanged"] is True and len(sm["finsight_db"]["parts"]) == 2 and "part 1" in out_md.read_text()
+    assert M.fingerprint(p) == before
