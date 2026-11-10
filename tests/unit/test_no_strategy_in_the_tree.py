@@ -1,5 +1,6 @@
-"""Acceptance item (restructure plan, Phase 10): the tree contains no strategy. Interfaces and the registry live in stockbot/strategies; the only strategy-shaped code is the dummy
-under tests/ and the old macro kill switch kept as provenance (decision D1).
+"""Acceptance item (restructure plan, Phase 10): the tree contains no strategy EXCEPT the one the owner has approved by name (near_52w_high, STOP 2 of its task, a deliberate change
+of this file). Interfaces and the registry live in stockbot/strategies; other strategy-shaped code is only the dummy under tests/ and the old macro kill switch kept as provenance
+(decision D1). Exactly one strategy folder is allowed, exactly one strategy class inside it, and nothing else anywhere: a second strategy must be added here on purpose.
 
 Exit policies (exit-policies task, deliberate change): classes implementing the exit-policy interface are allowed in exactly two places, the shared library
 stockbot/engine/exit_policies/ and a strategy's own folder stockbot/strategies/<name>/. Strategies and overlays are still allowed nowhere outside tests/."""
@@ -10,6 +11,8 @@ from stockbot.strategies.registry import default_registry
 
 ROOT = Path(__file__).resolve().parents[2]
 INTERFACES = ["stockbot/engine/exit_policy.py::ExitPolicy", "stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"]
+APPROVED_STRATEGY_FOLDERS = ["near_52w_high"]
+APPROVED_STRATEGIES = ["stockbot/strategies/near_52w_high/strategy.py::NearHighStrategy"]
 LIBRARY_POLICIES = ["stockbot/engine/exit_policies/fixed_hold.py::FixedHold", "stockbot/engine/exit_policies/trailing_stop.py::TrailingStop"]
 
 
@@ -49,7 +52,7 @@ def forbidden(hits):
     """Hits that are not an interface definition and not an exit policy in an allowed home."""
     out = []
     for rel, name, kinds in hits:
-        if f"{rel}::{name}" in INTERFACES:
+        if f"{rel}::{name}" in INTERFACES + APPROVED_STRATEGIES:
             continue
         if kinds == {"exit_policy"} and exit_policy_home(rel):
             continue
@@ -62,12 +65,12 @@ def test_the_strategies_package_holds_only_the_interface_the_spec_and_the_regist
     assert names == {"__init__.py", "base.py", "registry.py", "spec.py"}, names
 
 
-def test_the_strategies_folder_holds_no_strategy_today():
-    """No strategy folder, and no strategy- or overlay-shaped class anywhere under stockbot/strategies except the two interface Protocols."""
+def test_the_strategies_folder_holds_only_the_one_approved_strategy_folder():
+    """Exactly the approved strategy folder, and no strategy- or overlay-shaped class under stockbot/strategies except the two interface Protocols and the one approved class."""
     folders = sorted(p.name for p in (ROOT / "stockbot" / "strategies").iterdir() if p.is_dir() and p.name != "__pycache__")
-    assert folders == [], folders
+    assert folders == APPROVED_STRATEGY_FOLDERS, folders
     inside = [f"{rel}::{name}" for rel, name, kinds in scan(ROOT) if rel.startswith("stockbot/strategies/") and kinds & {"strategy", "overlay"}]
-    assert sorted(inside) == ["stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"], inside
+    assert sorted(inside) == sorted(["stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"] + APPROVED_STRATEGIES), inside
 
 
 def test_the_default_registry_and_the_default_live_book_are_empty():
@@ -79,7 +82,7 @@ def test_no_class_outside_tests_implements_the_strategy_or_overlay_or_exit_polic
     hits = scan(ROOT)
     assert forbidden(hits) == [], forbidden(hits)
     # what is allowed is exactly the interface definitions plus the library's two policies (a new policy file must be added here on purpose)
-    assert sorted(f"{rel}::{name}" for rel, name, _ in hits) == sorted(INTERFACES + LIBRARY_POLICIES)
+    assert sorted(f"{rel}::{name}" for rel, name, _ in hits) == sorted(INTERFACES + APPROVED_STRATEGIES + LIBRARY_POLICIES)
 
 
 def _cls(src: str) -> ast.ClassDef:
