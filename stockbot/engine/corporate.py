@@ -1,7 +1,7 @@
 """Corporate actions on OPEN positions, generic (ENGINE_CONTRACT section 7).
 
 Splits and bonuses rescale every generic price field (entry, initial stop, live stop, target, highest high, last close), divide the shares by the factor
-(floor; the fractional remainder is paid in cash at the ex-date open) and call ``ExitPolicy.on_corporate_action`` for the policy-owned prices. R (``risk_inr``),
+(floor; the fractional remainder is paid in cash at the ex-date open), scale a queued market exit (pending_exit) with them and call ``ExitPolicy.on_corporate_action`` for the policy-owned prices. R (``risk_inr``),
 days held and counters are unchanged. Anything the engine cannot rescale (rights, mergers, demergers, unparsable ratios) puts the position on HOLD:
 flagged, excluded from trade statistics. Dividends are ignored (gross-return engine). Only actions known by the as-of date (ex_date <= as_of) arrive here.
 Mirrors the F3 behaviour of ``stockbot.engine.corporate_action_events`` (which stays for the legacy simulator until Phase 10).
@@ -45,6 +45,15 @@ class CAOutcome:
     factors: tuple = ()          # (key, factor, fractional_cash) per rescaled action
 
 
+def _rescaled_pending(pos: Position, factor: float, new_shares: int) -> int:
+    """A market exit queued for the next open scales with the shares: a full exit stays a full exit (exactly the new shares), a partial one is floored."""
+    if pos.pending_exit <= 0:
+        return pos.pending_exit
+    if pos.pending_exit >= pos.shares_remaining:
+        return new_shares
+    return min(new_shares, int(math.floor(pos.pending_exit / factor + 1e-9)))
+
+
 def _rescale(pos: Position, factor: float, ex_price: float, policy) -> tuple:
     exact = pos.shares_remaining / factor
     n = int(math.floor(exact + 1e-9))
@@ -54,7 +63,7 @@ def _rescale(pos: Position, factor: float, ex_price: float, policy) -> tuple:
     new = replace(
         pos, entry_price=pos.entry_price * factor, initial_stop=pos.initial_stop * factor, live_stop=pos.live_stop * factor,
         target=None if pos.target is None else pos.target * factor, highest_high=pos.highest_high * factor, last_close=pos.last_close * factor,
-        shares_remaining=n, shares_initial=pos.shares_initial / factor,
+        shares_remaining=n, shares_initial=pos.shares_initial / factor, pending_exit=_rescaled_pending(pos, factor, n),
         exit_state=policy.on_corporate_action(pos.exit_state, factor) if policy is not None else pos.exit_state,
     )
     return new, frac
