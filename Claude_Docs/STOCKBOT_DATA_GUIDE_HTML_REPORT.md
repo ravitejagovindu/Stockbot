@@ -102,4 +102,4 @@ The other twelve in the pool also matched: the lake's row count; the last sessio
 
 ## 7. Commits
 
-COMMITS_PLACEHOLDER
+Guide, export, tests, screenshots and report: `5f4ffbe` (the footer of the page names its parent, 412a298). This report's final wording: the commit after it.
