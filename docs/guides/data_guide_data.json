@@ -1,0 +1,2989 @@
+{
+ "meta": {
+  "title": "StockBot data picture guide",
+  "subtitle": "What is in the database, which table holds what, where it comes from, and how it reaches the engine.",
+  "guide_file": "docs/guides/DATA_GUIDE.md",
+  "banner": "The lake (finsight.db) is read-only for the engine.",
+  "example_note": "Everything labelled EXAMPLE is made up. Numbers without that label are measured or quoted from a named report, with their date.",
+  "built_at": "2026-11-10",
+  "built_from_commit": "412a298"
+ },
+ "views": [
+  {
+   "id": "big",
+   "label": "Big picture"
+  },
+  {
+   "id": "tables",
+   "label": "Table map"
+  },
+  {
+   "id": "relations",
+   "label": "How tables relate"
+  },
+  {
+   "id": "flow",
+   "label": "Source to engine"
+  },
+  {
+   "id": "row",
+   "label": "One price row"
+  },
+  {
+   "id": "time",
+   "label": "Time travel"
+  },
+  {
+   "id": "actions",
+   "label": "Corporate actions"
+  },
+  {
+   "id": "coverage",
+   "label": "Coverage"
+  },
+  {
+   "id": "issues",
+   "label": "Known issues"
+  },
+  {
+   "id": "other",
+   "label": "Other databases"
+  },
+  {
+   "id": "ask",
+   "label": "Ask the data"
+  },
+  {
+   "id": "glossary",
+   "label": "Glossary"
+  }
+ ],
+ "groups": [
+  {
+   "id": "price",
+   "label": "Core price data",
+   "desc": "Daily raw prices. The one table the engine reads for prices."
+  },
+  {
+   "id": "actions",
+   "label": "Corporate actions",
+   "desc": "Splits, bonuses and other events by ex-date, and the symbol-rename map."
+  },
+  {
+   "id": "earnings",
+   "label": "Earnings",
+   "desc": "Board-meeting and results announcements from the NSE earnings APIs."
+  },
+  {
+   "id": "asm",
+   "label": "ASM / GSM",
+   "desc": "NSE surveillance lists, one snapshot per day."
+  },
+  {
+   "id": "shares",
+   "label": "Shares and listings",
+   "desc": "Shares issued today and NSE's list of listed securities."
+  },
+  {
+   "id": "staging",
+   "label": "Staging and logs",
+   "desc": "Where data landed first, what was archived, and diaries of the downloaders."
+  },
+  {
+   "id": "legacy",
+   "label": "Legacy dashboard",
+   "desc": "Used only by the older dashboard side, not connected to the new engine."
+  },
+  {
+   "id": "unused",
+   "label": "Empty or unused",
+   "desc": "No rows, no reader, or SQLite's own bookkeeping."
+  }
+ ],
+ "databases": [
+  {
+   "id": "lake",
+   "name": "finsight.db",
+   "nick": "the lake",
+   "kind": "db",
+   "engine": "read-only",
+   "color": "price",
+   "where": "F:\\Projects\\Ravi\\StockBot\\finsight.db (not in git)",
+   "size": "{{m:meta.db_size_bytes|n}} bytes",
+   "writers": "The ingestion tools, the one-off tools in scripts/provenance, and the older dashboard side.",
+   "readers": "AsOfView (read-only), the data checks, the live runner (ASM/GSM snapshot), tests.",
+   "engine_may": "Read-only, only through open_lake (SQLite mode=ro plus query_only). The engine, backtest, validation and the live adapter never write it.",
+   "plain": "The one big database of prices, corporate actions, earnings and surveillance lists. Everything the engine knows about the market comes from here.",
+   "when": "size measured {{m:meta.measured_date}}; roles from DATA_GUIDE section A",
+   "source": "docs/guides/DATA_GUIDE.md::A"
+  },
+  {
+   "id": "live",
+   "name": "state/live_state.db",
+   "nick": "live state",
+   "kind": "db",
+   "engine": "indirect",
+   "color": "staging",
+   "where": "state/live_state.db (git-ignored)",
+   "size": "does not exist yet",
+   "writers": "stockbot/live/state_store.py, through the live adapter only.",
+   "readers": "The adapter and stockbot/live/health_check.py.",
+   "engine_may": "Not directly. The engine only sees the State object the adapter loads. The store refuses to open a file named finsight.db.",
+   "plain": "The live account's own database: an append-only journal of everything that happened, plus a cached copy of the latest state. Created by the first end-of-day run.",
+   "when": "checked 2026-11-09: the end-of-day run has never been run",
+   "source": "docs/guides/DATA_GUIDE.md::A"
+  },
+  {
+   "id": "asm",
+   "name": "asm_gsm_snapshot.db",
+   "nick": "ASM/GSM snapshot database",
+   "kind": "db",
+   "engine": "no",
+   "color": "asm",
+   "where": "F:\\Projects\\Ravi\\StockBotSnapshot\\asm_gsm_snapshot.db (outside the repository)",
+   "size": "155,648 bytes",
+   "writers": "The frozen stand-alone script snapshot_asm_gsm.py in that same folder.",
+   "readers": "stockbot/data/ingestion/merge_asm_gsm_snapshots.py, when you choose to merge it into the lake.",
+   "engine_may": "No. It holds one snapshot day, 2026-11-08.",
+   "plain": "A separate small database where the daily ASM/GSM snapshot tool saves its pages. It has the same three snapshot tables as the lake.",
+   "when": "measured 2026-11-09 (DATA_GUIDE)",
+   "source": "docs/guides/DATA_GUIDE.md::A"
+  },
+  {
+   "id": "ref",
+   "name": "data/reference/",
+   "nick": "reference files",
+   "kind": "files",
+   "engine": "partly",
+   "color": "actions",
+   "where": "data/reference/*.csv, f2_symbols.txt, and data/f9/",
+   "size": "{{m:reference_files|len}} CSV files",
+   "writers": "The scripts named in the Other databases view.",
+   "readers": "Some are read by the as-of view (fund_etf_symbols.csv) and the sector lookup (sector_map.csv); the rest by checks and tools.",
+   "engine_may": "Some files, through named readers. Never written by the engine.",
+   "plain": "Lookup and evidence files that live in git next to the code: sectors, fund lists, the ISIN map, the raw corporate-action dump and the 57 verified events.",
+   "when": "file count measured {{m:meta.measured_date}}; 57 verified events from DATA_GUIDE section E",
+   "source": "docs/guides/DATA_GUIDE.md::H"
+  },
+  {
+   "id": "ledgers",
+   "name": "Trial ledgers",
+   "nick": "ledgers",
+   "kind": "files",
+   "engine": "no",
+   "color": "shares",
+   "where": "stockbot/validation/ledger/records/",
+   "size": "trial_ledger.csv 769 bytes, trial_ledger_exploratory.csv 275 bytes",
+   "writers": "stockbot/validation/ledger/__init__.py, append-only.",
+   "readers": "verify and tests.",
+   "engine_may": "No. Never edited. The exploratory ledger is pinned by a recorded sha256 and has no hash chain.",
+   "plain": "The record of every validation attempt, counted whether it passed or not. It is the honesty record for the validation step.",
+   "when": "measured 2026-11-09 (DATA_GUIDE)",
+   "source": "docs/guides/DATA_GUIDE.md::A"
+  },
+  {
+   "id": "tickets",
+   "name": "state/tickets/",
+   "nick": "ticket files",
+   "kind": "files",
+   "engine": "output",
+   "color": "legacy",
+   "where": "state/tickets/tickets_<date>.json (git-ignored)",
+   "size": "none yet",
+   "writers": "stockbot/live/runner.py (write_tickets).",
+   "readers": "The operator.",
+   "engine_may": "Output only.",
+   "plain": "One file per trading day listing the tickets the engine proposed. Not written yet, because the end-of-day run has never run.",
+   "when": "measured 2026-11-09 (DATA_GUIDE)",
+   "source": "docs/guides/DATA_GUIDE.md::A"
+  },
+  {
+   "id": "backups",
+   "name": "Backups",
+   "nick": "backups",
+   "kind": "files",
+   "engine": "no",
+   "color": "unused",
+   "where": "F:\\Projects\\Ravi\\Backups\\",
+   "size": "three lake copies, each with a .sha256 file",
+   "writers": "Made by hand before risky steps.",
+   "readers": "Restore by hand.",
+   "engine_may": "No.",
+   "plain": "Hand-made copies of the lake from before the three risky steps. The newest, pre_restructure, has the same sha256 as today's finsight.db.",
+   "when": "measured 2026-11-09 (DATA_GUIDE)",
+   "source": "docs/guides/DATA_GUIDE.md::A"
+  }
+ ],
+ "heads_up": [
+  {
+   "text": "The lake's last session is {{m:coverage.lake_last_date}}.",
+   "when": "measured {{m:meta.measured_date}}",
+   "state": "fact",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "text": "No daily loader exists yet. Nothing moves new days from staging into the lake.",
+   "when": "code searched 2026-11-09",
+   "state": "missing",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "text": "ASM/GSM history exists only from the day snapshots began: {{m:coverage.asm_days.0.snapshot_date}}. Snapshot days so far: {{m:coverage.asm_days|uniq:snapshot_date}}.",
+   "when": "measured {{m:meta.measured_date}}",
+   "state": "fact",
+   "source": "docs/guides/DATA_GUIDE.md::F"
+  },
+  {
+   "text": "The trading calendar starts {{m:coverage.nifty_first_date}}. Earlier lake dates cannot be reached for decisions.",
+   "when": "measured {{m:meta.measured_date}}",
+   "state": "fact",
+   "source": "docs/guides/DATA_GUIDE.md::D"
+  },
+  {
+   "text": "Prices are raw, never split-adjusted. Only the EQ series was kept.",
+   "when": "from DATA_GUIDE section D",
+   "state": "fact",
+   "source": "docs/guides/DATA_GUIDE.md::D"
+  },
+  {
+   "text": "{{m:coverage.actions_after_last_session|n}} corporate actions already have an ex-date after the lake's last session.",
+   "when": "measured {{m:meta.measured_date}}",
+   "state": "fact",
+   "source": "docs/guides/DATA_GUIDE.md::C.6"
+  }
+ ],
+ "tables": [
+  {
+   "id": "market_data_lake",
+   "group": "price",
+   "engine": true,
+   "oneline": "Daily raw prices for every symbol, plus the Nifty 50 and India VIX series.",
+   "purpose": "One row per symbol per session: raw open, high, low, close and volume, exactly as traded. Never adjusted for splits. Everything the engine knows about prices comes from here through AsOfView.",
+   "columns": {
+    "id": "Surrogate row id.",
+    "symbol": "NSE symbol. A renamed name is stored under its latest symbol for the whole history.",
+    "trade_date": "Session date, plain text YYYY-MM-DD.",
+    "open_raw": "Opening price in rupees as traded that day.",
+    "high_raw": "Highest price of the day, raw.",
+    "low_raw": "Lowest price of the day, raw.",
+    "close_raw": "Closing price, raw. A split shows as a jump here.",
+    "volume_raw": "Shares traded. Zero for the index series.",
+    "exchange": "Always NSE.",
+    "created_at": "When the row was inserted (UTC).",
+    "source": "Provenance label, set on some index rows only. Not reliable provenance.",
+    "loaded_at": "Load time of the F2 work. Empty on most rows.",
+    "source_symbol": "The symbol the row was published under, when it differs from symbol (renamed names)."
+   },
+   "written_by": [
+    {
+     "path": "scripts/provenance/f2_swap.py",
+     "what": "the raw-price swap"
+    },
+    {
+     "path": "scripts/provenance/fix_blocker1_index_data.py",
+     "what": "index fix"
+    },
+    {
+     "path": "scripts/provenance/ingest_historical_2018_2019.py",
+     "what": "history fill"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/asof.py",
+     "what": "AsOfView, read-only"
+    },
+    {
+     "path": "stockbot/data_checks/",
+     "what": "data checks"
+    },
+    {
+     "path": "stockbot/live/runner.py",
+     "what": "freshness check"
+    }
+   ],
+   "issues": [
+    "EQ series only: a name that leaves EQ looks like a long absence.",
+    "Raw prices: a split shows as a jump.",
+    "The Nifty series starts later than the equity rows."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.1",
+   "scripts": []
+  },
+  {
+   "id": "market_data_lake_staging",
+   "group": "staging",
+   "engine": false,
+   "oneline": "The raw Bhavcopy download as it landed, before it went into the lake.",
+   "purpose": "Raw end-of-day rows with the extra Bhavcopy fields: ISIN, previous close, series. It is the evidence behind the lake and the input for symbol continuity. Only EQ rows were kept.",
+   "columns": {
+    "symbol": "Symbol as published that day.",
+    "trade_date": "Session date.",
+    "open_raw": "Raw open.",
+    "high_raw": "Raw high.",
+    "low_raw": "Raw low.",
+    "close_raw": "Raw close.",
+    "volume_raw": "Shares traded.",
+    "prev_close": "Previous close as printed in the file, an independent corporate-action signal.",
+    "isin": "ISIN of the security.",
+    "series": "NSE series. Only EQ was kept.",
+    "source": "URL the file came from."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/ingest_raw_bhavcopy_range.py",
+     "what": "the range downloader"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_build_isin_symbol_map.py",
+     "what": "ISIN map"
+    },
+    {
+     "path": "scripts/provenance/f2_swap.py",
+     "what": "the swap"
+    }
+   ],
+   "issues": [
+    "Ends on the last date requested; nothing moves new days from staging into the lake automatically."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.2",
+   "scripts": []
+  },
+  {
+   "id": "market_data_lake_yahoo_archive",
+   "group": "staging",
+   "engine": false,
+   "oneline": "The old Yahoo-adjusted lake rows, archived when the swap replaced them.",
+   "purpose": "The lake as it was before the F2 swap: Yahoo-adjusted prices with fractional values. Kept as evidence. Nothing in the engine reads it.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Symbol.",
+    "trade_date": "Session date.",
+    "open_raw": "Named raw, but holds a Yahoo-ADJUSTED value.",
+    "high_raw": "Named raw, but adjusted.",
+    "low_raw": "Named raw, but adjusted.",
+    "close_raw": "Named raw, but adjusted.",
+    "volume_raw": "Shares traded.",
+    "exchange": "Exchange.",
+    "created_at": "When the Yahoo data was loaded.",
+    "archived_at": "When the swap archived the row."
+   },
+   "written_by": [
+    {
+     "path": "scripts/provenance/f2_swap.py",
+     "what": "the swap"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_event_evidence.py",
+     "what": "event evidence"
+    },
+    {
+     "path": "scripts/provenance/f2_post_swap_checks.py",
+     "what": "post-swap checks"
+    }
+   ],
+   "issues": [
+    "The column names say _raw but the content is adjusted: do not use it as raw price evidence."
+   ],
+   "status": "archive",
+   "source": "docs/guides/DATA_GUIDE.md::C.3",
+   "scripts": []
+  },
+  {
+   "id": "bhavcopy_fetch_log",
+   "group": "staging",
+   "engine": false,
+   "oneline": "A diary of the downloader: one row per calendar date tried.",
+   "purpose": "Records for each date tried whether it was a session, a holiday or an error. Lets the downloader resume and shows which weekdays were holidays.",
+   "columns": {
+    "trade_date": "The date tried. Unique.",
+    "status": "OK or HOLIDAY_OR_MISSING. An ERROR status exists in the code but none is stored now.",
+    "n_rows": "EQ rows stored for the date. Zero if not a session.",
+    "url": "File URL used. Empty for holidays.",
+    "fetched_at": "When it was tried.",
+    "note": "Why a date was rejected."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/ingest_raw_bhavcopy_range.py",
+     "what": "the range downloader"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_build_isin_symbol_map.py",
+     "what": "ISIN map"
+    },
+    {
+     "path": "scripts/provenance/f2_validate_staging.py",
+     "what": "staging validation"
+    }
+   ],
+   "issues": [
+    "NSE answers some holiday requests with the previous session's file; the downloader rejects a file whose own date differs."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.4",
+   "scripts": []
+  },
+  {
+   "id": "index_gap_fill",
+   "group": "staging",
+   "engine": false,
+   "oneline": "Nifty 50 and India VIX rows for dates the lake lacked.",
+   "purpose": "Index rows for special weekend sessions and a few ordinary days, fetched from NSE's daily index file or from Yahoo. Applied into the lake by the swap script.",
+   "columns": {
+    "symbol": "NIFTY50_INDEX or INDIA_VIX.",
+    "trade_date": "Date of the gap.",
+    "open_raw": "Index open.",
+    "high_raw": "Index high.",
+    "low_raw": "Index low.",
+    "close_raw": "Index close.",
+    "source": "An NSE index-file URL or yahoo:<ticker>."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_index_gap_fill.py",
+     "what": "NSE index file"
+    },
+    {
+     "path": "stockbot/data/ingestion/f2_index_gap_fill_yahoo.py",
+     "what": "Yahoo fallback"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "scripts/provenance/f2_swap.py",
+     "what": "the swap"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.5",
+   "scripts": []
+  },
+  {
+   "id": "corporate_actions_log",
+   "group": "actions",
+   "engine": true,
+   "oneline": "Every corporate action by ex-date, with an evidence tier.",
+   "purpose": "One row per symbol, ex-date and type: splits, bonuses, dividends, rights, mergers, demergers and others, with the ratio where one applies. This table makes adjusted prices possible.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Lake symbol the event applies to.",
+    "ex_date": "First session without the right.",
+    "action_type": "SPLIT, BONUS, DIVIDEND, RIGHTS, MERGER, DEMERGER or OTHER.",
+    "ratio_numerator": "Ratio numerator, for SPLIT, BONUS and RIGHTS.",
+    "ratio_denominator": "Ratio denominator.",
+    "notes": "The feed's subject text and feed symbol.",
+    "created_at": "Insert time.",
+    "source": "Where the row came from.",
+    "loaded_at": "Load time.",
+    "evidence_tier": "STRONG, WEAK, WEAK_DIRECTIONAL, UNSUPPORTED or NOT_PRICE_MOVING.",
+    "evidence": "The evidence sentence for SPLIT and BONUS rows."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_load_corporate_actions.py",
+     "what": "append-only loader"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/asof.py",
+     "what": "AsOfView.corporate_actions"
+    },
+    {
+     "path": "stockbot/data_checks/f2_engine_scan.py",
+     "what": "engine scan"
+    },
+    {
+     "path": "stockbot/data_checks/f2_verify_engine_path.py",
+     "what": "the 57 verification rows"
+    }
+   ],
+   "issues": [
+    "Only the ex-date is recorded, no announcement date.",
+    "created_at says nothing about when an event was known: the table was loaded in one go."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.6",
+   "scripts": []
+  },
+  {
+   "id": "isin_symbol_map",
+   "group": "actions",
+   "engine": false,
+   "oneline": "Which symbol an ISIN traded under, and when.",
+   "purpose": "A map from ISIN, the permanent security identifier, to the symbols it used and the dates, so a rename can be told from a genuinely new security.",
+   "columns": {
+    "isin": "Permanent security identifier.",
+    "symbol": "A symbol that ISIN used.",
+    "first_date": "First Bhavcopy day under that symbol.",
+    "last_date": "Last Bhavcopy day under that symbol.",
+    "isin_class": "pure_rename, demerger_merger or other.",
+    "canonical_symbol": "The symbol the history is stored under in the lake.",
+    "applied_at": "When the map was built."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_build_isin_symbol_map.py",
+     "what": "map builder"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_load_corporate_actions.py",
+     "what": "action loader"
+    },
+    {
+     "path": "stockbot/data/ingestion/collect_earnings_history.py",
+     "what": "earnings collector"
+    },
+    {
+     "path": "stockbot/data_checks/f2_engine_scan.py",
+     "what": "engine scan"
+    }
+   ],
+   "issues": [],
+   "status": "reference",
+   "source": "docs/guides/DATA_GUIDE.md::C.7",
+   "scripts": []
+  },
+  {
+   "id": "shares_outstanding",
+   "group": "shares",
+   "engine": false,
+   "oneline": "One shares-issued number per symbol, as of today, not point-in-time.",
+   "purpose": "How many shares each company has issued today, fetched once from Yahoo for the market-cap gate. It is not point-in-time, so the engine does not read it.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Symbol.",
+    "effective_date": "A placeholder date, the same for every row.",
+    "shares_count": "Shares issued today.",
+    "source": "yahoo_finance_current.",
+    "created_at": "When it was fetched."
+   },
+   "written_by": [
+    {
+     "path": "scripts/provenance/fix_blocker2_shares_outstanding.py",
+     "what": "one-off fix"
+    },
+    {
+     "path": "stockbot/data/ingestion/shares_outstanding_ingestor.py",
+     "what": "ingestor"
+    }
+   ],
+   "read_by": [],
+   "issues": [
+    "KI-001: one current snapshot, not point-in-time, so a market-cap rule cannot be applied to history."
+   ],
+   "status": "unused",
+   "source": "docs/guides/DATA_GUIDE.md::C.8",
+   "scripts": []
+  },
+  {
+   "id": "securities_master",
+   "group": "shares",
+   "engine": false,
+   "oneline": "NSE's list of listed securities with official listing dates.",
+   "purpose": "Company name, series and listing date for each listed security. Used by tools. The as-of view works out listing age from the first price bar instead.",
+   "columns": {
+    "symbol": "NSE symbol. The key.",
+    "company_name": "Company name.",
+    "series": "Series, default EQ.",
+    "listing_date": "Official listing date.",
+    "isin": "ISIN. Empty for some rows.",
+    "created_at": "Insert time.",
+    "updated_at": "Update time."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/securities_ingestor.py",
+     "what": "from EQUITY_L.csv"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/ingestion/f2_build_fund_symbols.py",
+     "what": "fund symbols"
+    }
+   ],
+   "issues": [],
+   "status": "reference",
+   "source": "docs/guides/DATA_GUIDE.md::C.9",
+   "scripts": []
+  },
+  {
+   "id": "earnings_symbol_map",
+   "group": "earnings",
+   "engine": true,
+   "oneline": "Joins a lake symbol to the symbol the earnings APIs use.",
+   "purpose": "The two symbols differ for renamed names. This map lets the earnings tables be reached from a lake symbol.",
+   "columns": {
+    "lake_symbol": "Symbol in the lake.",
+    "query_symbol": "Symbol the NSE earnings APIs know it by.",
+    "how": "lake_symbol means same name; isin_symbol_map means matched through the ISIN map."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/collect_earnings_history.py",
+     "what": "earnings collector"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/asof.py",
+     "what": "earnings_coverage, results_meetings"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.10",
+   "scripts": []
+  },
+  {
+   "id": "earnings_board_meeting",
+   "group": "earnings",
+   "engine": true,
+   "oneline": "Board-meeting announcements, with the time the exchange was told.",
+   "purpose": "Every board meeting in the NSE feed with its intimation timestamp. A results meeting counts as known only after its intimation, which makes this the point-in-time-safe source.",
+   "columns": {
+    "id": "Row id.",
+    "query_symbol": "Symbol queried.",
+    "symbol": "Symbol in the response.",
+    "isin": "ISIN.",
+    "company_name": "Company name.",
+    "bm_date": "The meeting date.",
+    "purpose": "The stated purpose.",
+    "description": "The announcement text.",
+    "intimation_ts": "When the exchange was informed.",
+    "sys_ts": "System timestamp.",
+    "attachment": "Link to the attachment.",
+    "is_results_meeting": "1 if classified as a financial-results meeting.",
+    "results_rule": "Which rule classified it: purpose or desc.",
+    "row_hash": "Hash of the row, the dedupe key."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/collect_earnings_history.py",
+     "what": "earnings collector"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/asof.py",
+     "what": "AsOfView.results_meetings"
+    },
+    {
+     "path": "stockbot/data_checks/earnings_coverage.py",
+     "what": "coverage check"
+    },
+    {
+     "path": "stockbot/data_checks/earnings_validate.py",
+     "what": "validation"
+    }
+   ],
+   "issues": [
+    "KI-004: earnings history has limits.",
+    "A few results meetings have no intimation time and are never returned by the view."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.11",
+   "scripts": []
+  },
+  {
+   "id": "earnings_results_filing",
+   "group": "earnings",
+   "engine": false,
+   "oneline": "Filed financial results, used for cross-checks only.",
+   "purpose": "Filed results with period, audit status and timestamps. Checks use it to cross-check meeting dates. The view does not, because its broadcast time lags the announcement.",
+   "columns": {
+    "id": "Row id.",
+    "query_symbol": "Symbol queried.",
+    "symbol": "Symbol in the response.",
+    "isin": "ISIN.",
+    "company_name": "Company name.",
+    "period": "Quarterly, Annual and so on.",
+    "relating_to": "Third Quarter and so on.",
+    "from_date": "Start of the period covered.",
+    "to_date": "End of the period covered.",
+    "audited": "Audited or unaudited.",
+    "consolidated": "Consolidated or standalone.",
+    "cumulative": "Cumulative flag.",
+    "format": "Filing format.",
+    "filing_ts": "When it was filed.",
+    "broadcast_ts": "When it was broadcast. Lags the real announcement.",
+    "exch_dissem_ts": "When the exchange disseminated it.",
+    "seq_number": "Sequence number.",
+    "params": "API parameters.",
+    "xbrl": "Link to the XBRL file.",
+    "row_hash": "Hash of the row, the dedupe key."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/collect_earnings_history.py",
+     "what": "earnings collector"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data_checks/earnings_coverage.py",
+     "what": "coverage check"
+    },
+    {
+     "path": "stockbot/data_checks/earnings_validate.py",
+     "what": "validation"
+    }
+   ],
+   "issues": [
+    "No filings for periods after December 2024 (KI-004).",
+    "broadcast_ts lags the real announcement."
+   ],
+   "status": "reference",
+   "source": "docs/guides/DATA_GUIDE.md::C.12",
+   "scripts": []
+  },
+  {
+   "id": "earnings_api_raw",
+   "group": "earnings",
+   "engine": true,
+   "oneline": "The exact API responses, compressed.",
+   "purpose": "The raw responses so the parsed earnings tables can be rebuilt or audited. A symbol counts as having data if some response returned rows.",
+   "columns": {
+    "endpoint": "corporates-financial-results or corporate-board-meetings.",
+    "query_symbol": "Symbol queried.",
+    "fetched_at": "When it was fetched.",
+    "http_status": "HTTP status.",
+    "row_count": "Rows in the response.",
+    "body_zlib": "The response, zlib-compressed JSON."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/collect_earnings_history.py",
+     "what": "earnings collector"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/asof.py",
+     "what": "AsOfView.earnings_coverage"
+    },
+    {
+     "path": "stockbot/data_checks/earnings_coverage.py",
+     "what": "coverage check"
+    }
+   ],
+   "issues": [],
+   "status": "core (raw)",
+   "source": "docs/guides/DATA_GUIDE.md::C.13",
+   "scripts": []
+  },
+  {
+   "id": "earnings_collect_log",
+   "group": "earnings",
+   "engine": false,
+   "oneline": "One row per API call of the earnings collection.",
+   "purpose": "When, which endpoint and symbol, the HTTP status, rows returned and a note.",
+   "columns": {
+    "at": "When the call was made.",
+    "endpoint": "Which API.",
+    "query_symbol": "Symbol queried.",
+    "http_status": "HTTP status.",
+    "rows": "Rows returned.",
+    "note": "OK or the problem."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/collect_earnings_history.py",
+     "what": "earnings collector"
+    }
+   ],
+   "read_by": [],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.14",
+   "scripts": []
+  },
+  {
+   "id": "asm_gsm_daily_snapshot",
+   "group": "asm",
+   "engine": true,
+   "oneline": "NSE's ASM and GSM surveillance lists for the day the snapshot was taken.",
+   "purpose": "One row per name per framework per day. The live runner excludes any name on today's list. It is point-in-time only from its first day, because the NSE API returns current lists only.",
+   "columns": {
+    "snapshot_date": "The day the snapshot was taken. Part of the key.",
+    "framework": "ASM_LT, ASM_ST or GSM. Part of the key.",
+    "symbol": "NSE symbol. Part of the key.",
+    "isin": "ISIN.",
+    "company_name": "Company name.",
+    "stage": "Stage within the framework.",
+    "surv_code": "Surveillance code.",
+    "surv_desc": "Description.",
+    "nse_time": "NSE's own time stamp.",
+    "srno": "Serial number in the list.",
+    "fetched_at": "When fetched."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/snapshot_asm_gsm.py",
+     "what": "daily snapshot tool"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/live/runner.py",
+     "what": "load_asm_ranges"
+    }
+   ],
+   "issues": [
+    "KI-003: only snapshot days exist, no history before the first one."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.15",
+   "scripts": []
+  },
+  {
+   "id": "asm_gsm_snapshot_raw",
+   "group": "asm",
+   "engine": false,
+   "oneline": "The raw API body of each ASM or GSM snapshot call.",
+   "purpose": "Keeps the raw response of each snapshot so the parsed table can be rebuilt.",
+   "columns": {
+    "snapshot_date": "Snapshot day.",
+    "endpoint": "reportASM or reportGSM.",
+    "fetched_at": "When fetched.",
+    "http_status": "HTTP status.",
+    "row_count": "Rows in the response.",
+    "body": "The JSON body."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/snapshot_asm_gsm.py",
+     "what": "daily snapshot tool"
+    }
+   ],
+   "read_by": [],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.16",
+   "scripts": []
+  },
+  {
+   "id": "asm_gsm_snapshot_log",
+   "group": "asm",
+   "engine": false,
+   "oneline": "Outcome of each snapshot call.",
+   "purpose": "A missed day shows up as a missing snapshot_date here.",
+   "columns": {
+    "run_at": "When the call ran.",
+    "snapshot_date": "Snapshot day.",
+    "endpoint": "reportASM or reportGSM.",
+    "outcome": "OK or the problem.",
+    "detail": "Rows returned."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/snapshot_asm_gsm.py",
+     "what": "daily snapshot tool"
+    }
+   ],
+   "read_by": [],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.17",
+   "scripts": []
+  },
+  {
+   "id": "asm_gsm_list",
+   "group": "unused",
+   "engine": false,
+   "oneline": "An older ASM/GSM list design, never filled.",
+   "purpose": "From the first version of the dashboard side. Its writer has no caller and nothing reads it.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Symbol.",
+    "framework": "Framework.",
+    "stage": "Stage.",
+    "effective_date": "Effective date.",
+    "fetched_at": "When fetched."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/asm_gsm_refresher.py",
+     "what": "not called"
+    }
+   ],
+   "read_by": [],
+   "issues": [],
+   "status": "empty, unused",
+   "source": "docs/guides/DATA_GUIDE.md::C.18",
+   "scripts": []
+  },
+  {
+   "id": "earnings_calendar",
+   "group": "unused",
+   "engine": false,
+   "oneline": "An older earnings-calendar design, never filled.",
+   "purpose": "From the first version of the dashboard side. Its writer has no caller, and KI-004 explains why that design could not give a valid calendar.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Symbol.",
+    "event_date": "Event date.",
+    "event_type": "Event type.",
+    "description": "Description.",
+    "source": "Source.",
+    "fetched_at": "When fetched."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/ingestion/earnings_calendar_ingestor.py",
+     "what": "not called"
+    }
+   ],
+   "read_by": [],
+   "issues": [],
+   "status": "empty, unused",
+   "source": "docs/guides/DATA_GUIDE.md::C.19",
+   "scripts": []
+  },
+  {
+   "id": "regime_state",
+   "group": "legacy",
+   "engine": false,
+   "oneline": "The old strategy's daily macro kill-switch state.",
+   "purpose": "Nifty against its 200- and 50-day averages, the VIX, and a re-entry counter. Used only by the legacy dashboard, not an input of the new engine.",
+   "columns": {
+    "id": "Row id.",
+    "eval_date": "The day evaluated. Unique.",
+    "kill_switch_active": "1 means the switch was on, no new entries.",
+    "nifty_close": "Nifty close.",
+    "nifty_sma200": "200-day average.",
+    "nifty_sma50": "50-day average.",
+    "vix_close": "India VIX close.",
+    "reentry_consecutive_count": "Sessions in a row meeting the re-entry condition.",
+    "trigger_reason": "Why the switch turned on.",
+    "created_at": "Insert time."
+   },
+   "written_by": [
+    {
+     "path": "scripts/provenance/regime/regime_filter.py",
+     "what": "the old regime filter"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/live/api/regime.py",
+     "what": "legacy dashboard"
+    }
+   ],
+   "issues": [],
+   "status": "legacy-dashboard",
+   "source": "docs/guides/DATA_GUIDE.md::C.20",
+   "scripts": []
+  },
+  {
+   "id": "pipeline_run_log",
+   "group": "legacy",
+   "engine": false,
+   "oneline": "The old end-of-day pipeline's run diary.",
+   "purpose": "One row per run of the old pipeline, also its idempotency guard. The new end-of-day run does not use it.",
+   "columns": {
+    "id": "Row id.",
+    "run_date": "Run date. Unique.",
+    "status": "COMPLETE.",
+    "kill_switch_active": "Kill-switch state.",
+    "candidates_screened": "Candidates screened.",
+    "candidates_passed": "Candidates that passed.",
+    "new_setups_generated": "New setups.",
+    "positions_evaluated": "Positions evaluated.",
+    "error_message": "Error text, if any.",
+    "started_at": "Start time.",
+    "completed_at": "End time."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/live/idempotency.py",
+     "what": "run guard"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/live/api/health.py",
+     "what": "legacy dashboard"
+    }
+   ],
+   "issues": [],
+   "status": "legacy-dashboard",
+   "source": "docs/guides/DATA_GUIDE.md::C.21",
+   "scripts": []
+  },
+  {
+   "id": "active_positions",
+   "group": "legacy",
+   "engine": false,
+   "oneline": "Open positions of the old paper and live trading. Empty.",
+   "purpose": "Belongs to the older dashboard side and is not connected to the new state store.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Symbol.",
+    "entry_date": "Entry date.",
+    "entry_price": "Entry price.",
+    "shares": "Shares held.",
+    "initial_stop_loss": "First stop.",
+    "live_stop_loss": "Current stop.",
+    "initial_resistance_target": "First target.",
+    "projected_rr": "Projected reward to risk.",
+    "position_state": "Position state.",
+    "days_held": "Days held.",
+    "highest_high_since_breakout": "Highest high since entry.",
+    "sector": "Sector.",
+    "earnings_alert": "Earnings alert flag.",
+    "next_earnings_date": "Next earnings date.",
+    "account_equity_at_entry": "Account equity at entry.",
+    "stop_a_at_entry": "Stop A at entry.",
+    "stop_b_at_entry": "Stop B at entry.",
+    "last_evaluated_date": "Last evaluation date.",
+    "created_at": "Insert time.",
+    "updated_at": "Update time.",
+    "original_shares": "Shares at entry.",
+    "shares_remaining": "Shares left after partial exits.",
+    "total_realized_pnl_partial": "Profit booked by partial exits.",
+    "partial_exit_count": "Partial exits so far.",
+    "last_partial_exit_rr": "Reward to risk of the last partial exit.",
+    "next_partial_exit_rr": "Reward to risk of the next partial exit.",
+    "mode": "LIVE or paper.",
+    "pending_close_reason": "Why a close is pending.",
+    "fill_source": "SIMULATED or BROKER_ENTERED.",
+    "entry_costs": "Entry costs.",
+    "risk_inr": "Initial risk in rupees.",
+    "applied_corp_actions": "Actions already applied.",
+    "manual_review_ca": "Unhandled actions."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/live/position_service.py",
+     "what": "position service"
+    },
+    {
+     "path": "stockbot/live/api/positions.py",
+     "what": "positions API"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/live/api/portfolio.py",
+     "what": "portfolio API"
+    },
+    {
+     "path": "stockbot/live/equity.py",
+     "what": "equity"
+    }
+   ],
+   "issues": [],
+   "status": "legacy-dashboard, empty",
+   "source": "docs/guides/DATA_GUIDE.md::C.22",
+   "scripts": []
+  },
+  {
+   "id": "trade_analytics_log",
+   "group": "legacy",
+   "engine": false,
+   "oneline": "Append-only log of closed trades of the old paper and live trading. Empty.",
+   "purpose": "Two triggers refuse any UPDATE or DELETE. Not connected to the new engine.",
+   "columns": {
+    "id": "Row id.",
+    "position_id": "Position it closed.",
+    "symbol": "Symbol.",
+    "entry_date": "Entry date.",
+    "exit_date": "Exit date.",
+    "entry_price": "Entry price.",
+    "exit_price": "Exit price.",
+    "shares": "Shares.",
+    "initial_stop_loss": "First stop.",
+    "projected_rr": "Projected reward to risk.",
+    "realized_rr": "Realised reward to risk.",
+    "pnl_gross": "Profit before costs.",
+    "exit_reason": "Why it exited.",
+    "regime_at_entry": "Regime at entry.",
+    "regime_at_exit": "Regime at exit.",
+    "sector": "Sector.",
+    "days_held": "Days held.",
+    "closed_at": "When closed.",
+    "mode": "LIVE or paper.",
+    "costs_total": "Total costs.",
+    "pnl_net": "Profit after costs.",
+    "tax_est": "Estimated tax.",
+    "is_partial": "Partial exit flag.",
+    "risk_inr": "Risk in rupees.",
+    "excluded_ca": "True if an unhandled corporate action excludes the trade from statistics."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/live/analytics_loop.py",
+     "what": "analytics loop"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/validation/trade_metrics.py",
+     "what": "trade metrics"
+    },
+    {
+     "path": "stockbot/live/api/analytics.py",
+     "what": "analytics API"
+    }
+   ],
+   "issues": [],
+   "status": "legacy-dashboard, empty",
+   "source": "docs/guides/DATA_GUIDE.md::C.23",
+   "scripts": []
+  },
+  {
+   "id": "daily_watchlist",
+   "group": "legacy",
+   "engine": false,
+   "oneline": "Tickets of each old end-of-day run. Empty.",
+   "purpose": "The old pipeline's daily candidate list. Its writer was removed.",
+   "columns": {
+    "id": "Row id.",
+    "run_date": "Run date.",
+    "symbol": "Symbol.",
+    "entry_price": "Entry price.",
+    "live_stop_loss": "Stop.",
+    "stop_a": "Stop A.",
+    "stop_b": "Stop B.",
+    "initial_resistance_target": "Target.",
+    "projected_rr": "Projected reward to risk.",
+    "shares": "Shares.",
+    "position_value": "Position value.",
+    "risk_amount": "Risk amount.",
+    "risk_pct_of_equity": "Risk as a share of equity.",
+    "sector": "Sector.",
+    "blocked": "Blocked flag.",
+    "block_reason": "Why blocked.",
+    "created_at": "Insert time.",
+    "execution_status": "PENDING and so on.",
+    "execution_note": "Note.",
+    "position_id": "Linked position."
+   },
+   "written_by": [],
+   "read_by": [
+    {
+     "path": "stockbot/live/api/watchlist.py",
+     "what": "watchlist API"
+    },
+    {
+     "path": "stockbot/live/paper_report.py",
+     "what": "paper report"
+    }
+   ],
+   "issues": [],
+   "status": "legacy-dashboard, empty",
+   "source": "docs/guides/DATA_GUIDE.md::C.24",
+   "scripts": []
+  },
+  {
+   "id": "account_ledger",
+   "group": "legacy",
+   "engine": false,
+   "oneline": "Deposits and withdrawals of the old dashboard. Empty.",
+   "purpose": "Cash movements for the old equity calculation. Not connected to the new state store.",
+   "columns": {
+    "id": "Row id.",
+    "transaction_date": "Date.",
+    "transaction_type": "Deposit or withdrawal.",
+    "amount_inr": "Amount in rupees.",
+    "notes": "Notes.",
+    "created_at": "Insert time."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/live/api/ledger.py",
+     "what": "ledger API"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/live/account_ledger.py",
+     "what": "account ledger"
+    },
+    {
+     "path": "stockbot/live/equity.py",
+     "what": "equity"
+    }
+   ],
+   "issues": [],
+   "status": "legacy-dashboard, empty",
+   "source": "docs/guides/DATA_GUIDE.md::C.25",
+   "scripts": []
+  },
+  {
+   "id": "sqlite_sequence",
+   "group": "unused",
+   "engine": false,
+   "oneline": "SQLite's own bookkeeping: the next id for each autoincrement table.",
+   "purpose": "Not a data table. Ignore it.",
+   "columns": {
+    "name": "Table name.",
+    "seq": "Last id handed out."
+   },
+   "written_by": [],
+   "read_by": [],
+   "issues": [],
+   "status": "internal",
+   "source": "docs/guides/DATA_GUIDE.md::C.26",
+   "scripts": []
+  }
+ ],
+ "link_keys": {
+  "symbol": "The same NSE symbol in both tables. A logical link: no foreign key enforces it.",
+  "isin": "The same ISIN in both tables. The ISIN survives a rename, so it ties old and new symbols together.",
+  "trade_date": "The same session date in both tables.",
+  "ex_date": "A corporate action's ex-date is compared with the trade dates of the price table. Nothing joins them in the database.",
+  "query_symbol": "The symbol the NSE earnings APIs use. Reached from a lake symbol through earnings_symbol_map."
+ },
+ "er_nodes": [
+  {
+   "id": "market_data_lake",
+   "pos": [
+    400,
+    215,
+    200,
+    50
+   ]
+  },
+  {
+   "id": "market_data_lake_staging",
+   "pos": [
+    400,
+    40,
+    200,
+    50
+   ]
+  },
+  {
+   "id": "bhavcopy_fetch_log",
+   "pos": [
+    700,
+    40,
+    190,
+    50
+   ]
+  },
+  {
+   "id": "market_data_lake_yahoo_archive",
+   "pos": [
+    30,
+    215,
+    230,
+    50
+   ]
+  },
+  {
+   "id": "index_gap_fill",
+   "pos": [
+    30,
+    40,
+    170,
+    50
+   ]
+  },
+  {
+   "id": "corporate_actions_log",
+   "pos": [
+    450,
+    330,
+    210,
+    50
+   ]
+  },
+  {
+   "id": "isin_symbol_map",
+   "pos": [
+    225,
+    40,
+    150,
+    44
+   ]
+  },
+  {
+   "id": "securities_master",
+   "pos": [
+    30,
+    330,
+    180,
+    50
+   ]
+  },
+  {
+   "id": "shares_outstanding",
+   "pos": [
+    240,
+    330,
+    180,
+    50
+   ]
+  },
+  {
+   "id": "earnings_symbol_map",
+   "pos": [
+    740,
+    215,
+    200,
+    50
+   ]
+  },
+  {
+   "id": "earnings_board_meeting",
+   "pos": [
+    560,
+    440,
+    200,
+    50
+   ]
+  },
+  {
+   "id": "earnings_results_filing",
+   "pos": [
+    800,
+    440,
+    200,
+    50
+   ]
+  },
+  {
+   "id": "earnings_api_raw",
+   "pos": [
+    960,
+    330,
+    130,
+    44
+   ]
+  },
+  {
+   "id": "asm_gsm_daily_snapshot",
+   "pos": [
+    700,
+    130,
+    200,
+    44
+   ]
+  }
+ ],
+ "er_edges": [
+  {
+   "a": "market_data_lake_staging",
+   "b": "bhavcopy_fetch_log",
+   "keys": [
+    "trade_date"
+   ],
+   "meaning": "One fetch-log row per trade_date the downloader tried."
+  },
+  {
+   "a": "market_data_lake_staging",
+   "b": "market_data_lake",
+   "keys": [
+    "symbol",
+    "trade_date"
+   ],
+   "meaning": "Staging rows were swapped into the lake with the same symbol and trade_date."
+  },
+  {
+   "a": "market_data_lake",
+   "b": "market_data_lake_yahoo_archive",
+   "keys": [
+    "symbol",
+    "trade_date"
+   ],
+   "meaning": "The old Yahoo rows the swap replaced were archived under the same symbol and date."
+  },
+  {
+   "a": "index_gap_fill",
+   "b": "market_data_lake",
+   "keys": [
+    "symbol",
+    "trade_date"
+   ],
+   "meaning": "Fills missing NIFTY50_INDEX and INDIA_VIX dates in the lake."
+  },
+  {
+   "a": "market_data_lake",
+   "b": "corporate_actions_log",
+   "keys": [
+    "symbol",
+    "ex_date"
+   ],
+   "meaning": "An action's symbol is a lake symbol; its ex_date is compared with the lake's trade dates."
+  },
+  {
+   "a": "isin_symbol_map",
+   "b": "market_data_lake_staging",
+   "keys": [
+    "isin"
+   ],
+   "meaning": "The ISIN map was built from the ISIN printed in the staging rows."
+  },
+  {
+   "a": "isin_symbol_map",
+   "b": "earnings_symbol_map",
+   "keys": [
+    "isin",
+    "symbol"
+   ],
+   "meaning": "Renamed names reach the earnings APIs under their old symbol, matched through the ISIN map."
+  },
+  {
+   "a": "market_data_lake",
+   "b": "earnings_symbol_map",
+   "keys": [
+    "symbol"
+   ],
+   "meaning": "A lake symbol is the lake_symbol column of the earnings map."
+  },
+  {
+   "a": "earnings_symbol_map",
+   "b": "earnings_board_meeting",
+   "keys": [
+    "query_symbol"
+   ],
+   "meaning": "Meetings are stored under the query symbol."
+  },
+  {
+   "a": "earnings_symbol_map",
+   "b": "earnings_results_filing",
+   "keys": [
+    "query_symbol"
+   ],
+   "meaning": "Filings are stored under the query symbol."
+  },
+  {
+   "a": "earnings_symbol_map",
+   "b": "earnings_api_raw",
+   "keys": [
+    "query_symbol"
+   ],
+   "meaning": "Raw responses are stored per query symbol."
+  },
+  {
+   "a": "market_data_lake",
+   "b": "asm_gsm_daily_snapshot",
+   "keys": [
+    "symbol"
+   ],
+   "meaning": "A snapshot symbol is a lake symbol on the day it was listed."
+  },
+  {
+   "a": "securities_master",
+   "b": "market_data_lake",
+   "keys": [
+    "symbol"
+   ],
+   "meaning": "The official listing list shares the symbol, and an ISIN, with the price table."
+  },
+  {
+   "a": "shares_outstanding",
+   "b": "market_data_lake",
+   "keys": [
+    "symbol"
+   ],
+   "meaning": "Shares issued today per symbol. Unused by the engine."
+  }
+ ],
+ "flow_steps": [
+  {
+   "n": 1,
+   "title": "Sources",
+   "plain": "Five public NSE sources. Nothing here is ours."
+  },
+  {
+   "n": 2,
+   "title": "Scripts fetch and save",
+   "plain": "Each source has its own script that saves a table. The scripts are run by hand."
+  },
+  {
+   "n": 3,
+   "title": "Tables",
+   "plain": "The fetched data lands in tables. Prices land in staging first."
+  },
+  {
+   "n": 4,
+   "title": "The missing link",
+   "plain": "Staging reached the lake by one reviewed swap. No daily step moves new days. That is missing."
+  },
+  {
+   "n": 5,
+   "title": "The lake",
+   "plain": "Prices and index series in market_data_lake are what the engine reads."
+  },
+  {
+   "n": 6,
+   "title": "Read paths",
+   "plain": "Prices, actions and earnings go through AsOfView. The surveillance list is read by the live runner."
+  },
+  {
+   "n": 7,
+   "title": "Engine",
+   "plain": "The engine receives plain data. It cannot reach the database itself."
+  }
+ ],
+ "flow_nodes": [
+  {
+   "id": "s1",
+   "step": 1,
+   "kind": "source",
+   "label": "NSE Bhavcopy zip",
+   "sub": "daily price file",
+   "pos": [
+    10,
+    20,
+    125,
+    54
+   ],
+   "group": "price",
+   "detail": "The exchange's end-of-day price file for each session, in a legacy and a 2024+ UDiFF format.",
+   "source": "stockbot/data/ingestion/ingest_raw_bhavcopy_range.py"
+  },
+  {
+   "id": "i1",
+   "step": 2,
+   "kind": "script",
+   "label": "ingest_raw_bhavcopy_range.py",
+   "sub": "downloads, checks the date",
+   "pos": [
+    155,
+    20,
+    170,
+    54
+   ],
+   "group": "price",
+   "detail": "Tries every calendar date, accepts a file only if it declares the requested date and has EQ rows, and logs the outcome.",
+   "source": "stockbot/data/ingestion/ingest_raw_bhavcopy_range.py"
+  },
+  {
+   "id": "t1",
+   "step": 3,
+   "kind": "table",
+   "label": "market_data_lake_staging",
+   "sub": "+ bhavcopy_fetch_log",
+   "pos": [
+    345,
+    20,
+    170,
+    54
+   ],
+   "group": "staging",
+   "table": "market_data_lake_staging",
+   "detail": "Raw EQ rows with ISIN, previous close and series, plus one fetch-log row per date tried.",
+   "source": "docs/guides/DATA_GUIDE.md::C.2"
+  },
+  {
+   "id": "g1",
+   "step": 4,
+   "kind": "missing",
+   "label": "daily loader",
+   "sub": "MISSING",
+   "pos": [
+    535,
+    20,
+    150,
+    54
+   ],
+   "group": "price",
+   "detail": "No code moves a new day from staging into the lake. The loader that inserts straight into the lake has no caller. Today the lake ends where the older live pipeline stopped.",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "t2",
+   "step": 5,
+   "kind": "table",
+   "label": "market_data_lake",
+   "sub": "raw prices + index series",
+   "pos": [
+    535,
+    100,
+    150,
+    54
+   ],
+   "group": "price",
+   "table": "market_data_lake",
+   "detail": "The lake's price table. Filled from staging by the one-time reviewed swap, f2_swap.py.",
+   "source": "docs/guides/DATA_GUIDE.md::C.1"
+  },
+  {
+   "id": "s2",
+   "step": 1,
+   "kind": "source",
+   "label": "NSE index file, Yahoo",
+   "sub": "Nifty 50 and India VIX",
+   "pos": [
+    10,
+    180,
+    125,
+    54
+   ],
+   "group": "staging",
+   "detail": "NSE's daily index file, with Yahoo as the fallback, for dates the lake's index series lacked.",
+   "source": "stockbot/data/ingestion/f2_index_gap_fill.py"
+  },
+  {
+   "id": "i2",
+   "step": 2,
+   "kind": "script",
+   "label": "f2_index_gap_fill.py",
+   "sub": "and the Yahoo version",
+   "pos": [
+    155,
+    180,
+    170,
+    54
+   ],
+   "group": "staging",
+   "detail": "Fetches index rows for the missing dates.",
+   "source": "stockbot/data/ingestion/f2_index_gap_fill.py"
+  },
+  {
+   "id": "t3",
+   "step": 3,
+   "kind": "table",
+   "label": "index_gap_fill",
+   "sub": "applied by the swap",
+   "pos": [
+    345,
+    180,
+    170,
+    54
+   ],
+   "group": "staging",
+   "table": "index_gap_fill",
+   "detail": "Index rows waiting to be applied. The swap script applied them into the lake once.",
+   "source": "docs/guides/DATA_GUIDE.md::C.5"
+  },
+  {
+   "id": "s3",
+   "step": 1,
+   "kind": "source",
+   "label": "NSE corporate actions API",
+   "sub": "feed of events",
+   "pos": [
+    10,
+    260,
+    125,
+    54
+   ],
+   "group": "actions",
+   "detail": "The exchange's feed of splits, bonuses, dividends and other actions.",
+   "source": "stockbot/data/ingestion/nse_corporate_actions_history.py"
+  },
+  {
+   "id": "i3",
+   "step": 2,
+   "kind": "script",
+   "label": "dump, evidence, loader",
+   "sub": "f2_load_corporate_actions.py",
+   "pos": [
+    155,
+    260,
+    170,
+    54
+   ],
+   "group": "actions",
+   "detail": "Dumps the feed, tests each event against what prices did, labels an evidence tier, and loads once, append-only.",
+   "source": "stockbot/data/ingestion/f2_load_corporate_actions.py"
+  },
+  {
+   "id": "t4",
+   "step": 3,
+   "kind": "table",
+   "label": "corporate_actions_log",
+   "sub": "by ex-date",
+   "pos": [
+    345,
+    260,
+    170,
+    54
+   ],
+   "group": "actions",
+   "table": "corporate_actions_log",
+   "detail": "Every action with ex-date, ratio and evidence tier.",
+   "source": "docs/guides/DATA_GUIDE.md::C.6"
+  },
+  {
+   "id": "s4",
+   "step": 1,
+   "kind": "source",
+   "label": "NSE results and board-meeting APIs",
+   "sub": "announcements",
+   "pos": [
+    10,
+    340,
+    125,
+    54
+   ],
+   "group": "earnings",
+   "detail": "The exchange's APIs for board meetings and filed results.",
+   "source": "stockbot/data/ingestion/collect_earnings_history.py"
+  },
+  {
+   "id": "i4",
+   "step": 2,
+   "kind": "script",
+   "label": "collect_earnings_history.py",
+   "sub": "collects once, by hand",
+   "pos": [
+    155,
+    340,
+    170,
+    54
+   ],
+   "group": "earnings",
+   "detail": "Calls both APIs per symbol, keeps the raw response and the parsed rows.",
+   "source": "stockbot/data/ingestion/collect_earnings_history.py"
+  },
+  {
+   "id": "t5",
+   "step": 3,
+   "kind": "table",
+   "label": "earnings tables",
+   "sub": "meeting, filing, raw, map",
+   "pos": [
+    345,
+    340,
+    170,
+    54
+   ],
+   "group": "earnings",
+   "table": "earnings_board_meeting",
+   "detail": "Board meetings with intimation time, filings, raw responses and the symbol map.",
+   "source": "docs/guides/DATA_GUIDE.md::C.11"
+  },
+  {
+   "id": "s5",
+   "step": 1,
+   "kind": "source",
+   "label": "NSE ASM and GSM lists",
+   "sub": "current lists only",
+   "pos": [
+    10,
+    420,
+    125,
+    54
+   ],
+   "group": "asm",
+   "detail": "The exchange's surveillance lists. The API returns only today's list, never history.",
+   "source": "stockbot/data/ingestion/snapshot_asm_gsm.py"
+  },
+  {
+   "id": "i5",
+   "step": 2,
+   "kind": "script",
+   "label": "snapshot_asm_gsm.py",
+   "sub": "run by hand once",
+   "pos": [
+    155,
+    420,
+    170,
+    54
+   ],
+   "group": "asm",
+   "detail": "Saves today's lists. It was run once, on the first snapshot day.",
+   "source": "stockbot/data/ingestion/snapshot_asm_gsm.py"
+  },
+  {
+   "id": "g2",
+   "step": 4,
+   "kind": "missing",
+   "label": "daily scheduler",
+   "sub": "MISSING",
+   "pos": [
+    155,
+    490,
+    170,
+    44
+   ],
+   "group": "asm",
+   "detail": "No scheduled task runs the snapshot each day on this machine, so a missed day stays missed.",
+   "source": "docs/guides/DATA_GUIDE.md::F"
+  },
+  {
+   "id": "t6",
+   "step": 3,
+   "kind": "table",
+   "label": "asm_gsm_daily_snapshot",
+   "sub": "one row per name per day",
+   "pos": [
+    345,
+    420,
+    170,
+    54
+   ],
+   "group": "asm",
+   "table": "asm_gsm_daily_snapshot",
+   "detail": "The day's lists, one row per name per framework.",
+   "source": "docs/guides/DATA_GUIDE.md::C.15"
+  },
+  {
+   "id": "r1",
+   "step": 6,
+   "kind": "reader",
+   "label": "AsOfView prices",
+   "sub": "raw_bars, adjusted_bars, sessions...",
+   "pos": [
+    715,
+    100,
+    170,
+    54
+   ],
+   "group": "price",
+   "detail": "raw_bars, adjusted_bars, sessions, symbols_trading, symbol_info and adtv, all bounded by the as-of date.",
+   "source": "stockbot/data/asof.py"
+  },
+  {
+   "id": "r2",
+   "step": 6,
+   "kind": "reader",
+   "label": "AsOfView.corporate_actions",
+   "sub": "ex-date up to as-of",
+   "pos": [
+    715,
+    260,
+    170,
+    54
+   ],
+   "group": "actions",
+   "detail": "Returns only actions whose ex-date is on or before the as-of date.",
+   "source": "stockbot/data/asof.py"
+  },
+  {
+   "id": "r3",
+   "step": 6,
+   "kind": "reader",
+   "label": "AsOfView earnings",
+   "sub": "results_meetings, earnings_coverage",
+   "pos": [
+    715,
+    340,
+    170,
+    54
+   ],
+   "group": "earnings",
+   "detail": "results_meetings returns a meeting only after its intimation date. No data means no data, not no event.",
+   "source": "stockbot/data/asof.py"
+  },
+  {
+   "id": "r4",
+   "step": 6,
+   "kind": "reader",
+   "label": "live.runner.load_asm_ranges",
+   "sub": "names on the day's list",
+   "pos": [
+    715,
+    420,
+    170,
+    54
+   ],
+   "group": "asm",
+   "detail": "Reads the day's snapshot and hands the engine plain data. Missing snapshot for the run date stops a live run.",
+   "source": "stockbot/live/runner.py"
+  },
+  {
+   "id": "e",
+   "step": 7,
+   "kind": "engine",
+   "label": "engine.decide + universe",
+   "sub": "plain data in, decisions out",
+   "pos": [
+    915,
+    100,
+    125,
+    370
+   ],
+   "group": "price",
+   "detail": "The engine never opens a database. It receives what the read paths hand it.",
+   "source": "stockbot/engine/decide.py"
+  }
+ ],
+ "flow_edges": [
+  [
+   "s1",
+   "i1",
+   "solid"
+  ],
+  [
+   "i1",
+   "t1",
+   "solid"
+  ],
+  [
+   "t1",
+   "g1",
+   "missing"
+  ],
+  [
+   "g1",
+   "t2",
+   "missing"
+  ],
+  [
+   "s2",
+   "i2",
+   "solid"
+  ],
+  [
+   "i2",
+   "t3",
+   "solid"
+  ],
+  [
+   "t3",
+   "t2",
+   "once"
+  ],
+  [
+   "s3",
+   "i3",
+   "solid"
+  ],
+  [
+   "i3",
+   "t4",
+   "solid"
+  ],
+  [
+   "s4",
+   "i4",
+   "solid"
+  ],
+  [
+   "i4",
+   "t5",
+   "solid"
+  ],
+  [
+   "s5",
+   "i5",
+   "solid"
+  ],
+  [
+   "i5",
+   "t6",
+   "solid"
+  ],
+  [
+   "g2",
+   "t6",
+   "missing"
+  ],
+  [
+   "t2",
+   "r1",
+   "solid"
+  ],
+  [
+   "t4",
+   "r2",
+   "solid"
+  ],
+  [
+   "t5",
+   "r3",
+   "solid"
+  ],
+  [
+   "t6",
+   "r4",
+   "solid"
+  ],
+  [
+   "r1",
+   "e",
+   "solid"
+  ],
+  [
+   "r2",
+   "e",
+   "solid"
+  ],
+  [
+   "r3",
+   "e",
+   "solid"
+  ],
+  [
+   "r4",
+   "e",
+   "solid"
+  ]
+ ],
+ "row_steps": [
+  {
+   "n": 1,
+   "title": "Raw file line",
+   "where": "NSE Bhavcopy zip",
+   "group": "price",
+   "plain": "NSE publishes one line per security per day in a zip file. The line below is made up.",
+   "fields": [
+    [
+     "SYMBOL",
+     "EXAMPLECO"
+    ],
+    [
+     "SERIES",
+     "EQ"
+    ],
+    [
+     "OPEN",
+     "201.40"
+    ],
+    [
+     "HIGH",
+     "206.00"
+    ],
+    [
+     "LOW",
+     "199.75"
+    ],
+    [
+     "CLOSE",
+     "204.10"
+    ],
+    [
+     "PREVCLOSE",
+     "200.90"
+    ],
+    [
+     "TOTTRDQTY",
+     "1,250,000"
+    ],
+    [
+     "TIMESTAMP",
+     "02-JAN-2030"
+    ],
+    [
+     "ISIN",
+     "INE000X00000"
+    ]
+   ],
+   "changed": [],
+   "source": "stockbot/data/ingestion/ingest_raw_bhavcopy_range.py"
+  },
+  {
+   "n": 2,
+   "title": "Checks",
+   "where": "ingest_raw_bhavcopy_range.py",
+   "group": "price",
+   "plain": "Kept only if the file's own date equals the requested date, and only for series EQ. A holiday copy of yesterday's file is rejected.",
+   "fields": [
+    [
+     "file date equals requested date",
+     "yes: keep"
+    ],
+    [
+     "SERIES is EQ",
+     "yes: keep"
+    ],
+    [
+     "otherwise",
+     "dropped, and the fetch log says why"
+    ]
+   ],
+   "changed": [],
+   "source": "stockbot/data/ingestion/ingest_raw_bhavcopy_range.py"
+  },
+  {
+   "n": 3,
+   "title": "Staging row",
+   "where": "market_data_lake_staging",
+   "group": "staging",
+   "table": "market_data_lake_staging",
+   "plain": "Names change to the table's own: raw prices, prev_close, isin, series, and the file's URL.",
+   "fields": [
+    [
+     "symbol",
+     "EXAMPLECO"
+    ],
+    [
+     "trade_date",
+     "2030-01-02"
+    ],
+    [
+     "open_raw",
+     "201.4"
+    ],
+    [
+     "high_raw",
+     "206.0"
+    ],
+    [
+     "low_raw",
+     "199.75"
+    ],
+    [
+     "close_raw",
+     "204.1"
+    ],
+    [
+     "volume_raw",
+     "1250000"
+    ],
+    [
+     "prev_close",
+     "200.9"
+    ],
+    [
+     "isin",
+     "INE000X00000"
+    ],
+    [
+     "series",
+     "EQ"
+    ],
+    [
+     "source",
+     "(the file's URL)"
+    ]
+   ],
+   "changed": [
+    "symbol",
+    "trade_date",
+    "volume_raw"
+   ],
+   "source": "docs/guides/DATA_GUIDE.md::C.2"
+  },
+  {
+   "n": 4,
+   "title": "Fetch log row",
+   "where": "bhavcopy_fetch_log",
+   "group": "staging",
+   "table": "bhavcopy_fetch_log",
+   "plain": "One diary row for the date: how many EQ rows were stored, with the outcome.",
+   "fields": [
+    [
+     "trade_date",
+     "2030-01-02"
+    ],
+    [
+     "status",
+     "OK"
+    ],
+    [
+     "n_rows",
+     "1423"
+    ],
+    [
+     "url",
+     "(the file's URL)"
+    ],
+    [
+     "fetched_at",
+     "2030-01-02T18:30:00"
+    ],
+    [
+     "note",
+     "(empty)"
+    ]
+   ],
+   "changed": [
+    "status",
+    "n_rows"
+   ],
+   "source": "docs/guides/DATA_GUIDE.md::C.4"
+  },
+  {
+   "n": 5,
+   "title": "Into the lake",
+   "where": "market_data_lake",
+   "group": "price",
+   "table": "market_data_lake",
+   "plain": "The swap copied raw staging rows into the lake. Prices stay raw. It is a one-time step today: no daily loader exists.",
+   "fields": [
+    [
+     "id",
+     "(new row id)"
+    ],
+    [
+     "symbol",
+     "EXAMPLECO"
+    ],
+    [
+     "trade_date",
+     "2030-01-02"
+    ],
+    [
+     "open_raw",
+     "201.4"
+    ],
+    [
+     "high_raw",
+     "206.0"
+    ],
+    [
+     "low_raw",
+     "199.75"
+    ],
+    [
+     "close_raw",
+     "204.1"
+    ],
+    [
+     "volume_raw",
+     "1250000"
+    ],
+    [
+     "exchange",
+     "NSE"
+    ]
+   ],
+   "changed": [
+    "exchange",
+    "id"
+   ],
+   "source": "docs/guides/DATA_GUIDE.md::C.1"
+  },
+  {
+   "n": 6,
+   "title": "Freshness check",
+   "where": "live.runner.check_freshness",
+   "group": "price",
+   "plain": "Before a live run the check asks: is today a Nifty date in the lake? If the latest session is older, it stops with DataFreshnessError. It only looks, it never fetches.",
+   "fields": [
+    [
+     "as-of date",
+     "2030-01-02"
+    ],
+    [
+     "latest session in the lake",
+     "2030-01-02"
+    ],
+    [
+     "result",
+     "fresh: the run may go on"
+    ]
+   ],
+   "changed": [],
+   "source": "stockbot/live/runner.py::check_freshness"
+  }
+ ],
+ "time": {
+  "symbol": "EXAMPLECO",
+  "ex_index": 6,
+  "ratio_num": 1,
+  "ratio_den": 10,
+  "factor": 0.1,
+  "dates": [
+   "2030-01-02",
+   "2030-01-03",
+   "2030-01-04",
+   "2030-01-07",
+   "2030-01-08",
+   "2030-01-09",
+   "2030-01-10",
+   "2030-01-11",
+   "2030-01-14",
+   "2030-01-15",
+   "2030-01-16",
+   "2030-01-17"
+  ],
+  "close": [
+   1000,
+   1012,
+   1005,
+   1030,
+   1021,
+   1040,
+   104,
+   106,
+   103,
+   108,
+   110,
+   109
+  ],
+  "error_text": "end {later} is after the as-of date {as_of}",
+  "source": "stockbot/data/asof.py",
+  "adjust_source": "stockbot/data/adjustments.py::get_adjusted_series",
+  "lines": [
+   "AsOfView(conn, as_of) bounds the SQL itself: trade_date <= as_of.",
+   "Asking for a later end or start date raises FutureDataError instead of silently returning less.",
+   "A split counts only once its ex-date is on or before the as-of date."
+  ]
+ },
+ "action_types": {
+  "SPLIT": {
+   "applied": true,
+   "price": "Factor = numerator / denominator (1:10 gives 0.1). Bars before the ex-date are multiplied.",
+   "position": "Prices rescaled, shares divided by the factor (floor), cash in lieu for the fraction."
+  },
+  "BONUS": {
+   "applied": true,
+   "price": "Factor = denominator / (denominator + numerator) (1:1 gives 0.5).",
+   "position": "Same rescale."
+  },
+  "DIVIDEND": {
+   "applied": false,
+   "price": "Ignored: gross returns, no total-return adjustment.",
+   "position": "Ignored."
+  },
+  "RIGHTS": {
+   "applied": false,
+   "price": "Factor 1.0: no price adjustment.",
+   "position": "HOLD: flagged CORPORATE_ACTION_HOLD, not rescaled, excluded from trade statistics."
+  },
+  "MERGER": {
+   "applied": false,
+   "price": "Factor 1.0: no price adjustment.",
+   "position": "HOLD."
+  },
+  "DEMERGER": {
+   "applied": false,
+   "price": "Factor 1.0: no price adjustment.",
+   "position": "HOLD."
+  },
+  "OTHER": {
+   "applied": false,
+   "price": "Factor 1.0. Includes split or bonus announcements whose price evidence disagreed, kept as OTHER on purpose.",
+   "position": "HOLD."
+  }
+ },
+ "actions_text": {
+  "applies": "The engine adjusts prices for SPLIT and BONUS only.",
+  "means": "Any price jump on the date of a dividend, rights issue, merger, demerger or OTHER action stays in the history as an unadjusted jump. A backtest reader should treat it that way.",
+  "tiers": {
+   "STRONG": "The Yahoo-implied factor agrees with the logged factor within 3%.",
+   "WEAK": "The raw close-to-close ratio is within 25% of the logged factor and closer to it than to any other standard ratio.",
+   "WEAK_DIRECTIONAL": "Reviewer-approved: the feed states the ratio, Yahoo does not contradict it, and adjusting improves the fit.",
+   "UNSUPPORTED": "The evidence disagreed. Stored as OTHER and does not move prices.",
+   "NOT_PRICE_MOVING": "Dividends, rights, mergers, demergers and other non-price events."
+  },
+  "source": "docs/guides/DATA_GUIDE.md::E",
+  "chart": {
+   "dates": [
+    "Day 1",
+    "Day 2",
+    "Day 3",
+    "Day 4",
+    "Day 5",
+    "Day 6",
+    "Day 7",
+    "Day 8",
+    "Day 9",
+    "Day 10"
+   ],
+   "raw": [
+    500,
+    510,
+    495,
+    520,
+    525,
+    53,
+    52,
+    54,
+    56,
+    55
+   ],
+   "ex_index": 5,
+   "factor": 0.1
+  }
+ },
+ "issues": [
+  {
+   "id": "ki001",
+   "tag": "KI-001",
+   "title": "Shares count is not point-in-time",
+   "status": "open",
+   "icon": "coins",
+   "what": "shares_outstanding holds one current number per symbol, fetched once. It cannot say how many shares existed in the past.",
+   "backtest": "A market-cap rule cannot be applied to history, so the gate is parked and liquidity (ADTV) is used instead.",
+   "when": "from report docs/data_audit/DATA_KNOWN_ISSUES.md",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "ki002",
+   "tag": "KI-002",
+   "title": "Max-T test has low power",
+   "status": "recorded",
+   "icon": "meter",
+   "what": "At the number of trades the strategy can achieve, the significance test can detect only large edges.",
+   "backtest": "Not significant at about 2.6 trades a month is not evidence of no edge.",
+   "when": "from report docs/data_audit/DATA_KNOWN_ISSUES.md",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "ki003",
+   "tag": "KI-003",
+   "title": "No historical ASM/GSM data",
+   "status": "open",
+   "icon": "shield",
+   "what": "NSE's API returns the current lists only, so snapshots exist only from the day they began.",
+   "backtest": "The surveillance exclusion cannot be applied to the past.",
+   "when": "from report docs/data_audit/DATA_KNOWN_ISSUES.md",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "ki004",
+   "tag": "KI-004",
+   "title": "Earnings history has limits",
+   "status": "collected, with limits",
+   "icon": "calendar",
+   "what": "The results API has no filings for periods after December 2024, broadcast times lag the announcement, and some symbols have no data.",
+   "backtest": "Use the results board-meeting date and its intimation time. No data returns no data, never no event.",
+   "when": "from report docs/data_audit/DATA_KNOWN_ISSUES.md",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "eq",
+   "tag": "EQ-only",
+   "title": "EQ series only: gaps and re-entries",
+   "status": "open",
+   "icon": "gap",
+   "what": "A name that moves out of the EQ series looks like a long absence. {{m:coverage.symbol_class[class=last bar before the last session of the lake].symbols|n}} equity symbols end before the last session.",
+   "backtest": "Entry and universe rules must treat re-entry after an absence explicitly.",
+   "when": "measured {{m:meta.measured_date}}",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "ann",
+   "tag": "No announce dates",
+   "title": "Corporate actions have no announcement date",
+   "status": "open",
+   "icon": "clock",
+   "what": "Only the ex-date is recorded. The table was loaded in one go, so created_at says nothing about when an event was known.",
+   "backtest": "No rule may use that an action is coming.",
+   "when": "from docs/restructure/PRE_LIVE_LIST.md item 5",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "loader",
+   "tag": "No daily loader",
+   "title": "Nothing loads new days into the lake",
+   "status": "missing",
+   "icon": "gear",
+   "what": "The range downloader writes only to staging. The loader that writes straight into the lake has no caller. The lake ends {{m:coverage.lake_last_date}}.",
+   "backtest": "For the daily run, the freshness check reports DataFreshnessError for any later date until something loads those days.",
+   "when": "code searched 2026-11-09; date measured {{m:meta.measured_date}}",
+   "source": "docs/guides/DATA_GUIDE.md::I"
+  },
+  {
+   "id": "cal",
+   "tag": "Calendar",
+   "title": "The calendar starts {{m:coverage.nifty_first_date}}",
+   "status": "open",
+   "icon": "calendar",
+   "what": "Sessions come from the Nifty series. Earlier lake dates have no Nifty row, so they are unreachable for decisions.",
+   "backtest": "A window that starts earlier effectively starts on that date.",
+   "when": "measured {{m:meta.measured_date}}",
+   "source": "docs/guides/DATA_GUIDE.md::D"
+  }
+ ],
+ "live": {
+  "tables": [
+   {
+    "name": "meta",
+    "cols": "key (primary key), value",
+    "plain": "schema_version and initial_cash. A different schema version is refused: no migration is designed."
+   },
+   {
+    "name": "journal",
+    "cols": "seq, kind, session, key, payload",
+    "plain": "The append-only history. kind is init, effect (an operator report applied) or decisions (one session). UNIQUE (kind, key), so the same report or session is journaled once."
+   },
+   {
+    "name": "snapshot",
+    "cols": "id (always 1), as_of, state",
+    "plain": "The latest State as JSON. A cache; rebuild ignores it."
+   }
+  ],
+  "triggers": [
+   "journal_no_update",
+   "journal_no_delete"
+  ],
+  "trigger_message": "journal is append-only",
+  "events": [
+   {
+    "seq": 1,
+    "kind": "init",
+    "session": "0000-00-00",
+    "key": "init",
+    "payload": "{\"cash\": 1000000.0}",
+    "cash": 1000000.0,
+    "positions": [],
+    "note": "init creates State.initial(cash)."
+   },
+   {
+    "seq": 2,
+    "kind": "decisions",
+    "session": "2030-01-02",
+    "key": "2030-01-02",
+    "payload": "{\"new_tickets\": [EXAMPLECO buy 877]}",
+    "cash": 1000000.0,
+    "positions": [],
+    "note": "A session's Decisions: a ticket was proposed. No money has moved yet."
+   },
+   {
+    "seq": 3,
+    "kind": "effect",
+    "session": "2030-01-03",
+    "key": "report-1",
+    "payload": "{FillReport EXAMPLECO 877 @ 201.40}",
+    "cash": 823372.2,
+    "positions": [
+     "EXAMPLECO 877"
+    ],
+    "note": "The operator reported the fill. apply_effect updates cash and positions (costs left out of this picture)."
+   },
+   {
+    "seq": 4,
+    "kind": "decisions",
+    "session": "2030-01-03",
+    "key": "2030-01-03",
+    "payload": "{\"fills\": [], \"flags\": []}",
+    "cash": 823372.2,
+    "positions": [
+     "EXAMPLECO 877"
+    ],
+    "note": "Next session: the position is stepped, nothing to report."
+   }
+  ],
+  "source": "stockbot/live/state_store.py",
+  "doc": "docs/guides/DATA_GUIDE.md::G",
+  "rebuild": "rebuild() ignores the snapshot and folds the journal from the first row: init, then each effect with apply_effect, each decisions row with apply_decisions. The result must equal the stored snapshot. scripts/daily_health_check.py reports a mismatch."
+ },
+ "ref_files": [
+  {
+   "file": "sector_map.csv",
+   "plain": "Sector per symbol, for the sector cap.",
+   "read_by": "stockbot/data/sector_map.py"
+  },
+  {
+   "file": "fund_etf_symbols.csv",
+   "plain": "ETF and fund names excluded from the universe.",
+   "read_by": "stockbot/data/asof.py"
+  },
+  {
+   "file": "isin_symbol_map.csv",
+   "plain": "The ISIN map with continuity evidence. The table isin_symbol_map is its loaded form.",
+   "read_by": "stockbot/data/ingestion/f2_build_isin_symbol_map.py"
+  },
+  {
+   "file": "special_sessions.csv",
+   "plain": "Special weekend or holiday sessions and Nifty-series gaps.",
+   "read_by": "stockbot/data_checks/copy_detector.py"
+  },
+  {
+   "file": "verified_corporate_actions.csv",
+   "plain": "The 57 hand-verified events with expected factor and treatment.",
+   "read_by": "stockbot/data_checks/f2_verify_engine_path.py"
+  },
+  {
+   "file": "unadjusted_events.csv",
+   "plain": "Events that move price but are not adjusted (rights, demergers and so on).",
+   "read_by": "stockbot/data_checks/f2_engine_scan.py"
+  },
+  {
+   "file": "held_events.csv",
+   "plain": "Events held out of the first load until a second source confirmed them.",
+   "read_by": "stockbot/data/ingestion/f2_load_corporate_actions.py"
+  },
+  {
+   "file": "corporate_actions_evidence.csv",
+   "plain": "The evidence table behind corporate_actions_log.",
+   "read_by": "stockbot/data/ingestion/f2_event_evidence.py"
+  },
+  {
+   "file": "nse_corporate_actions_raw.csv",
+   "plain": "The raw NSE feed dump.",
+   "read_by": "stockbot/data/ingestion/f2_build_isin_symbol_map.py"
+  },
+  {
+   "file": "EQUITY_L.csv",
+   "plain": "NSE's listed-securities file.",
+   "read_by": "stockbot/data/ingestion/securities_ingestor.py"
+  },
+  {
+   "file": "pit_shares_anchors.csv",
+   "plain": "Point-in-time shares inputs of the closed F2b work. Not used.",
+   "read_by": "scripts/provenance/"
+  },
+  {
+   "file": "pit_shares_spotcheck_filings.csv",
+   "plain": "Point-in-time shares spot-check inputs. Not used.",
+   "read_by": "scripts/provenance/"
+  }
+ ],
+ "ref_other": [
+  {
+   "file": "f2_symbols.txt",
+   "rows_note": "one symbol per line",
+   "plain": "The symbol list used for the corporate-action dump.",
+   "read_by": "the dump tool"
+  },
+  {
+   "file": "data/f9/power_results.json",
+   "rows_note": "JSON",
+   "plain": "Power-study results, full run.",
+   "read_by": "stockbot/validation/f9_report.py"
+  },
+  {
+   "file": "data/f9/trade_library.npz",
+   "rows_note": "arrays",
+   "plain": "The old strategy's random-entry trade library.",
+   "read_by": "stockbot/validation/f9_power_study.py"
+  }
+ ],
+ "ask": [
+  {
+   "q": "What did a stock trade at on a day?",
+   "tables": [
+    "market_data_lake"
+   ],
+   "method": "AsOfView.raw_bars (raw), AsOfView.adjusted_bars (split-adjusted)",
+   "plain": "Raw prices are stored. The adjusted view is computed in memory from the corporate-action log.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "Was a day a trading session?",
+   "tables": [
+    "market_data_lake",
+    "bhavcopy_fetch_log"
+   ],
+   "method": "AsOfView.sessions (the Nifty rows)",
+   "plain": "Sessions are the NIFTY50_INDEX dates. The fetch log explains holidays.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "Did a stock split or pay a bonus, and when?",
+   "tables": [
+    "corporate_actions_log"
+   ],
+   "method": "action_type SPLIT or BONUS, ex_date",
+   "plain": "One row per action with the ex-date and the ratio.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "Why did a price jump?",
+   "tables": [
+    "corporate_actions_log",
+    "isin_symbol_map"
+   ],
+   "method": "actions around the date, then the ISIN map for a rename",
+   "plain": "Look for an action near the date. If there is none, check whether the symbol was renamed.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "Did a symbol change name?",
+   "tables": [
+    "isin_symbol_map"
+   ],
+   "method": "isin_class and canonical_symbol",
+   "plain": "The ISIN stays the same when the symbol changes.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "When is the next results meeting, and when was it announced?",
+   "tables": [
+    "earnings_board_meeting",
+    "earnings_symbol_map"
+   ],
+   "method": "bm_date, intimation_ts, is_results_meeting=1, through the symbol map",
+   "plain": "A meeting counts as known only after its intimation time.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "Is a name on a surveillance list today?",
+   "tables": [
+    "asm_gsm_daily_snapshot"
+   ],
+   "method": "snapshot_date and symbol",
+   "plain": "Only snapshot days exist, so only those days can be answered.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "Did the downloader skip a date?",
+   "tables": [
+    "bhavcopy_fetch_log"
+   ],
+   "method": "status and note for the date",
+   "plain": "Every date tried has a row with its outcome.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "How old is a listing?",
+   "tables": [
+    "market_data_lake",
+    "securities_master"
+   ],
+   "method": "first bar in the lake (AsOfView.symbol_info); official date in securities_master",
+   "plain": "The engine uses the first price bar. The official listing date is in the master list.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "What is a stock's sector?",
+   "files": [
+    "data/reference/sector_map.csv"
+   ],
+   "tables": [],
+   "method": "data/reference/sector_map.csv",
+   "plain": "Sectors are not in the database. They are in a reference file.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  },
+  {
+   "q": "What is in the live state?",
+   "tables": [],
+   "dbs": [
+    "live"
+   ],
+   "method": "state/live_state.db, tables journal and snapshot",
+   "plain": "Once the file exists. It is a separate database from the lake.",
+   "source": "docs/guides/DATA_GUIDE.md::K.1"
+  }
+ ],
+ "ask_note": "Run these from the repository folder. mode=ro opens the file read-only, so nothing you type can change it. The pattern passes the SQL as an argument, which keeps single quotes inside the SQL working. The DATA_GUIDE shows the SQL inside the command text, which breaks for queries that contain quotes.",
+ "open_ro": "py -c \"import sqlite3,sys; c=sqlite3.connect('file:finsight.db?mode=ro', uri=True); print(c.execute(sys.argv[1]).fetchall())\" \"<SQL>\"",
+ "queries": [
+  {
+   "id": "q1",
+   "title": "Last 5 bars for a symbol (raw prices)",
+   "sql": "SELECT trade_date, open_raw, high_raw, low_raw, close_raw, volume_raw FROM market_data_lake WHERE symbol='RELIANCE' ORDER BY trade_date DESC LIMIT 5;",
+   "returned": "Returned 2026-10-16 (1215.0, 1215.4, 1193.0, 1211.2, 17225283), 2026-10-15 (1185.2, 1218.8, 1177.2, 1215.0, 23456219), then 2026-10-14, 2026-10-13, 2026-10-12.",
+   "when": "run 2026-11-09 (DATA_GUIDE section K.2)",
+   "source": "docs/guides/DATA_GUIDE.md::K.2"
+  },
+  {
+   "id": "q2",
+   "title": "All actions for a symbol",
+   "sql": "SELECT ex_date, action_type, ratio_numerator, ratio_denominator, evidence_tier FROM corporate_actions_log WHERE symbol='SBIN' AND action_type <> 'DIVIDEND' ORDER BY ex_date;",
+   "returned": "Returned one row: 2014-11-20, SPLIT, 1.0, 10.0, WEAK.",
+   "when": "run 2026-11-09 (DATA_GUIDE section K.2)",
+   "source": "docs/guides/DATA_GUIDE.md::K.2"
+  },
+  {
+   "id": "q3",
+   "title": "Sessions in a year (from the Nifty series)",
+   "sql": "SELECT COUNT(*) FROM market_data_lake WHERE symbol='NIFTY50_INDEX' AND trade_date BETWEEN '2025-01-01' AND '2025-12-31';",
+   "returned": "Returned 249.",
+   "when": "run 2026-11-09 (DATA_GUIDE section K.2)",
+   "source": "docs/guides/DATA_GUIDE.md::K.2"
+  },
+  {
+   "id": "q4",
+   "title": "A split in raw prices",
+   "sql": "SELECT trade_date, close_raw, volume_raw FROM market_data_lake WHERE symbol='SBIN' AND trade_date BETWEEN '2014-11-17' AND '2014-11-24' ORDER BY trade_date;",
+   "returned": "Returned closes 2940.6, 2945.75, 2910.5, then 297.1 on 2014-11-20, then 305.5 and 308.85.",
+   "when": "run 2026-11-09 (DATA_GUIDE section K.2)",
+   "source": "docs/guides/DATA_GUIDE.md::K.2"
+  },
+  {
+   "id": "q5",
+   "title": "How a renamed symbol is linked",
+   "sql": "SELECT isin, symbol, first_date, last_date, isin_class, canonical_symbol FROM isin_symbol_map WHERE canonical_symbol='ETERNAL' ORDER BY first_date;",
+   "returned": "Returned ZOMATO 2021-07-23 to 2025-04-08 and ETERNAL 2025-04-09 to 2026-09-30, both pure_rename, canonical ETERNAL.",
+   "when": "run 2026-11-09 (DATA_GUIDE section K.2)",
+   "source": "docs/guides/DATA_GUIDE.md::K.2"
+  }
+ ],
+ "glossary": [
+  {
+   "term": "ADTV",
+   "def": "Average daily traded value: raw close times raw volume, averaged over recent sessions. Always computed from raw prices and raw volume.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "EQ series",
+   "def": "NSE's regular trading series. Only EQ rows were kept in the lake, so a name that moves to another series looks absent.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "series",
+   "def": "NSE's label for the trading segment of a security, such as EQ, BE or BZ. Only EQ is in the price tables.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "raw price",
+   "def": "The price exactly as traded that day. The lake stores only raw prices, so a split shows as a jump.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "adjusted price",
+   "def": "A raw price rescaled for splits and bonuses so history lines up with today. Computed in memory, never stored.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "ex-date",
+   "def": "The first session on which a buyer no longer gets the right, for example the split. The action log records only this date.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "PIT",
+   "def": "Point-in-time: using only what was knowable on the day. A number that was known later must not be used earlier.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "Bhavcopy",
+   "def": "NSE's end-of-day price file for all securities, published each session.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "UDiFF",
+   "def": "The newer Bhavcopy file layout used from mid-2024. The downloader handles it and the older layout.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "ISIN",
+   "def": "A permanent security identifier. It stays the same when the trading symbol changes.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "symbol",
+   "def": "The short NSE trading code of a security, such as RELIANCE. It can change when a company renames itself.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "canonical symbol",
+   "def": "The latest symbol of a renamed security. The lake stores the whole history under it.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "session",
+   "def": "A day on which the exchange traded. The lake's sessions are the dates of the Nifty 50 series.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "as-of",
+   "def": "The date a query pretends to be standing on. Nothing after it can be seen.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "AsOfView",
+   "def": "The only door from the engine to the lake. It applies the as-of date inside the SQL and raises FutureDataError for a later date.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "FutureDataError",
+   "def": "The error AsOfView raises when asked for a bar dated after the as-of date. There is no way to read the future.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "lake",
+   "def": "The project's name for finsight.db, the big market-data database.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "staging",
+   "def": "A holding table where raw downloads land before they are checked and moved on.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "swap",
+   "def": "The one-time reviewed step that replaced the lake's Yahoo-adjusted rows with raw NSE rows from staging.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "holiday copy",
+   "def": "NSE sometimes answers a holiday request with the previous session's file. The downloader rejects a file whose own date is not the requested date.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "special session",
+   "def": "A weekend or holiday on which NSE traded, such as the Diwali evening session.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "split",
+   "def": "A company divides each share into several. The price falls by the ratio and the share count rises.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "bonus",
+   "def": "Free extra shares for each share held. The price falls and the share count rises.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "evidence tier",
+   "def": "A label saying how well the price data confirmed an action: STRONG, WEAK, WEAK_DIRECTIONAL, UNSUPPORTED or NOT_PRICE_MOVING.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "demerger",
+   "def": "A company splits off a part into a new company. The engine does not adjust prices for it.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "intimation",
+   "def": "The moment a company tells the exchange about something, such as a board meeting. A meeting counts as known only after it.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "ASM",
+   "def": "Additional Surveillance Measure: an NSE list of stocks under extra watch, long-term or short-term.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "GSM",
+   "def": "Graded Surveillance Measure: an NSE list that grades stocks under restrictions.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "snapshot",
+   "def": "A copy of a list as it stood on one day. NSE gives no history, so snapshots are the only way to keep it.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "journal",
+   "def": "The append-only history of the live account: init, operator reports and each session's decisions.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "append-only",
+   "def": "Rows may be added but never changed or removed. Triggers refuse any UPDATE or DELETE.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "trigger",
+   "def": "A rule stored inside the database that runs on an event, here to abort an UPDATE or DELETE.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "rebuild",
+   "def": "Recomputing the live state by replaying the journal from the first row.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "foreign key",
+   "def": "A rule that makes the database enforce a link between tables. This database declares none: its links are logical.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "read-only",
+   "def": "Opened so that nothing can be written. The lake is opened with SQLite mode=ro plus query_only.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  },
+  {
+   "term": "KI",
+   "def": "Known issue: an entry in the data audit's list of limits, such as KI-001.",
+   "source": "docs/guides/DATA_GUIDE.md"
+  }
+ ],
+ "triggers": [
+  {
+   "name": "trg_tal_no_update",
+   "table": "trade_analytics_log",
+   "plain": "Aborts any UPDATE with the message append-only.",
+   "source": "docs/guides/DATA_GUIDE.md::B"
+  },
+  {
+   "name": "trg_tal_no_delete",
+   "table": "trade_analytics_log",
+   "plain": "Aborts any DELETE with the message append-only.",
+   "source": "docs/guides/DATA_GUIDE.md::B"
+  }
+ ],
+ "views_note": {
+  "text": "finsight.db has no views.",
+  "source": "docs/guides/DATA_GUIDE.md::B"
+ }
+}

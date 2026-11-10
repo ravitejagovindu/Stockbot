@@ -4,6 +4,8 @@ A reading guide to every database and data file in the project, written from the
 
 **How the numbers in this guide were obtained.** Unless a line says "from report ...", every number was measured on **2026-11-09** from `finsight.db` as it stood then (file modified 2026-11-08 12:38:02, size 3,432,767,488 bytes) by `py scripts/gen_data_catalogue.py` (which writes `docs/guides/data_catalogue.md`, the full machine-measured catalogue: every column, every index, three sample rows per table) and by a few extra read-only queries. Numbers taken from an older written report say which report. To refresh the measured numbers, run the generator again; `tests/unit/test_guides_consistent.py` fails if a table in the database is missing from this guide.
 
+A picture version of this guide (clickable table map, diagrams, an as-of time-travel slider) is `docs/guides/data_guide.html`; it is built from `docs/guides/data_guide_data.json` and the measured export `docs/guides/data_catalogue.json` (`py scripts/gen_data_catalogue.py --json`).
+
 Contents: A the databases and files, B inventory of `finsight.db`, C every table, D what a reader must know about the lake, E corporate actions, F coverage, G the live state database, H reference files, I known issues, J diagrams, K cheat sheet and queries.
 
 ---

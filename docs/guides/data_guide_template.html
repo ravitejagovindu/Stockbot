@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StockBot data picture guide</title>
+<style>
+:root{
+  --bg:#f7f8fa; --card:#ffffff; --ink:#14181f; --muted:#4b5563; --line:#cbd2dc; --accent:#1d4ed8; --ok:#15803d; --bad:#b91c1c; --warn:#b45309; --shadow:rgba(15,23,42,.18);
+  --g-price:#2563eb; --g-actions:#7c3aed; --g-earnings:#0e7490; --g-asm:#c2410c; --g-shares:#15803d; --g-staging:#475569; --g-legacy:#9d174d; --g-unused:#6b7280;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f141b; --card:#18202b; --ink:#e8edf4; --muted:#a8b3c3; --line:#3a4656; --accent:#7aa2ff; --ok:#4ade80; --bad:#f87171; --warn:#fbbf24; --shadow:rgba(0,0,0,.6);
+    --g-price:#60a5fa; --g-actions:#a78bfa; --g-earnings:#22d3ee; --g-asm:#fb923c; --g-shares:#a3e635; --g-staging:#94a3b8; --g-legacy:#f472b6; --g-unused:#9ca3af;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f141b; --card:#18202b; --ink:#e8edf4; --muted:#a8b3c3; --line:#3a4656; --accent:#7aa2ff; --ok:#4ade80; --bad:#f87171; --warn:#fbbf24; --shadow:rgba(0,0,0,.6);
+  --g-price:#60a5fa; --g-actions:#a78bfa; --g-earnings:#22d3ee; --g-asm:#fb923c; --g-shares:#a3e635; --g-staging:#94a3b8; --g-legacy:#f472b6; --g-unused:#9ca3af;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+code{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.88em;background:color-mix(in srgb,var(--muted) 14%,transparent);padding:1px 5px;border-radius:4px;word-break:break-all}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+header{padding:12px 16px 0;max-width:1180px;margin:0 auto}
+h1{margin:0;font-size:1.35rem}
+.sub{margin:2px 0 8px;color:var(--muted);font-size:.9rem}
+.bar{display:flex;gap:8px;align-items:center}
+nav{flex:1;display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;border-bottom:1px solid var(--line)}
+nav button{white-space:nowrap;border:1px solid transparent;background:none;padding:7px 11px;border-radius:8px 8px 0 0;color:var(--muted);font-weight:600;font-size:.92rem}
+nav button[aria-selected="true"]{background:var(--card);border-color:var(--line);border-bottom-color:var(--card);color:var(--ink)}
+#theme{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 10px;font-size:.85rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px;max-width:1180px;margin:0 auto;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--pk,var(--line));background:color-mix(in srgb,var(--pk,var(--muted)) 14%,var(--card));border-radius:999px;padding:3px 10px;font-size:.82rem;color:var(--ink)}
+.chip i{width:10px;height:10px;border-radius:3px;background:var(--pk,var(--muted));display:inline-block}
+.crumb{display:flex;gap:10px;align-items:center;padding:4px 16px;max-width:1180px;margin:0 auto;font-size:.88rem;color:var(--muted);flex-wrap:wrap}
+.crumb button.back{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:4px 12px;font-weight:600}
+.crumb button.back:disabled{opacity:.45;cursor:default}
+.crumb button.c{background:none;border:0;padding:0;color:var(--accent);text-decoration:underline}
+main{max-width:1180px;margin:0 auto;padding:8px 16px 28px}
+body.panel-open main{margin-right:480px}
+@media (max-width:1200px){body.panel-open main{margin-right:auto}}
+.banner{background:color-mix(in srgb,var(--bad) 12%,var(--card));border:2px solid var(--bad);border-radius:10px;padding:10px 14px;font-weight:800;font-size:1.1rem;margin:6px 0 10px}
+.hint{color:var(--muted);font-size:.9rem;margin:4px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.mdate{display:inline-block;font-size:.7rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:0 5px;margin-left:5px;white-space:nowrap;vertical-align:middle}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--ink);font-family:inherit}
+svg .node rect{fill:color-mix(in srgb,var(--pk) 16%,var(--card));stroke:var(--pk);stroke-width:2.2}
+svg .node{cursor:pointer}
+svg .node:hover rect,svg .node:focus-visible rect,svg .node.sel rect{stroke-width:4;fill:color-mix(in srgb,var(--pk) 30%,var(--card))}
+svg .node.dim{opacity:.25}
+svg .node.missing rect{stroke:var(--bad);stroke-dasharray:6 4;fill:color-mix(in srgb,var(--bad) 10%,var(--card))}
+svg .node.missing .sm{fill:var(--bad);font-weight:800}
+svg .node.lit rect{stroke-width:4.5}
+svg .node .nm{font-size:12px;font-weight:700}
+svg .node .sm{font-size:10.5px;fill:var(--muted)}
+svg .elab{font-size:11px;fill:var(--ink);font-weight:600}
+svg .elab-bg{fill:var(--bg);stroke:var(--line)}
+svg .ax{font-size:11px;fill:var(--muted)}
+.edge{fill:none;stroke:var(--muted);stroke-width:1.6}
+.edge.faint{opacity:.28;stroke-width:1.2}
+.edge.logical{stroke-dasharray:7 5}
+.edge.hot{stroke:var(--accent);stroke-width:3;opacity:1}
+.edge.miss{stroke:var(--bad);stroke-width:2.4;stroke-dasharray:3 5}
+.edge.once{stroke:var(--warn);stroke-width:2.2;stroke-dasharray:3 4}
+.edge.anim{stroke:var(--accent);stroke-width:3.2;stroke-dasharray:8 6;animation:dash .9s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-14}}
+.tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 14px;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0b1020}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0b1020}}
+.btn[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 22%,var(--card));border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.sm{padding:3px 10px;font-size:.82rem}
+.grid{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.item{display:block;width:100%;text-align:left;border:1px solid var(--line);border-left:6px solid var(--pk,var(--line));background:var(--card);border-radius:8px;padding:9px 12px}
+.item b{display:block;word-break:break-word}
+.item span.d{color:var(--muted);font-size:.88rem;display:block}
+.item.off{opacity:.4}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;border-radius:999px;padding:1px 8px;margin-left:6px;vertical-align:middle;border:1px solid var(--line)}
+.badge.engine{color:var(--ok);border-color:var(--ok)}
+.badge.warn,.badge.planned,.badge.missing{color:var(--bad);border-color:var(--bad)}
+.badge.ro{color:var(--bad);border-color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--card))}
+.rows{font-weight:700;font-size:.92rem}
+.term{border-bottom:2px dotted var(--accent);cursor:help}
+#tip{position:fixed;z-index:60;max-width:300px;background:var(--ink);color:var(--bg);padding:8px 10px;border-radius:8px;font-size:.85rem;line-height:1.35;display:none;box-shadow:0 4px 14px var(--shadow);pointer-events:none}
+#tip b{display:block}
+#panel{position:fixed;z-index:50;top:0;bottom:0;right:0;width:min(470px,100%);background:var(--card);border-left:6px solid var(--pk,var(--line));box-shadow:-6px 0 20px var(--shadow);overflow-y:auto;padding:14px 16px 24px;transform:translateX(105%);visibility:hidden;transition:transform .18s}
+body.panel-open #panel{transform:none;visibility:visible}
+#panel h2{margin:0 36px 4px 0;font-size:1.2rem;word-break:break-word}
+#panel h3{margin:14px 0 4px;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+#panel p{margin:4px 0}
+#panel ul{margin:4px 0;padding-left:0;list-style:none}
+#panel li{padding:3px 0;border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+#panel .x{position:absolute;top:8px;right:8px;border:1px solid var(--line);background:var(--card);border-radius:8px;width:34px;height:34px;font-size:1.1rem}
+#panel .more,#panel .src{color:var(--muted);font-size:.82rem;margin-top:12px}
+#panel details{margin:8px 0;border:1px solid var(--line);border-radius:8px;padding:4px 10px}
+#panel summary{cursor:pointer;font-weight:700}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.9rem}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;word-break:break-word}
+.cols li b{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.85rem}
+.cols li .ty{color:var(--muted);font-size:.78rem;margin-left:6px}
+.cols li .ex{color:var(--muted);font-size:.8rem;display:block}
+.scroll{overflow-x:auto;max-width:100%}
+table.t{border-collapse:collapse;font-size:.8rem}
+table.t th,table.t td{border:1px solid var(--line);padding:2px 6px;text-align:left;white-space:nowrap}
+table.t th{background:color-mix(in srgb,var(--muted) 12%,var(--card))}
+table.w td,table.w th{white-space:normal}
+table.w{font-size:.88rem;width:100%}
+pre{background:color-mix(in srgb,var(--muted) 12%,var(--card));border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;font-size:.8rem;white-space:pre-wrap;word-break:break-word}
+@media (max-width:700px){
+  .legend{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.legend .chip,.legend .hint{white-space:nowrap;flex:none}
+  body.panel-open main{margin-right:auto}
+  #panel{top:auto;left:0;right:0;width:100%;max-height:80vh;border-left:0;border-top:6px solid var(--pk,var(--line));border-radius:14px 14px 0 0;transform:translateY(105%)}
+  h1{font-size:1.15rem}
+}
+.pipe{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pipe button{border:2px solid var(--pk,var(--accent));background:color-mix(in srgb,var(--pk,var(--accent)) 14%,var(--card));border-radius:999px;padding:3px 10px;font-weight:700;font-size:.85rem}
+.pipe button[aria-current="step"]{background:var(--pk,var(--accent));color:#fff}
+:root[data-theme="dark"] .pipe button[aria-current="step"]{color:#0b1020}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pipe button[aria-current="step"]{color:#0b1020}}
+.example{margin:8px 0;border:2px dashed var(--warn);border-radius:10px;padding:8px 12px;background:var(--card)}
+.tag{display:inline-block;font-size:.7rem;font-weight:800;color:var(--warn);border:1px solid var(--warn);border-radius:6px;padding:0 6px;margin-right:6px}
+.stepbox{border:3px solid var(--pk);background:color-mix(in srgb,var(--pk) 12%,var(--card));border-radius:12px;padding:10px 12px}
+.stepbox .t{font-size:1.15rem;font-weight:800;margin-bottom:2px}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;margin-top:8px}
+.fields div{border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--card);font-size:.85rem}
+.fields div.chg{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+.fields b{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-family:ui-monospace,Consolas,Menlo,monospace}
+.heads{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));margin:8px 0 12px}
+.heads .h{border:1px solid var(--line);border-left:5px solid var(--warn);border-radius:8px;padding:7px 10px;background:var(--card);font-size:.9rem}
+.heads .h.missing{border-left-color:var(--bad)}
+.heads .h b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--warn)}
+.heads .h.missing b{color:var(--bad)}
+.dbs{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.db{position:relative;text-align:left;border:2px solid var(--pk);background:color-mix(in srgb,var(--pk) 9%,var(--card));border-radius:12px;padding:10px 12px;width:100%}
+.db.lake{grid-column:1/-1;border-width:4px}
+.db .ribbon{position:absolute;top:-1px;right:12px;background:var(--bad);color:#fff;font-weight:800;font-size:.75rem;padding:2px 10px;border-radius:0 0 8px 8px}
+.db h3{margin:0;font-size:1.05rem;word-break:break-word}
+.db .nick{color:var(--muted);font-size:.85rem}
+.db dl{margin:6px 0 0;font-size:.86rem}
+.sect{margin:14px 0 4px;padding-bottom:3px;border-bottom:3px solid var(--pk);font-size:1rem;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.sect small{color:var(--muted);font-weight:400}
+input[type=search]{font:inherit;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);width:100%;max-width:520px}
+input[type=range]{width:100%;max-width:640px;accent-color:var(--accent)}
+details.g{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:6px 10px;margin:4px 0}
+details.g summary{cursor:pointer;font-weight:700}
+.charts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+@media (max-width:480px){.charts{grid-template-columns:1fr}}
+.chart h3{margin:0 0 2px;font-size:1rem}
+.icards{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.ic{border:1px solid var(--line);border-top:5px solid var(--st,var(--warn));border-radius:10px;padding:10px 12px;background:var(--card)}
+.ic .head{display:flex;gap:10px;align-items:center}
+.ic svg.icon{width:44px;height:44px;flex:none;stroke:var(--st,var(--warn));fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ic h3{margin:0;font-size:1rem}
+.ic .tg{font-size:.72rem;font-weight:800;color:var(--muted)}
+.ic .bt{margin:6px 0;border-left:4px solid var(--accent);padding-left:8px}
+.ic.missing{--st:var(--bad)}
+.ic.open{--st:var(--warn)}
+.ic.fine{--st:var(--g-staging)}
+.jr{border:1px solid var(--line);border-radius:6px;padding:4px 8px;margin:4px 0;font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.78rem;background:var(--card);word-break:break-all}
+.jr.new{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:700px){.two{grid-template-columns:1fr}}
+.err{border:2px solid var(--bad);border-radius:8px;padding:8px 10px;background:color-mix(in srgb,var(--bad) 10%,var(--card));font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.85rem;word-break:break-word}
+.okbox{border:2px solid var(--ok);border-radius:8px;padding:8px 10px;background:color-mix(in srgb,var(--ok) 10%,var(--card));font-size:.9rem}
+.qs{display:grid;gap:8px}
+.qb{text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px 12px;font-weight:600}
+.qb[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card))}
+footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion: reduce){#panel{transition:none}.edge.anim{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="ttl">StockBot data picture guide</h1>
+  <p class="sub" id="sub"></p>
+  <div class="bar"><nav id="tabs" role="tablist" aria-label="Views"></nav><button id="theme" type="button" aria-label="Switch light or dark colours">Theme: auto</button></div>
+</header>
+<div class="legend" id="legend" aria-label="Colour key: one colour per data group"></div>
+<div class="crumb" id="crumb"></div>
+<main id="main" tabindex="-1"><noscript>This guide needs JavaScript. The text version is docs/guides/DATA_GUIDE.md.</noscript></main>
+<aside id="panel" role="dialog" aria-modal="false" aria-labelledby="ptitle" tabindex="-1"><button class="x" type="button" id="pclose" aria-label="Close panel">&times;</button><div id="pbody"></div></aside>
+<div id="tip" role="tooltip"></div>
+<footer><span id="foot"><!--__GUIDE_FOOTER__--></span> Text version: <code>docs/guides/DATA_GUIDE.md</code>.</footer>
+<script type="application/json" id="guide-data">/*__GUIDE_DATA__*/</script>
+<script>
+"use strict";
+(function () {
+  var D = JSON.parse(document.getElementById("guide-data").textContent);
+  var M = D.measured, MD = M.meta.measured_date;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var esc = function (s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
+  var VIEWS = D.views, VIEW_IDS = VIEWS.map(function (v) { return v.id; });
+  var GR = {}; D.groups.forEach(function (g) { GR[g.id] = g; });
+  var TB = {}; D.tables.forEach(function (t) { TB[t.id] = t; });
+  var gcol = function (id) { return "var(--g-" + id + ")"; };
+  var narrow = window.matchMedia("(max-width: 700px)");
+  var store = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } } };
+  var nf = function (n) { return Number(n).toLocaleString("en-US"); };
+
+  /* ---------- measured-number tokens: {{m:path|fmt}} are filled from the catalogue export embedded in the page ---------- */
+  function segs(p) { var out = [], cur = "", depth = 0; for (var i = 0; i < p.length; i++) { var c = p.charAt(i); if (c === "[") depth++; if (c === "]") depth--; if (c === "." && !depth) { out.push(cur); cur = ""; } else cur += c; } out.push(cur); return out; }
+  function getp(o, p) {
+    segs(p).forEach(function (s) {
+      if (o === null || o === undefined) return;
+      var m = /^([^\[]*)\[([^=]+)=(.*)\]$/.exec(s);
+      if (m) { if (m[1]) o = o[m[1]]; o = (o || []).filter(function (x) { return String(x[m[2]]) === m[3]; })[0]; } else o = o[s];
+    });
+    return o;
+  }
+  function tok(spec) {
+    var parts = spec.split("|"), v = getp(M, parts[0]);
+    if (v === undefined || v === null) return "?";
+    var f = parts[1];
+    if (f === "n") return nf(v);
+    if (f === "len") return String(v.length);
+    if (f && f.indexOf("uniq:") === 0) { var k = f.slice(5), seen = {}, c = 0; v.forEach(function (x) { if (!seen[x[k]]) { seen[x[k]] = 1; c++; } }); return String(c); }
+    return String(v);
+  }
+  var F = function (s) { return String(s).replace(/\{\{m:([^}]+)\}\}/g, function (a, b) { return tok(b); }); };
+  var X = function (s) { return esc(F(s)); };
+  var meas = function () { return '<span class="mdate">measured ' + esc(MD) + "</span>"; };
+
+  /* ---------- glossary terms: underlined once per container ---------- */
+  var TERMS = D.glossary.map(function (g, i) { return { i: i, g: g }; }).sort(function (a, b) { return b.g.term.length - a.g.term.length; });
+  var reEsc = function (s) { return s.replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&"); };
+  TERMS.forEach(function (t) { t.re = new RegExp("(?<![\\w-])" + reEsc(t.g.term) + "(?![\\w-])", t.g.term === t.g.term.toLowerCase() ? "i" : ""); });
+  var seenMain = {}, seenPanel = {}, seen = seenMain;
+  function T(text) {
+    text = F(text); var m = [];
+    TERMS.forEach(function (t) { if (seen[t.i]) return; var r = t.re.exec(text); if (r) m.push({ s: r.index, e: r.index + r[0].length, i: t.i }); });
+    m.sort(function (a, b) { return a.s - b.s || (b.e - b.s) - (a.e - a.s); });
+    var out = "", pos = 0;
+    m.forEach(function (x) { if (x.s < pos) return; out += esc(text.slice(pos, x.s)) + '<span class="term" tabindex="0" data-t="' + x.i + '">' + esc(text.slice(x.s, x.e)) + "</span>"; pos = x.e; seen[x.i] = 1; });
+    return out + esc(text.slice(pos));
+  }
+  var tip = $("#tip");
+  function showTip(el) {
+    var t = D.glossary[+el.getAttribute("data-t")];
+    tip.innerHTML = "<b>" + esc(t.term) + "</b>" + esc(t.def); tip.style.display = "block";
+    var r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = Math.max(8, Math.min(window.innerWidth - w - 8, r.left)), y = r.bottom + 6; if (y + h > window.innerHeight - 8) y = Math.max(8, r.top - h - 6);
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  }
+  function hideTip() { tip.style.display = "none"; }
+  function showNodeTip(el) { var t = el.getAttribute("data-tip"); if (!t) return; tip.innerHTML = esc(t); tip.style.display = "block"; var r = el.getBoundingClientRect(); tip.style.left = Math.max(8, Math.min(window.innerWidth - tip.offsetWidth - 8, r.left)) + "px"; tip.style.top = Math.min(window.innerHeight - tip.offsetHeight - 8, r.bottom + 6) + "px"; }
+
+  /* ---------- routing: #view/arg ---------- */
+  function route() { var h = location.hash.replace(/^#/, "").split("/"); return { v: VIEW_IDS.indexOf(h[0]) >= 0 ? h[0] : "big", a: h.slice(1).join("/") || "" }; }
+  function go(v, a) { var h = a !== undefined && a !== "" ? v + "/" + a : v; if (location.hash === "#" + h) render(); else location.hash = h; }
+  var playTimer = null;
+  function stopPlay() { if (playTimer) { clearInterval(playTimer); playTimer = null; } }
+
+  /* ---------- builders ---------- */
+  function chip(gid, label) { return '<span class="chip" style="--pk:' + gcol(gid) + '"><i></i>' + esc(label || GR[gid].label) + "</span>"; }
+  function tchip(id) { var t = TB[id]; return '<button type="button" class="chip" data-act="tbl" data-id="' + id + '" style="--pk:' + gcol(t.group) + '"><i></i>' + esc(id) + "</button>"; }
+  function badge(t, cls) { return '<span class="badge ' + cls + '">' + esc(t) + "</span>"; }
+  function mt(id) { return M.tables[id]; }
+  function rowsOf(id) { var m = mt(id); return m ? nf(m.rows) : "-"; }
+  function wrap(text, n) { var words = String(text).split(" "), lines = [], cur = ""; words.forEach(function (w) { if ((cur + " " + w).trim().length > n && cur) { lines.push(cur); cur = w; } else cur = (cur + " " + w).trim(); }); if (cur) lines.push(cur); return lines; }
+  function clip(a, b) {
+    var ax = a.x + a.w / 2, ay = a.y + a.h / 2, bx = b.x + b.w / 2, by = b.y + b.h / 2, dx = bx - ax, dy = by - ay;
+    var edge = function (r, cx, cy, sx, sy) { var t = Math.min(sx !== 0 ? (r.w / 2) / Math.abs(sx) : Infinity, sy !== 0 ? (r.h / 2) / Math.abs(sy) : Infinity); return [cx + sx * t, cy + sy * t]; };
+    return [edge(a, ax, ay, dx, dy), edge(b, bx, by, -dx, -dy)];
+  }
+  function defs() {
+    var m = function (id, c) { return '<marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:' + c + '"/></marker>'; };
+    return "<defs>" + m("a-n", "var(--muted)") + m("a-hot", "var(--accent)") + m("a-bad", "var(--bad)") + m("a-warn", "var(--warn)") +
+      "</defs>";
+  }
+  function line(a, b, cls, mk, label) {
+    var c = clip(a, b), s = c[0], e = c[1];
+    var out = '<path class="edge ' + cls + '" d="M' + s[0].toFixed(1) + " " + s[1].toFixed(1) + "L" + e[0].toFixed(1) + " " + e[1].toFixed(1) + '" marker-end="url(#' + mk + ')"/>';
+    if (label) { var mx = (s[0] + e[0]) / 2, my = (s[1] + e[1]) / 2; out += '<rect class="elab-bg" x="' + (mx - label.length * 3.3 - 4) + '" y="' + (my - 9) + '" width="' + (label.length * 6.6 + 8) + '" height="16" rx="4"/><text class="elab" x="' + mx + '" y="' + (my + 4) + '" text-anchor="middle">' + esc(label) + "</text>"; }
+    return out;
+  }
+  function R(pos) { return { x: pos[0], y: pos[1], w: pos[2], h: pos[3] }; }
+  function stepper(n, max, label) {
+    return '<div class="tbar"><button type="button" class="btn" data-act="st-back"' + (n <= 0 ? " disabled" : "") + '>Back</button><button type="button" class="btn primary" data-act="st-next"' + (n >= max ? " disabled" : "") + '>Next</button>' +
+      '<button type="button" class="btn" data-act="st-play" aria-pressed="' + (!!playTimer) + '">' + (playTimer ? "Pause" : "Play") + '</button><button type="button" class="btn" data-act="st-reset">Reset</button><span class="hint" aria-live="polite">' + label + "</span></div>";
+  }
+
+  /* ---------- the panel ---------- */
+  var panel = $("#panel"), pbody = $("#pbody"), lastFocus = null;
+  function openPanel(color, html) {
+    if (!document.body.classList.contains("panel-open")) lastFocus = document.activeElement;
+    panel.style.setProperty("--pk", color); pbody.innerHTML = html; document.body.classList.add("panel-open"); panel.scrollTop = 0;
+    if (!panel.contains(document.activeElement)) $("#pclose").focus();
+  }
+  function beginPanel() { seenPanel = {}; seen = seenPanel; }
+  function endPanel() { seen = seenMain; }
+  function more(section) { return '<p class="more">Read more: <code>' + esc(D.meta.guide_file) + "</code>, section " + esc(section) + ".</p>"; }
+  function src(s) { return '<p class="src">Source: <code>' + esc(s) + "</code></p>"; }
+  function sec(h, body) { return "<h3>" + h + "</h3>" + body; }
+  function secOf(source) { return String(source).split("::")[1] || ""; }
+  function pathList(L) { return L.length ? "<ul>" + L.map(function (w) { return "<li><code>" + esc(w.path) + "</code> " + T(w.what) + "</li>"; }).join("") + "</ul>" : "<p>Nothing.</p>"; }
+
+  function cell(v) { if (v === null || v === undefined) return "NULL"; return String(v); }
+  function tablePanel(id) {
+    var t = TB[id]; if (!t) return;
+    var m = mt(id); beginPanel();
+    var h = '<h2 id="ptitle">' + esc(id) + (t.engine ? badge("used by the engine", "engine") : "") + "</h2><p>" + chip(t.group) + "</p><p>" + T(t.purpose) + "</p>";
+    if (m) {
+      var kv = "<dt>Rows</dt><dd><b>" + nf(m.rows) + "</b>" + meas() + "</dd>";
+      if (m.first) kv += "<dt>" + esc(m.date_column) + "</dt><dd>" + esc(m.first) + " to " + esc(m.last) + meas() + "</dd>";
+      if (m.distinct_dates !== null) kv += "<dt>Distinct dates</dt><dd>" + nf(m.distinct_dates) + meas() + "</dd>";
+      if (m.symbols !== null) kv += "<dt>Distinct symbols</dt><dd>" + nf(m.symbols) + meas() + "</dd>";
+      h += '<dl class="kv">' + kv + "</dl>";
+      var pk = m.columns.filter(function (c) { return c.pk; }).sort(function (a, b) { return a.pk - b.pk; }).map(function (c) { return c.name; });
+      h += sec("Keys and indexes", "<ul>" + (pk.length ? "<li>Primary key: <code>" + esc(pk.join(", ")) + "</code></li>" : "") + m.indexes.map(function (i) { return "<li><code>" + esc(i.name) + "</code> (" + (i.unique ? "unique, " : "") + esc(i.columns.join(", ")) + ")</li>"; }).join("") + (!pk.length && !m.indexes.length ? "<li>None.</li>" : "") + "</ul>");
+      h += '<details open><summary>Columns (' + m.columns.length + ")</summary><ul class=\"cols\">" + m.columns.map(function (c) {
+        return "<li><b>" + esc(c.name) + '</b><span class="ty">' + esc(c.type || "-") + (c.notnull || c.pk ? "" : ", may be empty") + "</span> " + T(t.columns[c.name] || "") + '<span class="ex">e.g. ' + esc(cell(c.example)) + "</span></li>";
+      }).join("") + "</ul></details>";
+      h += '<details><summary>Three sample rows</summary><div class="scroll"><table class="t"><thead><tr>' + m.columns.map(function (c) { return "<th>" + esc(c.name) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+        m.sample.map(function (r) { return "<tr>" + r.map(function (v) { return "<td>" + esc(cell(v)) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div><p class=\"hint\">Taken from the first two and the last row by row id." + meas() + "</p></details>";
+    } else {
+      h += "<p>This is SQLite's own table and is not measured.</p><ul class=\"cols\">" + Object.keys(t.columns).map(function (c) { return "<li><b>" + esc(c) + "</b> " + T(t.columns[c]) + "</li>"; }).join("") + "</ul>";
+    }
+    h += sec("Where the data came from", pathList(t.written_by)) + sec("Who reads it", pathList(t.read_by));
+    var trg = D.triggers.filter(function (x) { return x.table === id; });
+    if (trg.length) h += sec("Triggers", "<ul>" + trg.map(function (x) { return "<li><code>" + esc(x.name) + "</code> " + T(x.plain) + "</li>"; }).join("") + "</ul>");
+    if (t.issues.length) h += sec("Known issues", "<ul>" + t.issues.map(function (x) { return "<li>" + T(x) + "</li>"; }).join("") + "</ul>");
+    h += more(secOf(t.source)) + src(t.source);
+    openPanel(gcol(t.group), h); endPanel();
+  }
+  function dbPanel(id) {
+    var b = D.databases.filter(function (x) { return x.id === id; })[0]; if (!b) return; beginPanel();
+    var h = '<h2 id="ptitle">' + esc(b.name) + (b.engine === "read-only" ? badge("read-only for the engine", "ro") : "") + '</h2><p class="hint">' + esc(b.nick) + "</p><p>" + T(b.plain) + "</p>" +
+      '<dl class="kv"><dt>Where</dt><dd>' + esc(b.where) + "</dd><dt>Size</dt><dd>" + esc(F(b.size)) + '<span class="mdate">' + esc(F(b.when)) + "</span></dd><dt>Written by</dt><dd>" + T(b.writers) + "</dd><dt>Read by</dt><dd>" + T(b.readers) + "</dd><dt>May the engine touch it?</dt><dd><b>" + T(b.engine_may) + "</b></dd></dl>";
+    if (b.id === "lake") h += '<p><button type="button" class="btn sm" data-act="view" data-v="tables">Open the table map</button></p>';
+    if (b.id === "live" || b.id === "asm" || b.id === "ref") h += '<p><button type="button" class="btn sm" data-act="view" data-v="other">Open the other databases view</button></p>';
+    h += more(secOf(b.source)) + src(b.source);
+    openPanel(gcol(b.color), h); endPanel();
+  }
+
+  var main = $("#main"), V = {};
+
+  /* ---------- 1 big picture ---------- */
+  V.big = function (a) {
+    var h = '<div class="banner" role="note">' + esc(D.meta.banner) + "</div>";
+    h += '<h2 style="font-size:1rem;margin:6px 0">Heads up</h2><div class="heads">' + D.heads_up.map(function (x) { return '<div class="h ' + x.state + '"><b>' + (x.state === "missing" ? "Missing" : "Fact") + "</b>" + T(x.text) + '<span class="mdate">' + esc(F(x.when)) + "</span></div>"; }).join("") + "</div>";
+    h += '<p class="hint">Click a box for where it lives, who writes it, who reads it, and whether the engine may touch it.</p><div class="dbs">';
+    D.databases.forEach(function (b) {
+      h += '<button type="button" class="db' + (b.id === "lake" ? " lake" : "") + '" data-act="db" data-id="' + b.id + '" style="--pk:' + gcol(b.color) + '">' + (b.id === "lake" ? '<span class="ribbon">READ-ONLY FOR THE ENGINE</span>' : "") +
+        "<h3>" + esc(b.name) + '</h3><div class="nick">' + esc(b.nick) + "</div><dl><dt class=\"sr\">Plain</dt><dd style=\"margin:0\">" + T(b.plain) + "</dd></dl>" +
+        '<div class="hint" style="margin:6px 0 0"><b>Engine:</b> ' + esc(({ "read-only": "read-only", indirect: "not directly", no: "no", partly: "some files", output: "output only" })[b.engine]) + " &middot; <b>Written by:</b> " + T(b.writers) + "</div></button>";
+    });
+    main.innerHTML = h + "</div>";
+    if (a) dbPanel(a);
+  };
+
+  /* ---------- 2 table map ---------- */
+  var tq = "";
+  function tablesHtml() {
+    var engineOnly = store.get("sb-engine") === "1", w = tq.toLowerCase().split(/\s+/).filter(Boolean), h = "", any = false;
+    D.groups.forEach(function (g) {
+      var L = D.tables.filter(function (t) {
+        if (t.group !== g.id || (engineOnly && !t.engine)) return false;
+        var txt = (t.id + " " + t.oneline + " " + Object.keys(t.columns).join(" ")).toLowerCase();
+        return w.every(function (x) { return txt.indexOf(x) >= 0; });
+      });
+      if (!L.length) return; any = true;
+      h += '<h3 class="sect" style="--pk:' + gcol(g.id) + '">' + chip(g.id) + " <small>" + esc(g.desc) + '</small></h3><div class="grid">';
+      L.forEach(function (t) {
+        var hit = w.length ? Object.keys(t.columns).filter(function (c) { return w.some(function (x) { return c.toLowerCase().indexOf(x) >= 0; }); }) : [];
+        h += '<button type="button" class="item" data-act="tbl" data-id="' + t.id + '" style="--pk:' + gcol(g.id) + '"><b>' + esc(t.id) + (t.engine ? badge("engine", "engine") : "") + "</b><span class=\"d\">" + esc(t.oneline) + '</span><span class="rows">' + rowsOf(t.id) + " rows</span>" + (mt(t.id) ? meas() : "") +
+          (hit.length ? '<span class="d">column match: ' + esc(hit.slice(0, 4).join(", ")) + "</span>" : "") + "</button>";
+      });
+      h += "</div>";
+    });
+    return any ? h : '<div class="card">No table or column matches.</div>';
+  }
+  V.tables = function (a) {
+    var eo = store.get("sb-engine") === "1";
+    main.innerHTML = '<div class="tbar"><button type="button" class="btn" data-act="engfilter" data-v="1" aria-pressed="' + eo + '">Used by the engine</button><button type="button" class="btn" data-act="engfilter" data-v="0" aria-pressed="' + (!eo) + '">Everything</button>' +
+      '<input type="search" id="tq" placeholder="Search a table or column name" aria-label="Search tables and columns" value="' + esc(tq) + '"></div><p class="hint">Row counts are measured ' + esc(MD) + ". Click a card for columns, keys, sources, readers, issues and sample rows.</p><div id=\"tlist\">" + tablesHtml() + "</div>";
+    if (a && TB[a]) tablePanel(a);
+  };
+
+  /* ---------- 3 relations ---------- */
+  var ERN = {}; D.er_nodes.forEach(function (n) { ERN[n.id] = n; });
+  V.relations = function (a) {
+    var sel = ERN[a] ? a : "", key = (D.link_keys[a] && !ERN[a]) ? a : "";
+    var h = '<p class="hint">Dashed lines are <b>logical</b> links: the database declares no foreign keys, so nothing enforces them. Click a table to light up its links, or pick a link type.</p><div class="tbar">' +
+      Object.keys(D.link_keys).map(function (k) { return '<button type="button" class="btn sm" data-act="lkey" data-id="' + k + '" aria-pressed="' + (key === k) + '"><code>' + esc(k) + "</code></button>"; }).join("") + "</div>";
+    var edges = D.er_edges;
+    if (!narrow.matches) {
+      var s = '<svg viewBox="0 0 1100 560" role="group" aria-label="Entity relationships between tables">' + defs();
+      edges.forEach(function (e) {
+        var on = (sel && (e.a === sel || e.b === sel)) || (key && e.keys.indexOf(key) >= 0);
+        s += line(R(ERN[e.a].pos), R(ERN[e.b].pos), "logical " + (on ? "hot" : (sel || key) ? "faint" : ""), on ? "a-hot" : "a-n", on ? e.keys.join(", ") : "");
+      });
+      D.er_nodes.forEach(function (n) {
+        var t = TB[n.id], r = R(n.pos), linked = !sel && !key ? true : (sel === n.id) || edges.some(function (e) { return ((e.a === sel && e.b === n.id) || (e.b === sel && e.a === n.id)) || (key && e.keys.indexOf(key) >= 0 && (e.a === n.id || e.b === n.id)); });
+        s += '<g class="node' + (sel === n.id ? " sel" : "") + (linked ? "" : " dim") + '" tabindex="0" role="button" data-act="er" data-id="' + n.id + '" data-tip="' + esc(t.oneline) + '" aria-label="' + esc(n.id + ": " + t.oneline) + '" style="--pk:' + gcol(t.group) + '"><rect x="' + r.x + '" y="' + r.y + '" width="' + r.w + '" height="' + r.h + '" rx="10"/>';
+        wrap(n.id, Math.floor(r.w / 7.2)).forEach(function (ln, i, all) { s += '<text class="nm" x="' + (r.x + r.w / 2) + '" y="' + (r.y + r.h / 2 + 4 + (i - (all.length - 1) / 2) * 14) + '" text-anchor="middle">' + esc(ln) + "</text>"; });
+        s += "</g>";
+      });
+      h += s + "</svg>";
+    } else {
+      h += '<div class="grid">' + D.er_nodes.map(function (n) { return '<button type="button" class="item" data-act="er" data-id="' + n.id + '" style="--pk:' + gcol(TB[n.id].group) + '"><b>' + esc(n.id) + "</b></button>"; }).join("") + "</div>";
+    }
+    var list = sel ? edges.filter(function (e) { return e.a === sel || e.b === sel; }) : key ? edges.filter(function (e) { return e.keys.indexOf(key) >= 0; }) : [];
+    h += '<div class="card" style="margin-top:8px">';
+    if (sel) h += "<b>" + esc(sel) + "</b> " + meas() + ' <p class="hint">' + esc(TB[sel].oneline) + " <button type=\"button\" class=\"btn sm\" data-act=\"tbl\" data-id=\"" + sel + '">Open table</button></p>';
+    if (key) h += "<b>Link type: <code>" + esc(key) + "</code></b><p>" + T(D.link_keys[key]) + "</p>";
+    if (list.length) {
+      h += "<ul>" + list.map(function (e) {
+        var other = sel ? (e.a === sel ? e.b : e.a) : e.a + " and " + e.b;
+        return "<li><b>" + esc(other) + "</b> via " + e.keys.map(function (k) { return "<code>" + esc(k) + "</code>"; }).join(", ") + ": " + T(e.meaning) + " <i>(logical link, not an enforced key)</i></li>";
+      }).join("") + "</ul>" + (sel ? "<p>" + Array.from(new Set([].concat.apply([], list.map(function (e) { return e.keys; })))).map(function (k) { return "<code>" + esc(k) + "</code>: " + T(D.link_keys[k]); }).join("<br>") + "</p>" : "");
+    } else if (!sel && !key) h += "Pick a table or a link type to see what each link means.";
+    main.innerHTML = h + "</div>";
+  };
+
+  /* ---------- 4 flow ---------- */
+  var FN = {}; D.flow_nodes.forEach(function (n) { FN[n.id] = n; });
+  var LANES = { s1: 1, i1: 1, t1: 1, g1: 1, t2: 1, r1: 1, s2: 2, i2: 2, t3: 2, s3: 3, i3: 3, t4: 3, r2: 3, s4: 4, i4: 4, t5: 4, r3: 4, s5: 5, i5: 5, t6: 5, g2: 5, r4: 5, e: 6 };
+  var lastFlow = 0;
+  function flowNodeSvg(n, cur) {
+    var r = R(n.pos), cls = "node" + (n.kind === "missing" ? " missing" : "") + (cur && n.step === cur ? " lit" : "") + (cur && n.step > cur ? " dim" : "");
+    var s = '<g class="' + cls + '" tabindex="0" role="button" data-act="fnode" data-id="' + n.id + '" data-tip="' + esc(n.detail) + '" aria-label="' + esc(n.label + (n.kind === "missing" ? " (missing)" : "") + ". " + n.detail) + '" style="--pk:' + gcol(n.group) + '"><rect x="' + r.x + '" y="' + r.y + '" width="' + r.w + '" height="' + r.h + '" rx="9"/>';
+    var lines = wrap(n.label, Math.floor(r.w / 6.9)).slice(0, 3), y0 = r.y + 16;
+    lines.forEach(function (ln, i) { s += '<text class="nm" x="' + (r.x + r.w / 2) + '" y="' + (y0 + i * 13) + '" text-anchor="middle">' + esc(ln) + "</text>"; });
+    s += '<text class="sm" x="' + (r.x + r.w / 2) + '" y="' + (r.y + r.h - 7) + '" text-anchor="middle">' + esc(n.sub) + "</text></g>";
+    return s;
+  }
+  V.flow = function (a) {
+    var S = D.flow_steps, nodeArg = a && a.indexOf("node-") === 0 ? a.slice(5) : "", n = nodeArg ? lastFlow : Math.max(0, Math.min(S.length, parseInt(a, 10) || 0));
+    if (!nodeArg) lastFlow = n;
+    var st = S[n - 1], h = stepper(n, S.length, n ? "Step " + n + " of " + S.length : "Press Next");
+    h += '<div class="pipe" role="group" aria-label="The seven steps">' + S.map(function (x) { return '<button type="button" data-act="fstep" data-n="' + x.n + '"' + (x.n === n ? ' aria-current="step"' : "") + ">" + x.n + ". " + esc(x.title) + "</button>"; }).join("") + "</div>";
+    h += '<div class="card" style="margin-bottom:8px">' + (st ? "<b>" + esc(st.title) + "</b><p style=\"margin:2px 0\">" + T(st.plain) + "</p>" : "<b>Five NSE sources, five scripts, the lake, and the read paths into the engine.</b><p style=\"margin:2px 0\">Press Next to walk through it. Red dashed boxes are <b>missing</b>: they do not exist today.</p>") + "</div>";
+    if (!narrow.matches) {
+      var s = '<svg viewBox="0 0 1050 545" role="group" aria-label="From source to engine">' + defs();
+      D.flow_edges.forEach(function (e) {
+        var A = FN[e[0]], B = FN[e[1]], k = e[2], hot = n && B.step === n;
+        s += line(R(A.pos), R(B.pos), (k === "missing" ? "miss" : k === "once" ? "once" : "") + (hot && k === "solid" ? " anim" : ""), k === "missing" ? "a-bad" : k === "once" ? "a-warn" : hot ? "a-hot" : "a-n", k === "once" ? "one-time swap" : "");
+      });
+      D.flow_nodes.forEach(function (x) { s += flowNodeSvg(x, n); });
+      h += s + "</svg>";
+    } else {
+      [1, 2, 3, 4, 5, 6].forEach(function (L) {
+        var ns = D.flow_nodes.filter(function (x) { return LANES[x.id] === L; });
+        h += '<div class="card" style="margin:6px 0"><div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">' + ns.map(function (x, i) {
+          return (i ? '<span aria-hidden="true">&rarr;</span>' : "") + '<button type="button" class="chip' + (x.kind === "missing" ? " miss" : "") + '" data-act="fnode" data-id="' + x.id + '" style="--pk:' + (x.kind === "missing" ? "var(--bad)" : gcol(x.group)) + ";" + (n && x.step > n ? "opacity:.35" : "") + '"><i></i>' + esc(x.label) + (x.kind === "missing" ? " (MISSING)" : "") + "</button>";
+        }).join("") + "</div></div>";
+      });
+    }
+    h += '<p class="hint"><span class="badge missing">missing</span> red dashed: no code does this today. Amber dotted: a one-time reviewed step that was done and is not a daily job. Blue moving dashes: data arriving at the current step.</p>' + more("J.2 and I");
+    main.innerHTML = h;
+    if (nodeArg && FN[nodeArg]) {
+      var x = FN[nodeArg]; beginPanel();
+      openPanel(x.kind === "missing" ? "var(--bad)" : gcol(x.group), '<h2 id="ptitle">' + esc(x.label) + (x.kind === "missing" ? badge("missing", "missing") : "") + "</h2><p class=\"hint\">" + esc(x.sub) + "</p><p>" + T(x.detail) + "</p>" +
+        (x.table && TB[x.table] ? '<p><button type="button" class="btn sm" data-act="tbl" data-id="' + x.table + '">Open table ' + esc(x.table) + "</button></p>" : "") + more("J.2") + src(x.source)); endPanel();
+    }
+  };
+
+  /* ---------- 5 one price row ---------- */
+  V.row = function (a) {
+    var S = D.row_steps, n = Math.max(0, Math.min(S.length, parseInt(a, 10) || 0)), s = S[n - 1], prev = S[n - 2];
+    var h = stepper(n, S.length, n ? "Step " + n + " of " + S.length : "Press Next");
+    h += '<div class="pipe" role="group" aria-label="The six stages">' + S.map(function (x) { return '<button type="button" data-act="rstep" data-n="' + x.n + '" style="--pk:' + gcol(x.group) + '"' + (x.n === n ? ' aria-current="step"' : "") + ">" + x.n + ". " + esc(x.title) + "</button>"; }).join("") + "</div>";
+    if (!s) h += '<div class="card"><b>Follow one price row from the file NSE publishes to the check that tells you the lake is fresh.</b><p>The row is made up. Press Next.</p></div>';
+    else {
+      h += '<div class="stepbox" style="--pk:' + gcol(s.group) + '"><h4 style="margin:0;font-size:.72rem;text-transform:uppercase;color:var(--muted)">Step ' + s.n + " &middot; " + esc(s.where) + '</h4><div class="t">' + esc(s.title) + "</div>" + T(s.plain) +
+        '<div class="fields">' + s.fields.map(function (f) { return '<div class="' + (s.changed.indexOf(f[0]) >= 0 ? "chg" : "") + '"><b>' + esc(f[0]) + "</b>" + esc(f[1]) + "</div>"; }).join("") + "</div></div>" +
+        '<div class="example"><span class="tag">EXAMPLE, NOT REAL DATA</span>The values above are invented. The field names are the ones the code reads or the table really has.</div>' +
+        (s.table ? '<p><button type="button" class="btn sm" data-act="tbl" data-id="' + s.table + '">Open table ' + esc(s.table) + "</button></p>" : "") + src(s.source);
+      if (prev) void prev;
+    }
+    main.innerHTML = h + more("J.3");
+  };
+
+  /* ---------- 6 time travel ---------- */
+  function timeState(i) {
+    var Tm = D.time, ex = Tm.ex_index, applied = ex <= i, bars = [];
+    for (var k = 0; k < Tm.dates.length; k++) bars.push({ d: Tm.dates[k], raw: Tm.close[k], vis: k <= i, adj: k <= i ? (applied && k < ex ? Tm.close[k] * Tm.factor : Tm.close[k]) : null });
+    return { i: i, applied: applied, bars: bars };
+  }
+  function timeChart(st, field, title, color) {
+    var Tm = D.time, W = narrow.matches ? 360 : 640, H = 150, ml = 40, mr = 8, mt0 = 18, mb = 22, n = Tm.dates.length, max = 1100, bw = (W - ml - mr) / n;
+    var y = function (v) { return mt0 + (H - mt0 - mb) * (1 - v / max); };
+    var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(title) + '"><title>' + esc(title) + "</title>";
+    [0, 500, 1000].forEach(function (g) { s += '<line x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y(g) + '" y2="' + y(g) + '" style="stroke:var(--line)"/><text class="ax" x="' + (ml - 4) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + "</text>"; });
+    st.bars.forEach(function (b, k) {
+      var x = ml + k * bw + bw * 0.15, w = bw * 0.7, v = field === "raw" ? b.raw : b.adj;
+      if (!b.vis) { s += '<rect x="' + x + '" y="' + y(b.raw) + '" width="' + w + '" height="' + (y(0) - y(b.raw)) + '" style="fill:none;stroke:var(--muted);stroke-dasharray:3 3;opacity:.55"/>'; }
+      else s += '<rect x="' + x + '" y="' + y(v) + '" width="' + w + '" height="' + Math.max(1, y(0) - y(v)) + '" style="fill:' + color + '"/>';
+      if (k === Tm.ex_index) s += '<text class="ax" x="' + (x + w / 2) + '" y="' + (mt0 - 6) + '" text-anchor="middle" style="fill:var(--warn);font-weight:700">ex-date</text>';
+      if (!narrow.matches || k % 2 === 0) s += '<text class="ax" x="' + (x + w / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + esc(b.d.slice(8)) + "</text>";
+    });
+    return s + "</svg>";
+  }
+  function timeBody(i) {
+    var Tm = D.time, st = timeState(i), asof = Tm.dates[i], nvis = i + 1, nhid = Tm.dates.length - nvis, later = Tm.dates[i + 1] || "2030-01-18", look = 5;
+    var rb = st.bars.filter(function (b) { return b.vis; }).slice(-look);
+    var h = '<div class="example"><span class="tag">EXAMPLE, NOT REAL DATA</span>' + esc(Tm.symbol) + ": 12 made-up sessions with a 1:10 split. As-of date: <b>" + esc(asof) + "</b>. Visible bars: <b>" + nvis + "</b>. Hidden (the future): <b>" + nhid + "</b>.</div>";
+    h += '<div class="two"><div class="card chart"><h3>Raw closes (what is stored)</h3>' + timeChart(st, "raw", "Raw closes: solid bars are visible, dashed outlines are hidden", "var(--g-price)") + '<p class="hint">Solid = visible on the as-of date. Dashed outline = hidden: it lies after the as-of date.</p></div>' +
+      '<div class="card chart"><h3>adjusted_bars (what the engine gets)</h3>' + timeChart(st, "adj", "Adjusted closes the engine receives", "var(--g-actions)") + "</div></div>";
+    h += '<div class="two" style="margin-top:8px"><div class="card"><b>raw_bars("' + esc(Tm.symbol) + '", lookback=' + look + ")</b><div class=\"scroll\"><table class=\"t\"><tr><th>trade_date</th><th>close_raw</th></tr>" + rb.map(function (b) { return "<tr><td>" + esc(b.d) + "</td><td>" + b.raw + "</td></tr>"; }).join("") + "</table></div>" +
+      "<p class=\"hint\">The SQL itself says trade_date &lt;= as-of, newest first, limit " + look + ".</p></div>" +
+      '<div class="card"><b>corporate_actions("' + esc(Tm.symbol) + '")</b>' + (st.applied ? '<div class="okbox">Returns SPLIT 1:10, ex-date ' + esc(Tm.dates[Tm.ex_index]) + ". The split is applied: bars before the ex-date are multiplied by " + Tm.factor + ".</div>" :
+        '<div class="err">Returns [] on this date. The split has ex-date ' + esc(Tm.dates[Tm.ex_index]) + ", which is after the as-of date " + esc(asof) + ", so it is NOT applied and cannot leak into today's prices.</div>") + "</div></div>";
+    h += '<div class="card" style="margin-top:8px"><div class="tbar"><button type="button" class="btn" data-act="future">Ask for a later bar</button><button type="button" class="btn" data-act="today">Ask for the as-of bar</button></div><div id="tresult" aria-live="polite" class="hint">Try the buttons: what happens when the code asks for a date after ' + esc(asof) + "?</div></div>";
+    h += "<ul class=\"hint\" style=\"padding-left:18px\">" + Tm.lines.map(function (l) { return "<li>" + T(l) + "</li>"; }).join("") + "</ul>";
+    return h + src(Tm.source) + more("J.6");
+  }
+  V.time = function (a) {
+    var Tm = D.time, i = Math.max(0, Math.min(Tm.dates.length - 1, parseInt(a, 10)));
+    if (isNaN(i)) i = 3;
+    var h = '<div class="card"><label for="slide"><b>As-of date:</b> <span id="slidev">' + esc(Tm.dates[i]) + '</span></label><input type="range" id="slide" min="0" max="' + (Tm.dates.length - 1) + '" value="' + i + '" aria-valuetext="' + esc(Tm.dates[i]) + '">' +
+      '<div class="tbar"><button type="button" class="btn sm" data-act="tset" data-n="4">Before the split</button><button type="button" class="btn sm" data-act="tset" data-n="' + Tm.ex_index + '">On the ex-date</button><button type="button" class="btn sm" data-act="tset" data-n="10">After the split</button></div></div><div id="tbody">' + timeBody(i) + "</div>";
+    main.innerHTML = h;
+  };
+
+  /* ---------- 7 corporate actions ---------- */
+  var actMode = "both";
+  function splitChart() {
+    var C = D.actions_text.chart, W = narrow.matches ? 360 : 640, H = 240, ml = 44, mr = 10, mt0 = 18, mb = 26, n = C.raw.length, max = 600, bw = (W - ml - mr) / n;
+    var y = function (v) { return mt0 + (H - mt0 - mb) * (1 - v / max); }, x = function (k) { return ml + k * bw + bw / 2; };
+    var adj = C.raw.map(function (v, k) { return k < C.ex_index ? v * C.factor : v; });
+    var path = function (arr) { return arr.map(function (v, k) { return (k ? "L" : "M") + x(k).toFixed(1) + " " + y(v).toFixed(1); }).join(""); };
+    var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Raw and adjusted price of a made-up share around a 1:10 split"><title>Raw and adjusted price around a split</title>';
+    [0, 200, 400, 600].forEach(function (g) { s += '<line x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y(g) + '" y2="' + y(g) + '" style="stroke:var(--line)"/><text class="ax" x="' + (ml - 4) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + "</text>"; });
+    s += '<line x1="' + (x(C.ex_index) - bw / 2) + '" x2="' + (x(C.ex_index) - bw / 2) + '" y1="' + mt0 + '" y2="' + (H - mb) + '" style="stroke:var(--warn);stroke-dasharray:4 3"/><text class="ax" x="' + (x(C.ex_index) - bw / 2 + 4) + '" y="' + (mt0 + 10) + '" style="fill:var(--warn);font-weight:700">ex-date (1:10 split)</text>';
+    if (actMode !== "adj") s += '<path d="' + path(C.raw) + '" style="fill:none;stroke:var(--g-price);stroke-width:3"/>' + C.raw.map(function (v, k) { return '<circle cx="' + x(k) + '" cy="' + y(v) + '" r="3.5" style="fill:var(--g-price)"/>'; }).join("");
+    if (actMode !== "raw") s += '<path d="' + path(adj) + '" style="fill:none;stroke:var(--g-actions);stroke-width:3;stroke-dasharray:' + (actMode === "both" ? "7 4" : "0") + '"/>' + adj.map(function (v, k) { return '<circle cx="' + x(k) + '" cy="' + y(v) + '" r="3" style="fill:var(--g-actions)"/>'; }).join("");
+    C.dates.forEach(function (d, k) { if (!narrow.matches || k % 2 === 0) s += '<text class="ax" x="' + x(k) + '" y="' + (H - 8) + '" text-anchor="middle">' + esc(d.replace("Day ", "D")) + "</text>"; });
+    return s + "</svg>";
+  }
+  V.actions = function (a) {
+    var A = M.coverage.actions_by_type, tiers = M.coverage.actions_by_type_tier;
+    var h = '<div class="card chart"><div class="tbar"><b>Raw versus adjusted, one made-up share with a 1:10 split</b> <span class="tag">EXAMPLE, NOT REAL DATA</span></div><div class="tbar">' +
+      [["raw", "Raw (stored)"], ["adj", "Adjusted (computed)"], ["both", "Both"]].map(function (m) { return '<button type="button" class="btn sm" data-act="amode" data-v="' + m[0] + '" aria-pressed="' + (actMode === m[0]) + '">' + m[1] + "</button>"; }).join("") + "</div>" + splitChart() +
+      "<p class=\"hint\">The stored price falls tenfold on the ex-date although nothing was lost. The adjusted line multiplies every earlier bar by 0.1 so the history lines up. Nothing is written back.</p></div>";
+    h += '<div class="card" style="margin-top:8px"><b>' + esc(D.actions_text.applies) + "</b><p style=\"margin:2px 0\">" + T(D.actions_text.means) + "</p></div>";
+    var max = Math.max.apply(null, A.map(function (r) { return r.rows; }));
+    h += '<h3 style="margin:12px 0 4px">Action types in corporate_actions_log ' + meas() + '</h3><div class="scroll"><table class="t w"><tr><th>Type</th><th>Rows</th><th>Symbols</th><th>First ex-date</th><th>Last ex-date</th><th>Engine adjusts prices?</th></tr>' +
+      A.map(function (r) {
+        var at = D.action_types[r.action_type];
+        return '<tr><td><button type="button" class="chip" data-act="atype" data-id="' + r.action_type + '" style="--pk:' + (at.applied ? "var(--ok)" : "var(--bad)") + '"><i></i>' + esc(r.action_type) + "</button></td><td>" + nf(r.rows) + '<svg width="' + Math.max(2, Math.round(80 * r.rows / max)) + '" height="6" style="display:inline-block;width:' + Math.max(2, Math.round(80 * r.rows / max)) + 'px;margin-left:6px" aria-hidden="true"><rect width="100%" height="6" style="fill:var(--g-actions)"/></svg></td><td>' + nf(r.symbols) + "</td><td>" + esc(r.first_ex_date) + "</td><td>" + esc(r.last_ex_date) + "</td><td>" + (at.applied ? "<b style=\"color:var(--ok)\">Yes</b>" : "<b style=\"color:var(--bad)\">No</b>") + "</td></tr>";
+      }).join("") + "</table></div>";
+    h += "<p class=\"hint\">Applied: SPLIT and BONUS. Not applied: the rest. Click a type for what it does to prices and to an open position.</p>" + more("E");
+    main.innerHTML = h;
+    if (a && D.action_types[a]) {
+      beginPanel(); var at = D.action_types[a], tt = tiers.filter(function (x) { return x.action_type === a; });
+      openPanel(at.applied ? "var(--ok)" : "var(--bad)", '<h2 id="ptitle">' + esc(a) + badge(at.applied ? "adjusted" : "not adjusted", at.applied ? "engine" : "missing") + '</h2><h3>History prices</h3><p>' + T(at.price) + "</p><h3>Open position on the ex-date</h3><p>" + T(at.position) + "</p>" +
+        sec("Evidence tiers " + meas(), "<ul>" + tt.map(function (x) { return "<li><b>" + esc(x.evidence_tier) + "</b>: " + nf(x.rows) + "<br><span class=\"hint\">" + esc(D.actions_text.tiers[x.evidence_tier] || "") + "</span></li>"; }).join("") + "</ul>") + more("E") + src(D.actions_text.source)); endPanel();
+    }
+  };
+
+  /* ---------- 8 coverage ---------- */
+  function barChart(rows, field, o) {
+    var W = narrow.matches ? 360 : 640, H = 230, ml = 46, mr = 8, mt0 = 14, mb = 26, n = rows.length, bw = (W - ml - mr) / n;
+    var mx = Math.max.apply(null, rows.map(function (r) { return r[field]; })), step = Math.pow(10, Math.floor(Math.log10(mx))), top = Math.ceil(mx / step) * step;
+    if (top / step < 3) { step = step / 2; top = Math.ceil(mx / step) * step; }
+    var y = function (v) { return mt0 + (H - mt0 - mb) * (1 - v / top); }, fmt = function (v) { return v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? Math.round(v / 1e3) + "k" : String(v); };
+    var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(o.title) + '" style="--c:' + o.color + '"><title>' + esc(o.title) + "</title>";
+    for (var g = 0; g <= top + 1e-9; g += step * (top / step > 6 ? 2 : 1)) s += '<line x1="' + ml + '" x2="' + (W - mr) + '" y1="' + y(g) + '" y2="' + y(g) + '" style="stroke:var(--line)"/><text class="ax" x="' + (ml - 4) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + fmt(g) + "</text>";
+    rows.forEach(function (r, k) {
+      var x = ml + k * bw + bw * 0.12, w = bw * 0.76, hatch = o.hatch && o.hatch(r);
+      s += '<rect x="' + x + '" y="' + y(r[field]) + '" width="' + w + '" height="' + (y(0) - y(r[field])) + '" style="fill:' + (hatch ? "color-mix(in srgb," + o.color + " 30%,var(--card))" : o.color) + ";stroke:" + o.color + (hatch ? ";stroke-dasharray:4 2" : "") + '"><title>' + esc(r.year + ": " + nf(r[field])) + "</title></rect>";
+      if (!narrow.matches || k % 2 === 0) s += '<text class="ax" x="' + (x + w / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + esc(narrow.matches ? "'" + String(r.year).slice(2) : r.year) + "</text>";
+    });
+    return s + "</svg>";
+  }
+  function numTable(rows, cols) { return '<details class="g"><summary>Show the numbers</summary><div class="scroll"><table class="t"><tr>' + cols.map(function (c) { return "<th>" + esc(c[1]) + "</th>"; }).join("") + "</tr>" + rows.map(function (r) { return "<tr>" + cols.map(function (c) { return "<td>" + esc(typeof r[c[0]] === "number" ? nf(r[c[0]]) : r[c[0]]) + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div></details>"; }
+  V.coverage = function () {
+    var C = M.coverage, Y = C.lake_by_year, nf0 = C.nifty_first_date.slice(0, 4), hatch = function (r) { return String(r.year) <= nf0; };
+    var h = '<div class="card"><b>Lake dates:</b> first ' + esc(C.lake_first_date) + ", last <b>" + esc(C.lake_last_date) + "</b>. The Nifty calendar starts <b>" + esc(C.nifty_first_date) + "</b>." + meas() +
+      "<p class=\"hint\" style=\"margin:4px 0 0\">Hatched bars: years that include sessions before the Nifty calendar starts. Those earlier sessions exist in the lake but cannot be reached through <code>sessions()</code>.</p></div><div class=\"charts\" style=\"margin-top:8px\">";
+    h += '<div class="card chart"><h3>Rows per year</h3>' + barChart(Y, "rows", { title: "Rows per year in market_data_lake", color: "var(--g-price)", hatch: hatch }) + meas() + numTable(Y, [["year", "Year"], ["rows", "Rows"], ["sessions", "Sessions"], ["equity_symbols", "Equity symbols"]]) + "</div>";
+    h += '<div class="card chart"><h3>Sessions per year</h3>' + barChart(Y, "sessions", { title: "Distinct trade dates per year", color: "var(--g-staging)", hatch: hatch }) + meas() + "<p class=\"hint\">The last year is partial: the lake ends " + esc(C.lake_last_date) + ".</p></div>";
+    h += '<div class="card chart"><h3>Equity symbols per year</h3>' + barChart(Y, "equity_symbols", { title: "Distinct equity symbols per year", color: "var(--g-shares)", hatch: hatch }) + meas() + "</div>";
+    h += '<div class="card chart"><h3>Results board meetings per year (earnings)</h3>' + barChart(C.earnings_by_year.map(function (r) { return { year: r.year, meetings: r.meetings }; }), "meetings", { title: "Results board meetings per year", color: "var(--g-earnings)" }) + meas() +
+      "<p class=\"hint\">The jump from 2023 is a change in how many announcement rows exist per meeting, not necessarily more meetings (from DATA_GUIDE section F).</p>" + numTable(C.earnings_by_year, [["year", "Year"], ["meetings", "Meetings"], ["lake_symbols", "Symbols"]]) + "</div></div>";
+    var ES = C.earnings_symbols, SC = C.symbol_class;
+    h += '<div class="two" style="margin-top:12px"><div class="card"><b>Earnings coverage</b>' + meas() + "<p>" + nf(ES.lake_symbols_mapped) + " lake symbols are mapped. " + nf(ES.query_symbols_with_rows) + " of " + nf(ES.query_symbols_mapped) + " query symbols have at least one API response with rows, so " + nf(ES.query_symbols_mapped - ES.query_symbols_with_rows) + " mapped names have no data by this measure.</p></div>" +
+      '<div class="card"><b>ASM/GSM snapshots</b>' + meas() + "<p>" + C.asm_days.map(function (r) { return esc(r.snapshot_date) + " " + esc(r.framework) + ": " + nf(r.rows); }).join("<br>") + "</p><p class=\"hint\">One snapshot day. NSE keeps no history, so earlier days cannot be recovered.</p></div></div>";
+    h += '<div class="card" style="margin-top:8px"><b>Which equity symbols still trade</b>' + meas() + "<p>" + SC.map(function (r) { return nf(r.symbols) + " " + esc(r["class"]); }).join(", ") + ".</p></div>";
+    main.innerHTML = h + more("F");
+  };
+
+  /* ---------- 9 known issues ---------- */
+  var ICONS = {
+    coins: '<circle cx="14" cy="16" r="9"/><path d="M14 11v10M10 14h8"/><circle cx="30" cy="30" r="9"/><path d="M30 25v10M26 28h8"/>',
+    meter: '<path d="M8 32a16 16 0 0 1 32 0"/><path d="M24 32l8-10"/><circle cx="24" cy="32" r="2"/>',
+    shield: '<path d="M24 6l14 5v11c0 10-6 16-14 20C16 38 10 32 10 22V11z"/><path d="M18 24l5 5 8-10"/>',
+    calendar: '<rect x="8" y="10" width="32" height="30" rx="4"/><path d="M8 19h32M16 6v8M32 6v8M16 26h4M24 26h4M32 26h4M16 32h4"/>',
+    gap: '<path d="M6 34h10M32 34h10M6 20h6l4 14M42 20h-6l-4 14M20 12v8M28 12v8"/>',
+    clock: '<circle cx="24" cy="24" r="16"/><path d="M24 14v10l7 4"/>',
+    gear: '<circle cx="24" cy="24" r="6"/><path d="M24 6v6M24 36v6M6 24h6M36 24h6M11 11l4 4M33 33l4 4M37 11l-4 4M15 33l-4 4"/>'
+  };
+  V.issues = function () {
+    var h = '<p class="hint">Eight things to know before trusting a backtest. Each has a plain line on what it means. Numbers are measured ' + esc(MD) + " or quoted from a named report.</p><div class=\"icards\">";
+    D.issues.forEach(function (x) {
+      var cls = x.status === "missing" ? "missing" : x.status === "recorded" ? "fine" : "open";
+      h += '<div class="ic ' + cls + '"><div class="head"><svg class="icon" viewBox="0 0 48 48" aria-hidden="true">' + ICONS[x.icon] + '</svg><div><div class="tg">' + esc(x.tag) + " &middot; " + esc(x.status) + "</div><h3>" + X(x.title) + "</h3></div></div><p style=\"margin:6px 0\">" + T(x.what) + '</p><p class="bt"><b>What this means for a backtest:</b> ' + T(x.backtest) + '</p><p class="hint" style="margin:2px 0">Read more: <code>' + esc(D.meta.guide_file) + "</code>, section " + esc(secOf(x.source)) + '. <span class="mdate">' + esc(F(x.when)) + "</span></p></div>";
+    });
+    main.innerHTML = h + "</div>";
+  };
+
+  /* ---------- 10 other databases ---------- */
+  function liveState(n) {
+    var ev = D.live.events, cur = n ? ev[n - 1] : null, h = '<div class="two"><div class="card"><b>journal</b> (append-only)' + (n ? "" : '<p class="hint">Empty. Press Next.</p>') + ev.slice(0, n).map(function (e, i) { return '<div class="jr' + (i === n - 1 ? " new" : "") + '">(' + e.seq + ", '" + esc(e.kind) + "', '" + esc(e.session) + "', '" + esc(e.key) + "', " + esc(e.payload) + ")</div>"; }).join("") + "</div>" +
+      '<div class="card"><b>snapshot</b> (the latest State, a cache)' + (cur ? "<dl class=\"kv\"><dt>as_of</dt><dd>" + esc(cur.session === "0000-00-00" ? "-" : cur.session) + "</dd><dt>cash</dt><dd>" + nf(cur.cash) + "</dd><dt>positions</dt><dd>" + (cur.positions.length ? esc(cur.positions.join(", ")) : "none") + "</dd></dl><p class=\"hint\">" + T(cur.note) + "</p>" : "<p class=\"hint\">Not written yet.</p>") + "</div></div>";
+    return h;
+  }
+  V.other = function (a) {
+    var L = D.live, n = Math.max(0, Math.min(L.events.length, parseInt(a, 10) || 0));
+    var h = '<h2 class="sect" style="--pk:' + gcol("staging") + '">state/live_state.db <small>does not exist yet; the shape is from the code (' + esc(L.source) + ")</small></h2>";
+    h += '<div class="grid" style="margin-bottom:8px">' + L.tables.map(function (t) { return '<div class="card"><b>' + esc(t.name) + "</b><br><code>" + esc(t.cols) + "</code><p style=\"margin:4px 0\">" + T(t.plain) + "</p></div>"; }).join("") + "</div>";
+    h += '<p class="hint">Two triggers (' + L.triggers.map(function (x) { return "<code>" + esc(x) + "</code>"; }).join(", ") + ") refuse any UPDATE or DELETE on the journal.</p>";
+    h += '<div class="example"><span class="tag">EXAMPLE, NOT REAL DATA</span>Four made-up events folded into state, one at a time.</div>' + stepper(n, L.events.length, n ? "Event " + n + " of " + L.events.length : "Press Next") + liveState(n);
+    h += '<div class="tbar" style="margin-top:8px"><button type="button" class="btn" data-act="tryupd">Try to UPDATE a journal row</button><button type="button" class="btn" data-act="rebuild">Rebuild from the journal</button></div><div id="liveout" aria-live="polite" class="hint">' + T(L.rebuild) + "</div>" + src(L.doc);
+    h += '<h2 class="sect" style="--pk:' + gcol("asm") + '">ASM/GSM snapshot database <small>outside the repository</small></h2><div class="card">' + T(D.databases.filter(function (x) { return x.id === "asm"; })[0].plain) +
+      "<p class=\"hint\">Tables: asm_gsm_daily_snapshot, asm_gsm_snapshot_raw, asm_gsm_snapshot_log. The lake holds a copy of the same data: " + M.coverage.asm_days.map(function (r) { return esc(r.framework) + " " + nf(r.rows); }).join(", ") + " rows on " + esc(M.coverage.asm_days[0].snapshot_date) + ". " + meas() + "</p></div>";
+    var byName = {}; M.reference_files.forEach(function (r) { byName[r.file] = r; });
+    h += '<h2 class="sect" style="--pk:' + gcol("actions") + '">Reference files <small>data/reference/ (rows measured ' + esc(MD) + ")</small></h2><div class=\"scroll\"><table class=\"t w\"><tr><th>File</th><th>Rows</th><th>What it is</th><th>Read by</th></tr>" +
+      D.ref_files.map(function (f) { var r = byName[f.file]; return "<tr><td><code>" + esc(f.file) + "</code></td><td>" + (r ? nf(r.rows) : "?") + "</td><td>" + T(f.plain) + "</td><td><code>" + esc(f.read_by) + "</code></td></tr>"; }).join("") +
+      D.ref_other.map(function (f) { return "<tr><td><code>" + esc(f.file) + "</code></td><td>" + esc(f.rows_note) + "</td><td>" + T(f.plain) + "</td><td><code>" + esc(f.read_by) + "</code></td></tr>"; }).join("") + "</table></div>";
+    main.innerHTML = h + more("G and H");
+  };
+
+  /* ---------- 11 ask the data ---------- */
+  var askSel = -1;
+  function askAnswer() {
+    if (askSel < 0) return '<div class="card">Pick a question on the left.</div>';
+    var x = D.ask[askSel];
+    return '<div class="card"><b>' + esc(x.q) + "</b><p>" + T(x.plain) + "</p><p>" + (x.tables.map(tchip).join(" ")) + (x.files || []).map(function (f) { return '<span class="chip" style="--pk:var(--g-actions)"><i></i>' + esc(f) + "</span>"; }).join(" ") + (x.dbs ? '<span class="chip" style="--pk:var(--g-staging)"><i></i>state/live_state.db</span>' : "") + "</p><p class=\"hint\">Method: " + T(x.method) + "</p></div>";
+  }
+  V.ask = function (a) {
+    askSel = a !== "" && !isNaN(parseInt(a, 10)) ? Math.max(-1, Math.min(D.ask.length - 1, parseInt(a, 10))) : -1;
+    var h = '<div class="two"><div><h3 style="margin:4px 0">Which table answers my question?</h3><div class="qs">' + D.ask.map(function (x, i) { return '<button type="button" class="qb" data-act="ask" data-id="' + i + '" aria-pressed="' + (i === askSel) + '">' + esc(x.q) + "</button>"; }).join("") + '</div></div><div><div id="askans">' + askAnswer() + "</div></div></div>";
+    h += '<h3 style="margin:16px 0 4px">Five read-only SQL examples</h3><div class="card"><b>They open the database read-only.</b> Command pattern (the SQL goes in the last quotes):<pre id="pat">' + esc(D.open_ro) + '</pre><button type="button" class="btn sm" data-act="copy" data-t="pattern">Copy the pattern</button><p class="hint">' + esc(D.ask_note) + "</p></div>";
+    D.queries.forEach(function (q, i) {
+      h += '<div class="card" style="margin-top:8px"><b>' + (i + 1) + ". " + esc(q.title) + "</b><pre>" + esc(q.sql) + '</pre><div class="tbar"><button type="button" class="btn sm" data-act="copy" data-t="sql" data-id="' + i + '">Copy SQL</button><button type="button" class="btn sm" data-act="copy" data-t="cmd" data-id="' + i + '">Copy as command</button><span class="hint copied" id="cp' + i + '" aria-live="polite"></span></div><p class="hint">' + esc(q.returned) + ' <span class="mdate">' + esc(q.when) + "</span></p></div>";
+    });
+    main.innerHTML = h + more("K");
+  };
+  function copyText(text, id) {
+    var done = function () { var e = $("#" + id); if (e) e.textContent = "Copied"; };
+    var fallback = function () { var ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.top = "-1000px"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch (e) { var e2 = $("#" + id); if (e2) e2.textContent = "Select the text and copy it by hand."; } document.body.removeChild(ta); };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, fallback); return; } } catch (e) { /* fall through */ }
+    fallback();
+  }
+
+  /* ---------- 12 glossary ---------- */
+  var gq = "";
+  function glossHtml() {
+    var w = gq.toLowerCase();
+    return D.glossary.map(function (g, i) { return { g: g, i: i }; }).filter(function (x) { return !w || (x.g.term + " " + x.g.def).toLowerCase().indexOf(w) >= 0; }).sort(function (a, b) { return a.g.term.toLowerCase() < b.g.term.toLowerCase() ? -1 : 1; })
+      .map(function (x) { return '<details class="g"><summary>' + esc(x.g.term) + "</summary><p>" + esc(x.g.def) + "</p></details>"; }).join("") || '<div class="card">No such term.</div>';
+  }
+  V.glossary = function () {
+    main.innerHTML = '<p class="hint">Words underlined with dots anywhere in this guide show their meaning on hover, focus or tap. All of them are here.</p><input type="search" id="gq" placeholder="Search terms" aria-label="Search the glossary" value="' + esc(gq) + '"><div id="gloss" style="margin-top:10px">' + glossHtml() + "</div>";
+  };
+
+  /* ---------- shell ---------- */
+  var tabs = $("#tabs");
+  tabs.innerHTML = VIEWS.map(function (v) { return '<button type="button" role="tab" id="tab-' + v.id + '" data-view="' + v.id + '">' + esc(v.label) + "</button>"; }).join("");
+  $("#legend").innerHTML = '<span class="hint" style="margin:0 6px 0 0">Colour key:</span>' + D.groups.map(function (g) { return chip(g.id); }).join("");
+  $("#ttl").textContent = D.meta.title; $("#sub").textContent = D.meta.subtitle;
+
+  function crumb(r) {
+    var vl = VIEWS.filter(function (v) { return v.id === r.v; })[0].label, last = "";
+    if (r.a) {
+      if (r.v === "tables" || r.v === "relations") last = r.a;
+      else if (r.v === "big") last = (D.databases.filter(function (b) { return b.id === r.a; })[0] || { name: "" }).name;
+      else if (r.v === "flow" || r.v === "row" || r.v === "other") last = r.a.indexOf("node-") === 0 ? (FN[r.a.slice(5)] || { label: "" }).label : "step " + r.a;
+      else if (r.v === "time") last = "as-of " + (D.time.dates[parseInt(r.a, 10)] || "");
+      else if (r.v === "actions") last = r.a;
+      else if (r.v === "ask") last = "question " + r.a;
+    }
+    var up = document.body.classList.contains("panel-open") || r.v !== "big" || !!r.a;
+    $("#crumb").innerHTML = '<button type="button" class="back" data-act="back"' + (up ? "" : " disabled") + '>&larr; Back</button><span>You are here:</span> <button type="button" class="c" data-act="home">Data guide</button> &rsaquo; ' +
+      (last ? '<button type="button" class="c" data-act="view" data-v="' + r.v + '">' + esc(vl) + "</button> &rsaquo; <b>" + esc(last) + "</b>" : "<b>" + esc(vl) + "</b>");
+  }
+  function render() {
+    var r = route();
+    if (["flow", "row", "other"].indexOf(r.v) < 0) stopPlay();
+    seenMain = {}; seenPanel = {}; seen = seenMain;
+    document.body.classList.remove("panel-open");
+    VIEW_IDS.forEach(function (id) { var b = $("#tab-" + id); b.setAttribute("aria-selected", id === r.v ? "true" : "false"); b.tabIndex = id === r.v ? 0 : -1; });
+    V[r.v](r.a);
+    crumb(r); document.title = "StockBot data picture guide: " + VIEWS.filter(function (v) { return v.id === r.v; })[0].label;
+  }
+
+  /* ---------- events ---------- */
+  var STEPPED = { flow: function () { return D.flow_steps.length; }, row: function () { return D.row_steps.length; }, other: function () { return D.live.events.length; } };
+  function curStep(r) { return r.v === "flow" && r.a.indexOf("node-") === 0 ? lastFlow : (parseInt(r.a, 10) || 0); }
+  function stepGo(delta) { var r = route(), max = STEPPED[r.v](), n = Math.max(0, Math.min(max, curStep(r) + delta)); go(r.v, n); return n >= max; }
+  function timeUpdate(i) {
+    var body = $("#tbody"); if (!body) return;
+    $("#slidev").textContent = D.time.dates[i]; $("#slide").setAttribute("aria-valuetext", D.time.dates[i]); body.innerHTML = timeBody(i);
+    try { history.replaceState(null, "", "#time/" + i); } catch (e) { /* ignore */ }
+    crumb({ v: "time", a: String(i) });
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-act],[data-view],.term"); if (!t) return;
+    if (t.classList.contains("term")) { e.stopPropagation(); showTip(t); return; }
+    if (t.hasAttribute("data-view")) { stopPlay(); go(t.getAttribute("data-view")); return; }
+    var act = t.getAttribute("data-act"), id = t.getAttribute("data-id"), r = route();
+    switch (act) {
+      case "db": go("big", id); break;
+      case "tbl": go("tables", id); break;
+      case "engfilter": store.set("sb-engine", t.getAttribute("data-v")); render(); break;
+      case "er": go("relations", id); break;
+      case "lkey": go("relations", id === r.a ? "" : id); break;
+      case "fnode": go("flow", "node-" + id); break;
+      case "fstep": stopPlay(); go("flow", t.getAttribute("data-n")); break;
+      case "rstep": stopPlay(); go("row", t.getAttribute("data-n")); break;
+      case "st-next": stopPlay(); stepGo(1); break;
+      case "st-back": stopPlay(); stepGo(-1); break;
+      case "st-reset": stopPlay(); go(r.v, 0); break;
+      case "st-play":
+        if (playTimer) { stopPlay(); render(); break; }
+        if (curStep(route()) >= STEPPED[route().v]()) go(route().v, 0);
+        playTimer = setInterval(function () { if (stepGo(1)) { stopPlay(); render(); } }, 2600); stepGo(1); break;
+      case "tset": { var n = parseInt(t.getAttribute("data-n"), 10); $("#slide").value = n; timeUpdate(n); break; }
+      case "future": { var i = +$("#slide").value, later = D.time.dates[i + 1] || "2030-01-18"; $("#tresult").className = ""; $("#tresult").innerHTML = '<div class="err">FutureDataError: ' + esc(D.time.error_text.replace("{later}", later).replace("{as_of}", D.time.dates[i])) + "</div>"; break; }
+      case "today": { var j = +$("#slide").value, b = timeState(j).bars[j]; $("#tresult").className = ""; $("#tresult").innerHTML = '<div class="okbox">The bar for ' + esc(b.d) + " is visible: close_raw " + b.raw + ".</div>"; break; }
+      case "amode": actMode = t.getAttribute("data-v"); render(); break;
+      case "atype": go("actions", id); break;
+      case "tryupd": $("#liveout").innerHTML = '<div class="err">UPDATE journal SET ... &rarr; aborted: ' + esc(D.live.trigger_message) + "</div>"; break;
+      case "rebuild": { var nn = curStep(route()); $("#liveout").innerHTML = nn ? '<div class="okbox">Folded ' + nn + " journal row(s) from the first one. Result: cash " + nf(D.live.events[nn - 1].cash) + ", positions " + esc(D.live.events[nn - 1].positions.join(", ") || "none") + ". It equals the stored snapshot.</div>" : '<div class="err">The journal is empty: nothing to rebuild. Press Next first.</div>'; break; }
+      case "ask": go("ask", id); break;
+      case "copy": {
+        var kind = t.getAttribute("data-t"), qi = parseInt(id, 10), text = kind === "pattern" ? D.open_ro : kind === "sql" ? D.queries[qi].sql : D.open_ro.replace("<SQL>", D.queries[qi].sql);
+        copyText(text, kind === "pattern" ? "cp-pat" : "cp" + qi); if (kind === "pattern") { var pe = $("#cp-pat"); if (!pe) { pe = document.createElement("span"); pe.id = "cp-pat"; pe.className = "hint"; pe.setAttribute("aria-live", "polite"); t.insertAdjacentElement("afterend", pe); copyText(text, "cp-pat"); } }
+        break;
+      }
+      case "back": if (document.body.classList.contains("panel-open") || r.a) go(r.v); else go("big"); break;
+      case "home": go("big"); break;
+      case "view": go(t.getAttribute("data-v")); break;
+    }
+  });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".term")) hideTip(); }, true);
+  $("#pclose").addEventListener("click", function () { var r = route(); go(r.v, r.v === "flow" ? lastFlow : ""); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { hideTip(); if (document.body.classList.contains("panel-open")) { var r0 = route(); go(r0.v, r0.v === "flow" ? lastFlow : ""); } return; }
+    var t = e.target;
+    if ((e.key === "Enter" || e.key === " ") && t.getAttribute && t.getAttribute("role") === "button" && t.tagName.toLowerCase() === "g") { e.preventDefault(); t.dispatchEvent(new MouseEvent("click", { bubbles: true })); }
+    if ((e.key === "Enter" || e.key === " ") && t.classList && t.classList.contains("term")) { e.preventDefault(); showTip(t); }
+    if ((e.key === "ArrowRight" || e.key === "ArrowLeft") && t.getAttribute && t.getAttribute("role") === "tab") {
+      var i = VIEW_IDS.indexOf(t.getAttribute("data-view")) + (e.key === "ArrowRight" ? 1 : -1); i = (i + VIEW_IDS.length) % VIEW_IDS.length; go(VIEW_IDS[i]); $("#tab-" + VIEW_IDS[i]).focus();
+    }
+    var rv = route().v;
+    if (STEPPED[rv] && t.closest && !t.closest("input") && !t.getAttribute("role") && (e.key === "ArrowRight" || e.key === "ArrowLeft")) { stopPlay(); stepGo(e.key === "ArrowRight" ? 1 : -1); }
+  });
+  document.addEventListener("input", function (e) {
+    if (e.target.id === "tq") { tq = e.target.value; seen = seenMain = {}; $("#tlist").innerHTML = tablesHtml(); }
+    if (e.target.id === "gq") { gq = e.target.value; $("#gloss").innerHTML = glossHtml(); }
+    if (e.target.id === "slide") timeUpdate(+e.target.value);
+  });
+  document.addEventListener("mouseover", function (e) { var t = e.target.closest(".term,[data-tip]"); if (!t) return; if (t.classList.contains("term")) showTip(t); else showNodeTip(t); });
+  document.addEventListener("mouseout", function (e) { var t = e.target.closest(".term,[data-tip]"); if (t) hideTip(); });
+  document.addEventListener("focusin", function (e) { var t = e.target.closest && e.target.closest(".term,g[data-tip]"); if (!t) return; if (t.classList.contains("term")) showTip(t); else showNodeTip(t); });
+  document.addEventListener("focusout", hideTip);
+  window.addEventListener("hashchange", function () { hideTip(); render(); });
+  narrow.addEventListener("change", render);
+  window.addEventListener("scroll", hideTip, true);
+
+  var themeBtn = $("#theme"), modes = ["auto", "light", "dark"];
+  function applyTheme(m) { if (m === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", m); themeBtn.textContent = "Theme: " + m; }
+  var tm = store.get("sb-theme"); applyTheme(modes.indexOf(tm) >= 0 ? tm : "auto");
+  themeBtn.addEventListener("click", function () { var cur = store.get("sb-theme"); var nx = modes[(modes.indexOf(cur) + 1 + modes.length) % modes.length]; if (modes.indexOf(cur) < 0) nx = "light"; store.set("sb-theme", nx); applyTheme(nx); });
+
+  render();
+})();
+</script>
+</body>
+</html>

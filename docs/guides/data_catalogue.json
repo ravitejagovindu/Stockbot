@@ -1,0 +1,4506 @@
+{
+ "meta": {
+  "measured_at": "2026-11-10 08:56",
+  "measured_date": "2026-11-10",
+  "db_file": "finsight.db",
+  "db_size_bytes": 3432767488,
+  "db_modified": "2026-11-08 12:38:02",
+  "generator": "py scripts/gen_data_catalogue.py --json"
+ },
+ "objects": [
+  {
+   "type": "index",
+   "name": "idx_corp_symbol_date",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "index",
+   "name": "idx_earnings_symbol",
+   "table": "earnings_calendar"
+  },
+  {
+   "type": "index",
+   "name": "idx_mdl_symbol_date",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "index",
+   "name": "idx_mdl_trade_date",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "index",
+   "name": "idx_mdls_date",
+   "table": "market_data_lake_staging"
+  },
+  {
+   "type": "index",
+   "name": "idx_mdls_isin",
+   "table": "market_data_lake_staging"
+  },
+  {
+   "type": "index",
+   "name": "idx_positions_state",
+   "table": "active_positions"
+  },
+  {
+   "type": "index",
+   "name": "idx_positions_symbol",
+   "table": "active_positions"
+  },
+  {
+   "type": "index",
+   "name": "idx_securities_listing_date",
+   "table": "securities_master"
+  },
+  {
+   "type": "index",
+   "name": "idx_shares_symbol",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "index",
+   "name": "ix_ebm_isin",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "index",
+   "name": "ix_erf_isin",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_active_positions_1",
+   "table": "active_positions"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_asm_gsm_daily_snapshot_1",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_asm_gsm_list_1",
+   "table": "asm_gsm_list"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_asm_gsm_snapshot_raw_1",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_bhavcopy_fetch_log_1",
+   "table": "bhavcopy_fetch_log"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_corporate_actions_log_1",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_daily_watchlist_1",
+   "table": "daily_watchlist"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_earnings_api_raw_1",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_earnings_board_meeting_1",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_earnings_calendar_1",
+   "table": "earnings_calendar"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_earnings_results_filing_1",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_earnings_symbol_map_1",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_index_gap_fill_1",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_market_data_lake_1",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_market_data_lake_staging_1",
+   "table": "market_data_lake_staging"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_market_data_lake_yahoo_archive_1",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_pipeline_run_log_1",
+   "table": "pipeline_run_log"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_regime_state_1",
+   "table": "regime_state"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_securities_master_1",
+   "table": "securities_master"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_shares_outstanding_1",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "table",
+   "name": "account_ledger",
+   "table": "account_ledger"
+  },
+  {
+   "type": "table",
+   "name": "active_positions",
+   "table": "active_positions"
+  },
+  {
+   "type": "table",
+   "name": "asm_gsm_daily_snapshot",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "table",
+   "name": "asm_gsm_list",
+   "table": "asm_gsm_list"
+  },
+  {
+   "type": "table",
+   "name": "asm_gsm_snapshot_log",
+   "table": "asm_gsm_snapshot_log"
+  },
+  {
+   "type": "table",
+   "name": "asm_gsm_snapshot_raw",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "table",
+   "name": "bhavcopy_fetch_log",
+   "table": "bhavcopy_fetch_log"
+  },
+  {
+   "type": "table",
+   "name": "corporate_actions_log",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "table",
+   "name": "daily_watchlist",
+   "table": "daily_watchlist"
+  },
+  {
+   "type": "table",
+   "name": "earnings_api_raw",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "table",
+   "name": "earnings_board_meeting",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "table",
+   "name": "earnings_calendar",
+   "table": "earnings_calendar"
+  },
+  {
+   "type": "table",
+   "name": "earnings_collect_log",
+   "table": "earnings_collect_log"
+  },
+  {
+   "type": "table",
+   "name": "earnings_results_filing",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "table",
+   "name": "earnings_symbol_map",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "table",
+   "name": "index_gap_fill",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "table",
+   "name": "isin_symbol_map",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "table",
+   "name": "market_data_lake",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "table",
+   "name": "market_data_lake_staging",
+   "table": "market_data_lake_staging"
+  },
+  {
+   "type": "table",
+   "name": "market_data_lake_yahoo_archive",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "table",
+   "name": "pipeline_run_log",
+   "table": "pipeline_run_log"
+  },
+  {
+   "type": "table",
+   "name": "regime_state",
+   "table": "regime_state"
+  },
+  {
+   "type": "table",
+   "name": "securities_master",
+   "table": "securities_master"
+  },
+  {
+   "type": "table",
+   "name": "shares_outstanding",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "table",
+   "name": "sqlite_sequence",
+   "table": "sqlite_sequence"
+  },
+  {
+   "type": "table",
+   "name": "trade_analytics_log",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "trg_tal_no_delete",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "trg_tal_no_update",
+   "table": "trade_analytics_log"
+  }
+ ],
+ "tables": {
+  "account_ledger": {
+   "rows": 0,
+   "date_column": "transaction_date",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "transaction_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "transaction_type",
+     "type": "VARCHAR(20)",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "amount_inr",
+     "type": "FLOAT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "notes",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "created_at",
+     "type": "DATETIME",
+     "notnull": true,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [],
+   "sample": []
+  },
+  "active_positions": {
+   "rows": 0,
+   "date_column": "entry_date",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "entry_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "entry_price",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "shares",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "initial_stop_loss",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "live_stop_loss",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "initial_resistance_target",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "projected_rr",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "position_state",
+     "type": "TEXT",
+     "notnull": true,
+     "default": "'INITIAL_RISK'",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "days_held",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "highest_high_since_breakout",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "sector",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "earnings_alert",
+     "type": "BOOLEAN",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "next_earnings_date",
+     "type": "DATE",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "account_equity_at_entry",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "stop_a_at_entry",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "stop_b_at_entry",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "last_evaluated_date",
+     "type": "DATE",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "updated_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "original_shares",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "shares_remaining",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "total_realized_pnl_partial",
+     "type": "FLOAT",
+     "notnull": false,
+     "default": "0.0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "partial_exit_count",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "last_partial_exit_rr",
+     "type": "FLOAT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "next_partial_exit_rr",
+     "type": "FLOAT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "mode",
+     "type": "VARCHAR(5)",
+     "notnull": true,
+     "default": "'LIVE'",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "pending_close_reason",
+     "type": "VARCHAR(30)",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "fill_source",
+     "type": "VARCHAR(14)",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "entry_costs",
+     "type": "FLOAT",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "risk_inr",
+     "type": "FLOAT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "applied_corp_actions",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "manual_review_ca",
+     "type": "VARCHAR(200)",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_positions_symbol",
+     "unique": false,
+     "columns": [
+      "symbol"
+     ]
+    },
+    {
+     "name": "idx_positions_state",
+     "unique": false,
+     "columns": [
+      "position_state"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_active_positions_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "entry_date"
+     ]
+    }
+   ],
+   "sample": []
+  },
+  "asm_gsm_daily_snapshot": {
+   "rows": 253,
+   "date_column": "snapshot_date",
+   "first": "2026-11-08",
+   "last": "2026-11-08",
+   "distinct_dates": 1,
+   "symbols": 253,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "snapshot_date",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 253,
+     "example": "2026-11-08"
+    },
+    {
+     "name": "framework",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 2,
+     "nonnull_rows": 253,
+     "example": "ASM_LT"
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 3,
+     "nonnull_rows": 253,
+     "example": "A2ZINFRA"
+    },
+    {
+     "name": "isin",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": "INE619I01012"
+    },
+    {
+     "name": "company_name",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": "A2Z Infra Engineering Limited"
+    },
+    {
+     "name": "stage",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": "Stage I"
+    },
+    {
+     "name": "surv_code",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": "LTASM - I (13)"
+    },
+    {
+     "name": "surv_desc",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": "Long Term Additional Surveillance Measure (LTASM) - Stage I"
+    },
+    {
+     "name": "nse_time",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": "08-Nov-2026"
+    },
+    {
+     "name": "srno",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": 1
+    },
+    {
+     "name": "fetched_at",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 253,
+     "example": "2026-11-08T10:58:10"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_asm_gsm_daily_snapshot_1",
+     "unique": true,
+     "columns": [
+      "snapshot_date",
+      "framework",
+      "symbol"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "2026-11-08",
+     "ASM_LT",
+     "A2ZINFRA",
+     "INE619I01012",
+     "A2Z Infra Engineering Limited",
+     "Stage I",
+     "LTASM - I (13)",
+     "Long Term Additional Surveillance Measure (LTASM) - Stage I",
+     "08-Nov-2026",
+     1,
+     "2026-11-08T10:58:10"
+    ],
+    [
+     "2026-11-08",
+     "ASM_LT",
+     "AAATECH",
+     "INE0D0U01013",
+     "AAA Technologies Limited",
+     "Stage I",
+     "LTASM - I (13)",
+     "Long Term Additional Surveillance Measure (LTASM) - Stage I",
+     "08-Nov-2026",
+     2,
+     "2026-11-08T10:58:10"
+    ],
+    [
+     "2026-11-08",
+     "GSM",
+     "WINNY",
+     "INE0S9101013",
+     "Winny Immigration & Education Services Limited",
+     "0",
+     "GSM - 0 (99)",
+     "Shortlisted under Graded Surveillance Measure",
+     "08-Nov-2026 08:07:02",
+     76,
+     "2026-11-08T10:58:11"
+    ]
+   ]
+  },
+  "asm_gsm_list": {
+   "rows": 0,
+   "date_column": "effective_date",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "framework",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "stage",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "effective_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "fetched_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_asm_gsm_list_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "framework"
+     ]
+    }
+   ],
+   "sample": []
+  },
+  "asm_gsm_snapshot_log": {
+   "rows": 2,
+   "date_column": "snapshot_date",
+   "first": "2026-11-08",
+   "last": "2026-11-08",
+   "distinct_dates": 1,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "run_at",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": "2026-11-08T10:58:09"
+    },
+    {
+     "name": "snapshot_date",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": "2026-11-08"
+    },
+    {
+     "name": "endpoint",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": "reportASM"
+    },
+    {
+     "name": "outcome",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": "OK"
+    },
+    {
+     "name": "detail",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": "179 rows"
+    }
+   ],
+   "indexes": [],
+   "sample": [
+    [
+     "2026-11-08T10:58:09",
+     "2026-11-08",
+     "reportASM",
+     "OK",
+     "179 rows"
+    ],
+    [
+     "2026-11-08T10:58:09",
+     "2026-11-08",
+     "reportGSM",
+     "OK",
+     "76 rows"
+    ]
+   ]
+  },
+  "asm_gsm_snapshot_raw": {
+   "rows": 2,
+   "date_column": "snapshot_date",
+   "first": "2026-11-08",
+   "last": "2026-11-08",
+   "distinct_dates": 1,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "snapshot_date",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 2,
+     "example": "2026-11-08"
+    },
+    {
+     "name": "endpoint",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 2,
+     "nonnull_rows": 2,
+     "example": "reportASM"
+    },
+    {
+     "name": "fetched_at",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": "2026-11-08T10:58:10"
+    },
+    {
+     "name": "http_status",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": 200
+    },
+    {
+     "name": "row_count",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2,
+     "example": 179
+    },
+    {
+     "name": "body",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "{\"longterm\":{\"data\":[{\"asmSurvIndicator\":\"Stage I\",\"asmTime\":\"08-Nov-2026\",\"c..."
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_asm_gsm_snapshot_raw_1",
+     "unique": true,
+     "columns": [
+      "snapshot_date",
+      "endpoint"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "2026-11-08",
+     "reportASM",
+     "2026-11-08T10:58:10",
+     200,
+     179,
+     "{\"longterm\":{\"data\":[{\"asmSurvIndicator\":\"Stage I\",\"asmTime\":\"08-Nov-2026\",\"c..."
+    ],
+    [
+     "2026-11-08",
+     "reportGSM",
+     "2026-11-08T10:58:11",
+     200,
+     76,
+     "[{\"companyName\":\"AGS Transact Technologies Limited\",\"gsmStage\":\"LXII\",\"gsmTim..."
+    ]
+   ]
+  },
+  "bhavcopy_fetch_log": {
+   "rows": 5021,
+   "date_column": "trade_date",
+   "first": "2013-01-01",
+   "last": "2026-09-30",
+   "distinct_dates": 5021,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "trade_date",
+     "type": "DATE",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 5021,
+     "example": "2013-01-01"
+    },
+    {
+     "name": "status",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 5021,
+     "example": "OK"
+    },
+    {
+     "name": "n_rows",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 5021,
+     "example": 1423
+    },
+    {
+     "name": "url",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 3405,
+     "example": "https://archives.nseindia.com/content/historical/EQUITIES/2013/JAN/cm01JAN201..."
+    },
+    {
+     "name": "fetched_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 5021,
+     "example": "2026-11-06T15:59:05"
+    },
+    {
+     "name": "note",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1616,
+     "example": "file declares 2026-09-11, requested 2026-09-14: https://nsearchives.nseindia...."
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_bhavcopy_fetch_log_1",
+     "unique": true,
+     "columns": [
+      "trade_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "2013-01-01",
+     "OK",
+     1423,
+     "https://archives.nseindia.com/content/historical/EQUITIES/2013/JAN/cm01JAN201...",
+     "2026-11-06T15:59:05",
+     null
+    ],
+    [
+     "2013-01-02",
+     "OK",
+     1431,
+     "https://archives.nseindia.com/content/historical/EQUITIES/2013/JAN/cm02JAN201...",
+     "2026-11-06T15:59:06",
+     null
+    ],
+    [
+     "2026-09-14",
+     "HOLIDAY_OR_MISSING",
+     0,
+     null,
+     "2026-11-07T12:46:24",
+     "file declares 2026-09-11, requested 2026-09-14: https://nsearchives.nseindia...."
+    ]
+   ]
+  },
+  "corporate_actions_log": {
+   "rows": 22997,
+   "date_column": "ex_date",
+   "first": "2010-01-04",
+   "last": "2026-11-06",
+   "distinct_dates": 3343,
+   "symbols": 2342,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 22997,
+     "example": 1
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "ex_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "2010-08-12"
+    },
+    {
+     "name": "action_type",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "DIVIDEND"
+    },
+    {
+     "name": "ratio_numerator",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1256,
+     "example": 1.0
+    },
+    {
+     "name": "ratio_denominator",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1256,
+     "example": 10.0
+    },
+    {
+     "name": "notes",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "feed_symbol=20MICRONS; Annual General Meeting And Dividend Re.1/- Per Share"
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "2026-11-07 17:11:53"
+    },
+    {
+     "name": "source",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "NSE corporates-corporateActions API (F2 Step 7)"
+    },
+    {
+     "name": "loaded_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "2026-11-07T22:41:12"
+    },
+    {
+     "name": "evidence_tier",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 22997,
+     "example": "NOT_PRICE_MOVING"
+    },
+    {
+     "name": "evidence",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1174,
+     "example": "yahoo factor 0.1000 vs logged 0.1000 (within 3%); basis: across the gap: last..."
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_corp_symbol_date",
+     "unique": false,
+     "columns": [
+      "symbol",
+      "ex_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_corporate_actions_log_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "ex_date",
+      "action_type"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     1,
+     "20MICRONS",
+     "2010-08-12",
+     "DIVIDEND",
+     null,
+     null,
+     "feed_symbol=20MICRONS; Annual General Meeting And Dividend Re.1/- Per Share",
+     "2026-11-07 17:11:53",
+     "NSE corporates-corporateActions API (F2 Step 7)",
+     "2026-11-07T22:41:12",
+     "NOT_PRICE_MOVING",
+     null
+    ],
+    [
+     2,
+     "20MICRONS",
+     "2011-08-04",
+     "DIVIDEND",
+     null,
+     null,
+     "feed_symbol=20MICRONS; Annual General Meeting And Dividend Rs.1.50 Per Share",
+     "2026-11-07 17:11:53",
+     "NSE corporates-corporateActions API (F2 Step 7)",
+     "2026-11-07T22:41:12",
+     "NOT_PRICE_MOVING",
+     null
+    ],
+    [
+     22997,
+     "DOLPHIN",
+     "2024-01-25",
+     "SPLIT",
+     1.0,
+     10.0,
+     "feed_symbol=DOLPHIN; Face Value Split (Sub-Division) - From Rs 10/- Per Share...",
+     "2026-11-07 18:12:50",
+     "NSE corporates-corporateActions API (F2 Step 7)",
+     "2026-11-07T23:42:14",
+     "STRONG",
+     "yahoo factor 0.1000 vs logged 0.1000 (within 3%); basis: across the gap: last..."
+    ]
+   ]
+  },
+  "daily_watchlist": {
+   "rows": 0,
+   "date_column": "run_date",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "run_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "entry_price",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "live_stop_loss",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "stop_a",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "stop_b",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "initial_resistance_target",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "projected_rr",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "shares",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "position_value",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "risk_amount",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "risk_pct_of_equity",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "sector",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "blocked",
+     "type": "BOOLEAN",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "block_reason",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "execution_status",
+     "type": "VARCHAR(20)",
+     "notnull": true,
+     "default": "'PENDING'",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "execution_note",
+     "type": "VARCHAR(80)",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "position_id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_daily_watchlist_1",
+     "unique": true,
+     "columns": [
+      "run_date",
+      "symbol"
+     ]
+    }
+   ],
+   "sample": []
+  },
+  "earnings_api_raw": {
+   "rows": 6476,
+   "date_column": "fetched_at",
+   "first": "2026-11-08T10:59:32",
+   "last": "2026-11-08T12:38:02",
+   "distinct_dates": 1,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "endpoint",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 6476,
+     "example": "corporates-financial-results"
+    },
+    {
+     "name": "query_symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 2,
+     "nonnull_rows": 6476,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "fetched_at",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6476,
+     "example": "2026-11-08T10:59:32"
+    },
+    {
+     "name": "http_status",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6476,
+     "example": 200
+    },
+    {
+     "name": "row_count",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6476,
+     "example": 92
+    },
+    {
+     "name": "body_zlib",
+     "type": "BLOB",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "<5564 bytes>"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_earnings_api_raw_1",
+     "unique": true,
+     "columns": [
+      "endpoint",
+      "query_symbol"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "corporates-financial-results",
+     "20MICRONS",
+     "2026-11-08T10:59:32",
+     200,
+     92,
+     "<5564 bytes>"
+    ],
+    [
+     "corporate-board-meetings",
+     "20MICRONS",
+     "2026-11-08T10:59:33",
+     200,
+     103,
+     "<8194 bytes>"
+    ],
+    [
+     "corporates-financial-results",
+     "KINGFA",
+     "2026-11-08T12:38:02",
+     200,
+     37,
+     "<2970 bytes>"
+    ]
+   ]
+  },
+  "earnings_board_meeting": {
+   "rows": 164819,
+   "date_column": "bm_date",
+   "first": "2012-01-03",
+   "last": "2026-11-07",
+   "distinct_dates": 4730,
+   "symbols": 2895,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 164819,
+     "example": 1
+    },
+    {
+     "name": "query_symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "isin",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "INE144J01019"
+    },
+    {
+     "name": "company_name",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "20 Microns Limited"
+    },
+    {
+     "name": "bm_date",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "2026-10-28"
+    },
+    {
+     "name": "purpose",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "Board Meeting Intimation"
+    },
+    {
+     "name": "description",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164817,
+     "example": "20 MICRONS LIMITED has informed the Exchange about Board Meeting to be held o..."
+    },
+    {
+     "name": "intimation_ts",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164815,
+     "example": "2026-10-22 14:54:44"
+    },
+    {
+     "name": "sys_ts",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 157096,
+     "example": "2026-10-22 14:54:47"
+    },
+    {
+     "name": "attachment",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 144107,
+     "example": "https://nsearchives.nseindia.com/corporate/xbrl/PRIOR_INTIMATION_2786_WebXMLF..."
+    },
+    {
+     "name": "is_results_meeting",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": 1
+    },
+    {
+     "name": "results_rule",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "desc"
+    },
+    {
+     "name": "row_hash",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 164819,
+     "example": "9bf0680bd22b3440aadc0196054f9d6c4a766c5b"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "ix_ebm_isin",
+     "unique": false,
+     "columns": [
+      "isin",
+      "bm_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_earnings_board_meeting_1",
+     "unique": true,
+     "columns": [
+      "query_symbol",
+      "row_hash"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     1,
+     "20MICRONS",
+     "20MICRONS",
+     "INE144J01019",
+     "20 Microns Limited",
+     "2026-10-28",
+     "Board Meeting Intimation",
+     "20 MICRONS LIMITED has informed the Exchange about Board Meeting to be held o...",
+     "2026-10-22 14:54:44",
+     "2026-10-22 14:54:47",
+     "https://nsearchives.nseindia.com/corporate/xbrl/PRIOR_INTIMATION_2786_WebXMLF...",
+     1,
+     "desc",
+     "9bf0680bd22b3440aadc0196054f9d6c4a766c5b"
+    ],
+    [
+     2,
+     "20MICRONS",
+     "20MICRONS",
+     "INE144J01019",
+     "20 Microns Limited",
+     "2026-10-28",
+     "Financial Results/Other business matters",
+     "To consider and approve the financial results for the period ended September ...",
+     "2026-10-22 14:48:43",
+     "2026-10-22 14:48:43",
+     "https://nsearchives.nseindia.com/corporate/20MICRONS_22102026144823_BseNse_In...",
+     1,
+     "purpose",
+     "e9e480b9242215f9fa8a4f04ed6757d76d5e6bb8"
+    ],
+    [
+     164871,
+     "ZYLOG",
+     "ZYLOG",
+     "INE225I01018",
+     "Zylog Systems Limited",
+     "2012-02-01",
+     "Un-audited Financial Results",
+     "Inter-alia to consider and approve the Un-audited Financial Results of the Co...",
+     "2012-01-20 07:56:00",
+     null,
+     null,
+     1,
+     "purpose",
+     "49f9ef7ac53b0c3e547002910bafb98a6d9e5aa5"
+    ]
+   ]
+  },
+  "earnings_calendar": {
+   "rows": 0,
+   "date_column": "event_date",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "event_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "event_type",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "description",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "source",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "fetched_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_earnings_symbol",
+     "unique": false,
+     "columns": [
+      "symbol",
+      "event_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_earnings_calendar_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "event_date",
+      "event_type"
+     ]
+    }
+   ],
+   "sample": []
+  },
+  "earnings_collect_log": {
+   "rows": 6477,
+   "date_column": "at",
+   "first": "2026-11-08T10:59:32",
+   "last": "2026-11-08T12:38:02",
+   "distinct_dates": 1,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "at",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6477,
+     "example": "2026-11-08T10:59:32"
+    },
+    {
+     "name": "endpoint",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6477,
+     "example": "corporates-financial-results"
+    },
+    {
+     "name": "query_symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6477,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "http_status",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6477,
+     "example": 200
+    },
+    {
+     "name": "rows",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6477,
+     "example": 92
+    },
+    {
+     "name": "note",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 6477,
+     "example": "OK"
+    }
+   ],
+   "indexes": [],
+   "sample": [
+    [
+     "2026-11-08T10:59:32",
+     "corporates-financial-results",
+     "20MICRONS",
+     200,
+     92,
+     "OK"
+    ],
+    [
+     "2026-11-08T10:59:33",
+     "corporate-board-meetings",
+     "20MICRONS",
+     200,
+     103,
+     "OK"
+    ],
+    [
+     "2026-11-08T12:38:02",
+     "corporates-financial-results",
+     "KINGFA",
+     200,
+     37,
+     "OK"
+    ]
+   ]
+  },
+  "earnings_results_filing": {
+   "rows": 173410,
+   "date_column": null,
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": 2599,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 173410,
+     "example": 1
+    },
+    {
+     "name": "query_symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "isin",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "INE144J01019"
+    },
+    {
+     "name": "company_name",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "20 Microns Limited"
+    },
+    {
+     "name": "period",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "Quarterly"
+    },
+    {
+     "name": "relating_to",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "Third Quarter"
+    },
+    {
+     "name": "from_date",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "2024-10-01"
+    },
+    {
+     "name": "to_date",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "2024-12-31"
+    },
+    {
+     "name": "audited",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "Audited"
+    },
+    {
+     "name": "consolidated",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "Consolidated"
+    },
+    {
+     "name": "cumulative",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "Non-cumulative"
+    },
+    {
+     "name": "format",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "New"
+    },
+    {
+     "name": "filing_ts",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 166431,
+     "example": "2025-01-23 13:13:00"
+    },
+    {
+     "name": "broadcast_ts",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 165205,
+     "example": "2025-01-23 13:13:12"
+    },
+    {
+     "name": "exch_dissem_ts",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 128595,
+     "example": "2025-01-23 13:13:40"
+    },
+    {
+     "name": "seq_number",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "1190265"
+    },
+    {
+     "name": "params",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "01-Oct-202431-Dec-2024Q3ANNCNE20MICRONS"
+    },
+    {
+     "name": "xbrl",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "https://nsearchives.nseindia.com/corporate/xbrl/INDAS_117527_1359067_23012025..."
+    },
+    {
+     "name": "row_hash",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 173410,
+     "example": "45acf66135e372cab76085f80afd218ba4db64c0"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "ix_erf_isin",
+     "unique": false,
+     "columns": [
+      "isin",
+      "to_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_earnings_results_filing_1",
+     "unique": true,
+     "columns": [
+      "query_symbol",
+      "row_hash"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     1,
+     "20MICRONS",
+     "20MICRONS",
+     "INE144J01019",
+     "20 Microns Limited",
+     "Quarterly",
+     "Third Quarter",
+     "2024-10-01",
+     "2024-12-31",
+     "Audited",
+     "Consolidated",
+     "Non-cumulative",
+     "New",
+     "2025-01-23 13:13:00",
+     "2025-01-23 13:13:12",
+     "2025-01-23 13:13:40",
+     "1190265",
+     "01-Oct-202431-Dec-2024Q3ANNCNE20MICRONS",
+     "https://nsearchives.nseindia.com/corporate/xbrl/INDAS_117527_1359067_23012025...",
+     "45acf66135e372cab76085f80afd218ba4db64c0"
+    ],
+    [
+     2,
+     "20MICRONS",
+     "20MICRONS",
+     "INE144J01019",
+     "20 Microns Limited",
+     "Quarterly",
+     "Third Quarter",
+     "2024-10-01",
+     "2024-12-31",
+     "Audited",
+     "Non-Consolidated",
+     "Non-cumulative",
+     "New",
+     "2025-01-23 13:11:00",
+     "2025-01-23 13:11:46",
+     "2025-01-23 13:12:33",
+     "1190263",
+     "01-Oct-202431-Dec-2024Q3ANNNNE20MICRONS",
+     "https://nsearchives.nseindia.com/corporate/xbrl/INDAS_117526_1359063_23012025...",
+     "b0c1617633d53ad99c573a664a47eee6eb124381"
+    ],
+    [
+     173445,
+     "KINGFA",
+     "KINGFA",
+     "INE473D01015",
+     "Kingfa Science & Technology (India) Limited",
+     "Quarterly",
+     "Third Quarter",
+     "2016-10-01",
+     "2016-12-31",
+     "Un-Audited",
+     "Non-Consolidated",
+     "Non-cumulative",
+     "Old",
+     "2017-02-17 15:39:00",
+     "2017-02-17 15:39:00",
+     "2017-02-17 15:42:04",
+     "1019755",
+     "01-Oct-201631-Dec-2016Q3UNNNAEKINGFA",
+     "https://nsearchives.nseindia.com/corporate/xbrl/-",
+     "4c5639b7228e5eb081e0bfe12d1c7273a357f1fa"
+    ]
+   ]
+  },
+  "earnings_symbol_map": {
+   "rows": 3258,
+   "date_column": null,
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "lake_symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 3258,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "query_symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 2,
+     "nonnull_rows": 3258,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "how",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 3258,
+     "example": "lake_symbol"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_earnings_symbol_map_1",
+     "unique": true,
+     "columns": [
+      "lake_symbol",
+      "query_symbol"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "20MICRONS",
+     "20MICRONS",
+     "lake_symbol"
+    ],
+    [
+     "21STCENMGM",
+     "21STCENMGM",
+     "lake_symbol"
+    ],
+    [
+     "ZYLOG",
+     "ZYLOG",
+     "lake_symbol"
+    ]
+   ]
+  },
+  "index_gap_fill": {
+   "rows": 51,
+   "date_column": "trade_date",
+   "first": "2014-12-15",
+   "last": "2026-09-30",
+   "distinct_dates": 38,
+   "symbols": 2,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 51,
+     "example": "INDIA_VIX"
+    },
+    {
+     "name": "trade_date",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 2,
+     "nonnull_rows": 51,
+     "example": "2015-02-28"
+    },
+    {
+     "name": "open_raw",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 51,
+     "example": 19.57
+    },
+    {
+     "name": "high_raw",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 51,
+     "example": 19.57
+    },
+    {
+     "name": "low_raw",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 51,
+     "example": 16.6925
+    },
+    {
+     "name": "close_raw",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 51,
+     "example": 16.97
+    },
+    {
+     "name": "source",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 51,
+     "example": "https://archives.nseindia.com/content/indices/ind_close_all_28022015.csv"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_index_gap_fill_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "trade_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "INDIA_VIX",
+     "2015-02-28",
+     19.57,
+     19.57,
+     16.6925,
+     16.97,
+     "https://archives.nseindia.com/content/indices/ind_close_all_28022015.csv"
+    ],
+    [
+     "NIFTY50_INDEX",
+     "2016-10-30",
+     8672.35,
+     8678.25,
+     8616.25,
+     8625.7,
+     "https://archives.nseindia.com/content/indices/ind_close_all_30102016.csv"
+    ],
+    [
+     "INDIA_VIX",
+     "2016-06-20",
+     17.35,
+     18.45,
+     16.29,
+     17.52,
+     "yahoo:^INDIAVIX"
+    ]
+   ]
+  },
+  "isin_symbol_map": {
+   "rows": 853,
+   "date_column": "first_date",
+   "first": "2013-01-01",
+   "last": "2026-09-22",
+   "distinct_dates": 493,
+   "symbols": 848,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "isin",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 853,
+     "example": "IN9623B01058"
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 853,
+     "example": "PRETAILDVR"
+    },
+    {
+     "name": "first_date",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 853,
+     "example": "2013-01-01"
+    },
+    {
+     "name": "last_date",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 853,
+     "example": "2013-04-10"
+    },
+    {
+     "name": "isin_class",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 853,
+     "example": "demerger_merger"
+    },
+    {
+     "name": "canonical_symbol",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 853,
+     "example": "PRETAILDVR"
+    },
+    {
+     "name": "applied_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 853,
+     "example": "2026-11-07T19:00:37"
+    }
+   ],
+   "indexes": [],
+   "sample": [
+    [
+     "IN9623B01058",
+     "PRETAILDVR",
+     "2013-01-01",
+     "2013-04-10",
+     "demerger_merger",
+     "PRETAILDVR",
+     "2026-11-07T19:00:37"
+    ],
+    [
+     "IN9623B01058",
+     "FRLDVR",
+     "2013-04-11",
+     "2016-05-10",
+     "demerger_merger",
+     "FRLDVR",
+     "2026-11-07T19:00:37"
+    ],
+    [
+     "INF846KA1119",
+     "VALUEAXIS",
+     "2026-07-03",
+     "2026-09-30",
+     "pure_rename",
+     "VALUEAXIS",
+     "2026-11-07T19:00:37"
+    ]
+   ]
+  },
+  "market_data_lake": {
+   "rows": 5634334,
+   "date_column": "trade_date",
+   "first": "2013-01-01",
+   "last": "2026-10-16",
+   "distinct_dates": 3416,
+   "symbols": 3627,
+   "large_table": true,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": null,
+     "example": 2829906
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "NIFTY50_INDEX"
+    },
+    {
+     "name": "trade_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "2020-01-01"
+    },
+    {
+     "name": "open_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 12202.1504
+    },
+    {
+     "name": "high_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 12222.2002
+    },
+    {
+     "name": "low_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 12165.2998
+    },
+    {
+     "name": "close_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 12182.5
+    },
+    {
+     "name": "volume_raw",
+     "type": "BIGINT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 304100
+    },
+    {
+     "name": "exchange",
+     "type": "TEXT",
+     "notnull": true,
+     "default": "'NSE'",
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "NSE"
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "2026-10-02 06:58:37"
+    },
+    {
+     "name": "source",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "yahoo:^INDIAVIX"
+    },
+    {
+     "name": "loaded_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "2026-11-07T16:32:25"
+    },
+    {
+     "name": "source_symbol",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": null
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_mdl_trade_date",
+     "unique": false,
+     "columns": [
+      "trade_date"
+     ]
+    },
+    {
+     "name": "idx_mdl_symbol_date",
+     "unique": false,
+     "columns": [
+      "symbol",
+      "trade_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_market_data_lake_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "trade_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     2829906,
+     "NIFTY50_INDEX",
+     "2020-01-01",
+     12202.1504,
+     12222.2002,
+     12165.2998,
+     12182.5,
+     304100,
+     "NSE",
+     "2026-10-02 06:58:37",
+     null,
+     null,
+     null
+    ],
+    [
+     2829907,
+     "NIFTY50_INDEX",
+     "2020-01-02",
+     12198.5498,
+     12289.9004,
+     12195.25,
+     12282.2002,
+     407700,
+     "NSE",
+     "2026-10-02 06:58:37",
+     null,
+     null,
+     null
+    ],
+    [
+     8464249,
+     "INDIA_VIX",
+     "2016-06-20",
+     17.35,
+     18.45,
+     16.29,
+     17.52,
+     0,
+     "NSE",
+     "2026-11-07T16:32:25",
+     "yahoo:^INDIAVIX",
+     "2026-11-07T16:32:25",
+     null
+    ]
+   ]
+  },
+  "market_data_lake_staging": {
+   "rows": 5599040,
+   "date_column": "trade_date",
+   "first": "2013-01-01",
+   "last": "2026-09-30",
+   "distinct_dates": 3405,
+   "symbols": 3946,
+   "large_table": true,
+   "columns": [
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "trade_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "2013-01-01"
+    },
+    {
+     "name": "open_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 159.4
+    },
+    {
+     "name": "high_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 165.35
+    },
+    {
+     "name": "low_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 156.5
+    },
+    {
+     "name": "close_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 160.8
+    },
+    {
+     "name": "volume_raw",
+     "type": "BIGINT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 2053526
+    },
+    {
+     "name": "prev_close",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 156.95
+    },
+    {
+     "name": "isin",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "INE144J01019"
+    },
+    {
+     "name": "series",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "EQ"
+    },
+    {
+     "name": "source",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "https://archives.nseindia.com/content/historical/EQUITIES/2013/JAN/cm01JAN201..."
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_mdls_isin",
+     "unique": false,
+     "columns": [
+      "isin",
+      "trade_date"
+     ]
+    },
+    {
+     "name": "idx_mdls_date",
+     "unique": false,
+     "columns": [
+      "trade_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_market_data_lake_staging_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "trade_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "20MICRONS",
+     "2013-01-01",
+     159.4,
+     165.35,
+     156.5,
+     160.8,
+     2053526,
+     156.95,
+     "INE144J01019",
+     "EQ",
+     "https://archives.nseindia.com/content/historical/EQUITIES/2013/JAN/cm01JAN201..."
+    ],
+    [
+     "3MINDIA",
+     "2013-01-01",
+     4061.55,
+     4222.0,
+     4061.5,
+     4180.8,
+     925,
+     4061.55,
+     "INE470A01017",
+     "EQ",
+     "https://archives.nseindia.com/content/historical/EQUITIES/2013/JAN/cm01JAN201..."
+    ],
+    [
+     "ZYDUSWELL",
+     "2026-02-01",
+     451.9,
+     451.9,
+     436.85,
+     440.2,
+     45667,
+     448.3,
+     "INE768C01028",
+     "EQ",
+     "https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20260201_F_..."
+    ]
+   ]
+  },
+  "market_data_lake_yahoo_archive": {
+   "rows": 2829905,
+   "date_column": "trade_date",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": 2317,
+   "large_table": true,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": null,
+     "example": 1
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "trade_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "2020-01-01"
+    },
+    {
+     "name": "open_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 34.2644
+    },
+    {
+     "name": "high_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 35.0258
+    },
+    {
+     "name": "low_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 33.5505
+    },
+    {
+     "name": "close_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 34.074
+    },
+    {
+     "name": "volume_raw",
+     "type": "BIGINT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": 49077
+    },
+    {
+     "name": "exchange",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "NSE"
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "2026-10-02 04:08:38"
+    },
+    {
+     "name": "archived_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": null,
+     "example": "2026-11-07T16:32:25"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_market_data_lake_yahoo_archive_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "trade_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     1,
+     "20MICRONS",
+     "2020-01-01",
+     34.2644,
+     35.0258,
+     33.5505,
+     34.074,
+     49077,
+     "NSE",
+     "2026-10-02 04:08:38",
+     "2026-11-07T16:32:25"
+    ],
+    [
+     2,
+     "20MICRONS",
+     "2020-01-02",
+     34.2644,
+     34.4547,
+     33.4078,
+     33.8361,
+     25846,
+     "NSE",
+     "2026-10-02 04:08:38",
+     "2026-11-07T16:32:25"
+    ],
+    [
+     2829905,
+     "ZYDUSLIFE",
+     "2026-09-30",
+     1204.8,
+     1210.5,
+     1149.1,
+     1162.0,
+     1614233,
+     "NSE",
+     "2026-10-02 06:01:16",
+     "2026-11-07T16:32:25"
+    ]
+   ]
+  },
+  "pipeline_run_log": {
+   "rows": 11,
+   "date_column": "run_date",
+   "first": "2026-10-01",
+   "last": "2026-10-16",
+   "distinct_dates": 11,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 11,
+     "example": 5
+    },
+    {
+     "name": "run_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": "2026-10-01"
+    },
+    {
+     "name": "status",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": "COMPLETE"
+    },
+    {
+     "name": "kill_switch_active",
+     "type": "BOOLEAN",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": 1
+    },
+    {
+     "name": "candidates_screened",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": 0
+    },
+    {
+     "name": "candidates_passed",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": 0
+    },
+    {
+     "name": "new_setups_generated",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": 0
+    },
+    {
+     "name": "positions_evaluated",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": 0
+    },
+    {
+     "name": "error_message",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "started_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": "2026-10-15 09:55:10.330670"
+    },
+    {
+     "name": "completed_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 11,
+     "example": "2026-10-15 09:55:39.568678"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_pipeline_run_log_1",
+     "unique": true,
+     "columns": [
+      "run_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     5,
+     "2026-10-01",
+     "COMPLETE",
+     1,
+     0,
+     0,
+     0,
+     0,
+     null,
+     "2026-10-15 09:55:10.330670",
+     "2026-10-15 09:55:39.568678"
+    ],
+    [
+     6,
+     "2026-10-05",
+     "COMPLETE",
+     1,
+     0,
+     0,
+     0,
+     0,
+     null,
+     "2026-10-15 09:55:39.581588",
+     "2026-10-15 09:55:54.816468"
+    ],
+    [
+     16,
+     "2026-10-16",
+     "COMPLETE",
+     1,
+     0,
+     0,
+     0,
+     0,
+     null,
+     "2026-10-16 19:00:04.564655",
+     "2026-10-16 19:00:44.130879"
+    ]
+   ]
+  },
+  "regime_state": {
+   "rows": 1747,
+   "date_column": "eval_date",
+   "first": "2019-10-01",
+   "last": "2026-10-16",
+   "distinct_dates": 1747,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 1747,
+     "example": 54032
+    },
+    {
+     "name": "eval_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": "2020-01-02"
+    },
+    {
+     "name": "kill_switch_active",
+     "type": "BOOLEAN",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": 0
+    },
+    {
+     "name": "nifty_close",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": 12282.2002
+    },
+    {
+     "name": "nifty_sma200",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": 11578.1703
+    },
+    {
+     "name": "nifty_sma50",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": 12120.68
+    },
+    {
+     "name": "vix_close",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": 11.49
+    },
+    {
+     "name": "reentry_consecutive_count",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": 3
+    },
+    {
+     "name": "trigger_reason",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 39,
+     "example": "NIFTY(11678.50)<SMA200(11683.75)"
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 1747,
+     "example": "2026-10-15 01:15:23"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex_regime_state_1",
+     "unique": true,
+     "columns": [
+      "eval_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     54032,
+     "2020-01-02",
+     0,
+     12282.2002,
+     11578.1703,
+     12120.68,
+     11.49,
+     3,
+     null,
+     "2026-10-15 01:15:23"
+    ],
+    [
+     54033,
+     "2020-01-03",
+     0,
+     12226.6504,
+     11584.0125,
+     12131.0925,
+     12.7,
+     3,
+     null,
+     "2026-10-15 01:15:26"
+    ],
+    [
+     55778,
+     "2019-12-31",
+     0,
+     12168.45,
+     11566.049,
+     12099.315,
+     11.67,
+     3,
+     null,
+     "2026-10-26 01:57:56"
+    ]
+   ]
+  },
+  "securities_master": {
+   "rows": 2965,
+   "date_column": "listing_date",
+   "first": "1995-02-08",
+   "last": "2026-10-22",
+   "distinct_dates": 1671,
+   "symbols": 2965,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "symbol",
+     "type": "VARCHAR(20)",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 2965,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "company_name",
+     "type": "VARCHAR(200)",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2965,
+     "example": "20 Microns Limited"
+    },
+    {
+     "name": "series",
+     "type": "VARCHAR(10)",
+     "notnull": true,
+     "default": "'EQ'",
+     "pk": 0,
+     "nonnull_rows": 2965,
+     "example": "EQ"
+    },
+    {
+     "name": "listing_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2965,
+     "example": "2008-10-06"
+    },
+    {
+     "name": "isin",
+     "type": "VARCHAR(30)",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2608,
+     "example": "INE144J01027"
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 2965,
+     "example": "2026-10-21 10:03:30"
+    },
+    {
+     "name": "updated_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 2965,
+     "example": "2026-10-21 10:03:30"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_securities_listing_date",
+     "unique": false,
+     "columns": [
+      "listing_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_securities_master_1",
+     "unique": true,
+     "columns": [
+      "symbol"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "20MICRONS",
+     "20 Microns Limited",
+     "EQ",
+     "2008-10-06",
+     "INE144J01027",
+     "2026-10-21 10:03:30",
+     "2026-10-21 10:03:30"
+    ],
+    [
+     "21STCENMGM",
+     "21st Century Management Services Limited",
+     "EQ",
+     "1995-05-03",
+     "INE253B01015",
+     "2026-10-21 10:03:30",
+     "2026-10-21 10:03:30"
+    ],
+    [
+     "VALUEAXIS",
+     "VALUEAXIS",
+     "EQ",
+     "2026-10-01",
+     null,
+     "2026-10-21 12:41:32",
+     "2026-10-21 12:41:32"
+    ]
+   ]
+  },
+  "shares_outstanding": {
+   "rows": 2217,
+   "date_column": "effective_date",
+   "first": "2020-01-01",
+   "last": "2020-01-01",
+   "distinct_dates": 1,
+   "symbols": 2217,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 2217,
+     "example": 1
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2217,
+     "example": "20MICRONS"
+    },
+    {
+     "name": "effective_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2217,
+     "example": "2020-01-01"
+    },
+    {
+     "name": "shares_count",
+     "type": "BIGINT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2217,
+     "example": 35286502
+    },
+    {
+     "name": "source",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 2217,
+     "example": "yahoo_finance_current"
+    },
+    {
+     "name": "created_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 2217,
+     "example": "2026-10-02 07:10:09"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_shares_symbol",
+     "unique": false,
+     "columns": [
+      "symbol",
+      "effective_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_shares_outstanding_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "effective_date"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     1,
+     "20MICRONS",
+     "2020-01-01",
+     35286502,
+     "yahoo_finance_current",
+     "2026-10-02 07:10:09"
+    ],
+    [
+     2,
+     "21STCENMGM",
+     "2020-01-01",
+     10500000,
+     "yahoo_finance_current",
+     "2026-10-02 07:10:10"
+    ],
+    [
+     2217,
+     "ZYDUSWELL",
+     "2020-01-01",
+     318160720,
+     "yahoo_finance_current",
+     "2026-10-02 07:35:54"
+    ]
+   ]
+  },
+  "trade_analytics_log": {
+   "rows": 0,
+   "date_column": "entry_date",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "position_id",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "entry_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "exit_date",
+     "type": "DATE",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "entry_price",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "exit_price",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "shares",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "initial_stop_loss",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "projected_rr",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "realized_rr",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "pnl_gross",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "exit_reason",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "regime_at_entry",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "regime_at_exit",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "sector",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "days_held",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "closed_at",
+     "type": "TIMESTAMP",
+     "notnull": false,
+     "default": "CURRENT_TIMESTAMP",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "mode",
+     "type": "VARCHAR(5)",
+     "notnull": true,
+     "default": "'LIVE'",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "costs_total",
+     "type": "FLOAT",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "pnl_net",
+     "type": "FLOAT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "tax_est",
+     "type": "FLOAT",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "is_partial",
+     "type": "BOOLEAN",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "risk_inr",
+     "type": "FLOAT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "excluded_ca",
+     "type": "BOOLEAN",
+     "notnull": true,
+     "default": "0",
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [],
+   "sample": []
+  }
+ },
+ "coverage": {
+  "lake_by_year": [
+   {
+    "year": "2013",
+    "rows": 331315,
+    "sessions": 250,
+    "equity_symbols": 1587
+   },
+   {
+    "year": "2014",
+    "rows": 325245,
+    "sessions": 244,
+    "equity_symbols": 1569
+   },
+   {
+    "year": "2015",
+    "rows": 356973,
+    "sessions": 248,
+    "equity_symbols": 1604
+   },
+   {
+    "year": "2016",
+    "rows": 371156,
+    "sessions": 247,
+    "equity_symbols": 1632
+   },
+   {
+    "year": "2017",
+    "rows": 369033,
+    "sessions": 248,
+    "equity_symbols": 1678
+   },
+   {
+    "year": "2018",
+    "rows": 368372,
+    "sessions": 246,
+    "equity_symbols": 1663
+   },
+   {
+    "year": "2019",
+    "rows": 369068,
+    "sessions": 245,
+    "equity_symbols": 1686
+   },
+   {
+    "year": "2020",
+    "rows": 380286,
+    "sessions": 252,
+    "equity_symbols": 1731
+   },
+   {
+    "year": "2021",
+    "rows": 390266,
+    "sessions": 248,
+    "equity_symbols": 1889
+   },
+   {
+    "year": "2022",
+    "rows": 439390,
+    "sessions": 248,
+    "equity_symbols": 2009
+   },
+   {
+    "year": "2023",
+    "rows": 447483,
+    "sessions": 246,
+    "equity_symbols": 2118
+   },
+   {
+    "year": "2024",
+    "rows": 467894,
+    "sessions": 249,
+    "equity_symbols": 2265
+   },
+   {
+    "year": "2025",
+    "rows": 532263,
+    "sessions": 249,
+    "equity_symbols": 2511
+   },
+   {
+    "year": "2026",
+    "rows": 485590,
+    "sessions": 196,
+    "equity_symbols": 2931
+   }
+  ],
+  "index_rows": [
+   {
+    "symbol": "INDIA_VIX",
+    "rows": 3077,
+    "first": "2014-05-14",
+    "last": "2026-10-16"
+   },
+   {
+    "symbol": "NIFTY50_INDEX",
+    "rows": 2710,
+    "first": "2015-11-09",
+    "last": "2026-10-16"
+   }
+  ],
+  "equity_rows": {
+   "rows": 5628547,
+   "symbols": 3625,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "symbol_class": [
+   {
+    "class": "last bar before the last session of the lake",
+    "symbols": 934,
+    "earliest_first_bar": "2013-01-01",
+    "latest_last_bar": "2026-10-15"
+   },
+   {
+    "class": "trades on the last session",
+    "symbols": 2691,
+    "earliest_first_bar": "2013-01-01",
+    "latest_last_bar": "2026-10-16"
+   }
+  ],
+  "actions_by_type": [
+   {
+    "action_type": "DIVIDEND",
+    "rows": 20912,
+    "symbols": 2124,
+    "first_ex_date": "2010-01-04",
+    "last_ex_date": "2026-11-06"
+   },
+   {
+    "action_type": "OTHER",
+    "rows": 630,
+    "symbols": 423,
+    "first_ex_date": "2010-01-04",
+    "last_ex_date": "2026-11-06"
+   },
+   {
+    "action_type": "BONUS",
+    "rows": 463,
+    "symbols": 350,
+    "first_ex_date": "2013-01-23",
+    "last_ex_date": "2026-09-28"
+   },
+   {
+    "action_type": "SPLIT",
+    "rows": 452,
+    "symbols": 421,
+    "first_ex_date": "2013-01-28",
+    "last_ex_date": "2026-09-22"
+   },
+   {
+    "action_type": "RIGHTS",
+    "rows": 341,
+    "symbols": 271,
+    "first_ex_date": "2010-01-15",
+    "last_ex_date": "2026-11-04"
+   },
+   {
+    "action_type": "DEMERGER",
+    "rows": 108,
+    "symbols": 98,
+    "first_ex_date": "2010-11-25",
+    "last_ex_date": "2026-10-08"
+   },
+   {
+    "action_type": "MERGER",
+    "rows": 91,
+    "symbols": 77,
+    "first_ex_date": "2010-03-04",
+    "last_ex_date": "2019-07-11"
+   }
+  ],
+  "actions_by_type_tier": [
+   {
+    "action_type": "BONUS",
+    "evidence_tier": "STRONG",
+    "rows": 250
+   },
+   {
+    "action_type": "BONUS",
+    "evidence_tier": "WEAK",
+    "rows": 168
+   },
+   {
+    "action_type": "BONUS",
+    "evidence_tier": "WEAK_DIRECTIONAL",
+    "rows": 45
+   },
+   {
+    "action_type": "DEMERGER",
+    "evidence_tier": "NOT_PRICE_MOVING",
+    "rows": 108
+   },
+   {
+    "action_type": "DIVIDEND",
+    "evidence_tier": "NOT_PRICE_MOVING",
+    "rows": 20912
+   },
+   {
+    "action_type": "MERGER",
+    "evidence_tier": "NOT_PRICE_MOVING",
+    "rows": 91
+   },
+   {
+    "action_type": "OTHER",
+    "evidence_tier": "NOT_PRICE_MOVING",
+    "rows": 371
+   },
+   {
+    "action_type": "OTHER",
+    "evidence_tier": "UNSUPPORTED",
+    "rows": 259
+   },
+   {
+    "action_type": "RIGHTS",
+    "evidence_tier": "NOT_PRICE_MOVING",
+    "rows": 341
+   },
+   {
+    "action_type": "SPLIT",
+    "evidence_tier": "STRONG",
+    "rows": 253
+   },
+   {
+    "action_type": "SPLIT",
+    "evidence_tier": "WEAK",
+    "rows": 182
+   },
+   {
+    "action_type": "SPLIT",
+    "evidence_tier": "WEAK_DIRECTIONAL",
+    "rows": 17
+   }
+  ],
+  "actions_after_last_session": 90,
+  "fetch_log": [
+   {
+    "status": "OK",
+    "rows": 3405,
+    "first": "2013-01-01",
+    "last": "2026-09-30"
+   },
+   {
+    "status": "HOLIDAY_OR_MISSING",
+    "rows": 1616,
+    "first": "2013-01-05",
+    "last": "2026-09-27"
+   }
+  ],
+  "earnings_by_year": [
+   {
+    "year": "2012",
+    "meetings": 6533,
+    "lake_symbols": 1531
+   },
+   {
+    "year": "2013",
+    "meetings": 6660,
+    "lake_symbols": 1562
+   },
+   {
+    "year": "2014",
+    "meetings": 6588,
+    "lake_symbols": 1560
+   },
+   {
+    "year": "2015",
+    "meetings": 6460,
+    "lake_symbols": 1545
+   },
+   {
+    "year": "2016",
+    "meetings": 6839,
+    "lake_symbols": 1613
+   },
+   {
+    "year": "2017",
+    "meetings": 7192,
+    "lake_symbols": 1715
+   },
+   {
+    "year": "2018",
+    "meetings": 7486,
+    "lake_symbols": 1774
+   },
+   {
+    "year": "2019",
+    "meetings": 7371,
+    "lake_symbols": 1779
+   },
+   {
+    "year": "2020",
+    "meetings": 7638,
+    "lake_symbols": 1773
+   },
+   {
+    "year": "2021",
+    "meetings": 7385,
+    "lake_symbols": 1836
+   },
+   {
+    "year": "2022",
+    "meetings": 7675,
+    "lake_symbols": 1914
+   },
+   {
+    "year": "2023",
+    "meetings": 13438,
+    "lake_symbols": 2006
+   },
+   {
+    "year": "2024",
+    "meetings": 16638,
+    "lake_symbols": 2116
+   },
+   {
+    "year": "2025",
+    "meetings": 18069,
+    "lake_symbols": 2257
+   },
+   {
+    "year": "2026",
+    "meetings": 19063,
+    "lake_symbols": 2387
+   }
+  ],
+  "earnings_symbols": {
+   "lake_symbols_mapped": 3238,
+   "query_symbols_mapped": 3238,
+   "query_symbols_with_rows": 2897
+  },
+  "asm_days": [
+   {
+    "snapshot_date": "2026-11-08",
+    "framework": "ASM_LT",
+    "rows": 129
+   },
+   {
+    "snapshot_date": "2026-11-08",
+    "framework": "ASM_ST",
+    "rows": 48
+   },
+   {
+    "snapshot_date": "2026-11-08",
+    "framework": "GSM",
+    "rows": 76
+   }
+  ],
+  "lake_first_date": "2013-01-01",
+  "lake_last_date": "2026-10-16",
+  "nifty_first_date": "2015-11-09"
+ },
+ "reference_files": [
+  {
+   "file": "corporate_actions_evidence.csv",
+   "columns": [
+    "symbol",
+    "isin",
+    "ex_date",
+    "action_type",
+    "num",
+    "den",
+    "factor",
+    "note",
+    "subject",
+    "lake_symbol",
+    "factor_logged",
+    "raw_ratio",
+    "raw_offset",
+    "step_date",
+    "yahoo_factor",
+    "tier",
+    "evidence",
+    "evidence_basis",
+    "no_data_reason",
+    "stored_action_type"
+   ],
+   "rows": 23018
+  },
+  {
+   "file": "EQUITY_L.csv",
+   "columns": [
+    "SYMBOL",
+    "NAME OF COMPANY",
+    " SERIES",
+    " DATE OF LISTING",
+    " PAID UP VALUE",
+    " MARKET LOT",
+    " ISIN NUMBER",
+    " FACE VALUE"
+   ],
+   "rows": 2608
+  },
+  {
+   "file": "fund_etf_symbols.csv",
+   "columns": [
+    "symbol",
+    "isin"
+   ],
+   "rows": 511
+  },
+  {
+   "file": "held_events.csv",
+   "columns": [
+    "symbol",
+    "ex_date",
+    "action_type",
+    "reason",
+    "held_on"
+   ],
+   "rows": 1
+  },
+  {
+   "file": "isin_symbol_map.csv",
+   "columns": [
+    "isin",
+    "symbol",
+    "segment",
+    "first_date",
+    "last_date",
+    "n_days",
+    "isin_class",
+    "canonical_symbol",
+    "boundary_to_next",
+    "boundary_reason",
+    "gap_sessions",
+    "close_ratio_next_over_this"
+   ],
+   "rows": 853
+  },
+  {
+   "file": "nse_corporate_actions_raw.csv",
+   "columns": [
+    "query_symbol",
+    "symbol",
+    "isin",
+    "exDate",
+    "subject",
+    "series",
+    "faceVal",
+    "recDate",
+    "comp"
+   ],
+   "rows": 33773
+  },
+  {
+   "file": "nse_corporate_actions_raw.csv.done.csv",
+   "columns": [
+    "query_symbol"
+   ],
+   "rows": 3946
+  },
+  {
+   "file": "nse_corporate_actions_raw.csv.failed.csv",
+   "columns": [
+    "query_symbol"
+   ],
+   "rows": 0
+  },
+  {
+   "file": "pit_shares_anchors.csv",
+   "columns": [
+    "symbol",
+    "anchor_date",
+    "shares_count",
+    "source"
+   ],
+   "rows": 9
+  },
+  {
+   "file": "pit_shares_spotcheck_filings.csv",
+   "columns": [
+    "symbol",
+    "date",
+    "group",
+    "actual_shares",
+    "basis",
+    "source"
+   ],
+   "rows": 20
+  },
+  {
+   "file": "sector_map.csv",
+   "columns": [
+    "symbol",
+    "sector"
+   ],
+   "rows": 501
+  },
+  {
+   "file": "special_sessions.csv",
+   "columns": [
+    "date",
+    "kind",
+    "note"
+   ],
+   "rows": 18
+  },
+  {
+   "file": "unadjusted_events.csv",
+   "columns": [
+    "symbol",
+    "isin",
+    "date",
+    "kind",
+    "detail",
+    "lake_symbol"
+   ],
+   "rows": 268
+  },
+  {
+   "file": "verified_corporate_actions.csv",
+   "columns": [
+    "symbol",
+    "ex_date",
+    "action_type",
+    "ratio_numerator",
+    "ratio_denominator",
+    "expected_factor",
+    "category",
+    "expected_treatment",
+    "note",
+    "selection_basis",
+    "logged_factor",
+    "observed_raw_ratio",
+    "yahoo_factor",
+    "tier",
+    "result",
+    "result_note"
+   ],
+   "rows": 57
+  }
+ ]
+}
