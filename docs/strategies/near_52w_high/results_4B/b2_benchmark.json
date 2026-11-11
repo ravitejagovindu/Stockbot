@@ -1,0 +1,15 @@
+{
+ "daily_share": {
+  "years": 10.789869952087612,
+  "strategy_cagr_pct": 5.625980832044153,
+  "benchmark_cagr_pct": 10.417237192626194,
+  "alpha_pct": -4.791256360582041
+ },
+ "constant_share": {
+  "years": 10.789869952087612,
+  "strategy_cagr_pct": 5.625980832044153,
+  "benchmark_cagr_pct": 9.660648923493053,
+  "alpha_pct": -4.0346680914489
+ },
+ "mean_invested_share": 0.7378883972644918
+}

@@ -1,6 +1,6 @@
 # near_52w_high: status
 
-Last updated: 2026-11-11 (STOP 4A done, waiting for the reviewer and the owner's approval of STOP 4B).
+Last updated: 2026-11-11 (STOP 4B done: registered, run once, validated; waiting for the owner and reviewer).
 
 ## Done
 - Branch `near-52w-high` from origin/master 4bfc188 (the exit-policies merge).
@@ -15,6 +15,10 @@ Last updated: 2026-11-11 (STOP 4A done, waiting for the reviewer and the owner's
 - STOP 4A: **7b5b20b** shared gate change (`validation_gates.max_drawdown_pct` 15.0 to 20.0; paper stays 12.0), own commit; a9e9db7 tests first; **45db2e4da31de4ceee0a9b84195584dbe1225c84** finalisation commit (four scripts, `SPEC.prereg_ref`, final `PREREGISTRATION.md`, guides). Report: `Claude_Docs/STOCKBOT_NEAR_52W_HIGH_STOP4A_REPORT.md`. Nothing registered, nothing run on real data.
 - Final hashes: spec `359c8331091abf15f14cfaaf47f4fcf49f65835d876b6fb1ece56fa78287ab26` (with prereg_ref; was `e157b0bb...`), shared validation_gates `805efac844810c62d6f5d74b706d7cfb0b042c5fbc3cf217add54116d783cd2f` (was `d70800991ed5e6550fe8a89c050e6b3f989ac99f2a2d6cfaa133761771ab9e64`).
 - Tests at 45db2e4: G1 856 passed / 8 skipped; G3 2 passed; full folder (`STOCKBOT_DATA_TESTS=1 STOCKBOT_FINAL_CHECK=1`) 985 passed; finsight.db unchanged.
+
+- STOP 4B (owner's written approval 2026-11-11; drawdown gate confirmed as observed <= 20.0): registered with commit 45db2e4 (**7176d90**, row_hash `aceb96b894c2bb22debc166190a809d804527dd66ff7154473c43d20635ad7c4`); backtest run once (3 h 59 min), B1, B2, T1/T2/T3 and gates run once each; results row **22d3f45** (row_hash `3d0c31d5c5ab5318f8386fa3cd13077e2e02e8cd83f5c51576417033ea16f4dc`); report `Claude_Docs/STOCKBOT_NEAR_52W_HIGH_STOP4B_REPORT.md`; result files `docs/strategies/near_52w_high/results_4B/`.
+- **Registered conclusion: NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge).** T1 not significant at block 2 (adjusted p 0.4057) or block 3 (0.4119); T3 size 0.054, label "size ok"; gates: min_trades met (749); min_expectancy_r 0.0983 (not met), min_profit_factor 1.2579 (not met), max_drawdown_pct 30.05 (not met), min_alpha_after_tax_pct -4.79 (not met).
+- Tests after the run: G1 856 passed / 8 skipped; G3 2 passed; full folder 985 passed; finsight.db unchanged.
 
 ## Owner decisions at the STOP 3 review (2026-11-11)
 D1 prereg_ref set to the pre-registration path; D2 smallest edge stays 0.15 R with the plain-words power statement (central 61%, range 28% to 90%); D3 T1/T2/T3 as proposed with limits 0.075 and 0.025; D4 B1 and B2 as proposed, no full-engine replicates; D5 exploratory ledger untouched (section 12 is the record); D6 keep the TEST/TUNE note; D7 STOP 4B run approved, detached; a restart of the IDENTICAL registered run after a crash (same spec hash, shared-config hash, data snapshot, seeds, no results looked at) is not a new trial, any other rerun is; drawdown gate 20% in backtest (paper stays 12.0); decision rule as drafted.
@@ -41,8 +45,7 @@ D1 prereg_ref set to the pre-registration path; D2 smallest edge stays 0.15 R wi
 - G1 819 passed / 8 skipped; G3 2 passed; full folder with `STOCKBOT_DATA_TESTS=1 STOCKBOT_FINAL_CHECK=1`: 948 passed (1713 s). finsight.db sha256 and mtime unchanged.
 
 ## Open items
-- The reviewer checks the final `PREREGISTRATION.md` against the owner's decisions; then the owner approves STOP 4B in writing.
-- Open question: drawdown gate strict `<` (as in the archived plan) or `<=` (as drafted, implemented).
+- The owner and reviewer decide whether to merge this branch and what follows. Status stays `research`. Any new run or strategy change is a new trial and needs a new approval.
 
 ## Decisions made (dated)
 - 2026-11-10: branch based on origin/master (local master was stale).
@@ -53,7 +56,7 @@ D1 prereg_ref set to the pre-registration path; D2 smallest edge stays 0.15 R wi
 - 2026-11-10: `tests/unit/test_no_strategy_in_the_tree.py` changed on purpose. It used to assert that no strategy exists; it now allows exactly the folder `stockbot/strategies/near_52w_high/` and exactly the class `NearHighStrategy` in `strategy.py`, and nothing else. Every other rule in the file is unchanged (top-level files of the strategies package, empty default registry and live book, exit policies only in their two homes, any other strategy or overlay forbidden everywhere). A second strategy must be added to that file on purpose.
 
 ## Next step
-STOP 4B only after written approval: register with the finalisation commit SHA (`register_family`, then `verify_ledger` and `family_budget == 1`), run the backtest ONCE (detached), B1, T1/T2/T3, gates, report as measured.
+None until the owner and reviewer reply to the STOP 4B report. Nothing is merged; the strategy's status is `research`.
 
 ## Limitations (carried into the pre-registration, section 11)
 - Sector map: about a third of the selected symbols have no sector and share one UNKNOWN bucket, which the shared 15% cap holds to two positions at a time. Accepted; same as live.

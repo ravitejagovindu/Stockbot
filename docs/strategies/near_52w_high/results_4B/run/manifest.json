@@ -1,0 +1,24 @@
+{
+ "shared_config_hash": "805c9963d0a37de3f28ef9d1d534884f3376e62f404480327f2c3fc6af0b8dd7",
+ "strategies": {
+  "near_52w_high": {
+   "version": "1.0.0",
+   "config_hash": "359c8331091abf15f14cfaaf47f4fcf49f65835d876b6fb1ece56fa78287ab26",
+   "exit_policy": "fixed_hold_40",
+   "overlays": {}
+  }
+ },
+ "git_sha": "7176d9065ba77ec0bc6b4cd4aa1281c1405fc17c",
+ "data_snapshot": {
+  "file": "finsight.db",
+  "size": 3432767488,
+  "mtime_ns": 1794121682892612300,
+  "last_session": "2026-10-16"
+ },
+ "seed": null,
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "initial_equity": 1000000
+}

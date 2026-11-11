@@ -1,0 +1,160 @@
+{
+ "entries": {
+  "closed": 774,
+  "usable": 749,
+  "end_of_window": 12,
+  "excluded_ca": 13,
+  "per_month_usable": 5.7615384615384615,
+  "per_month_all_closed": 5.953846153846154,
+  "per_year_all_closed": {
+   "2016": 84,
+   "2017": 81,
+   "2018": 74,
+   "2019": 80,
+   "2020": 73,
+   "2021": 62,
+   "2022": 71,
+   "2023": 62,
+   "2024": 64,
+   "2025": 69,
+   "2026": 54
+  },
+  "per_year_usable": {
+   "2016": 84,
+   "2017": 79,
+   "2018": 73,
+   "2019": 79,
+   "2020": 69,
+   "2021": 59,
+   "2022": 71,
+   "2023": 60,
+   "2024": 63,
+   "2025": 68,
+   "2026": 44
+  }
+ },
+ "exit_reasons_all_closed": {
+  "TIME_EXIT": 601,
+  "STOP_HIT": 161,
+  "END_OF_WINDOW": 12
+ },
+ "exit_reasons_usable": {
+  "TIME_EXIT": 591,
+  "STOP_HIT": 158
+ },
+ "win_rate_usable_pct": 53.13751668891856,
+ "net_r_usable": {
+  "mean": 0.09826487260133207,
+  "median": 0.06939505803695957,
+  "sd": 0.9470126988689729,
+  "min": -1.7982504176145362,
+  "max": 8.241008566291514,
+  "p5": -1.0213813797630413,
+  "p95": 1.5728133356768548
+ },
+ "net_pnl_total_usable_inr": 813095.7917882106,
+ "equity": {
+  "start": 1000000.0,
+  "end_marked": 1805025.5465192134,
+  "total_return_pct": 80.50255465192133,
+  "sessions": 2674,
+  "max_drawdown_pct": 30.047946154697215,
+  "peak_date": "2018-08-28",
+  "trough_date": "2020-05-18",
+  "recovered_to_peak_on": "2021-06-02",
+  "share_of_sessions_in_drawdown_over_10pct": 0.4581151832460733
+ },
+ "occupancy": {
+  "invested_share_mean": 0.7378883972644918,
+  "invested_share_median": 0.7513651448383663,
+  "invested_share_p5": 0.637723005241356,
+  "invested_share_p95": 0.8082963367213345,
+  "open_positions_mean": 11.526925953627524,
+  "open_positions_median": 12.0,
+  "share_of_sessions_at_12": 0.7161555721765146,
+  "open_positions_max": 12
+ },
+ "blocked": {
+  "total": 60252,
+  "by_stage": {
+   "risk": 60170,
+   "sizing": 63,
+   "fill": 19
+  },
+  "by_kind": {
+   "BLOCKED_BY_RISK": 48926,
+   "ALREADY_HELD": 10050,
+   "RISK:sector": 1194,
+   "SIZE_ZERO": 63,
+   "GAP_UP_TOO_LARGE": 14,
+   "CORP_ACTION_ON_EXEC_DATE": 5
+  },
+  "sector_cap_blocks": 1194,
+  "sessions_with_a_sector_block": 379,
+  "sector_cap_blocks_in_UNKNOWN": 197
+ },
+ "concentration": {
+  "distinct_symbols": 277,
+  "largest_symbol": [
+   "INFY",
+   0.018691588785046728
+  ],
+  "top10_share": 0.13885180240320427,
+  "sector_share_pct": {
+   "FINANCIALS": 14.552736982643525,
+   "CONSUMER": 10.013351134846461,
+   "HEALTHCARE": 8.411214953271028,
+   "UNKNOWN": 7.87716955941255,
+   "ENERGY": 7.87716955941255,
+   "METALS": 7.87716955941255,
+   "INDUSTRIALS": 7.610146862483311,
+   "IT": 7.343124165554072,
+   "AUTO": 6.809078771695594,
+   "SERVICES": 6.408544726301735,
+   "CHEMICALS": 5.874499332443258,
+   "TELECOM": 4.672897196261682,
+   "REALTY": 4.005340453938585,
+   "TEXTILES": 0.40053404539385845,
+   "DIVERSIFIED": 0.26702269692923897
+  },
+  "entries_in_UNKNOWN_pct": 7.87716955941255,
+  "symbols_in_UNKNOWN": 41
+ },
+ "dispersion_and_dependence": {
+  "pairs": 746,
+  "sd_pair_observed": 0.9130526519951225,
+  "sd_pair_assumed": [
+   0.9,
+   1.2,
+   1.5
+  ],
+  "sd_trade_net_r_paired_trades": 0.9469838224808096,
+  "deff_observed": 1.3329890267865925,
+  "deff_assumed": [
+   1.0,
+   1.5,
+   2.0,
+   3.0
+  ],
+  "effective_trades_observed": 559.644516953276,
+  "monthly_sum_sd": 2.536321859445382,
+  "monthly_sum_se": 0.22245014263702884,
+  "mean_trades_per_month_paired": 5.7384615384615385,
+  "monthly_sum_autocorr_lag1_2_3": [
+   0.13611769686536207,
+   0.09186933006245643,
+   -0.0979853775908513
+  ],
+  "se_per_trade_observed": 0.03859576875223646,
+  "mde80_r_per_trade_observed_ideal_c": 0.09596740872504861,
+  "mde80_r_per_trade_observed_dual_c": 0.11739370976287242,
+  "power_at_0.15_ideal": 0.9875058243338589,
+  "power_at_0.15_dual": 0.9541441108928125,
+  "power_at_0.20_ideal": 0.9997976973215466,
+  "power_at_0.20_dual": 0.9985677432553857,
+  "monthly_series_check_mde80_r_per_trade_ideal": 0.09638762648835748,
+  "monthly_series_check_mde80_r_per_trade_dual": 0.11790774804731147,
+  "monthly_series_check_power_at_0.15_dual": 0.952490124382142,
+  "note": "post-decision and descriptive; the monthly-series check uses the naive SE of the 130 monthly sums, with dependence entering only through the block bootstrap"
+ }
+}
