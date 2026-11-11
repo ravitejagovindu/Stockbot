@@ -1,0 +1,406 @@
+{
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "counts": {
+  "usable_trades": 749,
+  "pairs": 746,
+  "dropped_pairs": 3,
+  "draws": 14630,
+  "months": 130,
+  "min_filled": 10
+ },
+ "T1": {
+  "blocks": {
+   "2": {
+    "observed_mean": 0.060766281540693474,
+    "standard_error": 0.2224501426370288,
+    "observed_t": 0.27316809429898015,
+    "unadjusted_p_value": 0.4057,
+    "adjusted_p_value": 0.4057,
+    "fwer_significant": false,
+    "ci99_lower": -0.5547027782636668,
+    "ci99_upper": 0.7140707120708539
+   },
+   "3": {
+    "observed_mean": 0.060766281540693474,
+    "standard_error": 0.2224501426370288,
+    "observed_t": 0.27316809429898015,
+    "unadjusted_p_value": 0.4119,
+    "adjusted_p_value": 0.4119,
+    "fwer_significant": false,
+    "ci99_lower": -0.53315269127808,
+    "ci99_upper": 0.6556966120530056
+   }
+  },
+  "months": 130,
+  "alpha": 0.05,
+  "K": 1,
+  "B": 10000,
+  "seed": 20261111,
+  "one_sided": "mean paired difference > 0",
+  "dual_significant": false
+ },
+ "T2": {
+  "seed": 20261111,
+  "paired_trades": 735,
+  "windows": {
+   "2016-2019": {
+    "n_trades": 308,
+    "n_entry_dates": 262,
+    "horizons": [
+     {
+      "horizon": 1,
+      "actual_mean": 0.6173350248369358,
+      "random_mean": 0.5868491119674073,
+      "paired_diff": 0.030485912869528432,
+      "trade_t": 0.05397015752826876,
+      "clustered_t": 0.051941780291542436,
+      "perm_p": 0.9566,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 5,
+      "actual_mean": 0.9085969222665252,
+      "random_mean": 0.6842723983832266,
+      "paired_diff": 0.22432452388329827,
+      "trade_t": 0.3623945294596462,
+      "clustered_t": 0.3459840681083437,
+      "perm_p": 0.7356,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 10,
+      "actual_mean": 0.7420154703021047,
+      "random_mean": 0.5824499923507405,
+      "paired_diff": 0.15956547795136408,
+      "trade_t": 0.22005274240079034,
+      "clustered_t": 0.21751715569626917,
+      "perm_p": 0.8366,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 20,
+      "actual_mean": 1.4008127945054187,
+      "random_mean": 0.8275022453426053,
+      "paired_diff": 0.5733105491628131,
+      "trade_t": 0.6993180632675124,
+      "clustered_t": 0.6811184304024701,
+      "perm_p": 0.498,
+      "status": "Not Sig"
+     }
+    ],
+    "expectancy": {
+     "actual": {
+      "gross": 0.06943758869394971,
+      "net": 0.053224128734868925,
+      "net_median": 0.0915178041318075,
+      "net_trimmed": 0.031370583458519986
+     },
+     "random_trade_averaged": {
+      "gross": 0.02002532562277726,
+      "net": 0.0038325549919541887,
+      "net_median": 0.050830514140663405,
+      "net_trimmed": 0.0009201672628857305
+     },
+     "paired_diff_net": {
+      "mean": 0.04939157374291473,
+      "median": 0.010911586207281568,
+      "trimmed": 0.0535915718789808,
+      "trade_t": 1.2467526319829818,
+      "clustered_t": 1.2160293775146802,
+      "skill_p_one_sided": 0.112
+     },
+     "random_raw_draws": {
+      "n": 6048,
+      "gross": 0.019252025144122293,
+      "net": 0.003053878578323676,
+      "net_median": -0.03691484945842755,
+      "net_trimmed": -0.060183563590283394
+     }
+    },
+    "holding_days": {
+     "actual_mean": 36.56818181818182,
+     "actual_median": 40.0,
+     "actual_max": 131.0,
+     "random_averaged_mean": 34.27576512861923,
+     "random_raw_mean": 34.25545634920635
+    }
+   },
+   "2020-2026": {
+    "n_trades": 427,
+    "n_entry_dates": 373,
+    "horizons": [
+     {
+      "horizon": 1,
+      "actual_mean": 0.9263366439975974,
+      "random_mean": 0.43377648372772776,
+      "paired_diff": 0.49256016026986976,
+      "trade_t": 0.7885112610746865,
+      "clustered_t": 0.7598737737174206,
+      "perm_p": 0.4868,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 5,
+      "actual_mean": 1.4838105407868447,
+      "random_mean": 1.0243502452320083,
+      "paired_diff": 0.4594602955548359,
+      "trade_t": 0.6667842181903378,
+      "clustered_t": 0.6688876281205979,
+      "perm_p": 0.533,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 10,
+      "actual_mean": 1.7609136970814567,
+      "random_mean": 1.4458471819510885,
+      "paired_diff": 0.31506651513036815,
+      "trade_t": 0.40673133745136036,
+      "clustered_t": 0.40697536685131563,
+      "perm_p": 0.7172,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 20,
+      "actual_mean": 2.129870785747459,
+      "random_mean": 1.9489517670213805,
+      "paired_diff": 0.180919018726079,
+      "trade_t": 0.2093019078714747,
+      "clustered_t": 0.2110925433366414,
+      "perm_p": 0.843,
+      "status": "Not Sig"
+     }
+    ],
+    "expectancy": {
+     "actual": {
+      "gross": 0.14197027199751452,
+      "net": 0.12611333152841062,
+      "net_median": 0.059449024093466,
+      "net_trimmed": 0.05003069941605716
+     },
+     "random_trade_averaged": {
+      "gross": 0.16755470243543874,
+      "net": 0.15125296021260196,
+      "net_median": 0.1226656342238204,
+      "net_trimmed": 0.13687812985388229
+     },
+     "paired_diff_net": {
+      "mean": -0.025139628684191347,
+      "median": -0.14595716949442916,
+      "trimmed": -0.05976126328570919,
+      "trade_t": -0.5352283953858595,
+      "clustered_t": -0.5270373279605259,
+      "skill_p_one_sided": 0.7055
+     },
+     "random_raw_draws": {
+      "n": 8348,
+      "gross": 0.16305887985818884,
+      "net": 0.14675228806435572,
+      "net_median": -0.00580176112879055,
+      "net_trimmed": 0.04794222406905905
+     }
+    },
+    "holding_days": {
+     "actual_mean": 35.31850117096019,
+     "actual_median": 40.0,
+     "actual_max": 84.0,
+     "random_averaged_mean": 35.3151220424897,
+     "random_raw_mean": 35.2955198850024
+    }
+   },
+   "Pooled": {
+    "n_trades": 735,
+    "n_entry_dates": 635,
+    "horizons": [
+     {
+      "horizon": 1,
+      "actual_mean": 0.7968502512064631,
+      "random_mean": 0.49792120413292673,
+      "paired_diff": 0.2989290470735363,
+      "trade_t": 0.6902281474590923,
+      "clustered_t": 0.6690641030041673,
+      "perm_p": 0.5096,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 5,
+      "actual_mean": 1.2427686435021392,
+      "random_mean": 0.8818414332191856,
+      "paired_diff": 0.36092721028295344,
+      "trade_t": 0.7570890683815831,
+      "clustered_t": 0.7424999516041589,
+      "perm_p": 0.4622,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 10,
+      "actual_mean": 1.333946821097728,
+      "random_mean": 1.084042645356657,
+      "paired_diff": 0.24990417574107113,
+      "trade_t": 0.4605111038145558,
+      "clustered_t": 0.4596594838590119,
+      "perm_p": 0.6642,
+      "status": "Not Sig"
+     },
+     {
+      "horizon": 20,
+      "actual_mean": 1.8243607703698421,
+      "random_mean": 1.4790110150797984,
+      "paired_diff": 0.3453497552900433,
+      "trade_t": 0.5679231333399786,
+      "clustered_t": 0.5721797122026036,
+      "perm_p": 0.5802,
+      "status": "Not Sig"
+     }
+    ],
+    "expectancy": {
+     "actual": {
+      "gross": 0.11157562375602069,
+      "net": 0.0955692846434979,
+      "net_median": 0.0693950580369595,
+      "net_trimmed": 0.03760392946416015
+     },
+     "random_trade_averaged": {
+      "gross": 0.10573286834251396,
+      "net": 0.0894767904058543,
+      "net_median": 0.10039815796109304,
+      "net_trimmed": 0.07584243245938245
+     },
+     "paired_diff_net": {
+      "mean": 0.006092494237643588,
+      "median": -0.050936309665764345,
+      "trimmed": -0.01233381559438724,
+      "trade_t": 0.19069038973360622,
+      "clustered_t": 0.18677099735139832,
+      "skill_p_one_sided": 0.4255
+     },
+     "random_raw_draws": {
+      "n": 14396,
+      "gross": 0.10264321875019533,
+      "net": 0.08638218660759539,
+      "net_median": -0.019632227729281852,
+      "net_trimmed": -0.000674650558829081
+     }
+    },
+    "holding_days": {
+     "actual_mean": 35.8421768707483,
+     "actual_median": 40.0,
+     "actual_max": 131.0,
+     "random_averaged_mean": 34.8795820023916,
+     "random_raw_mean": 34.858571825507084
+    }
+   }
+  },
+  "note": "secondary, reported only; trades with a blanked forward return (a split inside the 20-session horizon) are left out of T2"
+ },
+ "T3": {
+  "size": 0.054,
+  "se": 0.007147307185227175,
+  "rejections": 54,
+  "reps": 1000,
+  "B": 1000,
+  "seed": 20261111,
+  "low": 0.025,
+  "high": 0.075,
+  "verdict": "size ok"
+ },
+ "intervals": {
+  "mean_net_r_per_trade": {
+   "point": 0.10063382012180583,
+   "ci95": [
+    -0.013834159791485999,
+    0.21764282467531837
+   ],
+   "block_months": 3
+  },
+  "mean_paired_diff_per_trade": {
+   "point": 0.010589298391809854,
+   "ci95": [
+    -0.07387397545922744,
+    0.09423449871318888
+   ],
+   "block_months": 3
+  }
+ },
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "months": 48,
+   "pairs": 314,
+   "mean_net_r_per_trade": 0.04933306029915759,
+   "mean_paired_diff_per_trade": 0.03953039447315919,
+   "T1": {
+    "blocks": {
+     "2": {
+      "observed_mean": 0.2585946638452497,
+      "standard_error": 0.32074849781233755,
+      "observed_t": 0.8062225251528611,
+      "unadjusted_p_value": 0.2409,
+      "adjusted_p_value": 0.2409,
+      "fwer_significant": false,
+      "ci99_lower": -0.6750556017530028,
+      "ci99_upper": 1.1901058612759208
+     },
+     "3": {
+      "observed_mean": 0.2585946638452497,
+      "standard_error": 0.32074849781233755,
+      "observed_t": 0.8062225251528611,
+      "unadjusted_p_value": 0.2432,
+      "adjusted_p_value": 0.2432,
+      "fwer_significant": false,
+      "ci99_lower": -0.655778686969535,
+      "ci99_upper": 1.16122189085062
+     }
+    },
+    "months": 48,
+    "alpha": 0.05,
+    "K": 1,
+    "B": 10000,
+    "seed": 20261111,
+    "one_sided": "mean paired difference > 0",
+    "dual_significant": false
+   }
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "months": 82,
+   "pairs": 432,
+   "mean_net_r_per_trade": 0.13792187240030473,
+   "mean_paired_diff_per_trade": -0.010446590889541278,
+   "T1": {
+    "blocks": {
+     "2": {
+      "observed_mean": -0.05503569834490047,
+      "standard_error": 0.29924457024252676,
+      "observed_t": -0.18391544515008593,
+      "unadjusted_p_value": 0.5649,
+      "adjusted_p_value": 0.5649,
+      "fwer_significant": false,
+      "ci99_lower": -0.877035695136563,
+      "ci99_upper": 0.7625803313378224
+     },
+     "3": {
+      "observed_mean": -0.05503569834490047,
+      "standard_error": 0.29924457024252676,
+      "observed_t": -0.18391544515008593,
+      "unadjusted_p_value": 0.5747,
+      "adjusted_p_value": 0.5747,
+      "fwer_significant": false,
+      "ci99_lower": -0.8584222473749883,
+      "ci99_upper": 0.7348797809240686
+     }
+    },
+    "months": 82,
+    "alpha": 0.05,
+    "K": 1,
+    "B": 10000,
+    "seed": 20261111,
+    "one_sided": "mean paired difference > 0",
+    "dual_significant": false
+   }
+  }
+ },
+ "conclusion_t1_only": "T1 not significant at both block lengths"
+}

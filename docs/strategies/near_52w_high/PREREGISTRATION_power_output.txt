@@ -1,0 +1,33 @@
+nominal trades 786; z0.80 0.842; ideal c 1.645; F9-fitted dual-rule c 2.2
+
+MDE at 80% power (R per trade), then power at 0.15 R and at 0.20 R
+sd_pair  DEFF  n_eff | MDE80 ideal  MDE80 dual | pow@0.15 ideal  dual | pow@0.20 ideal  dual
+   0.9   1.0    786 |      0.080       0.098 |          1.00    0.99 |          1.00    1.00
+   0.9   1.5    524 |      0.098       0.120 |          0.99    0.95 |          1.00    1.00
+   0.9   2.0    393 |      0.113       0.138 |          0.95    0.87 |          1.00    0.99
+   0.9   3.0    262 |      0.138       0.169 |          0.85    0.69 |          0.97    0.92
+   1.2   1.0    786 |      0.106       0.130 |          0.97    0.90 |          1.00    0.99
+   1.2   1.5    524 |      0.130       0.159 |          0.89    0.75 |          0.99    0.95
+   1.2   2.0    393 |      0.151       0.184 |          0.80    0.61 |          0.95    0.87
+   1.2   3.0    262 |      0.184       0.225 |          0.65    0.43 |          0.85    0.69
+   1.5   1.0    786 |      0.133       0.163 |          0.88    0.73 |          0.98    0.94
+   1.5   1.5    524 |      0.163       0.199 |          0.74    0.54 |          0.92    0.80
+   1.5   2.0    393 |      0.188       0.230 |          0.63    0.41 |          0.84    0.67
+   1.5   3.0    262 |      0.230       0.282 |          0.49    0.28 |          0.70    0.48
+
+Trades needed for 80% power at 0.15 R (sd_pair 1.2), by design effect: ideal c, dual c
+  DEFF 1.0: 396 trades (ideal), 592 trades (dual rule)
+  DEFF 1.5: 594 trades (ideal), 888 trades (dual rule)
+  DEFF 2.0: 791 trades (ideal), 1184 trades (dual rule)
+  DEFF 3.0: 1187 trades (ideal), 1776 trades (dual rule)
+
+F9 scaling cross-check: slope 12.05 per R x sqrt(3.81) = 23.5 per R (assumes the same dependence and shorter F9 holds; optimistic for 40-session holds)
+  power at 0.10 R: 0.55
+  power at 0.15 R: 0.90
+  power at 0.20 R: 0.99
+  MDE80: 0.130 R
+
+Expectancy gate as a point estimate (single-strategy net R per trade, sd_trade 1.3 assumed):
+  DEFF 1.0: SE 0.046; chance the estimate is >= 0.15 when the true value is 0: 0.001; true value needed for the lower 95% bound to exceed 0.15: 0.23
+  DEFF 2.0: SE 0.066; chance the estimate is >= 0.15 when the true value is 0: 0.011; true value needed for the lower 95% bound to exceed 0.15: 0.26
+  DEFF 3.0: SE 0.080; chance the estimate is >= 0.15 when the true value is 0: 0.031; true value needed for the lower 95% bound to exceed 0.15: 0.28

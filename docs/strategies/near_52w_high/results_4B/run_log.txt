@@ -1,0 +1,6 @@
+﻿started pid 14032 at 2026-11-11T13:19:55.3615511+05:30
+B1 started pid 18696 at 2026-11-11T17:23:24.4567531+05:30
+B1 finished (meta present) 2026-11-11T19:19:10.7602721+05:30
+B2 exit 0, 20 s
+validate exit 0, 39 s
+gates exit 0, 3 s

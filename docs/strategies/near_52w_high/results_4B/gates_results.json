@@ -1,0 +1,99 @@
+{
+ "gates": [
+  {
+   "gate": "min_trades",
+   "gate_value": 40,
+   "comparison": ">=",
+   "observed": 749,
+   "interval": null,
+   "met": true,
+   "note": "a floor only; 40 trades have almost no power"
+  },
+  {
+   "gate": "min_expectancy_r",
+   "gate_value": 0.15,
+   "comparison": ">=",
+   "observed": 0.09826487260133207,
+   "interval": [
+    -0.016820794360409407,
+    0.21545300287713023
+   ],
+   "met": false,
+   "note": "the strategy's own absolute net R per usable trade, point estimate"
+  },
+  {
+   "gate": "min_profit_factor",
+   "gate_value": 1.3,
+   "comparison": ">=",
+   "observed": 1.257875111904098,
+   "interval": [
+    0.9083446745427922,
+    1.7469761216909185
+   ],
+   "met": false,
+   "note": "net P&L of usable trades, point estimate"
+  },
+  {
+   "gate": "max_drawdown_pct",
+   "gate_value": 20.0,
+   "comparison": "<=",
+   "observed": 30.047946154697215,
+   "interval": null,
+   "met": false,
+   "note": "one path, no interval"
+  },
+  {
+   "gate": "min_alpha_after_tax_pct",
+   "gate_value": -2.0,
+   "comparison": ">=",
+   "observed": -4.791256360582041,
+   "interval": [
+    -10.449795541813566,
+    1.3988840436121586
+   ],
+   "met": false,
+   "note": "annualised against the B2 benchmark (daily share), tax from the shared gates"
+  }
+ ],
+ "counts": {
+  "closed": 774,
+  "usable": 749,
+  "end_of_window": 12,
+  "excluded_ca": 13,
+  "entries_per_month": 5.7615384615384615,
+  "invested_share_mean": 0.7378883972644918,
+  "invested_share_p5": 0.637723005241356,
+  "invested_share_p95": 0.8082963367213345,
+  "open_positions_mean": 11.526925953627524,
+  "open_positions_max": 12
+ },
+ "all_met": false,
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "period": "2016-01-01 to 2019-12-31",
+   "trades": 315,
+   "expectancy_r": 0.05098400516636125,
+   "profit_factor": 1.1265305611237812,
+   "max_drawdown_pct": 23.191936289159987,
+   "invested_share_mean": 0.7620757571561262,
+   "alpha_pct": -9.144483224957067
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "period": "2020-01-01 to 2026-10-16",
+   "trades": 434,
+   "expectancy_r": 0.13258163122348832,
+   "profit_factor": 1.317358383902195,
+   "max_drawdown_pct": 22.08357181076347,
+   "invested_share_mean": 0.7237599986548049,
+   "alpha_pct": -2.103953831828953
+  }
+ },
+ "seed": 20261111,
+ "boot": 10000,
+ "block_months": 3,
+ "tax_pct": 0.0,
+ "risk_free_pct": 6.5,
+ "registered_conclusion": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)"
+}

@@ -320,8 +320,8 @@
     610,
     250
    ],
-   "oneline": "The interface a strategy must satisfy. No strategy exists here.",
-   "meaning": "The interface a strategy must satisfy, its description (StrategySpec) and a registry. There are no strategy files in the tree today.",
+   "oneline": "The interface a strategy must satisfy, and the one research strategy, near_52w_high.",
+   "meaning": "The interface a strategy must satisfy, its description (StrategySpec) and a registry. One strategy folder exists, near_52w_high (research status, not merged to master).",
    "modules": [
     {
      "n": "base.py",
@@ -339,9 +339,16 @@
      "d": "StrategyRegistry and the (empty) default_registry."
     }
    ],
+   "subpackages": [
+    {
+     "name": "stockbot.strategies.near_52w_high",
+     "path": "stockbot/strategies/near_52w_high",
+     "d": "The near-52-week-high strategy (research status): SPEC, NearHighStrategy, register."
+    }
+   ],
    "reads": "Nothing.",
    "writes": "Nothing.",
-   "extra_called_by": "A future strategy module imports base.py and spec.py.",
+   "extra_called_by": "A strategy folder imports base.py and spec.py.",
    "may_import": [
     "data"
    ],
@@ -536,6 +543,11 @@
      "n": "data_catalogue.py",
      "path": "stockbot/data_checks/data_catalogue.py",
      "d": "Measures every table and writes data_catalogue.md."
+    },
+    {
+     "n": "near_high_signal_count.py",
+     "path": "stockbot/data_checks/near_high_signal_count.py",
+     "d": "Counts-only study of the near-52-week-high rule; no returns."
     },
     {
      "n": "guide_html.py",
@@ -1493,7 +1505,7 @@
    "q": "Does it clear the pass rules?",
    "source": "stockbot/config/shared.yaml",
    "status": "planned",
-   "plain": "validation_gates are settings only. No code applies them yet (planned); a person compares.",
+   "plain": "validation_gates are settings. No module in stockbot/ applies them; one research script (evaluate_validation_gates_near_52w_high.py) does it for one strategy.",
    "pkg": "config"
   },
   {

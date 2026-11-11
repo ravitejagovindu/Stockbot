@@ -1,6 +1,6 @@
 # StockBot codebase guide
 
-A reading guide for the owner. It describes the repository as it is on `master` (tag `post-restructure`), written from the code, not from older documents. Plain words first, exact names after. Nothing here is a recommendation and nothing here describes a strategy: **no strategy exists in the tree.**
+A reading guide for the owner. It describes the repository as it is on `master` (tag `post-restructure`), written from the code, not from older documents. Plain words first, exact names after. Nothing here is a recommendation. **The only strategy in the tree is `near_52w_high` (status `research`, branch `near-52w-high`, not merged); `master` has none.**
 
 A picture version, for reading by clicking instead of scrolling, is `docs/guides/codebase_guide.html` (open it from the folder; it needs no internet). This text stays the detailed reference.
 
@@ -211,13 +211,14 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 
 ### C.6 `stockbot.strategies`
 
-**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. **There are no strategy files here.** A strategy would live in its own module in this package and import only the interface; it may also define its own exit policy there, importing only `stockbot.engine.exit_policy`.
+**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. A strategy lives in its own folder in this package and imports only the interface; it may also define its own exit policy there, importing only `stockbot.engine.exit_policy`. **One strategy folder exists, `stockbot/strategies/near_52w_high/` (research status; the no-strategy test allows exactly that one folder and one class).**
 
 | module | purpose |
 |---|---|
 | `base.py` | `Proposal`, and the `Strategy` and `Overlay` protocols. |
 | `spec.py` | `StrategySpec` (identity, parameters, exit policy, status, references) with strict validation and a configuration hash. |
 | `registry.py` | `StrategyRegistry` and the (empty) `default_registry`. |
+| `stockbot/strategies/near_52w_high/` | The near-52-week-high strategy (`strategy.py`: `SPEC`, `NearHighStrategy`, `register`; `__init__.py` re-exports them). Long-only; proposes the top 25 names whose adjusted close is within 5% of the highest adjusted close of the last 252 bars (gap guard, ties by ADTV then symbol, an explicit ordinal rank), stop 0.85 x the signal-day adjusted close, exit policy `fixed_hold_40` from the shared library. Every number is in `SPEC.params`. Registered only when `register(registry)` is called, so `default_registry` stays empty. |
 
 - **Reads/writes:** nothing. **Called by:** the engine and runner use the protocols; a future strategy module would import `base.py` and `spec.py`.
 - **Imports:** data view types only. Standard library otherwise.
@@ -288,7 +289,7 @@ Subpackage `stockbot.validation.ledger` (`__init__.py` holds the writers; the re
 - **Reads:** backtest results, trade tables, the ledger records. **Writes:** ledger rows (append-only, through `prereg_lock.append_row`), `docs/F9_POWER_RESULTS.md`. **Called by:** research scripts, `stockbot/live/paper_report.py`, tests.
 - **Imports:** config, data, risk, backtest, engine, universe; never live.
 - **Main API:** `register(*, ledger, yaml_path, gate_params, candidate_ids, git_sha, reason=None, now=None)`; `register_family(*, path, family_id, members, gate_params, git_sha, reason=None, now=None)`; `record_family_results(*, path, family_id, results, git_sha, reason=None, now=None)`; `record_exploratory(...)`; `verify(path=TRIAL_LEDGER) -> LedgerStatus`; `draw_matched_random(actual, *, sessions, view_at, shared_config, policy, equity, draws_per_trade, seed, pool_filter=None, asm_ranges=None) -> DataFrame`; `paired_statistics(actual_df, rand_df, *, seed) -> dict`; `WestfallYoungMaxTBootstrap(weekly_diffs, num_replications=10000, fwer_alpha=0.05, seed=42, block_size=4, sensitivity_block_sizes=None)` with `.run()` and `.run_sensitivity()`.
-- **Honest note:** the validation gates in `shared.yaml` (`validation_gates`) are configuration values. No module compares a run against them yet; applying them to a strategy's result is part of the future strategy phase.
+- **Honest note:** the validation gates in `shared.yaml` (`validation_gates`) are configuration values. No module in `stockbot/` compares a run against them. One research script does it for one strategy: `scripts/evaluate_validation_gates_near_52w_high.py` (section D). The backtest drawdown gate was changed from 15.0 to 20.0 on 2026-11-11 (reviewed shared change, owner); `paper_criteria.max_drawdown_pct` stays 12.0.
 
 ### C.10 `stockbot.data_checks`
 
@@ -300,6 +301,7 @@ Subpackage `stockbot.validation.ledger` (`__init__.py` holds the writers; the re
 | `data_catalogue.py` | Writes `docs/guides/data_catalogue.md` and, with `--json`, `docs/guides/data_catalogue.json`: machine-measured facts about every table (read-only). |
 | `guide_html.py` | Builds `docs/guides/codebase_guide.html` (the interactive picture version of this guide) from `docs/guides/codebase_guide_data.json` and `docs/guides/codebase_guide_template.html`. Standard library only. |
 | `data_guide_html.py` | Builds `docs/guides/data_guide.html` (the interactive picture version of `DATA_GUIDE.md`) from `docs/guides/data_guide_data.json`, the measured export `docs/guides/data_catalogue.json` and `docs/guides/data_guide_template.html`. Standard library only; reuses `guide_html.py`. |
+| `near_high_signal_count.py` | Counts-only study of the near-52-week-high rule (eligible, gap-guard, candidate and proposed counts, data-quality counts, nearness distribution, two mechanical occupancy models, scoring runtime). A study tool, not a strategy; takes the shared eligibility function as an argument because this package may not import `universe`. Reads only through `AsOfView`; computes no return. |
 | `copy_detector.py` | Flags dates whose rows copy the previous session (holiday copies). |
 | `f2_engine_scan.py` | Post-adjustment scan of large price moves through the real adjustment path, via the as-of view. |
 | `f2_verify_engine_path.py` | Runs every row of the verified-corporate-action list through the as-of view. |
@@ -330,6 +332,12 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/gen_data_catalogue.py` | Regenerates `docs/guides/data_catalogue.md` from the database (read-only). | manual | `stockbot.data_checks.data_catalogue` |
 | `scripts/build_data_guide_html.py` | Rebuilds `docs/guides/data_guide.html` from its JSON, the catalogue export and the template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.data_guide_html` |
 | `scripts/build_guide_html.py` | Rebuilds `docs/guides/codebase_guide.html` from its JSON and template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.guide_html` |
+| `scripts/signal_count_near_high.py` | Counts-only signal study of the near-52-week-high rule (read-only; hashes `finsight.db` before and after). Injects the shared eligibility rule. | manual | `stockbot.data_checks.near_high_signal_count` |
+| `scripts/research_near_52w_high.py` | Research wiring: one `run_backtest` of `near_52w_high` with the shared config, the library policy its spec names and the live sector lookup. Prints the plan; runs only with `--execute`; no sweep. | manual | `stockbot.backtest.runner`, `stockbot.strategies.near_52w_high` |
+| `scripts/benchmark_nifty_matched_near_52w_high.py` | B2 of the near_52w_high validation: the Nifty matched to the strategy's daily invested share with the risk-free rate on the rest, and the annualised alpha. Reads only the `NIFTY50_INDEX` closes inside the run's window. | manual | `stockbot.data` (view) |
+| `scripts/evaluate_validation_gates_near_52w_high.py` | Computes every `validation_gates` value for one run and prints it beside the shared gate value (point estimates, 95% block-bootstrap intervals, descriptive sub-periods). | manual | `stockbot.config.shared`, `stockbot.risk.r_metrics` |
+| `scripts/baseline_matched_random_near_52w_high.py` | B1: 20 matched random draws per actual trade through `draw_matched_random` and the library exit; forward reads capped; writes the actual trades and the draws as CSV. Read-only on the lake. | manual | `stockbot.validation.random_baseline` |
+| `scripts/validate_near_52w_high.py` | T1 (Max-T on entry-month sums, blocks 2 and 3), T2 (paired statistics, reported only), T3 (placebo size check) and the descriptive sub-periods. Reads CSV and JSON only; opens no database. | manual | `stockbot.validation.max_t_bootstrap`, `stockbot.validation.paired_stats` |
 | `scripts/paper_report.py` | Paper-trading criteria report. | manual | `stockbot.live.paper_report` |
 | `scripts/preflight_spot_check.py` | Data and adjustment spot checks. | manual | `stockbot.data_checks.preflight_spot_check` |
 | `scripts/earnings_coverage.py` | Earnings coverage report. | manual | `stockbot.data_checks.earnings_coverage` |
@@ -461,7 +469,7 @@ class ToyStrategy:
 
 **`Overlay`** (`stockbot/strategies/base.py`): `evaluate(view, overlay_state) -> (signal, new_overlay_state)`, evaluated once per session before anything else, for context such as a market-wide switch. A strategy declares which overlays it uses in `StrategySpec.overlays`; a missing or version-mismatched overlay raises `EngineInputError`. No real overlay exists yet (the old macro kill switch is kept as provenance).
 
-**Registry** (`stockbot/strategies/registry.py`): `default_registry.register(spec)` rejects duplicate ids; `get`, `ids`, `all`. Today it is empty.
+**Registry** (`stockbot/strategies/registry.py`): `default_registry.register(spec)` rejects duplicate ids; `get`, `ids`, `all`. Today it is empty: `near_52w_high.register(registry)` adds the spec to a registry the caller passes, and nothing calls it on the default registry.
 
 **Lifecycle and gates.**
 - `research`: backtests only. `paper`: runs in PAPER mode in the live package. `live`: runs in LIVE mode; the spec cannot even be built without a `validation_ref`, and `strategies_for_mode` refuses LIVE with no live strategy.
