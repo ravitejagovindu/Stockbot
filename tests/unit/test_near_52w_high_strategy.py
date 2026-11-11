@@ -48,7 +48,7 @@ def test_the_spec_carries_every_number_the_owner_fixed():
     assert SPEC.params == {"window": 252, "min_bars": 250, "threshold": 0.95, "top_n": 25, "stop_fraction": 0.85, "tie_adtv_sessions": 20}
     assert SPEC.universe_overrides == {} and SPEC.overlays == {}
     assert SPEC.expected_trade_rate == 6.2 and SPEC.smallest_edge_of_interest == 0.15
-    assert SPEC.prereg_ref is None and SPEC.validation_ref is None
+    assert SPEC.prereg_ref == "docs/strategies/near_52w_high/PREREGISTRATION.md" and SPEC.validation_ref is None      # set in the registration commit (owner decision D1)
 
 
 @pytest.mark.parametrize("key,value", [("window", 251), ("min_bars", 249), ("threshold", 0.96), ("top_n", 24), ("stop_fraction", 0.86), ("tie_adtv_sessions", 21)])

@@ -50,5 +50,11 @@ def test_execute_runs_one_backtest_through_run_backtest_and_writes_the_manifest(
     trades = json.loads((out / "trades.json").read_text())
     reasons = {t["symbol"]: t["exit_reason"] for t in trades if t["exit_reason"] != "END_OF_WINDOW"}
     assert reasons["A_GOOD"] == "TIME_EXIT" and reasons["B_STOP"] == "STOP_HIT"           # the library policy and the stop, through the shared runner
+    daily = json.loads((out / "daily.json").read_text())                                  # what the gates and the benchmark need: equity and cash at every session close
+    assert set(next(iter(daily.values()))) == {"equity", "cash"} and len(daily) == 50 and all(v["cash"] <= v["equity"] for v in daily.values())
+    eq = json.loads((out / "equity_curve.json").read_text())
+    assert all(daily[k]["equity"] == pytest.approx(eq[k]) for k in eq)
+    blocked = json.loads((out / "blocked.json").read_text())
+    assert isinstance(blocked, list) and all(set(b) == {"date", "strategy_id", "symbol", "reason", "stage"} for b in blocked)
     assert "pnl" not in capsys.readouterr().out.lower()                                     # nothing about P&L is printed
     assert script().main(["--lake", str(p), "--start", ds[251].isoformat(), "--end", ds[300].isoformat(), "--out", str(out), "--execute"]) == 2     # never overwrites a run
