@@ -53,10 +53,10 @@ register_family(path=FAMILY_LEDGER, family_id="near_52w_high", members=[SPEC],
 ## 7. Test counts and the database
 | check | STOP 3 | after the gate commit (7b5b20b) | at the finalisation commit (45db2e4) |
 |---|---|---|---|
-| G1 `tests/unit tests/integration` | 819 passed, 8 skipped | 820 passed, 8 skipped | G1_FINAL |
-| G3 `test_g3_fixture_baseline.py` | 2 passed | 2 passed | G3_FINAL |
-| full folder, `STOCKBOT_DATA_TESTS=1 STOCKBOT_FINAL_CHECK=1 pytest tests` | 948 passed | 949 passed (1941 s) | G2_FINAL |
-`finsight.db` before and after each run: sha256 `dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752`, mtime 2026-11-08 12:38:02.892612 +0530, 3,432,767,488 bytes. FINAL_DB_NOTE
+| G1 `tests/unit tests/integration` | 819 passed, 8 skipped | 820 passed, 8 skipped | **856 passed, 8 skipped** (392 s) |
+| G3 `test_g3_fixture_baseline.py` | 2 passed | 2 passed | **2 passed** |
+| full folder, `STOCKBOT_DATA_TESTS=1 STOCKBOT_FINAL_CHECK=1 pytest tests` | 948 passed | 949 passed (1941 s) | **985 passed, 0 failed, 0 skipped** (2084 s; not killed, not timed out) |
+`finsight.db` before and after each run: sha256 `dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752`, mtime 2026-11-08 12:38:02.892612 +0530, 3,432,767,488 bytes. Identical before and after the final G1, G3 and full-folder runs (re-read after the last run). The +36 tests since the gate commit are the new script tests.
 
 ## 8. Deviations and things to know
 1. **Drawdown comparison.** I implemented the gate as `observed <= 20.0` (the draft's wording). The archived pre-registration of the old family used a strict `<`. Say if you want strict.
