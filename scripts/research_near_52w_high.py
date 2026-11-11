@@ -6,7 +6,8 @@ one strategy, one spec, one window. The registered run is STOP 4 of the task; ST
 
   py scripts/research_near_52w_high.py [--lake PATH] [--start 2016-01-01] [--end 2026-10-16] [--out DIR] [--execute]
 
-Outputs under --out: manifest.json (the run manifest), trades.json (closed trades, END_OF_WINDOW closures included), equity_curve.json. Nothing is printed about P&L.
+Outputs under --out: manifest.json (the run manifest), trades.json (closed trades, END_OF_WINDOW closures included), equity_curve.json, daily.json (equity and cash at every close: what the gates
+and the B2 benchmark need) and blocked.json (the shared caps' blocks). Nothing is printed about P&L.
 Known limitation: no ASM/GSM surveillance ranges are supplied for the historical window (the snapshots exist only for recent dates), so that shared exclusion is not applied.
 """
 import argparse
@@ -66,6 +67,9 @@ def main(argv=None) -> int:
     (out / "manifest.json").write_text(json.dumps(res.manifest, indent=1, default=str), encoding="utf-8")
     (out / "trades.json").write_text(json.dumps([dataclasses.asdict(t) for t in res.trades], indent=1, default=str), encoding="utf-8")
     (out / "equity_curve.json").write_text(json.dumps({d.isoformat(): v for d, v in res.equity_curve.items()}, indent=1), encoding="utf-8")
+    (out / "daily.json").write_text(json.dumps({dec.as_of.isoformat(): {"equity": res.equity_curve[dec.as_of], "cash": dec.cash_after} for dec in res.decisions}, indent=1), encoding="utf-8")
+    (out / "blocked.json").write_text(json.dumps([{"date": dec.as_of.isoformat(), "strategy_id": b.strategy_id, "symbol": b.symbol, "reason": b.reason, "stage": b.stage}
+                                                  for dec in res.decisions for b in dec.blocked], indent=1), encoding="utf-8")
     print(f"sessions {len(res.decisions)}; closed trades {len(res.trades)}; written to {out}")
     return 0
 

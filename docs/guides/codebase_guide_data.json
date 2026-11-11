@@ -1505,7 +1505,7 @@
    "q": "Does it clear the pass rules?",
    "source": "stockbot/config/shared.yaml",
    "status": "planned",
-   "plain": "validation_gates are settings only. No code applies them yet (planned); a person compares.",
+   "plain": "validation_gates are settings. No module in stockbot/ applies them; one research script (evaluate_validation_gates_near_52w_high.py) does it for one strategy.",
    "pkg": "config"
   },
   {
