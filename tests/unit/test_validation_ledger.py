@@ -130,3 +130,34 @@ def test_exploratory_log_has_one_header_and_no_chain(tmp_path):
     assert rows[0] == ["timestamp_utc", "commit_sha", "outputs_dir", "mode", "selected_config", "gate_reached_json"] and len(rows) == 3
     assert rows[1][4] == "NONE" and rows[2][4] == "CFG-02" and json.loads(rows[2][5]) == {"CFG-01": 1}
     assert "row_hash" not in rows[0] and "prev_hash" not in rows[0]
+
+
+# ---------------------------------------------------------------- a family of FOUR (family_batch1: K = 4, Max-T). Temporary files only: the real family ledger is never written here.
+FOUR = ("low_volatility", "pullback_uptrend", "short_term_reversal", "trend_breakout_100d")
+
+
+def test_four_members_register_as_one_entry_with_budget_four_and_the_chain_verifies(tmp_path):
+    p = tmp_path / "fam.csv"
+    rec = reg(p, family="family_batch1", members=FOUR)
+    _, recs = read_ledger(p)
+    assert len(recs) == 1 and recs[0]["row_type"] == "FAMILY_REGISTRATION" and recs[0]["budget"] == "4" and rec["budget"] == 4        # ONE entry for all four
+    assert ledger.family_budget(p, "family_batch1") == 4 and [m["id"] for m in ledger.family_members(p, "family_batch1")] == sorted(FOUR)
+    assert ledger.verify(p).rows == 1
+
+
+def test_four_results_are_one_row_that_carries_all_four_members_and_the_chain_verifies(tmp_path):
+    """record_family_results writes ONE FAMILY_RESULTS row whose results_json holds a result per member (it is not four rows); a missing or extra member is refused."""
+    p = tmp_path / "fam.csv"
+    reg(p, family="family_batch1", members=FOUR)
+    results = {m: {"adjusted_p_block2": 0.3 + i / 10, "adjusted_p_block3": 0.4, "found": False} for i, m in enumerate(FOUR)}
+    with pytest.raises(PreRegistrationError, match="exactly the registered members"):
+        ledger.record_family_results(path=p, family_id="family_batch1", results={m: results[m] for m in FOUR[:3]}, git_sha="x")
+    with pytest.raises(PreRegistrationError, match="exactly the registered members"):
+        ledger.record_family_results(path=p, family_id="family_batch1", results={**results, "fifth": {"found": False}}, git_sha="x")
+    ledger.record_family_results(path=p, family_id="family_batch1", results=results, git_sha="x")
+    _, recs = read_ledger(p)
+    assert [r["row_type"] for r in recs] == ["FAMILY_REGISTRATION", "FAMILY_RESULTS"] and recs[1]["budget"] == "4"
+    assert sorted(json.loads(recs[1]["results_json"])) == sorted(FOUR) and sorted(m["id"] for m in json.loads(recs[1]["members_json"])) == sorted(FOUR)
+    assert ledger.verify(p).rows == 2
+    with pytest.raises(PreRegistrationError, match="already recorded"):
+        ledger.record_family_results(path=p, family_id="family_batch1", results=results, git_sha="x")
