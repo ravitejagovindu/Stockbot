@@ -14,6 +14,9 @@ from tests.fixtures.golden import legacy as _legacy
 LEGACY = _legacy()["strategy_config"]            # the old strategy_config.yaml, frozen before it is deleted (sha256 in tests/golden/legacy_equivalence.json.gz)
 RAW = yaml.safe_load(open(SHARED_YAML, encoding="utf-8"))
 RENAMED = {"portfolio_risk": "risk", "exclusions": "earnings", "live": "trade_management", "validation_gates": "gates"}
+# Reviewed shared changes made AFTER the restructure carried every value over unchanged: shared key -> (legacy value, current value). A change is allowed here only on purpose,
+# in its own commit, with the owner's decision recorded; the legacy value stays frozen in tests/golden.
+REVIEWED_CHANGES = {"validation_gates.max_drawdown_pct": (15.0, 20.0)}       # 2026-11-11, owner: applies to every strategy; paper_criteria.max_drawdown_pct stays 12.0
 
 
 def _legacy_path(section: str, key: str):
@@ -28,7 +31,10 @@ def test_every_shared_value_equals_the_legacy_value_and_type():
         sec, key = k.split(".", 1)
         lsec, lkey = _legacy_path(sec, key)
         old = LEGACY[lsec][lkey]
-        if key == "regimes":
+        if k in REVIEWED_CHANGES:
+            was, now = REVIEWED_CHANGES[k]
+            assert old == was and v == now and type(v) is type(old), (k, v, old)
+        elif key == "regimes":
             assert v == [dict(name=w["name"], role=w["role"], start=w["start"], end=w["end"]) for w in old], k
         else:
             assert v == old and type(v) is type(old), (k, v, old)
@@ -107,3 +113,14 @@ def test_the_config_dict_has_the_legacy_shape_and_the_shared_values():
 def test_the_regime_endpoint_constants_equal_the_frozen_macro_section():
     from stockbot.live.api.regime import LEGACY_MACRO
     assert all(LEGACY["macro"][k] == v for k, v in LEGACY_MACRO.items())
+
+
+def test_the_only_reviewed_change_is_the_backtest_drawdown_gate_and_the_paper_gate_is_untouched():
+    cfg = load_shared_config()
+    assert set(REVIEWED_CHANGES) == {"validation_gates.max_drawdown_pct"}
+    assert cfg.validation_gates.max_drawdown_pct == 20.0 and LEGACY["gates"]["max_drawdown_pct"] == 15.0
+    assert cfg.paper_criteria.max_drawdown_pct == 12.0 == LEGACY["paper_criteria"]["max_drawdown_pct"]       # a strategy passing 20% in backtest can still fail 12% in paper
+    assert cfg.validation_gates.max_drawdown_pct > cfg.paper_criteria.max_drawdown_pct
+    import dataclasses
+    from stockbot.validation.prereg_lock import gates_hash
+    assert gates_hash(dataclasses.asdict(cfg.validation_gates)) != "d70800991ed5e6550fe8a89c050e6b3f989ac99f2a2d6cfaa133761771ab9e64"        # the old hash (15.0) is no longer the shared one

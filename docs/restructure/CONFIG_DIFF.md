@@ -34,7 +34,7 @@
 | `live.earnings_alert_days` | `trade_management.earnings_alert_days` | `7` | yes |
 | `backtest.initial_equity` | `backtest.initial_equity` | `1000000` | yes |
 | `backtest.regimes` | `backtest.regimes` | `3 windows` | yes |
-| `validation_gates.max_drawdown_pct` | `gates.max_drawdown_pct` | `15.0` | yes |
+| `validation_gates.max_drawdown_pct` | `gates.max_drawdown_pct` | `20.0` (was `15.0`; reviewed change 2026-11-11, owner, for every strategy; `paper_criteria.max_drawdown_pct` stays `12.0`) | **no: reviewed change** |
 | `validation_gates.min_alpha_after_tax_pct` | `gates.min_alpha_after_tax_pct` | `-2.0` | yes |
 | `validation_gates.min_expectancy_r` | `gates.min_expectancy_r` | `0.15` | yes |
 | `validation_gates.min_profit_factor` | `gates.min_profit_factor` | `1.3` | yes |
