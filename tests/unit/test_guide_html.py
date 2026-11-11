@@ -14,6 +14,7 @@ import pytest
 
 from stockbot.data_checks import guide_html
 from tests.fixtures import boundaries as B
+from tests.fixtures.boundaries import strategy_owned
 
 ROOT = Path(__file__).resolve().parents[2]
 GUIDES = ROOT / "docs" / "guides"
@@ -64,7 +65,9 @@ def check_ref(ref):
 
 
 def stockbot_packages():
-    return sorted(".".join(p.parent.relative_to(ROOT).parts) for p in (ROOT / "stockbot").rglob("__init__.py") if "__pycache__" not in p.parts)
+    """Packages under stockbot/, except those inside an approved strategy folder (not listed in the guide; strategy branches never edit it)."""
+    return sorted(".".join(p.parent.relative_to(ROOT).parts) for p in (ROOT / "stockbot").rglob("__init__.py")
+                  if "__pycache__" not in p.parts and not strategy_owned(".".join(p.parent.relative_to(ROOT).parts)))
 
 
 # ---------------------------------------------------------------------------------------------------------------- the JSON

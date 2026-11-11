@@ -30,6 +30,9 @@ ALLOWED = {
 # the one engine module a strategy folder may import (exit-policy interface types for a strategy-owned policy); prefix match on dotted names, so
 # stockbot.engine.exit_policies (the shared library) and every other engine module stay forbidden
 STRATEGY_ENGINE_ALLOWED = ("stockbot.engine.exit_policy",)
+# the allow-list of strategy folders under stockbot/strategies/ (tests/unit/test_no_strategy_in_the_tree.py). A folder may be absent; a folder that exists must be listed here and obeys the
+# strategy import rules above. Adding an id is a deliberate, reviewed change to this file, never part of a strategy branch.
+APPROVED_STRATEGY_IDS = ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend")
 NETWORK_LIBS = {"requests", "urllib", "urllib3", "yfinance", "httpx", "aiohttp", "http", "socket", "ftplib", "smtplib"}
 DB_LIBS = {"sqlalchemy", "sqlite3"}
 NO_NETWORK_PKGS = {"backtest", "engine", "strategies", "risk"}
@@ -115,3 +118,16 @@ LEGACY_ALLOWLIST = {
 }
 # non-stockbot legacy .py files still under the top-level data/ folder -> phase that removes/moves them
 LEGACY_DATA_PY = {}
+
+
+def strategy_owned(rel: str) -> bool:
+    """True for a file or package that belongs to an approved strategy and so need not be listed in the guides (the guides say once, generically, that strategies live in
+    stockbot/strategies/<id>/; a strategy branch never edits them). ``rel`` is a repo-relative posix path ("stockbot/strategies/low_volatility/strategy.py"), a dotted package
+    ("stockbot.strategies.low_volatility") or a script path ("scripts/research_low_volatility.py", "scripts/strategies/low_volatility/run.py")."""
+    p = rel.replace(".", "/") if "/" not in rel else rel
+    parts = p.split("/")
+    if parts[:2] == ["stockbot", "strategies"] and len(parts) > 2 and parts[2] in APPROVED_STRATEGY_IDS:
+        return True
+    if parts[:2] == ["scripts", "strategies"] and len(parts) > 2 and parts[2] in APPROVED_STRATEGY_IDS:
+        return True
+    return parts[0] == "scripts" and any(Path(parts[-1]).stem.endswith("_" + i) or Path(parts[-1]).stem == i for i in APPROVED_STRATEGY_IDS)

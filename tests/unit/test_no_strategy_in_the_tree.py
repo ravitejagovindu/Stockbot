@@ -1,18 +1,22 @@
-"""Acceptance item (restructure plan, Phase 10): the tree contains no strategy EXCEPT the one the owner has approved by name (near_52w_high, STOP 2 of its task, a deliberate change
-of this file). Interfaces and the registry live in stockbot/strategies; other strategy-shaped code is only the dummy under tests/ and the old macro kill switch kept as provenance
-(decision D1). Exactly one strategy folder is allowed, exactly one strategy class inside it, and nothing else anywhere: a second strategy must be added here on purpose.
+"""Acceptance item (restructure plan, Phase 10): the tree contains no strategy EXCEPT the ones the owner has approved by name. The allow-list is APPROVED_STRATEGY_IDS in
+tests/fixtures/boundaries.py (a deliberate, reviewed change to that file). A listed folder may be absent. A folder under stockbot/strategies/ that is not listed fails, and every listed
+folder keeps the import boundary (it imports only the interface, the spec, the data view types and stockbot.engine.exit_policy; never another strategy). Interfaces and the registry live in
+stockbot/strategies; other strategy-shaped code is only the dummy under tests/ and the old macro kill switch kept as provenance (decision D1). Inside an approved folder: at most one
+strategy class and no overlay.
 
 Exit policies (exit-policies task, deliberate change): classes implementing the exit-policy interface are allowed in exactly two places, the shared library
 stockbot/engine/exit_policies/ and a strategy's own folder stockbot/strategies/<name>/. Strategies and overlays are still allowed nowhere outside tests/."""
 import ast
 from pathlib import Path
 
+import pytest
+
 from stockbot.strategies.registry import default_registry
+from tests.fixtures import boundaries as B
 
 ROOT = Path(__file__).resolve().parents[2]
 INTERFACES = ["stockbot/engine/exit_policy.py::ExitPolicy", "stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"]
-APPROVED_STRATEGY_FOLDERS = ["near_52w_high"]
-APPROVED_STRATEGIES = ["stockbot/strategies/near_52w_high/strategy.py::NearHighStrategy"]
+APPROVED_STRATEGY_FOLDERS = list(B.APPROVED_STRATEGY_IDS)
 LIBRARY_POLICIES = ["stockbot/engine/exit_policies/fixed_hold.py::FixedHold", "stockbot/engine/exit_policies/trailing_stop.py::TrailingStop"]
 
 
@@ -48,11 +52,28 @@ def scan(root: Path, dirs=("stockbot", "scripts")):
     return hits
 
 
+def approved_strategy_home(rel: str, approved=APPROVED_STRATEGY_FOLDERS) -> bool:
+    """True for a path inside an approved strategy folder: stockbot/strategies/<approved id>/.../<file>.py."""
+    p = rel.split("/")
+    return len(p) >= 4 and p[:2] == ["stockbot", "strategies"] and p[2] in approved
+
+
+def approved_strategy_hits(hits, approved=APPROVED_STRATEGY_FOLDERS):
+    """The strategy classes (and only those) sitting in an approved folder."""
+    return [(rel, name) for rel, name, kinds in hits if kinds == {"strategy"} and approved_strategy_home(rel, approved)]
+
+
+def unlisted_strategy_folders(root: Path, approved=APPROVED_STRATEGY_FOLDERS) -> list:
+    return sorted(p.name for p in (root / "stockbot" / "strategies").iterdir() if p.is_dir() and p.name != "__pycache__" and p.name not in approved)
+
+
 def forbidden(hits):
-    """Hits that are not an interface definition and not an exit policy in an allowed home."""
+    """Hits that are not an interface definition, not a lone strategy class in an approved folder and not an exit policy in an allowed home."""
     out = []
     for rel, name, kinds in hits:
-        if f"{rel}::{name}" in INTERFACES + APPROVED_STRATEGIES:
+        if f"{rel}::{name}" in INTERFACES:
+            continue
+        if kinds == {"strategy"} and approved_strategy_home(rel):
             continue
         if kinds == {"exit_policy"} and exit_policy_home(rel):
             continue
@@ -65,12 +86,68 @@ def test_the_strategies_package_holds_only_the_interface_the_spec_and_the_regist
     assert names == {"__init__.py", "base.py", "registry.py", "spec.py"}, names
 
 
-def test_the_strategies_folder_holds_only_the_one_approved_strategy_folder():
-    """Exactly the approved strategy folder, and no strategy- or overlay-shaped class under stockbot/strategies except the two interface Protocols and the one approved class."""
-    folders = sorted(p.name for p in (ROOT / "stockbot" / "strategies").iterdir() if p.is_dir() and p.name != "__pycache__")
-    assert folders == APPROVED_STRATEGY_FOLDERS, folders
-    inside = [f"{rel}::{name}" for rel, name, kinds in scan(ROOT) if rel.startswith("stockbot/strategies/") and kinds & {"strategy", "overlay"}]
-    assert sorted(inside) == sorted(["stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"] + APPROVED_STRATEGIES), inside
+def test_the_strategies_folder_holds_only_approved_strategy_folders():
+    """Every folder is on the allow-list (a listed folder may be absent); no strategy- or overlay-shaped class under stockbot/strategies except the two interface Protocols and at most one
+    strategy class per approved folder."""
+    assert unlisted_strategy_folders(ROOT) == [], unlisted_strategy_folders(ROOT)
+    hits = [h for h in scan(ROOT) if h[0].startswith("stockbot/strategies/")]
+    inside = [f"{rel}::{name}" for rel, name, kinds in hits if kinds & {"strategy", "overlay"}]
+    approved = approved_strategy_hits(hits)
+    assert sorted(inside) == sorted(["stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"] + [f"{r}::{n}" for r, n in approved]), inside
+    folders = [r.split("/")[2] for r, _ in approved]
+    assert len(folders) == len(set(folders)), f"more than one strategy class in a folder: {folders}"
+
+
+def test_the_allow_list_holds_exactly_the_five_approved_ids():
+    assert B.APPROVED_STRATEGY_IDS == ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend")
+
+
+def test_an_unlisted_strategy_folder_fails_and_a_listed_or_absent_one_does_not(tmp_path):
+    (tmp_path / "stockbot" / "strategies" / "short_term_reversal").mkdir(parents=True)
+    assert unlisted_strategy_folders(tmp_path) == []                       # listed, the others absent: fine
+    (tmp_path / "stockbot" / "strategies" / "secret_alpha").mkdir()
+    (tmp_path / "stockbot" / "strategies" / "__pycache__").mkdir()
+    assert unlisted_strategy_folders(tmp_path) == ["secret_alpha"]
+
+
+def test_a_strategy_class_is_allowed_only_inside_an_approved_folder_and_no_overlay_anywhere():
+    k = kinds_of(_cls(STRATEGY))
+    assert forbidden([("stockbot/strategies/low_volatility/strategy.py", "S", k)]) == []
+    assert forbidden([("stockbot/strategies/secret_alpha/strategy.py", "S", k)]) == ["stockbot/strategies/secret_alpha/strategy.py::S"]
+    assert forbidden([("stockbot/risk/strategy.py", "S", k)]) == ["stockbot/risk/strategy.py::S"]
+    assert forbidden([("stockbot/strategies/strategy.py", "S", k)]) == ["stockbot/strategies/strategy.py::S"]       # not inside a folder
+    ov = kinds_of(_cls(OVERLAY))
+    assert forbidden([("stockbot/strategies/low_volatility/o.py", "O", ov)]) == ["stockbot/strategies/low_volatility/o.py::O"]
+
+
+def test_every_approved_folder_on_the_real_tree_obeys_the_import_boundary():
+    own = tuple(f"stockbot.strategies.{i}" for i in B.APPROVED_STRATEGY_IDS)
+    assert [v for v in B.check(ROOT) if v[0].startswith(own)] == []
+
+
+def _tree(root: Path, sid: str, body: str) -> Path:
+    d = root / "stockbot" / "strategies" / sid
+    d.mkdir(parents=True)
+    for p in (root / "stockbot", root / "stockbot" / "strategies", d):
+        (p / "__init__.py").write_text("")
+    (d / "strategy.py").write_text(body, encoding="utf-8")
+    return root
+
+
+OK_IMPORTS = ("from stockbot.strategies.base import Proposal\nfrom stockbot.strategies.spec import StrategySpec\nfrom stockbot.data.asof import AsOfView\n"
+              "from stockbot.engine.exit_policy import ExitPolicy\n")
+
+
+@pytest.mark.parametrize("sid", B.APPROVED_STRATEGY_IDS)
+def test_the_boundary_checker_accepts_the_allowed_imports_and_catches_forbidden_ones_for_every_approved_id(tmp_path, sid):
+    assert B.check(_tree(tmp_path / "ok", sid, OK_IMPORTS)) == set()
+    other = next(i for i in B.APPROVED_STRATEGY_IDS if i != sid)
+    cases = [("from stockbot.engine.decide import decide\n", "may not import engine"), ("from stockbot.engine.exit_policies import fixed_hold\n", "may not import engine"),
+             (f"from stockbot.strategies.{other} import strategy\n", "may not import another strategy"), ("from stockbot.risk import sizing\n", "may not import risk"),
+             ("import requests\n", "network library")]
+    for n, (bad, rule) in enumerate(cases):
+        got = B.check(_tree(tmp_path / f"bad{n}", sid, OK_IMPORTS + bad))
+        assert any(rule in r for _, _, r in got), (sid, bad, got)
 
 
 def test_the_default_registry_and_the_default_live_book_are_empty():
@@ -82,7 +159,8 @@ def test_no_class_outside_tests_implements_the_strategy_or_overlay_or_exit_polic
     hits = scan(ROOT)
     assert forbidden(hits) == [], forbidden(hits)
     # what is allowed is exactly the interface definitions plus the library's two policies (a new policy file must be added here on purpose)
-    assert sorted(f"{rel}::{name}" for rel, name, _ in hits) == sorted(INTERFACES + APPROVED_STRATEGIES + LIBRARY_POLICIES)
+    approved = approved_strategy_hits(hits)
+    assert sorted(f"{rel}::{name}" for rel, name, _ in hits if (rel, name) not in approved) == sorted(INTERFACES + LIBRARY_POLICIES)
 
 
 def _cls(src: str) -> ast.ClassDef:

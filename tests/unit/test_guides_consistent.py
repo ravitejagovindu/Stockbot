@@ -13,6 +13,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.fixtures.boundaries import strategy_owned
+
 ROOT = Path(__file__).resolve().parents[2]
 GUIDES = ROOT / "docs" / "guides"
 CODE = GUIDES / "CODEBASE_GUIDE.md"
@@ -70,11 +72,14 @@ def missing_paths(text: str, names: set) -> list:
 
 
 def stockbot_packages() -> list:
-    return sorted(".".join(p.parent.relative_to(ROOT).parts) for p in (ROOT / "stockbot").rglob("__init__.py") if "__pycache__" not in p.parts)
+    """Every package under stockbot/ except those inside an approved strategy folder (the guides name strategies only generically: stockbot/strategies/<id>/)."""
+    return sorted(".".join(p.parent.relative_to(ROOT).parts) for p in (ROOT / "stockbot").rglob("__init__.py")
+                  if "__pycache__" not in p.parts and not strategy_owned(".".join(p.parent.relative_to(ROOT).parts)))
 
 
 def stockbot_modules() -> list:
-    return sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "stockbot").rglob("*.py") if "__pycache__" not in p.parts and p.name != "__init__.py")
+    return sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "stockbot").rglob("*.py")
+                  if "__pycache__" not in p.parts and p.name != "__init__.py" and not strategy_owned(p.relative_to(ROOT).as_posix()))
 
 
 def mermaid_blocks(text: str) -> list:
@@ -122,7 +127,8 @@ def test_every_stockbot_module_is_named_in_the_codebase_guide():
 
 def test_every_script_is_named_in_the_codebase_guide():
     t = _text(CODE)
-    scripts = [p.relative_to(ROOT).as_posix() for p in (ROOT / "scripts").rglob("*.py") if "__pycache__" not in p.parts]
+    scripts = [p.relative_to(ROOT).as_posix() for p in (ROOT / "scripts").rglob("*.py")
+               if "__pycache__" not in p.parts and not strategy_owned(p.relative_to(ROOT).as_posix())]
     missing = [s for s in scripts if f"`{Path(s).name}`" not in t and f"`{s}`" not in t]
     assert not missing, f"scripts missing from CODEBASE_GUIDE.md: {missing}"
 
@@ -148,6 +154,17 @@ def test_the_required_diagrams_are_present_and_explained(guide):
     for src, after in blocks:
         assert src.split("\n", 1)[0].split()[0] in ("flowchart", "sequenceDiagram", "erDiagram", "stateDiagram-v2", "graph"), src[:40]
         assert after.strip() and not after.startswith(("#", "```", "|")), f"a diagram in {guide.name} has no explanation under it: {src[:60]!r}"
+
+
+def test_strategy_folders_the_guides_do_not_list_are_not_required_in_them():
+    """A strategy branch adds stockbot/strategies/<id>/ (and a script named *_<id>.py) without editing the guides; anything else unlisted is still reported."""
+    for ok in ("stockbot/strategies/low_volatility/strategy.py", "stockbot.strategies.low_volatility", "stockbot/strategies/pullback_uptrend/sub/x.py",
+               "scripts/research_low_volatility.py", "scripts/strategies/short_term_reversal/run.py"):
+        assert strategy_owned(ok), ok
+    for bad in ("stockbot/strategies/secret_alpha/strategy.py", "stockbot.strategies.secret_alpha", "stockbot/engine/low_volatility.py", "stockbot/strategies/base.py",
+                "scripts/research_secret_alpha.py", "scripts/low_volatility_helper.py", "stockbot.strategies"):
+        assert not strategy_owned(bad), bad
+    assert not any(strategy_owned(m) for m in stockbot_modules()) and not any(strategy_owned(m) for m in stockbot_packages())
 
 
 def test_the_checker_itself_detects_a_missing_path_and_a_missing_object():

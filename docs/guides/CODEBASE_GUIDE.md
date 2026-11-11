@@ -211,7 +211,7 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 
 ### C.6 `stockbot.strategies`
 
-**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. A strategy lives in its own folder in this package and imports only the interface; it may also define its own exit policy there, importing only `stockbot.engine.exit_policy`. **One strategy folder exists, `stockbot/strategies/near_52w_high/` (research status; the no-strategy test allows exactly that one folder and one class).**
+**Meaning.** The interface a strategy must satisfy, its description (`StrategySpec`) and a registry. A strategy lives in its own folder in this package (stockbot/strategies/<id>/, only ids on the allow-list `APPROVED_STRATEGY_IDS` in `tests/fixtures/boundaries.py`; the guides do not list individual strategies beyond this) and imports only the interface; it may also define its own exit policy there, importing only `stockbot.engine.exit_policy`. **One strategy folder exists, `stockbot/strategies/near_52w_high/` (research status; the no-strategy test allows exactly that one folder and one class).**
 
 | module | purpose |
 |---|---|
