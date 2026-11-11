@@ -1,0 +1,2 @@
+timestamp_utc,commit_sha,family_id,row_type,members_json,budget,gates_sha256,reason,results_json,prev_hash,row_hash
+2026-11-11T07:49:01.906051+00:00,45db2e4da31de4ceee0a9b84195584dbe1225c84,near_52w_high,FAMILY_REGISTRATION,"[{""config_hash"": ""359c8331091abf15f14cfaaf47f4fcf49f65835d876b6fb1ece56fa78287ab26"", ""id"": ""near_52w_high"", ""version"": ""1.0.0""}]",1,805efac844810c62d6f5d74b706d7cfb0b042c5fbc3cf217add54116d783cd2f,initial registration,,GENESIS,aceb96b894c2bb22debc166190a809d804527dd66ff7154473c43d20635ad7c4
