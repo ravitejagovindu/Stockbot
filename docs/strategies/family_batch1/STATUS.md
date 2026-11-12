@@ -16,3 +16,5 @@ Last updated: 2026-11-11 (branch `family-prep`, from origin/master a7aff12).
 
 ## Next
 Owner reviews; strategy branches start stage 1. Nothing is registered or run.
+
+- 2026-11-12 owner decision: family_batch1 has THREE members (short_term_reversal, trend_breakout_100d, pullback_uptrend), K = 3. low_volatility is set aside (its branch stays unmerged). Register with `--expect-k 3`; the registration snippet in each PREREGISTRATION section 13 lists three specs.
