@@ -150,6 +150,15 @@ def test_no_gap_guard_on_the_61_close_window_but_it_is_counted(tmp_path):
     assert got == pytest.approx(float(np.std(np.diff(np.log(c[len(c) - 61 - (L.N - 262):len(c) - (L.N - 262)])), ddof=1)), rel=1e-9)   # returns are taken over the bars it has
 
 
+def test_the_window_gap_count_uses_the_calendar_when_it_is_shorter_than_61_sessions(tmp_path):
+    series = {"FULL": walk(0.01, 12), "MISS": walk(0.01, 13)}
+    p = tmp_path / "lake.db"
+    ds = L.build(p, series, skip={"MISS": {10}})
+    s = LowVolatilityStrategy(replace(SPEC, params={**P, "min_bars": 20}))               # the first month change is session 23: only 24 calendar sessions exist (< 61)
+    out = s.score(view_of(p, ds, 23), list(series), ds[23])
+    assert is_signal_session(view_of(p, ds, 23), ds[23]) and out["window_gaps"] == ["MISS"] and {r[0] for r in out["ranked"]} == {"FULL", "MISS"}
+
+
 def test_ties_go_by_adtv_then_symbol_and_the_rank_carries_that_order(tmp_path):
     series = {f"V{k:02d}": np.full(L.N, 100.0) for k in range(30)}                           # flat: vol60 = 0 for all, an exact tie
     vol = {f"V{k:02d}": 6_000_000 + k * 1_000_000 for k in range(30)}

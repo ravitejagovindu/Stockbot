@@ -61,7 +61,7 @@ class LowVolatilityStrategy:
         out = dict(date=as_of, n_eligible=len(eligible), short=[], stale=[], bad_price=[], valid=[], window_gaps=[], zero_vol=[], ranked=[])
         cands: list = []                                              # (symbol, vol60, close_adj)
         for sym in eligible:
-            bars = view.adjusted_bars(sym, lookback=min_bars)
+            bars = view.adjusted_bars(sym, lookback=max(min_bars, w + 1))
             if len(bars) < min_bars:
                 out["short"].append(sym)
                 continue
@@ -73,7 +73,7 @@ class LowVolatilityStrategy:
                 out["bad_price"].append(sym)
                 continue
             vol = float(np.std(np.diff(np.log(close)), ddof=1))
-            if sum(1 for d in bars.index[-(w + 1):] if d >= win_start) < w + 1:
+            if sum(1 for d in bars.index[-(w + 1):] if d >= win_start) < len(cal):     # a calendar session of the window with no bar (the calendar may be shorter than w + 1 sessions)
                 out["window_gaps"].append(sym)                       # counted, still ranked: the rule has no gap guard
             if vol == 0.0:
                 out["zero_vol"].append(sym)
