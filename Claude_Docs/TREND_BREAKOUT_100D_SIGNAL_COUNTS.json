@@ -1,0 +1,1302 @@
+{
+ "measured": "2026-11-12",
+ "rule": {
+  "adtv_sessions": 20,
+  "breakout_lookback": 100,
+  "min_bars": 200,
+  "min_present": 198,
+  "sma_period": 200,
+  "stop_fraction": 0.85,
+  "top_n": 25
+ },
+ "exit_policy": "trailing_pct_15",
+ "params": {
+  "max_positions": 12,
+  "risk_pct": 1.0,
+  "sector_cap_pct": 15.0,
+  "position_pct_of_equity": 6.666666666666665
+ },
+ "calendar": {
+  "first_session": "2016-01-01",
+  "last_session": "2026-10-16",
+  "n_sessions": 2674
+ },
+ "groups": {
+  "2016": {
+   "sessions": 247,
+   "first": "2016-01-01",
+   "last": "2016-12-30",
+   "eligible": {
+    "median": 144.0,
+    "p5": 128.0,
+    "p95": 172.7,
+    "min": 123.0,
+    "max": 177.0,
+    "mean": 149.10526315789474
+   },
+   "signals": {
+    "median": 8.0,
+    "p5": 0.0,
+    "p95": 38.69999999999999,
+    "min": 0.0,
+    "max": 52.0,
+    "mean": 11.291497975708502
+   },
+   "proposed": {
+    "median": 8.0,
+    "p5": 0.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 9.979757085020243
+   },
+   "sessions_with_signal": 224,
+   "sessions_with_12": 89,
+   "signal_name_sessions": 2789,
+   "overlap_signals": 2079,
+   "overlap_share": 0.7454284689852994,
+   "proposed_name_sessions": 2465,
+   "overlap_proposed": 1861,
+   "overlap_share_proposed": 0.7549695740365111,
+   "t_elig": {
+    "median": 4.004675600212067,
+    "p5": 2.986157799931243,
+    "p95": 13.223464899975806,
+    "min": 2.800129400100559,
+    "max": 13.950700599700212,
+    "mean": 6.3290344198264545
+   },
+   "t_score": {
+    "median": 1.0853629000484943,
+    "p5": 0.6584815298672766,
+    "p95": 3.6408088798634703,
+    "min": 0.5455326000228524,
+    "max": 4.032022200059146,
+    "mean": 1.726132976111809
+   }
+  },
+  "2017": {
+   "sessions": 248,
+   "first": "2017-01-02",
+   "last": "2017-12-29",
+   "eligible": {
+    "median": 200.5,
+    "p5": 152.4,
+    "p95": 249.0,
+    "min": 138.0,
+    "max": 252.0,
+    "mean": 201.1733870967742
+   },
+   "signals": {
+    "median": 18.0,
+    "p5": 3.0,
+    "p95": 37.64999999999998,
+    "min": 0.0,
+    "max": 58.0,
+    "mean": 18.838709677419356
+   },
+   "proposed": {
+    "median": 18.0,
+    "p5": 3.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 16.455645161290324
+   },
+   "sessions_with_signal": 246,
+   "sessions_with_12": 176,
+   "signal_name_sessions": 4672,
+   "overlap_signals": 4257,
+   "overlap_share": 0.9111729452054794,
+   "proposed_name_sessions": 4081,
+   "overlap_proposed": 3745,
+   "overlap_share_proposed": 0.9176672384219554,
+   "t_elig": {
+    "median": 12.559487650170922,
+    "p5": 6.558250304847024,
+    "p95": 14.375132634863256,
+    "min": 4.654111900366843,
+    "max": 19.778976399917156,
+    "mean": 11.460081364503205
+   },
+   "t_score": {
+    "median": 4.128311900189146,
+    "p5": 1.9796477502211929,
+    "p95": 5.939084494905546,
+    "min": 1.2449264000169933,
+    "max": 364.868806200102,
+    "mean": 5.395805943143299
+   }
+  },
+  "2018": {
+   "sessions": 246,
+   "first": "2018-01-01",
+   "last": "2018-12-31",
+   "eligible": {
+    "median": 212.0,
+    "p5": 190.0,
+    "p95": 268.0,
+    "min": 188.0,
+    "max": 274.0,
+    "mean": 215.71138211382114
+   },
+   "signals": {
+    "median": 7.0,
+    "p5": 0.0,
+    "p95": 27.0,
+    "min": 0.0,
+    "max": 66.0,
+    "mean": 8.861788617886178
+   },
+   "proposed": {
+    "median": 7.0,
+    "p5": 0.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 8.24390243902439
+   },
+   "sessions_with_signal": 221,
+   "sessions_with_12": 66,
+   "signal_name_sessions": 2180,
+   "overlap_signals": 1900,
+   "overlap_share": 0.8715596330275229,
+   "proposed_name_sessions": 2028,
+   "overlap_proposed": 1771,
+   "overlap_share_proposed": 0.8732741617357002,
+   "t_elig": {
+    "median": 13.269175800029188,
+    "p5": 3.9006748248357326,
+    "p95": 15.630974674946629,
+    "min": 3.475400799885392,
+    "max": 20.968984799925238,
+    "mean": 11.358011181294025
+   },
+   "t_score": {
+    "median": 4.449680199846625,
+    "p5": 1.0465685250237584,
+    "p95": 6.525304000009783,
+    "min": 0.7295397999696434,
+    "max": 7.713831500150263,
+    "mean": 3.9444504374074105
+   }
+  },
+  "2019": {
+   "sessions": 245,
+   "first": "2019-01-01",
+   "last": "2019-12-31",
+   "eligible": {
+    "median": 184.0,
+    "p5": 166.2,
+    "p95": 211.79999999999998,
+    "min": 161.0,
+    "max": 216.0,
+    "mean": 183.8938775510204
+   },
+   "signals": {
+    "median": 7.0,
+    "p5": 1.0,
+    "p95": 26.0,
+    "min": 0.0,
+    "max": 39.0,
+    "mean": 9.004081632653062
+   },
+   "proposed": {
+    "median": 7.0,
+    "p5": 1.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 8.661224489795918
+   },
+   "sessions_with_signal": 234,
+   "sessions_with_12": 68,
+   "signal_name_sessions": 2206,
+   "overlap_signals": 1547,
+   "overlap_share": 0.7012692656391659,
+   "proposed_name_sessions": 2122,
+   "overlap_proposed": 1497,
+   "overlap_share_proposed": 0.7054665409990575,
+   "t_elig": {
+    "median": 9.954754899721593,
+    "p5": 6.962221940234303,
+    "p95": 14.801775960344822,
+    "min": 4.250134299974889,
+    "max": 304.6733844000846,
+    "mean": 11.322514055104811
+   },
+   "t_score": {
+    "median": 2.867419600021094,
+    "p5": 1.679256980214268,
+    "p95": 4.290064160060137,
+    "min": 1.0543271000497043,
+    "max": 174.81930510001257,
+    "mean": 3.631119513065003
+   }
+  },
+  "2020": {
+   "sessions": 252,
+   "first": "2020-01-01",
+   "last": "2020-12-31",
+   "eligible": {
+    "median": 193.0,
+    "p5": 168.55,
+    "p95": 251.45,
+    "min": 160.0,
+    "max": 259.0,
+    "mean": 201.04761904761904
+   },
+   "signals": {
+    "median": 12.0,
+    "p5": 0.0,
+    "p95": 45.0,
+    "min": 0.0,
+    "max": 65.0,
+    "mean": 16.317460317460316
+   },
+   "proposed": {
+    "median": 12.0,
+    "p5": 0.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 13.277777777777779
+   },
+   "sessions_with_signal": 232,
+   "sessions_with_12": 131,
+   "signal_name_sessions": 4112,
+   "overlap_signals": 2873,
+   "overlap_share": 0.6986867704280155,
+   "proposed_name_sessions": 3346,
+   "overlap_proposed": 2416,
+   "overlap_share_proposed": 0.722056186491333,
+   "t_elig": {
+    "median": 14.685598850017413,
+    "p5": 7.8021303950576115,
+    "p95": 19.989947930094782,
+    "min": 6.180359200108796,
+    "max": 24.17588850017637,
+    "mean": 14.525316641664148
+   },
+   "t_score": {
+    "median": 4.128127599833533,
+    "p5": 1.3787547248415648,
+    "p95": 6.591271315095946,
+    "min": 1.1463076998479664,
+    "max": 7.2879886999726295,
+    "mean": 3.9876615666684563
+   }
+  },
+  "2021": {
+   "sessions": 248,
+   "first": "2021-01-01",
+   "last": "2021-12-31",
+   "eligible": {
+    "median": 304.0,
+    "p5": 260.35,
+    "p95": 361.0,
+    "min": 248.0,
+    "max": 373.0,
+    "mean": 309.8024193548387
+   },
+   "signals": {
+    "median": 29.0,
+    "p5": 5.0,
+    "p95": 68.29999999999995,
+    "min": 0.0,
+    "max": 90.0,
+    "mean": 32.03629032258065
+   },
+   "proposed": {
+    "median": 25.0,
+    "p5": 5.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 20.258064516129032
+   },
+   "sessions_with_signal": 246,
+   "sessions_with_12": 206,
+   "signal_name_sessions": 7945,
+   "overlap_signals": 7512,
+   "overlap_share": 0.9455003146633103,
+   "proposed_name_sessions": 5024,
+   "overlap_proposed": 4796,
+   "overlap_share_proposed": 0.9546178343949044,
+   "t_elig": {
+    "median": 12.373764799907804,
+    "p5": 8.347462160140276,
+    "p95": 17.728088234784078,
+    "min": 6.95235289959237,
+    "max": 84.4994172998704,
+    "mean": 13.066340043549351
+   },
+   "t_score": {
+    "median": 5.374642700189725,
+    "p5": 3.0380829847650603,
+    "p95": 7.184995919885113,
+    "min": 1.846766899805516,
+    "max": 134.4227424999699,
+    "mean": 5.849993628226295
+   }
+  },
+  "2022": {
+   "sessions": 248,
+   "first": "2022-01-03",
+   "last": "2022-12-30",
+   "eligible": {
+    "median": 308.5,
+    "p5": 252.35,
+    "p95": 343.65,
+    "min": 241.0,
+    "max": 358.0,
+    "mean": 305.7903225806452
+   },
+   "signals": {
+    "median": 14.0,
+    "p5": 0.0,
+    "p95": 41.64999999999998,
+    "min": 0.0,
+    "max": 52.0,
+    "mean": 16.173387096774192
+   },
+   "proposed": {
+    "median": 14.0,
+    "p5": 0.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 13.721774193548388
+   },
+   "sessions_with_signal": 231,
+   "sessions_with_12": 143,
+   "signal_name_sessions": 4011,
+   "overlap_signals": 3160,
+   "overlap_share": 0.7878334579905261,
+   "proposed_name_sessions": 3403,
+   "overlap_proposed": 2707,
+   "overlap_share_proposed": 0.7954745812518366,
+   "t_elig": {
+    "median": 17.671455449890345,
+    "p5": 9.907685130066238,
+    "p95": 21.596900269947945,
+    "min": 7.859257699921727,
+    "max": 504.37019059993327,
+    "mean": 19.267970941949546
+   },
+   "t_score": {
+    "median": 6.9235495501197875,
+    "p5": 4.067360510211438,
+    "p95": 8.611149594956077,
+    "min": 3.302197199780494,
+    "max": 629.520383299794,
+    "mean": 14.198687566909939
+   }
+  },
+  "2023": {
+   "sessions": 246,
+   "first": "2023-01-02",
+   "last": "2023-12-29",
+   "eligible": {
+    "median": 391.0,
+    "p5": 278.25,
+    "p95": 489.75,
+    "min": 272.0,
+    "max": 516.0,
+    "mean": 378.0121951219512
+   },
+   "signals": {
+    "median": 39.0,
+    "p5": 5.0,
+    "p95": 95.0,
+    "min": 0.0,
+    "max": 132.0,
+    "mean": 41.979674796747965
+   },
+   "proposed": {
+    "median": 25.0,
+    "p5": 5.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 19.869918699186993
+   },
+   "sessions_with_signal": 245,
+   "sessions_with_12": 194,
+   "signal_name_sessions": 10327,
+   "overlap_signals": 8889,
+   "overlap_share": 0.860753364965624,
+   "proposed_name_sessions": 4888,
+   "overlap_proposed": 4219,
+   "overlap_share_proposed": 0.8631342062193126,
+   "t_elig": {
+    "median": 12.46416989993304,
+    "p5": 8.368505424936302,
+    "p95": 20.832955625024624,
+    "min": 7.869580400176346,
+    "max": 41.726299199741334,
+    "mean": 13.96248157601425
+   },
+   "t_score": {
+    "median": 6.243301749927923,
+    "p5": 4.240060874959454,
+    "p95": 8.002940750098787,
+    "min": 3.2826704001054168,
+    "max": 99.2495328001678,
+    "mean": 6.489578312597942
+   }
+  },
+  "2024": {
+   "sessions": 249,
+   "first": "2024-01-01",
+   "last": "2024-12-31",
+   "eligible": {
+    "median": 527.0,
+    "p5": 468.0,
+    "p95": 605.6,
+    "min": 456.0,
+    "max": 617.0,
+    "mean": 533.5863453815261
+   },
+   "signals": {
+    "median": 45.0,
+    "p5": 7.0,
+    "p95": 101.0,
+    "min": 0.0,
+    "max": 139.0,
+    "mean": 48.369477911646584
+   },
+   "proposed": {
+    "median": 25.0,
+    "p5": 7.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 21.971887550200805
+   },
+   "sessions_with_signal": 248,
+   "sessions_with_12": 216,
+   "signal_name_sessions": 12044,
+   "overlap_signals": 11447,
+   "overlap_share": 0.9504317502490867,
+   "proposed_name_sessions": 5471,
+   "overlap_proposed": 5240,
+   "overlap_share_proposed": 0.9577773715956863,
+   "t_elig": {
+    "median": 20.94381139986217,
+    "p5": 6.410917919781059,
+    "p95": 29.23080572010949,
+    "min": 6.279326600022614,
+    "max": 504.3702447996475,
+    "mean": 20.051992545796402
+   },
+   "t_score": {
+    "median": 12.826427500229329,
+    "p5": 3.7405422000214457,
+    "p95": 17.940787920262665,
+    "min": 3.5659094997681677,
+    "max": 842.5686844000593,
+    "mean": 16.114318510446413
+   }
+  },
+  "2025": {
+   "sessions": 249,
+   "first": "2025-01-01",
+   "last": "2025-12-31",
+   "eligible": {
+    "median": 495.0,
+    "p5": 457.0,
+    "p95": 534.6,
+    "min": 449.0,
+    "max": 557.0,
+    "mean": 494.5261044176707
+   },
+   "signals": {
+    "median": 23.0,
+    "p5": 2.0,
+    "p95": 54.0,
+    "min": 0.0,
+    "max": 93.0,
+    "mean": 24.65863453815261
+   },
+   "proposed": {
+    "median": 23.0,
+    "p5": 2.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 17.329317269076306
+   },
+   "sessions_with_signal": 246,
+   "sessions_with_12": 171,
+   "signal_name_sessions": 6140,
+   "overlap_signals": 4180,
+   "overlap_share": 0.6807817589576547,
+   "proposed_name_sessions": 4315,
+   "overlap_proposed": 3096,
+   "overlap_share_proposed": 0.7174971031286211,
+   "t_elig": {
+    "median": 13.065984699875116,
+    "p5": 8.25226345974952,
+    "p95": 25.26629580007866,
+    "min": 8.000496099703014,
+    "max": 229.04913929989561,
+    "mean": 14.416924061029253
+   },
+   "t_score": {
+    "median": 9.932998499833047,
+    "p5": 4.206118059996515,
+    "p95": 16.797069060057403,
+    "min": 3.709988800343126,
+    "max": 338.89562630001456,
+    "mean": 10.5456989184957
+   }
+  },
+  "2026": {
+   "sessions": 196,
+   "first": "2026-01-01",
+   "last": "2026-10-16",
+   "eligible": {
+    "median": 585.5,
+    "p5": 471.0,
+    "p95": 626.0,
+    "min": 460.0,
+    "max": 635.0,
+    "mean": 561.8724489795918
+   },
+   "signals": {
+    "median": 38.0,
+    "p5": 4.0,
+    "p95": 78.25,
+    "min": 0.0,
+    "max": 112.0,
+    "mean": 37.316326530612244
+   },
+   "proposed": {
+    "median": 25.0,
+    "p5": 4.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 20.505102040816325
+   },
+   "sessions_with_signal": 195,
+   "sessions_with_12": 164,
+   "signal_name_sessions": 7314,
+   "overlap_signals": 5656,
+   "overlap_share": 0.7733114574788078,
+   "proposed_name_sessions": 4019,
+   "overlap_proposed": 3302,
+   "overlap_share_proposed": 0.8215974122916149,
+   "t_elig": {
+    "median": 6.313556950073689,
+    "p5": 5.142755250097252,
+    "p95": 8.538595724734478,
+    "min": 4.640918499790132,
+    "max": 11.248919700272381,
+    "mean": 6.314527840308408
+   },
+   "t_score": {
+    "median": 3.4038115001749247,
+    "p5": 3.0576581498607993,
+    "p95": 4.225061874720268,
+    "min": 2.62029410013929,
+    "max": 6.918785699643195,
+    "mean": 3.5394413311138977
+   }
+  },
+  "ALL (sample)": {
+   "sessions": 2674,
+   "first": "2016-01-01",
+   "last": "2026-10-16",
+   "eligible": {
+    "median": 275.0,
+    "p5": 144.0,
+    "p95": 593.0,
+    "min": 123.0,
+    "max": 635.0,
+    "mean": 316.86163051608077
+   },
+   "signals": {
+    "median": 17.0,
+    "p5": 1.0,
+    "p95": 71.0,
+    "min": 0.0,
+    "max": 139.0,
+    "mean": 23.836948391922213
+   },
+   "proposed": {
+    "median": 17.0,
+    "p5": 1.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 15.393418100224382
+   },
+   "sessions_with_signal": 2568,
+   "sessions_with_12": 1624,
+   "signal_name_sessions": 63740,
+   "overlap_signals": 53500,
+   "overlap_share": 0.8393473486037025,
+   "proposed_name_sessions": 41162,
+   "overlap_proposed": 34650,
+   "overlap_share_proposed": 0.8417958311063602,
+   "t_elig": {
+    "median": 11.931177699705586,
+    "p5": 3.912299049925059,
+    "p95": 22.831164784939027,
+    "min": 2.800129400100559,
+    "max": 504.3702447996475,
+    "mean": 13.054571971501709
+   },
+   "t_score": {
+    "median": 4.360337249934673,
+    "p5": 1.0422051498899236,
+    "p95": 14.473519889940507,
+    "min": 0.5455326000228524,
+    "max": 842.5686844000593,
+    "mean": 6.929674107741415
+   }
+  }
+ },
+ "regimes": {
+  "above": {
+   "sessions": 1920,
+   "share_of_sessions": 0.7180254300673149,
+   "signal_name_sessions": 53324,
+   "share_of_signals": 0.8365861311578286,
+   "signals_per_session": {
+    "median": 22.0,
+    "p5": 2.0,
+    "p95": 76.0,
+    "min": 0.0,
+    "max": 139.0,
+    "mean": 27.772916666666667
+   },
+   "proposed_per_session": {
+    "median": 22.0,
+    "p5": 2.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 17.6984375
+   },
+   "sessions_with_signal": 1894,
+   "sessions_with_12": 1381,
+   "overlap_share": 0.8558997824619309
+  },
+  "below": {
+   "sessions": 591,
+   "share_of_sessions": 0.22101720269259537,
+   "signal_name_sessions": 8491,
+   "share_of_signals": 0.13321305302792594,
+   "signals_per_session": {
+    "median": 5.0,
+    "p5": 0.0,
+    "p95": 62.0,
+    "min": 0.0,
+    "max": 112.0,
+    "mean": 14.367174280879865
+   },
+   "proposed_per_session": {
+    "median": 5.0,
+    "p5": 0.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 9.253807106598984
+   },
+   "sessions_with_signal": 526,
+   "sessions_with_12": 181,
+   "overlap_share": 0.767754092568602
+  },
+  "n/a": {
+   "sessions": 163,
+   "share_of_sessions": 0.06095736724008975,
+   "signal_name_sessions": 1925,
+   "share_of_signals": 0.03020081581424537,
+   "signals_per_session": {
+    "median": 9.0,
+    "p5": 0.0,
+    "p95": 37.900000000000006,
+    "min": 0.0,
+    "max": 46.0,
+    "mean": 11.809815950920246
+   },
+   "proposed_per_session": {
+    "median": 9.0,
+    "p5": 0.0,
+    "p95": 25.0,
+    "min": 0.0,
+    "max": 25.0,
+    "mean": 10.503067484662576
+   },
+   "sessions_with_signal": 148,
+   "sessions_with_12": 62,
+   "overlap_share": 0.6966233766233766
+  }
+ },
+ "signals_by_year_regime": {
+  "2016 above": {
+   "sessions": 55,
+   "signal_name_sessions": 817
+  },
+  "2016 below": {
+   "sessions": 29,
+   "signal_name_sessions": 47
+  },
+  "2016 n/a": {
+   "sessions": 163,
+   "signal_name_sessions": 1925
+  },
+  "2017 above": {
+   "sessions": 242,
+   "signal_name_sessions": 4653
+  },
+  "2017 below": {
+   "sessions": 6,
+   "signal_name_sessions": 19
+  },
+  "2018 above": {
+   "sessions": 194,
+   "signal_name_sessions": 2085
+  },
+  "2018 below": {
+   "sessions": 52,
+   "signal_name_sessions": 95
+  },
+  "2019 above": {
+   "sessions": 185,
+   "signal_name_sessions": 1981
+  },
+  "2019 below": {
+   "sessions": 60,
+   "signal_name_sessions": 225
+  },
+  "2020 above": {
+   "sessions": 157,
+   "signal_name_sessions": 3676
+  },
+  "2020 below": {
+   "sessions": 95,
+   "signal_name_sessions": 436
+  },
+  "2021 above": {
+   "sessions": 248,
+   "signal_name_sessions": 7945
+  },
+  "2022 above": {
+   "sessions": 160,
+   "signal_name_sessions": 3400
+  },
+  "2022 below": {
+   "sessions": 88,
+   "signal_name_sessions": 611
+  },
+  "2023 above": {
+   "sessions": 228,
+   "signal_name_sessions": 10211
+  },
+  "2023 below": {
+   "sessions": 18,
+   "signal_name_sessions": 116
+  },
+  "2024 above": {
+   "sessions": 238,
+   "signal_name_sessions": 11928
+  },
+  "2024 below": {
+   "sessions": 11,
+   "signal_name_sessions": 116
+  },
+  "2025 above": {
+   "sessions": 176,
+   "signal_name_sessions": 5611
+  },
+  "2025 below": {
+   "sessions": 73,
+   "signal_name_sessions": 529
+  },
+  "2026 above": {
+   "sessions": 37,
+   "signal_name_sessions": 1017
+  },
+  "2026 below": {
+   "sessions": 159,
+   "signal_name_sessions": 6297
+  }
+ },
+ "occupancy_models": {
+  "hold 20 / no sector cap": {
+   "hold": 20,
+   "variant": "no sector cap",
+   "entries": 1503,
+   "per_month": 11.80366492146597,
+   "entries_by_signal_regime": {
+    "n/a": 93,
+    "above": 1091,
+    "below": 319
+   },
+   "entries_by_year": {
+    "2016": 134,
+    "2017": 144,
+    "2018": 133,
+    "2019": 140,
+    "2020": 135,
+    "2021": 142,
+    "2022": 140,
+    "2023": 139,
+    "2024": 144,
+    "2025": 142,
+    "2026": 110
+   },
+   "sessions_full": 1556,
+   "mean_open": 11.210919970082275,
+   "distinct_symbols": 341,
+   "top_symbol": [
+    "ICICIBANK",
+    33
+   ],
+   "sector_blocks_total": 0,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 20 / sector cap 15%": {
+   "hold": 20,
+   "variant": "sector cap 15%",
+   "entries": 1481,
+   "per_month": 11.63089005235602,
+   "entries_by_signal_regime": {
+    "n/a": 91,
+    "above": 1085,
+    "below": 305
+   },
+   "entries_by_year": {
+    "2016": 130,
+    "2017": 144,
+    "2018": 128,
+    "2019": 135,
+    "2020": 132,
+    "2021": 140,
+    "2022": 138,
+    "2023": 140,
+    "2024": 143,
+    "2025": 142,
+    "2026": 109
+   },
+   "sessions_full": 1439,
+   "mean_open": 11.049364248317127,
+   "distinct_symbols": 354,
+   "top_symbol": [
+    "BHARTIARTL",
+    30
+   ],
+   "sector_blocks_total": 1481,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 40 / no sector cap": {
+   "hold": 40,
+   "variant": "no sector cap",
+   "entries": 781,
+   "per_month": 6.133507853403142,
+   "entries_by_signal_regime": {
+    "n/a": 48,
+    "above": 554,
+    "below": 179
+   },
+   "entries_by_year": {
+    "2016": 72,
+    "2017": 73,
+    "2018": 72,
+    "2019": 71,
+    "2020": 74,
+    "2021": 73,
+    "2022": 73,
+    "2023": 72,
+    "2024": 72,
+    "2025": 72,
+    "2026": 57
+   },
+   "sessions_full": 2139,
+   "mean_open": 11.617053103964098,
+   "distinct_symbols": 265,
+   "top_symbol": [
+    "ICICIBANK",
+    25
+   ],
+   "sector_blocks_total": 0,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 40 / sector cap 15%": {
+   "hold": 40,
+   "variant": "sector cap 15%",
+   "entries": 775,
+   "per_month": 6.086387434554974,
+   "entries_by_signal_regime": {
+    "n/a": 48,
+    "above": 556,
+    "below": 171
+   },
+   "entries_by_year": {
+    "2016": 72,
+    "2017": 72,
+    "2018": 72,
+    "2019": 69,
+    "2020": 73,
+    "2021": 72,
+    "2022": 72,
+    "2023": 72,
+    "2024": 73,
+    "2025": 72,
+    "2026": 56
+   },
+   "sessions_full": 1955,
+   "mean_open": 11.527673896783844,
+   "distinct_symbols": 266,
+   "top_symbol": [
+    "RELIANCE",
+    18
+   ],
+   "sector_blocks_total": 747,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 60 / no sector cap": {
+   "hold": 60,
+   "variant": "no sector cap",
+   "entries": 528,
+   "per_month": 4.146596858638744,
+   "entries_by_signal_regime": {
+    "n/a": 36,
+    "above": 368,
+    "below": 124
+   },
+   "entries_by_year": {
+    "2016": 49,
+    "2017": 53,
+    "2018": 49,
+    "2019": 48,
+    "2020": 51,
+    "2021": 50,
+    "2022": 48,
+    "2023": 48,
+    "2024": 48,
+    "2025": 48,
+    "2026": 36
+   },
+   "sessions_full": 2342,
+   "mean_open": 11.721017202692595,
+   "distinct_symbols": 245,
+   "top_symbol": [
+    "INFY",
+    11
+   ],
+   "sector_blocks_total": 0,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 60 / sector cap 15%": {
+   "hold": 60,
+   "variant": "sector cap 15%",
+   "entries": 527,
+   "per_month": 4.138743455497383,
+   "entries_by_signal_regime": {
+    "n/a": 36,
+    "above": 362,
+    "below": 129
+   },
+   "entries_by_year": {
+    "2016": 49,
+    "2017": 53,
+    "2018": 45,
+    "2019": 48,
+    "2020": 48,
+    "2021": 51,
+    "2022": 48,
+    "2023": 48,
+    "2024": 50,
+    "2025": 50,
+    "2026": 37
+   },
+   "sessions_full": 2157,
+   "mean_open": 11.68100224382947,
+   "distinct_symbols": 228,
+   "top_symbol": [
+    "INFY",
+    15
+   ],
+   "sector_blocks_total": 507,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 100 / no sector cap": {
+   "hold": 100,
+   "variant": "no sector cap",
+   "entries": 324,
+   "per_month": 2.5445026178010473,
+   "entries_by_signal_regime": {
+    "n/a": 24,
+    "above": 210,
+    "below": 90
+   },
+   "entries_by_year": {
+    "2016": 36,
+    "2017": 24,
+    "2018": 36,
+    "2019": 24,
+    "2020": 36,
+    "2021": 24,
+    "2022": 36,
+    "2023": 24,
+    "2024": 29,
+    "2025": 31,
+    "2026": 24
+   },
+   "sessions_full": 2507,
+   "mean_open": 11.842557965594615,
+   "distinct_symbols": 176,
+   "top_symbol": [
+    "KOTAKBANK",
+    6
+   ],
+   "sector_blocks_total": 0,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 100 / sector cap 15%": {
+   "hold": 100,
+   "variant": "sector cap 15%",
+   "entries": 324,
+   "per_month": 2.5445026178010473,
+   "entries_by_signal_regime": {
+    "n/a": 24,
+    "above": 217,
+    "below": 83
+   },
+   "entries_by_year": {
+    "2016": 36,
+    "2017": 24,
+    "2018": 36,
+    "2019": 24,
+    "2020": 36,
+    "2021": 24,
+    "2022": 34,
+    "2023": 26,
+    "2024": 29,
+    "2025": 31,
+    "2026": 24
+   },
+   "sessions_full": 2460,
+   "mean_open": 11.837696335078535,
+   "distinct_symbols": 187,
+   "top_symbol": [
+    "MARUTI",
+    5
+   ],
+   "sector_blocks_total": 309,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 150 / no sector cap": {
+   "hold": 150,
+   "variant": "no sector cap",
+   "entries": 216,
+   "per_month": 1.6963350785340314,
+   "entries_by_signal_regime": {
+    "n/a": 24,
+    "above": 135,
+    "below": 57
+   },
+   "entries_by_year": {
+    "2016": 24,
+    "2017": 24,
+    "2018": 12,
+    "2019": 24,
+    "2020": 24,
+    "2021": 12,
+    "2022": 24,
+    "2023": 23,
+    "2024": 13,
+    "2025": 24,
+    "2026": 12
+   },
+   "sessions_full": 2533,
+   "mean_open": 11.88070306656694,
+   "distinct_symbols": 139,
+   "top_symbol": [
+    "BAJFINANCE",
+    7
+   ],
+   "sector_blocks_total": 0,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 150 / sector cap 15%": {
+   "hold": 150,
+   "variant": "sector cap 15%",
+   "entries": 216,
+   "per_month": 1.6963350785340314,
+   "entries_by_signal_regime": {
+    "n/a": 24,
+    "above": 138,
+    "below": 54
+   },
+   "entries_by_year": {
+    "2016": 24,
+    "2017": 24,
+    "2018": 12,
+    "2019": 24,
+    "2020": 23,
+    "2021": 13,
+    "2022": 24,
+    "2023": 20,
+    "2024": 16,
+    "2025": 24,
+    "2026": 12
+   },
+   "sessions_full": 2492,
+   "mean_open": 11.860508601346298,
+   "distinct_symbols": 139,
+   "top_symbol": [
+    "INFY",
+    6
+   ],
+   "sector_blocks_total": 208,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 250 / no sector cap": {
+   "hold": 250,
+   "variant": "no sector cap",
+   "entries": 132,
+   "per_month": 1.036649214659686,
+   "entries_by_signal_regime": {
+    "n/a": 12,
+    "below": 20,
+    "above": 100
+   },
+   "entries_by_year": {
+    "2016": 12,
+    "2017": 12,
+    "2018": 12,
+    "2019": 12,
+    "2020": 12,
+    "2021": 12,
+    "2022": 12,
+    "2023": 12,
+    "2024": 12,
+    "2025": 12,
+    "2026": 12
+   },
+   "sessions_full": 2611,
+   "mean_open": 11.930067314884068,
+   "distinct_symbols": 108,
+   "top_symbol": [
+    "KOTAKBANK",
+    3
+   ],
+   "sector_blocks_total": 0,
+   "unrealised_signals_on_last_session": 0
+  },
+  "hold 250 / sector cap 15%": {
+   "hold": 250,
+   "variant": "sector cap 15%",
+   "entries": 132,
+   "per_month": 1.036649214659686,
+   "entries_by_signal_regime": {
+    "n/a": 12,
+    "below": 24,
+    "above": 96
+   },
+   "entries_by_year": {
+    "2016": 12,
+    "2017": 12,
+    "2018": 12,
+    "2019": 12,
+    "2020": 12,
+    "2021": 12,
+    "2022": 12,
+    "2023": 12,
+    "2024": 12,
+    "2025": 12,
+    "2026": 12
+   },
+   "sessions_full": 2587,
+   "mean_open": 11.915856394913986,
+   "distinct_symbols": 107,
+   "top_symbol": [
+    "KOTAKBANK",
+    3
+   ],
+   "sector_blocks_total": 91,
+   "unrealised_signals_on_last_session": 0
+  }
+ },
+ "distinct_names_ever_signalled": 1250,
+ "run_seconds": 56456.11452746391,
+ "finsight_db": {
+  "parts": [
+   {
+    "before": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "after": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "unchanged": true
+   },
+   {
+    "before": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "after": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "unchanged": true
+   },
+   {
+    "before": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "after": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "unchanged": true
+   },
+   {
+    "before": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "after": {
+     "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+     "size": 3432767488,
+     "mtime_ns": 1794121682892612300,
+     "mtime_iso": "2026-11-08T12:38:02.892612",
+     "sha256": null
+    },
+    "unchanged": true
+   }
+  ],
+  "unchanged": true
+ }
+}
