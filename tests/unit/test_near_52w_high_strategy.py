@@ -19,6 +19,7 @@ from stockbot.live.runner import Book, ModeError, strategies_for_mode
 from stockbot.strategies.near_52w_high import SPEC, NearHighStrategy, register
 from stockbot.strategies.registry import StrategyRegistry, default_registry
 from stockbot.strategies.spec import SpecError, StrategySpec
+from tests.fixtures import boundaries as B
 from tests.fixtures import mini_lake
 from tests.fixtures import near_high_series_lake as L
 from tests.fixtures.dummies import ScriptedStrategy, make_spec
@@ -248,8 +249,8 @@ def test_the_strategy_package_imports_only_what_a_strategy_may_import():
                     assert m.startswith(("stockbot.strategies.base", "stockbot.strategies.spec", "stockbot.strategies.near_52w_high")), (f.name, m)
                 else:
                     assert top in allowed_std, (f.name, m)
-    other = [d.name for d in (ROOT / "stockbot" / "strategies").iterdir() if d.is_dir() and d.name not in ("near_52w_high", "__pycache__")]
-    assert other == []
+    other = [d.name for d in (ROOT / "stockbot" / "strategies").iterdir() if d.is_dir() and d.name not in B.APPROVED_STRATEGY_IDS and d.name != "__pycache__"]
+    assert other == []                                                       # only folders on the owner's allow-list may exist
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------------ through the engine
