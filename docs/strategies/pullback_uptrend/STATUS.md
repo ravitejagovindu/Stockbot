@@ -1,15 +1,17 @@
 # pullback_uptrend: status
 
-Last updated: 2026-11-12 (stage 1 in progress: strategy and tests done; real-data counts running).
+Last updated: 2026-11-12 (stage 1 done; waiting for the owner).
 
 ## Done
 - Branch `pullback_uptrend` from origin/master 055c703 (worktree `F:\Projects\Ravi\StockBot_wt_pullback`, because the shared checkout was switched to another branch by a parallel session; `STOCKBOT_DB` points at the one `finsight.db`).
 - 00c09f8: strategy package `stockbot/strategies/pullback_uptrend/` (`SPEC`, `PullbackUptrendStrategy`, `rsi_wilder`, `order_signals`), study script `scripts/signal_count_pullback_uptrend.py`, `tests/unit/test_pullback_uptrend_strategy.py` (28 tests) and `tests/unit/test_signal_count_pullback_uptrend.py` (4 tests), `BRIEF.md`.
 - `finsight.db` sha256 re-checked 2026-11-12 before any work: `dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752` (matches).
 
+- c369b3d: real-data counts (`counts/`), draft `PREREGISTRATION.md`, status. Report: `Claude_Docs/PULLBACK_UPTREND_STAGE1_REPORT.md`.
+- Tests: strategy 28 + study 4 passed; G1 911 passed / 8 skipped / 1 failed; full G2 1040 passed / 1 failed; G3 2 passed. The single failure is `test_near_52w_high_strategy.py::test_the_strategy_package_imports_only_what_a_strategy_may_import` (asserts no other strategy folder exists); not edited. finsight.db sha256 unchanged.
+
 ## Open items
-- Real-data counts run in three date segments (2016-01-01..2018-12-31, 2019..2022, 2023-01-01..2026-10-16). The machine is shared with other sessions, so it is slow.
-- Then: assemble the report, draft `PREREGISTRATION.md`, full G1, full G2, G3, push, write `Claude_Docs/PULLBACK_UPTREND_STAGE1_REPORT.md`.
+- Owner decisions listed in the report (failing near_52w_high test, window start, expected_trade_rate 31.7 proposed, smallest edge, power figure, decision rule).
 
 ## Decisions made (dated)
 - 2026-11-12: RSI uses the existing `stockbot.data.indicators.rma` (Wilder, seeded with the simple mean of the first `period` values), applied to the symbol's last 250 adjusted closes. avg_loss = 0 gives RSI 100 (50 if avg_gain is also 0). No library RSI exists; `rsi_wilder` is tested against hand-computed values and an independent recursion.
@@ -20,7 +22,7 @@ Last updated: 2026-11-12 (stage 1 in progress: strategy and tests done; real-dat
 - 2026-11-12: strategy-owned study script lives in `scripts/` (name ends `_pullback_uptrend`, so the guide tests treat it as strategy-owned); no shared file or guide edited.
 
 ## Next step
-Finish the counts run, assemble, write the pre-registration draft and the report.
+None until the owner replies. Nothing is registered; status `research`.
 
 ## Limitations
 - Sector map: unmapped symbols share one UNKNOWN sector which the shared 15% cap limits to one position at a time at this position size (12.5% of equity each).
