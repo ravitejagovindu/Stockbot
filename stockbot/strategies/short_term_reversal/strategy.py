@@ -31,7 +31,7 @@ SPEC = StrategySpec(
     status="research",
     prereg_ref=None,                    # set in the registration commit, as for near_52w_high (the config hash covers it)
     validation_ref=None,
-    expected_trade_rate=None,           # Stage 1 counts give the estimate (docs/strategies/short_term_reversal/STATUS.md); the owner confirms it
+    expected_trade_rate=23.0,           # trades per month: the Stage 1 `shared` occupancy model (8 cash-bound slots, one position per sector), 2016-2026 = 23.02; the owner confirms it
     smallest_edge_of_interest=0.15,     # R per trade, net of costs (owner's number)
 )
 
