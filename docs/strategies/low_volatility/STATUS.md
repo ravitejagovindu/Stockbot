@@ -10,7 +10,7 @@ Last updated: 2026-11-12 (stage 1 done; waiting for the owner's decisions below)
 - Draft `PREREGISTRATION.md` (NOT registered), `power_calc.py` and `PREREGISTRATION_power_output.txt`.
 - finsight.db: sha256 `dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752`, size 3,432,767,488, mtime 2026-11-08 12:38:02.892612 +0530, identical before and after the study.
 - Spec hash today (`expected_trade_rate`, `smallest_edge_of_interest`, `prereg_ref` unset): `399ac830d3335b992a400361c2464b4af9de966164dafcce366ae62be69e2c76`.
-- Tests: see the report (G1, G2, G3 counts and the one failure that is not this branch's).
+- Tests: G1 902 passed / 8 skipped / 1 failed; full folder with the real database 1,031 passed / 1 failed; G3 2 passed. The one failure is the stale `test_near_52w_high_strategy.py` assertion (open item 6), the same in both runs. finsight.db unchanged after.
 
 ## Result in one paragraph
 The rule trades, but not as written on the label. At 1% risk and a 10% stop each position is 10% of equity, so the shared 15% sector cap allows one position per sector. The top 25 sit in a median of 9 distinct sectors (6 to 12), so a median of 16 of the 25 proposals are blocked by the cap and at most about 9 positions fit. Separately, `fixed_hold_21` exits at the open of session 22 while a calendar month has 17 to 23 sessions, so in 74% of months the previous cohort is still open at the next signal and that signal buys little or nothing. Modelled entries: 697 in 130 months, 5.4 a month (about 7 in a month that follows an exit, 0 to 2 in a month that does not), 7 signals with no entry at all. The counts do not make the rule impossible; they change what it is. Not changed, per the owner's instruction.
