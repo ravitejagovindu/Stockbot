@@ -36,7 +36,7 @@ import numpy as np
 from stockbot.data.adjustments import action_factor
 from stockbot.data.asof import AsOfView
 from stockbot.data.lake import open_lake
-from stockbot.data.sector_map import sector_for
+from stockbot.data.sector_map import is_mapped, sector_for
 
 # ---- the rule's numbers (fixed; see the module docstring) -----------------------------------------------------------------------------------------
 WINDOW = 252            # bars (and calendar sessions) of the look-back
@@ -138,7 +138,7 @@ class Occupancy:
     time on sessions e .. e+hold-1 and its market exit executes at the open of e+hold (so ``hold`` closes are held). Engine order (fills, exits, proposals): the slot is free
     for a signal at the close of e+hold, the next entry is at the open of e+hold+1. A symbol already held is skipped.
     With ``pos_pct`` and ``sector_cap_pct`` given, a candidate whose sector value after the trade would exceed the cap is blocked (counted) and the next one considered,
-    as the shared arbitration does; unmapped symbols share the UNKNOWN sector. No stops, no 15% risk cap, no costs, no gap-up cap, no cash cap, no missing-bar blocks."""
+    as the shared arbitration does; an unmapped symbol is its own sector (UNMAPPED:<symbol>), so unmapped names are never pooled. No stops, no 15% risk cap, no costs, no gap-up cap, no cash cap, no missing-bar blocks."""
 
     def __init__(self, n_sessions: int, max_positions: int, hold: int = HOLD_SESSIONS, pos_pct: Optional[float] = None, sector_cap_pct: Optional[float] = None):
         self.n, self.cap, self.hold = n_sessions, max_positions, hold
@@ -303,10 +303,10 @@ def _concentration(ents: list) -> Optional[dict]:
     if not ents:
         return None
     c = Counter(e["symbol"] for e in ents)
-    sec = Counter(sector_for(e["symbol"]) for e in ents)
+    sec = Counter(sector_for(e["symbol"]) if is_mapped(e["symbol"]) else "UNMAPPED (each its own sector)" for e in ents)        # one report row for all unmapped names
     return dict(entries=len(ents), distinct_symbols=len(c), top_symbol=c.most_common(1)[0][0], top_symbol_share=c.most_common(1)[0][1] / len(ents),
                 top10_share=sum(n for _, n in c.most_common(10)) / len(ents), sector_entries=dict(sec.most_common()),
-                symbols_without_sector=sum(1 for s in c if sector_for(s) == "UNKNOWN"), entries_without_sector=sum(n for s, n in c.items() if sector_for(s) == "UNKNOWN"))
+                symbols_without_sector=sum(1 for s in c if not is_mapped(s)), entries_without_sector=sum(n for s, n in c.items() if not is_mapped(s)))
 
 
 def summarise(res: dict, measured: Optional[date] = None) -> dict:
