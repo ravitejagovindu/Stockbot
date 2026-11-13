@@ -84,7 +84,7 @@ Extra rules in the same test: no strategy imports another strategy (`base`, `reg
 | module | purpose |
 |---|---|
 | `shared.py` | Typed, validated shared configuration (dataclasses per section). `load_shared_config()` reads `shared.yaml`. |
-| `shared.yaml` | The one configuration file: runtime mode, execution assumptions, costs, portfolio risk, universe rules, validation gates, paper criteria. |
+| `shared.yaml` | The one configuration file: runtime mode, execution assumptions, costs, portfolio risk, universe rules, validation gates, reporting rates, paper criteria. |
 | `paths.py` | The only place that knows where files live: the lake, the state database, the ticket folder. |
 | `mode.py` | `current_mode(config)`: resolves PAPER or LIVE from a config dictionary. |
 | `dict_view.py` | `config_dict()`: the shared config as the plain nested dictionary that older code (ingestion, quality checker, API routers, paper report) was written for. |
@@ -103,7 +103,7 @@ Extra rules in the same test: no strategy imports another strategy (`base`, `reg
 | `asof.py` | `AsOfView`: the point-in-time window onto the lake. The only way code above `data` reads market data. |
 | `adjustments.py` | Pure functions that adjust raw prices for splits and bonuses, and compute ADTV. Never touches the database. |
 | `indicators.py` | Pure indicator functions: `sma`, `rma`, `atr`, `donchian_low`, `donchian_high`. |
-| `sector_map.py` | `sector_for(symbol)`: sector lookup from `data/reference/sector_map.csv`. |
+| `sector_map.py` | The one sector rule for backtest, paper and live: `sector_for(symbol)` reads `data/reference/sector_map.csv`; a symbol not in it is its own sector, `UNMAPPED:<SYMBOL>` (never a shared bucket). `is_mapped(symbol)`; `SectorLookup`, the mapping every path hands to `EventData(sectors=...)`. |
 
 Subpackage `stockbot.data.db` (the older, ORM layer used by the dashboard side; writes to `finsight.db`):
 
@@ -283,13 +283,14 @@ Subpackage `stockbot.live.api` (FastAPI routers for the dashboard; they still us
 | `f9_report.py` | Applies the pre-registered decision rule to the power-study results and writes `docs/F9_POWER_RESULTS.md`. |
 | `prereg_lock.py` | Hash lock for the pre-registration and the hash-chained ledger primitives. |
 | `trade_metrics.py` | Trade and portfolio performance reporting (reads the older `trade_analytics_log`). |
+| `benchmark_alpha.py` | The B2 benchmark and alpha arithmetic in one place: `benchmark_returns`, `cash_credited_equity` (the strategy's idle cash earns `risk_free_pct` after the fact; no feedback into sizing), `alpha_pct`, `alpha_report` (raw, cash-credited = the gate value, illustrative after-tax), `implied_annual_return_pct`. |
 
 Subpackage `stockbot.validation.ledger` (`__init__.py` holds the writers; the records are in `stockbot/validation/ledger/records/`): `trial_ledger.csv` (hash-chained), `trial_ledger_exploratory.csv` (a pinned sha256, never a chain), `pre_registered_configs.yaml`, and a family ledger created by the first `register_family` call.
 
 - **Reads:** backtest results, trade tables, the ledger records. **Writes:** ledger rows (append-only, through `prereg_lock.append_row`), `docs/F9_POWER_RESULTS.md`. **Called by:** research scripts, `stockbot/live/paper_report.py`, tests.
 - **Imports:** config, data, risk, backtest, engine, universe; never live.
 - **Main API:** `register(*, ledger, yaml_path, gate_params, candidate_ids, git_sha, reason=None, now=None)`; `register_family(*, path, family_id, members, gate_params, git_sha, reason=None, now=None)`; `record_family_results(*, path, family_id, results, git_sha, reason=None, now=None)`; `record_exploratory(...)`; `verify(path=TRIAL_LEDGER) -> LedgerStatus`; `draw_matched_random(actual, *, sessions, view_at, shared_config, policy, equity, draws_per_trade, seed, pool_filter=None, asm_ranges=None) -> DataFrame`; `paired_statistics(actual_df, rand_df, *, seed) -> dict`; `WestfallYoungMaxTBootstrap(weekly_diffs, num_replications=10000, fwer_alpha=0.05, seed=42, block_size=4, sensitivity_block_sizes=None)` with `.run()` and `.run_sensitivity()`.
-- **Honest note:** the validation gates in `shared.yaml` (`validation_gates`) are configuration values. No module in `stockbot/` compares a run against them. One research script does it for one strategy: `scripts/evaluate_validation_gates_near_52w_high.py` (section D). The backtest drawdown gate was changed from 15.0 to 20.0 on 2026-11-11 (reviewed shared change, owner); `paper_criteria.max_drawdown_pct` stays 12.0.
+- **Honest note:** the validation gates in `shared.yaml` (`validation_gates`) are configuration values. No module in `stockbot/` compares a run against them. One research script does it for one strategy: `scripts/evaluate_validation_gates_near_52w_high.py` (section D), which takes the alpha arithmetic from `benchmark_alpha.py`. The backtest drawdown gate was changed from 15.0 to 20.0 on 2026-11-11 (reviewed shared change, owner); `paper_criteria.max_drawdown_pct` stays 12.0. The alpha gate is `min_alpha_pct` (renamed from `min_alpha_after_tax_pct`), 0.0: PRE-TAX alpha against the matched Nifty benchmark with the strategy's idle cash credited at the risk-free rate; after-tax figures at `reporting.after_tax_rates_pct` are illustrative and never gate.
 
 ### C.10 `stockbot.data_checks`
 
@@ -333,9 +334,9 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/build_data_guide_html.py` | Rebuilds `docs/guides/data_guide.html` from its JSON, the catalogue export and the template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.data_guide_html` |
 | `scripts/build_guide_html.py` | Rebuilds `docs/guides/codebase_guide.html` from its JSON and template (`--stamp` first records today's date and the git commit). | manual | `stockbot.data_checks.guide_html` |
 | `scripts/signal_count_near_high.py` | Counts-only signal study of the near-52-week-high rule (read-only; hashes `finsight.db` before and after). Injects the shared eligibility rule. | manual | `stockbot.data_checks.near_high_signal_count` |
-| `scripts/research_near_52w_high.py` | Research wiring: one `run_backtest` of `near_52w_high` with the shared config, the library policy its spec names and the live sector lookup. Prints the plan; runs only with `--execute`; no sweep. | manual | `stockbot.backtest.runner`, `stockbot.strategies.near_52w_high` |
-| `scripts/benchmark_nifty_matched_near_52w_high.py` | B2 of the near_52w_high validation: the Nifty matched to the strategy's daily invested share with the risk-free rate on the rest, and the annualised alpha. Reads only the `NIFTY50_INDEX` closes inside the run's window. | manual | `stockbot.data` (view) |
-| `scripts/evaluate_validation_gates_near_52w_high.py` | Computes every `validation_gates` value for one run and prints it beside the shared gate value (point estimates, 95% block-bootstrap intervals, descriptive sub-periods). | manual | `stockbot.config.shared`, `stockbot.risk.r_metrics` |
+| `scripts/research_near_52w_high.py` | Research wiring: one `run_backtest` of `near_52w_high` with the shared config, the library policy its spec names and the shared sector lookup. Prints the plan; runs only with `--execute`; no sweep. | manual | `stockbot.backtest.runner`, `stockbot.strategies.near_52w_high` |
+| `scripts/benchmark_nifty_matched_near_52w_high.py` | B2 of the near_52w_high validation: the Nifty matched to the strategy's daily invested share with the risk-free rate on the rest, and the annualised alpha raw and cash-credited (thin wrapper over `stockbot/validation/benchmark_alpha.py`). Reads only the `NIFTY50_INDEX` closes inside the run's window. | manual | `stockbot.data` (view), `stockbot.validation` |
+| `scripts/evaluate_validation_gates_near_52w_high.py` | Computes every `validation_gates` value for one run and prints it beside the shared gate value (point estimates, 95% block-bootstrap intervals, descriptive sub-periods), the raw and cash-credited alpha, illustrative after-tax alpha and the reported implied annual return. | manual | `stockbot.config.shared`, `stockbot.risk.r_metrics`, `stockbot.validation.benchmark_alpha` |
 | `scripts/baseline_matched_random_near_52w_high.py` | B1: 20 matched random draws per actual trade through `draw_matched_random` and the library exit; forward reads capped; writes the actual trades and the draws as CSV. Read-only on the lake. | manual | `stockbot.validation.random_baseline` |
 | `scripts/validate_near_52w_high.py` | T1 (Max-T on entry-month sums, blocks 2 and 3), T2 (paired statistics, reported only), T3 (placebo size check) and the descriptive sub-periods. Reads CSV and JSON only; opens no database. | manual | `stockbot.validation.max_t_bootstrap`, `stockbot.validation.paired_stats` |
 | `scripts/validate_family.py` | Joint validation of a family of K strategies: T1 with ONE Westfall-Young Max-T across the K monthly-sum series (blocks 2 and 3, B 10,000, fixed seed, both must be significant), T2, the T3 placebo size check of the joint procedure, and the shared gates per member. Reads CSV and JSON only; opens the lake (index closes, read-only) only with `--lake`. See `docs/strategies/family_batch1/FAMILY.md`. | manual | `stockbot.validation.max_t_bootstrap`, `stockbot.validation.paired_stats`, `scripts/validate_near_52w_high.py` |
@@ -493,7 +494,8 @@ All shared settings are in **`stockbot/config/shared.yaml`**, loaded and validat
 | `exclusions` | how many days ahead a results meeting counts as known |
 | `live` | days before results at which an alert would apply (the alert itself is not built, pre-live item 8) |
 | `backtest` | initial equity and the named date windows with roles TUNE and TEST |
-| `validation_gates` | the pass criteria for a strategy's backtest (drawdown, alpha, expectancy, profit factor, minimum trades, tax, risk-free rate) |
+| `validation_gates` | the pass criteria for a strategy's backtest (drawdown, pre-tax cash-credited alpha `min_alpha_pct`, expectancy, profit factor, minimum trades, tax, risk-free rate) |
+| `reporting` | reporting only, never a gate and outside the gate hash: `after_tax_rates_pct` for the illustrative after-tax alpha lines |
 | `paper_criteria` | the acceptance criteria for the paper run |
 
 **What a strategy may set:** its own `params`, its exit policy, and (only upward) `min_adtv_cr` and `min_listing_age_trading_days`. **What it may not:** anything in the table above. `StrategySpec` validation rejects a shared section inside `params`, and `tests/unit/test_strategy_spec.py` checks that the list of protected sections equals the one in `shared.py`. Known differences between the shared values and the mandate (12 positions and 15% total risk versus 10 and 10) are listed in `docs/restructure/PRE_LIVE_LIST.md`.

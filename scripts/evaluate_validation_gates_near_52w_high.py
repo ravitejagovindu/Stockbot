@@ -6,9 +6,12 @@ Inputs: the run directory written by scripts/research_near_52w_high.py (manifest
 run's window (the only price read from the lake; see scripts/benchmark_nifty_matched_near_52w_high.py). Gate values are read from the shared config at run time, never copied here.
 
 Gates (point estimates, as registered): min_trades (closed, usable trades >= value); min_expectancy_r (mean net R per usable trade >= value); min_profit_factor (sum of winning net P&L /
-sum of losing net P&L >= value); max_drawdown_pct (largest peak-to-trough fall of the daily equity curve <= value); min_alpha_after_tax_pct (annualised alpha against the B2 benchmark,
-after the shared tax rate >= value). A trade is usable unless its exit reason is END_OF_WINDOW or it is flagged excluded_ca. Intervals (95%, circular block bootstrap over entry months, 3-month
+sum of losing net P&L >= value); max_drawdown_pct (largest peak-to-trough fall of the daily equity curve <= value); min_alpha_pct (annualised PRE-TAX alpha against the B2 benchmark, with the
+strategy's idle cash credited at risk_free_pct >= value; the credit is applied after the fact and does not feed back into sizing; see stockbot/validation/benchmark_alpha.py). A trade is usable unless its exit reason is END_OF_WINDOW or it is flagged excluded_ca. Intervals (95%, circular block bootstrap over entry months, 3-month
 blocks) are reported beside the point estimates and decide nothing. The two sub-periods are DESCRIPTIVE: values only, no gate comparison.
+
+Reported beside the gates, never gating: the raw alpha (no cash credit) next to the cash-credited one; after-tax alpha at reporting.after_tax_rates_pct ("illustrative, not tax advice"); and the
+implied annual return = trades per year x expectancy_r x max_loss_pct_per_trade, shown beside the matched benchmark CAGR.
 """
 import argparse
 import dataclasses
@@ -24,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import benchmark_nifty_matched_near_52w_high as B2  # noqa: E402
+from stockbot.validation import benchmark_alpha as BA  # noqa: E402
 from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.data.lake import open_lake  # noqa: E402,F401  (module-level name: tests replace it to trace the SQL)
 from stockbot.risk.r_metrics import compute_trade_r  # noqa: E402
@@ -32,7 +36,7 @@ from stockbot.validation.max_t_bootstrap import _block_resample  # noqa: E402
 SEED = 20261111
 BLOCK = 3
 SUBPERIODS = {"2016-2019": (date(2016, 1, 1), date(2019, 12, 31)), "2020-2026": (date(2020, 1, 1), date(2026, 12, 31))}
-GATE_ORDER = ("min_trades", "min_expectancy_r", "min_profit_factor", "max_drawdown_pct", "min_alpha_after_tax_pct")
+GATE_ORDER = ("min_trades", "min_expectancy_r", "min_profit_factor", "max_drawdown_pct", "min_alpha_pct")
 
 
 def load_gates() -> dict:
@@ -97,20 +101,25 @@ def _ci(values: np.ndarray) -> list:
     return [float(np.percentile(values, 2.5)), float(np.percentile(values, 97.5))]
 
 
-def _alpha_for(equity: pd.Series, share: pd.Series, nifty: pd.Series, rf: float, tax: float) -> tuple:
-    b = B2.benchmark_returns(nifty, share, rf)
-    on = set(equity.index)
-    b = b.loc[[d for d in b.index if d in on]]
-    return B2.alpha_pct(equity, b, tax_pct=tax), b
+def _reporting_inputs(max_loss_pct, after_tax_rates_pct) -> tuple:
+    if max_loss_pct is None or after_tax_rates_pct is None:
+        cfg = load_shared_config()
+        max_loss_pct = cfg.portfolio_risk.max_loss_pct_per_trade if max_loss_pct is None else max_loss_pct
+        after_tax_rates_pct = cfg.reporting.after_tax_rates_pct if after_tax_rates_pct is None else after_tax_rates_pct
+    return float(max_loss_pct), tuple(after_tax_rates_pct)
 
 
-def evaluate(run_dir, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed: int = SEED, block: int = BLOCK) -> dict:
+def evaluate(run_dir, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed: int = SEED, block: int = BLOCK, max_loss_pct=None, after_tax_rates_pct=None) -> dict:
+    """Every gate from one run. The alpha gate is the cash-credited, PRE-TAX alpha (the strategy's idle cash earns risk_free_pct after the fact; no feedback into sizing). ``max_loss_pct`` and
+    ``after_tax_rates_pct`` feed the non-gating report lines and default to the shared config (portfolio_risk.max_loss_pct_per_trade, reporting.after_tax_rates_pct)."""
+    max_loss_pct, rates = _reporting_inputs(max_loss_pct, after_tax_rates_pct)
     run = load_run(Path(run_dir))
     equity, (eq2, cash) = run["equity"], run["daily"]
     table = trade_table(run["trades"])
     use = table[table["usable"]]
     share = B2.invested_share(eq2, cash)
-    alpha, bench = _alpha_for(equity, share, nifty, gates["risk_free_pct"], gates["ltcg_tax_pct"])
+    rep_alpha = BA.alpha_report(equity, cash, nifty, risk_free_pct=gates["risk_free_pct"], after_tax_rates_pct=rates, share=share)
+    alpha, bench, credited = rep_alpha["cash_credited"], rep_alpha["_benchmark_returns"], rep_alpha["_credited_equity"]
     months = _months(equity)
     arr = _monthly_arrays(table, months)
     n_trades = int(len(use))
@@ -124,15 +133,15 @@ def evaluate(run_dir, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed:
     exp_b = arr["sum_r"][idx].sum(axis=1) / np.maximum(arr["cnt"][idx].sum(axis=1), 1.0)
     neg_b, pos_b = arr["neg"][idx].sum(axis=1), arr["pos"][idx].sum(axis=1)
     pf_b = np.where(neg_b > 0, pos_b / np.where(neg_b > 0, neg_b, 1.0), np.inf)
-    rs, rb = _monthly_returns(equity.pct_change().iloc[1:], months), _monthly_returns(bench, months)
+    rs, rb = _monthly_returns(credited.pct_change().iloc[1:], months), _monthly_returns(bench, months)
     ts, tb = np.prod(1.0 + rs[idx], axis=1), np.prod(1.0 + rb[idx], axis=1)
     inv_years = 1.0 / alpha["years"] if alpha["years"] > 0 else 0.0
     alpha_b = 100.0 * ((ts ** inv_years - 1.0) - (tb ** inv_years - 1.0))
 
     spec = {"min_trades": (n_trades, ">=", None), "min_expectancy_r": (expectancy, ">=", _ci(exp_b)), "min_profit_factor": (pf, ">=", _ci(pf_b)),
-            "max_drawdown_pct": (dd, "<=", None), "min_alpha_after_tax_pct": (alpha["alpha_pct"], ">=", _ci(alpha_b))}
+            "max_drawdown_pct": (dd, "<=", None), "min_alpha_pct": (alpha["alpha_pct"], ">=", _ci(alpha_b))}
     note = {"min_trades": "a floor only; 40 trades have almost no power", "min_expectancy_r": "the strategy's own absolute net R per usable trade, point estimate",
-            "min_profit_factor": "net P&L of usable trades, point estimate", "max_drawdown_pct": "one path, no interval", "min_alpha_after_tax_pct": "annualised against the B2 benchmark (daily share), tax from the shared gates"}
+            "min_profit_factor": "net P&L of usable trades, point estimate", "max_drawdown_pct": "one path, no interval", "min_alpha_pct": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"}
     rows = []
     for g in GATE_ORDER:
         obs, op, interval = spec[g]
@@ -147,16 +156,22 @@ def evaluate(run_dir, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed:
         mask = [(lo <= d <= hi) for d in equity.index]
         if not any(mask):
             continue
-        e = equity[mask]
+        e = credited[mask]
         sub = use[(use["entry_date"] >= lo) & (use["entry_date"] <= hi)]
         sb = bench.loc[[d for d in bench.index if lo <= d <= hi]]
         d_ = {"descriptive": True, "period": f"{max(lo, e.index[0])} to {min(hi, e.index[-1])}", "trades": int(len(sub)), "expectancy_r": float(sub["net_r"].mean()) if len(sub) else None,
               "profit_factor": profit_factor(sub["net_pnl"]) if len(sub) else None, "max_drawdown_pct": max_drawdown_pct(e),
               "invested_share_mean": float(share[mask].mean())}
-        d_["alpha_pct"] = B2.alpha_pct(e, sb, tax_pct=gates["ltcg_tax_pct"])["alpha_pct"] if len(e) > 1 and len(sb) else None
+        d_["alpha_pct"] = BA.alpha_pct(e, sb)["alpha_pct"] if len(e) > 1 and len(sb) else None        # cash-credited, pre-tax
         desc[tag] = d_
-    return {"gates": rows, "counts": counts, "all_met": all(r["met"] for r in rows), "descriptive": desc, "seed": seed, "boot": boot, "block_months": block,
-            "tax_pct": gates["ltcg_tax_pct"], "risk_free_pct": gates["risk_free_pct"]}
+    years = rep_alpha["raw"]["years"]
+    trades_per_year = n_trades / years if years > 0 else 0.0
+    implied = {"non_gating": True, "trades_per_year": trades_per_year, "expectancy_r": expectancy, "max_loss_pct_per_trade": max_loss_pct,
+               "implied_annual_return_pct": BA.implied_annual_return_pct(trades_per_year, expectancy, max_loss_pct), "matched_benchmark_cagr_pct": rep_alpha["raw"]["benchmark_cagr_pct"],
+               "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"}
+    alpha_block = {k: v for k, v in rep_alpha.items() if not k.startswith("_")}
+    return {"gates": rows, "counts": counts, "all_met": all(r["met"] for r in rows), "alpha": alpha_block, "implied_annual_return": implied, "descriptive": desc, "seed": seed,
+            "boot": boot, "block_months": block, "gate_alpha_is_pre_tax": True, "risk_free_pct": gates["risk_free_pct"]}
 
 
 def format_table(res: dict) -> str:
@@ -164,7 +179,14 @@ def format_table(res: dict) -> str:
     for r in res["gates"]:
         iv = "-" if r["interval"] is None else f"{r['interval'][0]:.3f} to {r['interval'][1]:.3f}"
         L.append(f"{r['gate']} | {r['comparison']} {r['gate_value']} | {r['observed']:.4f} | {iv} | {'YES' if r['met'] else 'NO'}")
-    L += ["", f"all gates met on their point estimates: {res['all_met']}", "", f"counts: {json.dumps(res['counts'])}", "", "DESCRIPTIVE sub-periods (values only; no pass or fail; never used to select, change or stop anything):"]
+    a, im = res["alpha"], res["implied_annual_return"]
+    L += ["", "alpha, annualised percentage points (the gate uses the cash-credited, pre-tax value; the cash credit is applied after the fact and does not feed back into sizing):",
+          f"  raw alpha (strategy cash earns nothing; reported, not gating): {a['raw']['alpha_pct']:.4f}  (strategy CAGR {a['raw']['strategy_cagr_pct']:.4f}, matched benchmark CAGR {a['raw']['benchmark_cagr_pct']:.4f})",
+          f"  cash-credited alpha, pre-tax (GATE): {a['cash_credited']['alpha_pct']:.4f}  (strategy CAGR {a['cash_credited']['strategy_cagr_pct']:.4f}, matched benchmark CAGR {a['cash_credited']['benchmark_cagr_pct']:.4f})"]
+    for rate, v in a["after_tax_illustrative"].items():
+        L.append(f"  after-tax alpha at {rate}% on the end gain (non-gating; {a['after_tax_label'].split(':')[0]}): {v['alpha_pct']:.4f}")
+    L += [f"implied annual return (reported, not a gate): {im['trades_per_year']:.2f} trades/year x {im['expectancy_r']:.4f} R x {im['max_loss_pct_per_trade']}% = {im['implied_annual_return_pct']:.2f}% a year, beside the matched Nifty CAGR {im['matched_benchmark_cagr_pct']:.2f}%",
+          "", f"all gates met on their point estimates: {res['all_met']}", "", f"counts: {json.dumps(res['counts'])}", "", "DESCRIPTIVE sub-periods (values only; no pass or fail; never used to select, change or stop anything):"]
     for tag, d in res["descriptive"].items():
         L.append(f"  {tag}: {json.dumps(d)}")
     return "\n".join(L)

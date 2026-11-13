@@ -14,7 +14,7 @@ from typing import Any, Mapping, Optional
 
 STATUSES = ("research", "paper", "live")
 # mirrors stockbot.config.shared.NON_OVERRIDABLE (tests/unit/test_strategy_spec.py asserts they are equal)
-NON_OVERRIDABLE = frozenset({"runtime", "data", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "paper_criteria"})
+NON_OVERRIDABLE = frozenset({"runtime", "data", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "reporting", "paper_criteria"})
 UNIVERSE_OVERRIDABLE = frozenset({"min_adtv_cr", "min_listing_age_trading_days"})     # min_market_cap_cr is parked (KI-001) and cannot be overridden
 _ID = re.compile(r"^[a-z][a-z0-9_]{1,39}$")
 _VERSION = re.compile(r"^\d+\.\d+\.\d+$")

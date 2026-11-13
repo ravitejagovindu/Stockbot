@@ -497,6 +497,11 @@
      "n": "prereg_lock.py",
      "path": "stockbot/validation/prereg_lock.py",
      "d": "Hash lock and hash-chained ledger primitives."
+    },
+    {
+     "n": "benchmark_alpha.py",
+     "path": "stockbot/validation/benchmark_alpha.py",
+     "d": "Matched-Nifty benchmark and alpha arithmetic: the strategy's idle cash is credited after the fact; gate alpha is pre-tax."
     }
    ],
    "subpackages": [

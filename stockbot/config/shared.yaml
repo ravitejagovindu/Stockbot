@@ -59,14 +59,20 @@ backtest:
 # Q11: validation pass criteria are the SAME for every strategy and cannot be overridden. Re-pre-registered in the strategy phase.
 # KI-002: min_trades 40 and a +0.15 R expectancy bar are not testable at the current trade rate (flag there; nothing changed now).
 # Reviewed change 2026-11-11 (owner): max_drawdown_pct 15.0 -> 20.0. It applies to EVERY strategy. paper_criteria.max_drawdown_pct stays 12.0: a strategy that passes 20% in backtest can still fail 12% in paper.
+# Reviewed change (shared-rules B2/B3, owner): min_alpha_after_tax_pct (-2.0) is renamed min_alpha_pct and set to 0.0. It is PRE-TAX alpha against the matched Nifty benchmark with the strategy's idle cash
+# credited at risk_free_pct (stockbot/validation/benchmark_alpha.py). ltcg_tax_pct and stcg_tax_pct stay 0.0; after-tax figures are illustrative only (reporting.after_tax_rates_pct).
 validation_gates:
   max_drawdown_pct: 20.0
-  min_alpha_after_tax_pct: -2.0
+  min_alpha_pct: 0.0
   min_expectancy_r: 0.15
   min_profit_factor: 1.3
   min_trades: 40
   ltcg_tax_pct: 0.0
   risk_free_pct: 6.5
+
+# Reporting only: nothing here is a gate and nothing here enters the validation_gates hash. The after-tax alpha lines are "illustrative, not tax advice".
+reporting:
+  after_tax_rates_pct: [0.0, 20.0]
 
 # Q8: acceptance criteria for the paper run (live package); a strategy may not override them; revisited at pre-registration.
 paper_criteria:

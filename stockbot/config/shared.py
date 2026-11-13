@@ -13,7 +13,7 @@ from typing import Any, Mapping, Optional
 import yaml
 
 SHARED_YAML = Path(__file__).resolve().parent / "shared.yaml"
-NON_OVERRIDABLE = frozenset({"runtime", "data", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "paper_criteria"})
+NON_OVERRIDABLE = frozenset({"runtime", "data", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "reporting", "paper_criteria"})
 
 
 @dataclass(frozen=True)
@@ -93,12 +93,18 @@ class BacktestConfig:
 @dataclass(frozen=True)
 class ValidationGates:
     max_drawdown_pct: float
-    min_alpha_after_tax_pct: float
+    min_alpha_pct: float                  # PRE-TAX, cash-credited alpha (stockbot/validation/benchmark_alpha.py)
     min_expectancy_r: float
     min_profit_factor: float
     min_trades: int
     ltcg_tax_pct: float
     risk_free_pct: float
+
+
+@dataclass(frozen=True)
+class ReportingConfig:
+    """Reporting only; never a gate, never part of the validation_gates hash."""
+    after_tax_rates_pct: tuple
 
 
 @dataclass(frozen=True)
@@ -124,6 +130,7 @@ class SharedConfig:
     live: LiveConfig
     backtest: BacktestConfig
     validation_gates: ValidationGates
+    reporting: ReportingConfig
     paper_criteria: PaperCriteria
 
     def flat(self) -> dict[str, Any]:
@@ -151,9 +158,12 @@ def parse_shared_config(raw: Mapping[str, Any]) -> SharedConfig:
         raise ValueError(f"shared config sections must be exactly {sorted(secs)}; got {sorted(raw)}")
     bt = dict(raw["backtest"])
     bt["regimes"] = tuple(_build(BacktestWindow, w, "backtest.regimes") for w in bt["regimes"])
+    rep = dict(raw["reporting"])
+    if isinstance(rep.get("after_tax_rates_pct"), (list, tuple)):
+        rep["after_tax_rates_pct"] = tuple(float(x) if isinstance(x, (int, float)) and not isinstance(x, bool) else x for x in rep["after_tax_rates_pct"])
     parts = {}
     for f in fields(SharedConfig):
-        d = bt if f.name == "backtest" else raw[f.name]
+        d = bt if f.name == "backtest" else rep if f.name == "reporting" else raw[f.name]
         parts[f.name] = _build(f.type if not isinstance(f.type, str) else globals()[f.type], d, f.name)
     cfg = SharedConfig(**parts)
     _validate(cfg)
@@ -177,6 +187,9 @@ def _validate(c: SharedConfig) -> None:
         raise ValueError("costs must be >= 0")
     if c.exclusions.known_ahead_days < 0 or c.live.earnings_alert_days < 0:
         raise ValueError("day counts must be >= 0")
+    rates = c.reporting.after_tax_rates_pct
+    if not isinstance(rates, tuple) or any(not isinstance(x, float) or not (0.0 <= x < 100.0) for x in rates):
+        raise ValueError("reporting.after_tax_rates_pct must be a list of rates in [0, 100)")
     roles = [w.role for w in c.backtest.regimes]
     if any(r not in ("TUNE", "TEST") for r in roles) or "TEST" not in roles:
         raise ValueError("backtest.regimes: roles must be TUNE/TEST and include a TEST window")
