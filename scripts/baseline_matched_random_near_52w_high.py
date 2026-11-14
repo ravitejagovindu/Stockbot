@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.data.adjustments import action_factor  # noqa: E402
-from stockbot.data.asof import DEFAULT_LOOKBACK, AsOfView  # noqa: E402
+from stockbot.data.asof import DEFAULT_LOOKBACK, AsOfView, active_view_name  # noqa: E402
 from stockbot.data.lake import open_lake  # noqa: E402
 from stockbot.engine.exit_policies.registry import resolve  # noqa: E402
 from stockbot.risk.r_metrics import compute_trade_r  # noqa: E402
@@ -124,7 +124,7 @@ def run_baseline(lake, run_dir, out_dir, *, draws: int = DRAWS, min_filled: int 
     meta = {"draws_per_trade": draws, "min_filled": min_filled, "seed": seed, "policy": SPEC.exit_policy, "usable_trades": len(use), "pairs_kept": kept, "dropped_pairs": dropped,
             "share_dropped": share, "flag": (f"more than 5% of trades lost their pair ({share:.1%}): the result is flagged" if share > LOSS_FLAG else None), "draws_total": int(len(d)),
             "unfilled": unfilled, "end_of_window": sum(1 for t in trades if t["exit_reason"] == "END_OF_WINDOW"), "excluded_ca": sum(1 for t in trades if t.get("excluded_ca", False)),
-            "window": manifest["window"], "spec_config_hash": SPEC.config_hash()}
+            "window": manifest["window"], "spec_config_hash": SPEC.config_hash(), "asof_view": active_view_name()}
     for name, frame in (("actual_trades.csv", a), ("baseline_draws.csv", d)):
         frame.to_csv(out_dir / name, index=False)
     (out_dir / "baseline_meta.json").write_text(json.dumps(meta, indent=1, default=str), encoding="utf-8")
@@ -143,6 +143,7 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     from stockbot.config.paths import lake_path
     from stockbot.data_checks.near_high_signal_count import fingerprint
+    print(f"asof_view: {active_view_name()}", flush=True)
     lp = Path(args.lake) if args.lake else lake_path()
     before = fingerprint(lp, with_hash=not args.no_hash)
     meta = run_baseline(args.lake, args.run_dir, args.out_dir, draws=args.draws, min_filled=args.min_filled, seed=args.seed)

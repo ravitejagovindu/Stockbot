@@ -68,7 +68,7 @@ def test_invested_share_and_alpha_and_tax_hook():
     years = 366 / 365.25
     assert a["strategy_cagr_pct"] == pytest.approx(100 * (1.44 ** (1 / years) - 1)) and a["benchmark_cagr_pct"] == pytest.approx(100 * (1.2 ** (1 / years) - 1))
     assert a["alpha_pct"] == pytest.approx(a["strategy_cagr_pct"] - a["benchmark_cagr_pct"])
-    assert B.alpha_pct(eq, bench, tax_pct=0.0) == a                                  # tax 0 (ltcg and stcg are 0): after-tax equals pre-tax
+    assert B.alpha_pct(eq, bench, tax_pct=0.0) == a                                  # tax 0: after-tax equals pre-tax
     taxed = B.alpha_pct(eq, bench, tax_pct=20.0)
     assert taxed["strategy_cagr_pct"] < a["strategy_cagr_pct"] and taxed["benchmark_cagr_pct"] < a["benchmark_cagr_pct"]
 
@@ -90,9 +90,9 @@ def test_a_good_run_meets_every_gate_and_each_gate_is_printed_beside_its_registe
     d, run = good_run
     res = G.evaluate(d, nifty_for(run, 0.10), GATES, boot=500)
     r = rows(res)
-    assert set(r) == {"min_trades", "min_expectancy_r", "min_profit_factor", "max_drawdown_pct", "min_alpha_after_tax_pct"}
+    assert set(r) == {"min_trades", "min_expectancy_r", "min_profit_factor", "max_drawdown_pct", "min_alpha_pct"}
     assert r["max_drawdown_pct"]["gate_value"] == 20.0 and r["min_trades"]["gate_value"] == 40 and r["min_expectancy_r"]["gate_value"] == 0.15
-    assert r["min_profit_factor"]["gate_value"] == 1.3 and r["min_alpha_after_tax_pct"]["gate_value"] == -2.0
+    assert r["min_profit_factor"]["gate_value"] == 1.3 and r["min_alpha_pct"]["gate_value"] == 0.0
     assert all(x["met"] for x in r.values()) and res["all_met"] is True
     assert r["min_trades"]["observed"] == 360 and r["min_expectancy_r"]["interval"][0] < r["min_expectancy_r"]["observed"] < r["min_expectancy_r"]["interval"][1]
     text = G.format_table(res)
@@ -139,7 +139,72 @@ def test_the_alpha_gate_fails_when_the_matched_benchmark_is_far_ahead(good_run):
     G = script("evaluate_validation_gates_near_52w_high")
     d, run = good_run
     r = rows(G.evaluate(d, nifty_for(run, 0.45), GATES, boot=200))
-    assert r["min_alpha_after_tax_pct"]["met"] is False and r["min_alpha_after_tax_pct"]["observed"] < -2.0
+    assert r["min_alpha_pct"]["met"] is False and r["min_alpha_pct"]["observed"] < 0.0
+
+
+def test_the_wrappers_use_the_one_shared_implementation():
+    from stockbot.validation import benchmark_alpha as BA
+    B = script("benchmark_nifty_matched_near_52w_high")
+    assert B.benchmark_returns is BA.benchmark_returns and B.alpha_pct is BA.alpha_pct and B.invested_share is BA.invested_share and B.cash_credited_equity is BA.cash_credited_equity
+    G = script("evaluate_validation_gates_near_52w_high")
+    assert G.BA is BA
+
+
+def test_the_alpha_gate_uses_the_cash_credited_pre_tax_alpha_and_reports_the_raw_one(good_run):
+    G = script("evaluate_validation_gates_near_52w_high")
+    d, run = good_run
+    res = G.evaluate(d, nifty_for(run, 0.10), GATES, boot=200)
+    a = res["alpha"]
+    assert rows(res)["min_alpha_pct"]["observed"] == a["gate_alpha_pct"] == a["cash_credited"]["alpha_pct"]
+    assert a["cash_credited"]["alpha_pct"] > a["raw"]["alpha_pct"]                       # the strategy's idle cash now earns the risk-free rate, like the benchmark's
+    assert a["cash_credited"]["benchmark_cagr_pct"] == a["raw"]["benchmark_cagr_pct"] and res["gate_alpha_is_pre_tax"] is True and a["risk_free_pct"] == 6.5
+    assert set(a["after_tax_illustrative"]) == {"0.0", "20.0"} and a["after_tax_illustrative"]["0.0"]["alpha_pct"] == pytest.approx(a["cash_credited"]["alpha_pct"])
+    assert "not tax advice" in a["after_tax_label"] and "does not feed back" in a["note"]
+
+
+def test_the_after_tax_rates_are_reporting_only_and_never_move_the_gate(good_run):
+    G = script("evaluate_validation_gates_near_52w_high")
+    d, run = good_run
+    n = nifty_for(run, 0.10)
+    a, b = G.evaluate(d, n, GATES, boot=200, after_tax_rates_pct=(0.0,)), G.evaluate(d, n, GATES, boot=200, after_tax_rates_pct=(0.0, 20.0, 35.0))
+    assert [x["observed"] for x in a["gates"]] == [x["observed"] for x in b["gates"]] and a["all_met"] == b["all_met"]
+    assert set(b["alpha"]["after_tax_illustrative"]) == {"0.0", "20.0", "35.0"}
+    taxed = b["alpha"]["after_tax_illustrative"]
+    assert taxed["20.0"]["strategy_cagr_pct"] < taxed["0.0"]["strategy_cagr_pct"]
+
+
+def test_the_cash_credit_does_not_touch_the_runs_own_equity_or_the_trade_gates(good_run):
+    G = script("evaluate_validation_gates_near_52w_high")
+    d, run = good_run
+    before = (d / "equity_curve.json").read_bytes(), (d / "daily.json").read_bytes()
+    r1 = rows(G.evaluate(d, nifty_for(run, 0.10), GATES, boot=200))
+    after = (d / "equity_curve.json").read_bytes(), (d / "daily.json").read_bytes()
+    assert before == after
+    r2 = rows(G.evaluate(d, nifty_for(run, 0.10), dict(GATES, risk_free_pct=0.0), boot=200))
+    for g in ("min_trades", "min_expectancy_r", "min_profit_factor", "max_drawdown_pct"):
+        assert r1[g]["observed"] == r2[g]["observed"]                                         # the credit changes only the alpha, never sizing-derived numbers
+
+
+def test_the_implied_annual_return_line_is_reported_beside_the_matched_cagr_and_is_not_a_gate(good_run):
+    G = script("evaluate_validation_gates_near_52w_high")
+    d, run = good_run
+    res = G.evaluate(d, nifty_for(run, 0.10), GATES, boot=200, max_loss_pct=1.0)
+    im, c = res["implied_annual_return"], res["counts"]
+    assert im["non_gating"] is True and im["max_loss_pct_per_trade"] == 1.0
+    assert im["implied_annual_return_pct"] == pytest.approx(im["trades_per_year"] * im["expectancy_r"] * 1.0)
+    assert im["trades_per_year"] == pytest.approx(c["usable"] / res["alpha"]["raw"]["years"]) and im["matched_benchmark_cagr_pct"] == res["alpha"]["raw"]["benchmark_cagr_pct"]
+    assert "implied_annual_return" not in {r["gate"] for r in res["gates"]}
+    text = G.format_table(res)
+    for needle in ("raw alpha", "cash-credited alpha, pre-tax (GATE)", "not tax advice", "implied annual return (reported, not a gate)", "matched Nifty CAGR", "does not feed back into sizing"):
+        assert needle in text, needle
+
+
+def test_the_defaults_for_the_reporting_inputs_come_from_the_shared_config(good_run):
+    G = script("evaluate_validation_gates_near_52w_high")
+    d, run = good_run
+    res = G.evaluate(d, nifty_for(run, 0.10), GATES, boot=200)
+    assert res["implied_annual_return"]["max_loss_pct_per_trade"] == CFG.portfolio_risk.max_loss_pct_per_trade
+    assert set(res["alpha"]["after_tax_illustrative"]) == {str(float(x)) for x in CFG.reporting.after_tax_rates_pct}
 
 
 def test_drawdown_and_profit_factor_helpers():
@@ -417,7 +482,9 @@ def test_the_spec_names_its_preregistration_and_the_document_states_the_same_has
     assert SPEC.prereg_ref == SPEC_REF and SPEC.validation_ref is None and SPEC.status == "research"
     text = (ROOT / SPEC_REF).read_text(encoding="utf-8")
     assert SPEC.config_hash() in text
-    assert gates_hash(asdict(CFG.validation_gates)) in text and "805efac844810c62d6f5d74b706d7cfb0b042c5fbc3cf217add54116d783cd2f" in text
+    old = {("min_alpha_after_tax_pct" if k == "min_alpha_pct" else k): (-2.0 if k == "min_alpha_pct" else v) for k, v in asdict(CFG.validation_gates).items()}
+    assert gates_hash(old) in text and "805efac844810c62d6f5d74b706d7cfb0b042c5fbc3cf217add54116d783cd2f" in text      # the registered result used the old key and value
+    assert gates_hash(asdict(CFG.validation_gates)) not in text                                                         # the shared gates have since changed (shared-rules B2/B3)
 
 
 def test_the_preregistration_is_final_and_carries_the_owner_decisions():

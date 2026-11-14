@@ -16,6 +16,7 @@ Not exposed: ``shares_outstanding`` / market cap (single current snapshot, KI-00
 from __future__ import annotations
 
 import csv
+import os
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import lru_cache
@@ -61,7 +62,24 @@ def _d(v) -> date:
     return date.fromisoformat(str(v)[:10])
 
 
+def active_view_name() -> str:
+    """Which as-of view the switch selects: "memory" when STOCKBOT_VIEW=memory, otherwise "sql". The one place the variable is read (run manifests and the live guard use this too)."""
+    return "memory" if os.environ.get("STOCKBOT_VIEW", "").strip().lower() == "memory" else "sql"
+
+
 class AsOfView:
+    def __new__(cls, *args, **kwargs):
+        """THE switch between the SQL view and the in-memory view (``STOCKBOT_VIEW=memory``, see ``stockbot.data.asof_memory``); unset or anything else = this SQL view.
+        A direct ``AsOfView(...)`` call becomes a ``MemoryAsOfView``; a subclass of ``AsOfView`` (a script's own capped view) is built as the same subclass on top of
+        ``MemoryAsOfView`` (its overrides still win, its ``super()`` reaches the in-memory fetches). ``MemoryAsOfView`` and classes already derived from it are built as themselves."""
+        if active_view_name() == "memory":
+            from stockbot.data.asof_memory import MemoryAsOfView, memory_variant
+            if cls is AsOfView:
+                return object.__new__(MemoryAsOfView)
+            if not issubclass(cls, MemoryAsOfView):
+                return object.__new__(memory_variant(cls))
+        return object.__new__(cls)
+
     def __init__(self, conn, as_of: date):
         self._conn = conn
         self._as_of = _d(as_of)
@@ -179,12 +197,20 @@ class AsOfView:
     # --------------------------------------------------------------- symbols
     def symbols_trading(self) -> list[str]:
         """Symbols with a bar on the as-of date itself (index series excluded)."""
-        rows = self._conn.execute("select symbol from market_data_lake where trade_date=? order by symbol", (self._as_of.isoformat(),)).fetchall()
-        return [r[0] for r in rows if r[0] not in (NIFTY, VIX)]
+        return [s for s in self._symbols_on_as_of() if s not in (NIFTY, VIX)]
+
+    def _symbols_on_as_of(self) -> list[str]:
+        """Data-fetch primitive: every symbol (index series included) with a bar on the as-of date, sorted."""
+        return [r[0] for r in self._conn.execute("select symbol from market_data_lake where trade_date=? order by symbol", (self._as_of.isoformat(),)).fetchall()]
 
     def _lake_first_date(self) -> Optional[date]:
         r = self._conn.execute("select min(trade_date) from market_data_lake where symbol=?", (NIFTY,)).fetchone()
         return date.fromisoformat(str(r[0])[:10]) if r and r[0] else None
+
+    def _first_and_count(self, symbol: str):
+        """Data-fetch primitive: (first bar date or None, number of bars) of ``symbol`` on or before the as-of date."""
+        r = self._conn.execute("select min(trade_date), count(*) from market_data_lake where symbol=? and trade_date<=?", (symbol, self._as_of.isoformat())).fetchone()
+        return (date.fromisoformat(str(r[0])[:10]) if r and r[0] else None), int(r[1] or 0)
 
     def symbol_info(self, symbol: str) -> SymbolInfo:
         """First bar, bar count and listing age as of the view date.
@@ -192,9 +218,7 @@ class AsOfView:
         Listing age in trading days follows the reviewer-approved F2 rule (ported from the old universe screener): a name that already trades on the lake's first day is not a
         new listing, it counts as seasoned (252 + calendar days beyond a year); otherwise 550 or more calendar days since the first bar counts as seasoned the same way, and
         younger names are aged by the number of their own sessions."""
-        r = self._conn.execute("select min(trade_date), count(*) from market_data_lake where symbol=? and trade_date<=?", (symbol, self._as_of.isoformat())).fetchone()
-        first = date.fromisoformat(str(r[0])[:10]) if r and r[0] else None
-        n = int(r[1] or 0)
+        first, n = self._first_and_count(symbol)
         age = None
         if first is not None:
             lake_first = self._lake_first_date()

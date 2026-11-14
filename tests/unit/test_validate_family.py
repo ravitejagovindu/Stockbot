@@ -149,7 +149,7 @@ def test_the_gates_are_evaluated_per_member_and_the_conclusion_needs_both_t1_and
     assert set(res["gates"]) == set(LABELS)
     for lab in LABELS:
         g = {r["gate"]: r for r in res["gates"][lab]["gates"]}
-        assert set(g) == {"min_trades", "min_expectancy_r", "min_profit_factor", "max_drawdown_pct", "min_alpha_after_tax_pct"}
+        assert set(g) == {"min_trades", "min_expectancy_r", "min_profit_factor", "max_drawdown_pct", "min_alpha_pct"}
         assert g["max_drawdown_pct"]["gate_value"] == CFG.validation_gates.max_drawdown_pct
         found, met = res["T1"]["members"][lab]["dual_significant"], res["gates"][lab]["all_met"]
         assert res["conclusion"][lab] == V.registered_conclusion(found, met)

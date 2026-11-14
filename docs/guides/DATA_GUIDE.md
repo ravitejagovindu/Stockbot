@@ -441,7 +441,7 @@ Row counts measured 2026-11-09 (data rows, not counting the header). "Read by" i
 
 | file | columns | rows | purpose | read by |
 |---|---|---|---|---|
-| `data/reference/sector_map.csv` | symbol, sector | 501 | sector per symbol for the sector cap | `stockbot/data/sector_map.py` (so `stockbot/live/runner.py`) |
+| `data/reference/sector_map.csv` | symbol, sector | 501 | sector per symbol for the sector cap; a symbol not listed is its own sector `UNMAPPED:<SYMBOL>` | `stockbot/data/sector_map.py` (so `stockbot/live/runner.py` and the research wrappers) |
 | `data/reference/fund_etf_symbols.csv` | symbol, isin | 511 | ETF and fund names excluded from the universe | `stockbot/data/asof.py` (`symbol_info`), `earnings_coverage.py`, `collect_earnings_history.py` |
 | `data/reference/isin_symbol_map.csv` | isin, symbol, segment, first_date, last_date, n_days, isin_class, canonical_symbol, boundary_to_next, boundary_reason, gap_sessions, close_ratio_next_over_this | 853 | the ISIN map with continuity evidence (the table `isin_symbol_map` is its loaded form) | `f2_build_isin_symbol_map.py`, `collect_earnings_history.py`, `scripts/provenance/f2_swap.py` |
 | `data/reference/special_sessions.csv` | date, kind, note (comment lines at the top) | 18 | special weekend/holiday sessions and Nifty-series gaps | `stockbot/data_checks/copy_detector.py`, `scripts/provenance/f2_swap.py` |

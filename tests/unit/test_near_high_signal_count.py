@@ -14,6 +14,7 @@ import pytest
 from sqlalchemy import create_engine, text
 
 from stockbot.config.shared import load_shared_config
+from stockbot.data import sector_map
 from stockbot.data.asof import AsOfView
 from stockbot.data.lake import open_lake
 from stockbot.data_checks import near_high_signal_count as M
@@ -169,15 +170,19 @@ def test_cap_held_symbol_and_sector_rules():
     assert len(occ.entries) == 3 and occ.occupancy == [0, 3]
     occ.step(3, [("A", .99), ("D", .96)])                         # entries at 1, hold 2 -> exit at the open of 3: free for a signal at the close of 3
     assert [x[0] for x in occ.entries][3:] == ["A", "D"]
-    cap = M.Occupancy(100, 12, hold=40, pos_pct=100 / 15, sector_cap_pct=15.0)     # all fixture symbols are UNKNOWN: one shared sector, 2 x 6.67 = 13.3 fits, a third does not
+    cap = M.Occupancy(100, 12, hold=40, pos_pct=100 / 15, sector_cap_pct=15.0)     # all fixture symbols are unmapped: each is its OWN sector (UNMAPPED:<symbol>), so none is blocked
     cap.step(0, [("X1", .99), ("X2", .98), ("X3", .97), ("X4", .96)])
-    assert [x[0] for x in cap.entries] == ["X1", "X2"] and cap.blocks == [2]
+    assert [x[0] for x in cap.entries] == ["X1", "X2", "X3", "X4"] and cap.blocks == [0]
+    mapped = M.Occupancy(100, 12, hold=40, pos_pct=100 / 15, sector_cap_pct=15.0)  # a mapped sector is still capped: 2 x 6.67 = 13.3 fits, a third does not
+    banks = [s for s, sec in sector_map._load().items() if sec == "FINANCIALS"][:4]
+    mapped.step(0, [(b, .99 - i / 100) for i, b in enumerate(banks)])
+    assert [x[0] for x in mapped.entries] == banks[:2] and mapped.blocks == [2]
 
 
-def test_sector_capped_model_holds_at_most_two_unknown_sector_names(study):
-    assert max(r["occupancy_capped"] for r in study["rows"]) == 2
-    assert sum(r["sector_blocks"] for r in study["rows"]) > 0
-    assert len(study["entries_capped"]) < len(study["entries"])
+def test_sector_cap_does_not_pool_unmapped_names(study):
+    assert all(r["occupancy_capped"] == r["occupancy"] for r in study["rows"])        # the fixture symbols are all unmapped: the sector cap never binds
+    assert sum(r["sector_blocks"] for r in study["rows"]) == 0
+    assert len(study["entries_capped"]) == len(study["entries"])
 
 
 def test_summary_json_and_markdown(lake, study):
