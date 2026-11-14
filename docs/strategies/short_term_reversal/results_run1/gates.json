@@ -1,0 +1,140 @@
+{
+ "gates": [
+  {
+   "gate": "min_trades",
+   "gate_value": 40,
+   "comparison": ">=",
+   "observed": 4275,
+   "interval": null,
+   "met": true,
+   "note": "a floor only; 40 trades have almost no power"
+  },
+  {
+   "gate": "min_expectancy_r",
+   "gate_value": 0.15,
+   "comparison": ">=",
+   "observed": -0.2589548188713737,
+   "interval": [
+    -0.3369708409037035,
+    -0.1850855302499877
+   ],
+   "met": false,
+   "note": "the strategy's own absolute net R per usable trade, point estimate"
+  },
+  {
+   "gate": "min_profit_factor",
+   "gate_value": 1.3,
+   "comparison": ">=",
+   "observed": 0.7652527738077077,
+   "interval": [
+    0.6485405437642863,
+    0.9097749115043962
+   ],
+   "met": false,
+   "note": "net P&L of usable trades, point estimate"
+  },
+  {
+   "gate": "max_drawdown_pct",
+   "gate_value": 20.0,
+   "comparison": "<=",
+   "observed": 97.17443444557932,
+   "interval": null,
+   "met": false,
+   "note": "one path, no interval"
+  },
+  {
+   "gate": "min_alpha_pct",
+   "gate_value": 0.0,
+   "comparison": ">=",
+   "observed": -35.64716839459702,
+   "interval": [
+    -43.41383862796443,
+    -27.372183152532642
+   ],
+   "met": false,
+   "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+  }
+ ],
+ "counts": {
+  "closed": 4288,
+  "usable": 4275,
+  "end_of_window": 5,
+  "excluded_ca": 8,
+  "entries_per_month": 32.88461538461539,
+  "invested_share_mean": 0.7547468398180042,
+  "invested_share_p5": 0.303598943650149,
+  "invested_share_p95": 0.9999231879848439,
+  "open_positions_mean": 7.756918474195961,
+  "open_positions_max": 12
+ },
+ "all_met": false,
+ "alpha": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": -28.044666856965062,
+   "benchmark_cagr_pct": 8.73998138970924,
+   "alpha_pct": -36.7846482466743
+  },
+  "cash_credited": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": -26.907187004887778,
+   "benchmark_cagr_pct": 8.73998138970924,
+   "alpha_pct": -35.64716839459702
+  },
+  "gate_alpha_pct": -35.64716839459702,
+  "after_tax_label": "illustrative, not tax advice: tax charged on the end gain of the cash-credited strategy and of its benchmark; never a gate input",
+  "note": "Cash credit is applied after the fact on the recorded equity and cash (idle cash at the previous close earns risk_free_pct/100/252 per day); it does not feed back into sizing or any engine decision. The gate uses the cash-credited, pre-tax alpha.",
+  "risk_free_pct": 6.5,
+  "after_tax_illustrative": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": -26.907187004887778,
+    "benchmark_cagr_pct": 8.73998138970924,
+    "alpha_pct": -35.64716839459702
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": -26.907187004887778,
+    "benchmark_cagr_pct": 7.470403145529447,
+    "alpha_pct": -34.37759015041723
+   }
+  }
+ },
+ "implied_annual_return": {
+  "non_gating": true,
+  "trades_per_year": 396.20496066988073,
+  "expectancy_r": -0.2589548188713737,
+  "max_loss_pct_per_trade": 1.0,
+  "implied_annual_return_pct": -102.59918382620872,
+  "matched_benchmark_cagr_pct": 8.73998138970924,
+  "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"
+ },
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "period": "2016-01-01 to 2019-12-31",
+   "trades": 1640,
+   "expectancy_r": -0.24305231134082594,
+   "profit_factor": 0.7553718969313393,
+   "max_drawdown_pct": 81.3882954723971,
+   "invested_share_mean": 0.6603454834746626,
+   "alpha_pct": -41.990363022614794
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "period": "2020-01-01 to 2026-10-16",
+   "trades": 2635,
+   "expectancy_r": -0.2688523947158134,
+   "profit_factor": 0.8030216590863635,
+   "max_drawdown_pct": 84.91855463740579,
+   "invested_share_mean": 0.809888864317136,
+   "alpha_pct": -31.787615324509375
+  }
+ },
+ "seed": 20261111,
+ "boot": 10000,
+ "block_months": 3,
+ "gate_alpha_is_pre_tax": true,
+ "risk_free_pct": 6.5,
+ "asof_view": "memory"
+}
