@@ -118,6 +118,11 @@
      "d": "AsOfView: the point-in-time window onto the lake."
     },
     {
+     "n": "asof_memory.py",
+     "path": "stockbot/data/asof_memory.py",
+     "d": "The same view answered from tables loaded once into memory (STOCKBOT_VIEW=memory); only the data fetches differ."
+    },
+    {
      "n": "adjustments.py",
      "path": "stockbot/data/adjustments.py",
      "d": "Adjusts raw prices for splits and bonuses, in memory only."
