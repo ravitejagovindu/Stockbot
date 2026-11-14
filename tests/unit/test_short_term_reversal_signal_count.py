@@ -124,7 +124,7 @@ def test_a_tie_that_straddles_the_cut_and_a_tie_that_even_adtv_cannot_break_are_
 def test_sector_spread_counts_every_signal_by_sector(lake, part):
     _, ds, _ = lake
     r = row(part, ds, 300)
-    assert r["cand_sectors"] == {"UNKNOWN": 32} and (r["top_sector_distinct"], r["top_sector_max"], r["top_unknown"]) == (1, 25, 25)
+    assert r["cand_sectors"] == {"UNMAPPED": 32} and (r["top_sector_distinct"], r["top_sector_max"], r["top_unknown"]) == (25, 1, 25)      # each unmapped name is its own sector
     ss = M.summarise(M.assemble(part))["sector_spread"]
     assert ss["unknown_share"] == 1.0 and ss["signals_total"] == 160
 
@@ -143,8 +143,8 @@ def test_the_occupancy_model_hold_five_and_the_shared_caps(lake, part):
     plain, sector, shared = (res["entries"][k] for k in ("plain", "sector", "shared"))
     assert len(plain) == 12 and all(e["signal"] == ds[300] and e["entry"] == ds[301] and e["planned_exit"] == ds[306] for e in plain)      # 12 slots at the next open, exit five sessions later
     assert plain[0]["symbol"] == "Z29" and plain[0]["ret5"] == pytest.approx(-0.225)                                                              # the deepest fall first
-    assert len(sector) == len(shared) == 1                                                       # one UNKNOWN-sector position at 12.5% of equity fits the 15% cap; a second does not
-    assert sum(r["sector_blocks_shared"] for r in res["rows"]) > 0
+    assert len(sector) == 12 and len(shared) == 8                                                # every unmapped name is its own sector: the sector cap never binds; cash (8 x 12.5%) does
+    assert sum(r["sector_blocks_shared"] for r in res["rows"]) == 0
     occ = {r["date"]: r["occ_plain"] for r in res["rows"]}
     assert occ[ds[310]] == 0 and occ[ds[301]] == 12 and occ[ds[305]] == 12 and occ[ds[306]] == 0 and occ[ds[300]] == 0
 
@@ -155,8 +155,8 @@ def test_the_occupancy_class_frees_the_slot_for_a_signal_at_the_close_of_the_exi
         o.step(j, [("AAA", -0.1)])
     assert [(e[1], e[2], e[3]) for e in o.entries] == [(0, 1, 6), (6, 7, 12)]          # signal 0 -> entry 1 -> exit open of 6; a signal at the close of 6 re-enters at 7 (AAA is no longer held)
     o2 = M.Occupancy(20, 3, hold=5, pos_pct=12.5, sector_cap_pct=15.0)
-    o2.step(0, [("ZZZ1", -0.2), ("ZZZ2", -0.1), ("ZZZ1", -0.1)])                       # two unmapped names share UNKNOWN: one fits, one is blocked
-    assert [e[0] for e in o2.entries] == ["ZZZ1"] and o2.blocks == [1] and o2.open[0][0] == "ZZZ1"      # ZZZ2 blocked by the sector cap; the repeated ZZZ1 is skipped as held
+    o2.step(0, [("ZZZ1", -0.2), ("ZZZ2", -0.1), ("ZZZ1", -0.1)])                       # two unmapped names are two sectors: both fit
+    assert [e[0] for e in o2.entries] == ["ZZZ1", "ZZZ2"] and o2.blocks == [0] and o2.open[0][0] == "ZZZ1"      # no sector block; the repeated ZZZ1 is skipped as held
 
 
 def test_worst_market_days_and_their_share_of_signals():

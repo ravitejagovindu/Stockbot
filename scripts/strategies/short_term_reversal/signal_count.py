@@ -32,7 +32,9 @@ import numpy as np
 from stockbot.data.adjustments import action_factor
 from stockbot.data.asof import AsOfView
 from stockbot.data.lake import open_lake
-from stockbot.data.sector_map import sector_for
+from stockbot.data.sector_map import is_mapped, sector_for
+
+UNMAPPED_LABEL = "UNMAPPED"          # report label only: for the caps every unmapped symbol is its OWN sector (sector_for -> UNMAPPED:<symbol>)
 from stockbot.strategies.short_term_reversal.strategy import SPEC, order_candidates, scan
 
 P = SPEC.params
@@ -88,14 +90,14 @@ def snapshot(view: AsOfView, eligible: Sequence[str]) -> dict:
     split_in = unadj_in = 0
     sectors: Counter = Counter()
     for sym, _, _ in ordered:
-        sectors[sector_for(sym)] += 1
+        sectors[sector_for(sym) if is_mapped(sym) else UNMAPPED_LABEL] += 1
         s, u = _window_events(view, sym, anchor, t)
         split_in += s
         unadj_in += u
     floor_unadj = sum(1 for sym in res["below_floor"] if any(_window_events(view, sym, anchor, t)))
     top_sectors = Counter(sector_for(c[0]) for c in top)
     return dict(date=t, counts=dict(res["counts"]), ordered_n=len(ordered), top=[(c[0], c[1]) for c in top], nifty=nifty_move(view), cand_sectors=dict(sectors),
-                top_sector_distinct=len(top_sectors), top_sector_max=max(top_sectors.values()) if top_sectors else 0, top_unknown=top_sectors.get("UNKNOWN", 0),
+                top_sector_distinct=len(top_sectors), top_sector_max=max(top_sectors.values()) if top_sectors else 0, top_unknown=sum(1 for c in top if not is_mapped(c[0])),
                 tie_names_in_top=len(in_tie), tie_groups_in_top=tie_groups_in_top, tie_straddles_cut=bool(straddle), tie_symbol_decided=adtv_equal_ties,
                 split_in=split_in, unadj_in=unadj_in, floor_with_action=floor_unadj, cal_ok=len(cal) == LOOKBACK + 1)
 
@@ -105,7 +107,7 @@ class Occupancy:
     """Mechanical occupancy of ``slots`` positions. Signal at the close of session j; entry at the open of j+1 (session 1 of the hold); the position is open at proposal time on
     sessions e .. e+hold-1 and its market exit executes at the open of e+hold, so the slot is free for a signal at the close of e+hold. A symbol already held is skipped. With
     ``pos_pct`` and ``sector_cap_pct`` given, a candidate whose sector value after the trade would exceed the cap is blocked (counted) and the next one considered, as the shared
-    arbitration does; unmapped symbols share the UNKNOWN sector. No stops, no gap-down block, no costs, no gap-up cap, no cash rounding."""
+    arbitration does; every unmapped symbol is its own sector (UNMAPPED:<symbol>, the shared rule). No stops, no gap-down block, no costs, no gap-up cap, no cash rounding."""
 
     def __init__(self, n_sessions: int, slots: int, hold: int = HOLD_SESSIONS, pos_pct: Optional[float] = None, sector_cap_pct: Optional[float] = None):
         self.n, self.cap, self.hold = n_sessions, slots, hold
@@ -203,6 +205,13 @@ def assemble(part: dict, *, max_positions: int = 12, risk_pct: float = 1.0, max_
     """Run the occupancy models on a (merged) part's top lists and return the ``summarise`` input. Reads no database.
     Models: ``plain`` = position-count cap only; ``sector`` = + the shared sector cap; ``shared`` = + a slot count limited by cash (100% / position size) and the total-risk cap."""
     sess, rows = part["sessions"], [dict(r) for r in part["rows"]]          # copies: the cached part is never modified
+    for r in rows:                                                           # sector figures are re-derived under the CURRENT shared rule (every unmapped symbol its own sector), so an old cache cannot carry the pooled UNKNOWN bucket
+        secs = Counter(sector_for(s) for s, _ in r["top"])
+        r["top_sector_distinct"], r["top_sector_max"], r["top_unknown"] = len(secs), (max(secs.values()) if secs else 0), sum(1 for s, _ in r["top"] if not is_mapped(s))
+        cs = dict(r["cand_sectors"])
+        if "UNKNOWN" in cs:                                                  # the same names, now labelled as what they are (each its own sector for the caps)
+            cs[UNMAPPED_LABEL] = cs.get(UNMAPPED_LABEL, 0) + cs.pop("UNKNOWN")
+        r["cand_sectors"] = cs
     sf = stop_fit(risk_pct=risk_pct, max_positions=max_positions, max_total_risk_pct=max_total_risk_pct, sector_cap_pct=sector_cap_pct)
     pp = sf["position_pct_of_equity"]
     models = dict(plain=Occupancy(len(sess), max_positions), sector=Occupancy(len(sess), max_positions, pos_pct=pp, sector_cap_pct=sector_cap_pct),
@@ -250,7 +259,7 @@ def _concentration(ents: list) -> Optional[dict]:
     c = Counter(e["symbol"] for e in ents)
     sec = Counter(sector_for(e["symbol"]) for e in ents)
     return dict(entries=len(ents), distinct_symbols=len(c), top_symbol=c.most_common(1)[0][0], top_symbol_share=c.most_common(1)[0][1] / len(ents),
-                top10_share=sum(n for _, n in c.most_common(10)) / len(ents), sector_entries=dict(sec.most_common()), entries_without_sector=sum(n for s, n in c.items() if sector_for(s) == "UNKNOWN"))
+                top10_share=sum(n for _, n in c.most_common(10)) / len(ents), sector_entries=dict(sec.most_common()), entries_without_sector=sum(n for s, n in c.items() if not is_mapped(s)))
 
 
 def summarise(res: dict, measured: Optional[date] = None) -> dict:
@@ -321,8 +330,8 @@ def summarise(res: dict, measured: Optional[date] = None) -> dict:
                       sessions_without_full_calendar=sum(1 for r in rows if not r["cal_ok"])),
         first_signal_date=next((str(r["date"]) for r in rows if r["signals"] > 0), None), groups=out_groups, monthly=monthly,
         clustering=worst_days(rows),
-        sector_spread=dict(signals_total=sig_total, by_sector={s: n for s, n in sec_all.most_common()}, unknown_share=(sec_all.get("UNKNOWN", 0) / sig_total) if sig_total else None,
-                           largest_sector_share=(sec_all.most_common(1)[0][1] / sig_total) if sig_total else None,
+        sector_spread=dict(signals_total=sig_total, by_sector={s: n for s, n in sec_all.most_common()}, unknown_share=((sec_all.get(UNMAPPED_LABEL, 0) + sec_all.get("UNKNOWN", 0)) / sig_total) if sig_total else None,
+                           largest_sector_share=(max([n for s, n in sec_all.items() if s not in (UNMAPPED_LABEL, "UNKNOWN")] or [0]) / sig_total) if sig_total else None,   # a MAPPED sector: the unmapped label is not one sector
                            proposed_distinct_sectors=_stats([r["top_sector_distinct"] for r in rows if r["proposed"]]), proposed_largest_sector_names=_stats([r["top_sector_max"] for r in rows if r["proposed"]]),
                            proposed_unknown_names_total=sum(r["top_unknown"] for r in rows)),
         tie_rate=tie,
@@ -383,7 +392,7 @@ def render_markdown(sm: dict) -> str:
     for d in c["days"]:
         L.append(f"| {d['date']} | {100 * d['nifty_move']:.2f}% | {d['signals']} | {d['proposed']} |")
     ss = sm["sector_spread"]
-    L += ["", f"## (6) Sector spread (measured {m})", "", f"Signals in total {ss['signals_total']}; no sector (UNKNOWN): {_f(None if ss['unknown_share'] is None else 100 * ss['unknown_share'], 1)}%; largest sector share "
+    L += ["", f"## (6) Sector spread (measured {m})", "", f"Signals in total {ss['signals_total']}; no sector (UNMAPPED, each its own sector for the caps):{_f(None if ss['unknown_share'] is None else 100 * ss['unknown_share'], 1)}%; largest MAPPED sector share "
           f"{_f(None if ss['largest_sector_share'] is None else 100 * ss['largest_sector_share'], 1)}%. Proposed names per session: distinct sectors median {_f(ss['proposed_distinct_sectors']['median'], 1) if ss['proposed_distinct_sectors'] else '-'}, "
           f"most names in one sector median {_f(ss['proposed_largest_sector_names']['median'], 1) if ss['proposed_largest_sector_names'] else '-'}.", "", "| sector | signals | share |", "|---|---|---|"]
     for s, n in ss["by_sector"].items():

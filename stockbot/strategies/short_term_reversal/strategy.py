@@ -29,9 +29,9 @@ SPEC = StrategySpec(
     universe_overrides={},
     exit_policy="fixed_hold_5",
     status="research",
-    prereg_ref=None,                    # set in the registration commit, as for near_52w_high (the config hash covers it)
+    prereg_ref="docs/strategies/short_term_reversal/PREREGISTRATION.md",     # owner decision (stage 2); the config hash covers it
     validation_ref=None,
-    expected_trade_rate=23.0,           # trades per month: the Stage 1 `shared` occupancy model (8 cash-bound slots, one position per sector), 2016-2026 = 23.02; the owner confirms it
+    expected_trade_rate=23.0,           # trades per month: the Stage 1 occupancy model (8 cash-bound slots), 2016-2026 = 23.02; confirmed by the owner. Under the per-symbol UNMAPPED sector rule the same model gives 25.63 (reported, NOT applied)
     smallest_edge_of_interest=0.15,     # R per trade, net of costs (owner's number)
 )
 
