@@ -101,6 +101,7 @@ Extra rules in the same test: no strategy imports another strategy (`base`, `reg
 |---|---|
 | `lake.py` | `open_lake`: opens `finsight.db` read-only (SQLite `mode=ro` plus `query_only`), so a write raises an error. |
 | `asof.py` | `AsOfView`: the point-in-time window onto the lake. The only way code above `data` reads market data. |
+| `asof_memory.py` | `MemoryAsOfView`: the same view answered from tables loaded once into memory (selected by `STOCKBOT_VIEW=memory`); only the data fetches differ, all rules are `AsOfView`'s. |
 | `adjustments.py` | Pure functions that adjust raw prices for splits and bonuses, and compute ADTV. Never touches the database. |
 | `indicators.py` | Pure indicator functions: `sma`, `rma`, `atr`, `donchian_low`, `donchian_high`. |
 | `sector_map.py` | The one sector rule for backtest, paper and live: `sector_for(symbol)` reads `data/reference/sector_map.csv`; a symbol not in it is its own sector, `UNMAPPED:<SYMBOL>` (never a shared bucket). `is_mapped(symbol)`; `SectorLookup`, the mapping every path hands to `EventData(sectors=...)`. |
