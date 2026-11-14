@@ -29,3 +29,10 @@ Draft docs/strategies/short_term_reversal/PREREGISTRATION.md in the near_52w_hig
 - `tests/fixtures/boundaries.py` already lists `short_term_reversal` in APPROVED_STRATEGY_IDS, so no shared file needs editing for the new strategy folder.
 - The guide tests require every module and script outside a strategy-owned path to be named in `docs/guides/CODEBASE_GUIDE.md` (a shared file this task may not edit). The counts-study module therefore lives at `scripts/strategies/short_term_reversal/signal_count.py` and its wrapper is `scripts/signal_count_short_term_reversal.py`, both strategy-owned paths (`strategy_owned()` in `tests/fixtures/boundaries.py`). `stockbot/data_checks/` is not used.
 - Interpretations of the brief that the owner should confirm are listed in STATUS.md under "Decisions needed".
+
+## Stage 2 (owner decisions, final; no real backtest until the family is registered)
+- Rule numbers unchanged (ret5 band -0.30 to -0.07, min_bars 10, top_n 25, stop 0.92 x signal close, fixed_hold_5). Stage-1 edge-case readings accepted (a bar exactly 5 sessions back; adjusted closes; -7% and -30% inside the band).
+- `expected_trade_rate` 23.0 (unchanged; the model under the new sector rule gives 25.63), `smallest_edge_of_interest` 0.15, `prereg_ref` docs/strategies/short_term_reversal/PREREGISTRATION.md. Window for both family members 2016-01-01 to 2026-10-16.
+- Family family_batch1, K = 2 (short_term_reversal, pullback_uptrend), joint Max-T B = 10,000, blocks 2 and 3 months (both significant), B1 20 draws per trade seed 20261111, B2 Nifty matched to the invested share, gates hash e9b6407f...8054.
+- The registered run uses `STOCKBOT_VIEW=memory`; tests use the default SQL view. Stage-2 deliverables: final spec, re-count, finalised draft pre-registration, four run scripts, fixture tests, `RUN_COMMANDS.md`, report `Claude_Docs/SHORT_TERM_REVERSAL_STAGE2_REPORT.md`.
+

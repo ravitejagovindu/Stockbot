@@ -1,30 +1,21 @@
 # short_term_reversal: status
 
-Last updated: 2026-11-12 (Stage 1 complete except test runs and report; STOP after that).
+Last updated: 2026-11-14 (stage 2 done; waiting for the owner's review).
 
-## Done
-- Branch `short_term_reversal` from origin/master 055c703. finsight.db sha256 checked at the start: dcade465...b752 (matches). Size and mtime unchanged after all four study parts.
-- `stockbot/strategies/short_term_reversal/` (`__init__.py`, `strategy.py`): SPEC, `ShortTermReversalStrategy.propose`, explicit `register(registry)`; `scan` and `order_candidates` are public so the counts study uses the very same rule. `expected_trade_rate` 23.0 (provisional, owner confirms).
-- Counts study: `scripts/strategies/short_term_reversal/signal_count.py` (module) and `scripts/signal_count_short_term_reversal.py` (wrapper). Real-data run done: `results_stage1/counts.md`, `counts.json`, four part caches, logs.
-- Tests: `tests/unit/test_short_term_reversal_strategy.py` (36) and `tests/unit/test_short_term_reversal_signal_count.py` (16), fixture lakes only.
-- Draft `PREREGISTRATION.md` (family-level parts marked "filled at family registration").
+## Done (stage 2; taken over from a stopped session)
+- origin/master 8b07ece merged (ba007ab, kept); strategy and study tests pass.
+- SPEC final: expected_trade_rate 23.0, smallest_edge_of_interest 0.15, prereg_ref set. Spec hash `57b86c47d0c5cbdc1325e19230c103b84bc08c6be6b495aadb99d1aa84ec6168` (recomputed).
+- Counts study updated to the per-symbol UNMAPPED sector rule; re-count verified from the cached stage-1 lists (no database read): occupancy model 25.63 entries a month under the new rule against 23.02 before (sector figures recomputed, not carried from the old cache). expected_trade_rate NOT changed.
+- PREREGISTRATION.md finalised (still DRAFT, not registered): K = 2, joint Max-T B = 10,000, blocks 2 and 3 (both), gates hash e9b6407f...8054, decision rule, limitations, registration snippet with two specs.
+- Scripts: research, baseline, benchmark, evaluate_validation_gates (all `*_short_term_reversal.py`, proper copies; the benchmark and gates were thin wrappers of the near_52w_high versions and were replaced). Each output carries asof_view.
+- Tests (fixture lakes only): two new files (14 tests) replace the half-finished `test_run_scripts_short_term_reversal.py`.
+- RUN_COMMANDS.md written (not run).
 
-## Counts headline (2016-2026, measured 2026-11-12)
-59,055 signals (median 10 a session; 658 sessions with more than 25); 1.8% of signals on the 10 worst market days (0.37% if even); 36% of signals have no sector; 10 of 33,108 proposed names in a tie group, none straddling the cut; stop 8.00% fits (minimum 6.67%) but gives 12.5% positions: one per sector, 8 slots by cash. Occupancy model: 37.5 (plain), 27.7 (sector cap), **23.0 (shared) entries a month**. The rule is workable; nothing to stop on.
-
-## Next
-Owner review of the Stage 1 report. Then (not before): the strategy-owned research, B1 and B2 scripts, and the family registration.
+## Next step
+None until the owner replies. Nothing is registered; no real backtest has been run; status `research`.
 
 ## Blockers
 None.
 
-## Decisions needed (owner)
-- "min_bars 10" is implemented as: at least 10 own bars, a bar on the as-of date, and a bar on the exact session 5 calendar sessions back. A name missing the anchor bar is not a signal.
-- ret5 is computed on split/bonus-adjusted closes in the as-of basis and rounded to 12 decimals, so an exact -7.00% or -30.00% is inside the band.
-- Unadjusted corporate actions (demerger, merger, rights, OTHER): only the -0.30 floor guards them, as in the brief; no extra guard.
-- `expected_trade_rate` 23.0 is the `shared` occupancy model; confirm or set another.
-- The study module is under `scripts/strategies/short_term_reversal/` (not `stockbot/data_checks/`) so that no edit of `docs/guides` is needed.
-- The 12.5% position and one-per-sector cap mean the 12-position cap never binds; the 36% UNKNOWN-sector signals share one slot. Not changed (shared rules); flagged for the family review.
-
 ## Limitations
-- Entry gaps below the stop and the 3% gap-up cap need a price after the signal and cannot be counted in a counts-only study.
+See PREREGISTRATION.md section 12 (913 of 1,385 ever-eligible symbols unmapped, no dividends, no historical ASM/GSM, unadjusted demerger/rights actions, memory view for the registered run).
