@@ -18,3 +18,4 @@ Last updated: 2026-11-11 (branch `family-prep`, from origin/master a7aff12).
 Owner reviews; strategy branches start stage 1. Nothing is registered or run.
 
 - 2026-11-12 owner decision: family_batch1 has THREE members (short_term_reversal, trend_breakout_100d, pullback_uptrend), K = 3. low_volatility is set aside (its branch stays unmerged). Register with `--expect-k 3`; the registration snippet in each PREREGISTRATION section 13 lists three specs.
+- 2026-11-14: family_batch1 has TWO members (short_term_reversal, pullback_uptrend), K = 2; trend_breakout_100d set aside (84% overlap with near_52w_high). Shared gates hash e9b6407f908ff102dd25d9bc3b21a78a52b24c0ea082bba2cd3bb08f81188054. Registered runs use STOCKBOT_VIEW=memory (recorded as asof_view in each manifest). Register with --expect-k 2.

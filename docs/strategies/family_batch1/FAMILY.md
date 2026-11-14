@@ -1,14 +1,15 @@
-# family_batch1: three strategies, one family (K = 3)
+# family_batch1: two strategies, one family (K = 2)
 
-Status: **plan, nothing registered, nothing run.** This file fixes the shared rules and the sequence so that three strategy branches can run in parallel and be judged together. It is not a pre-registration; each member keeps its own `PREREGISTRATION.md` in `docs/strategies/<id>/` and the single family registration is written by the owner on master.
+Status: **plan, nothing registered, nothing run.** This file fixes the shared rules and the sequence so that two strategy branches can run in parallel and be judged together. It is not a pre-registration; each member keeps its own `PREREGISTRATION.md` in `docs/strategies/<id>/` and the single family registration is written by the owner on master.
 
-## Members (K = 3)
+## Members (K = 2)
 
 | id | folder | allowed by |
 |---|---|---|
 | `short_term_reversal` | `stockbot/strategies/short_term_reversal/` | `APPROVED_STRATEGY_IDS` in `tests/fixtures/boundaries.py` |
-| `trend_breakout_100d` | `stockbot/strategies/trend_breakout_100d/` | same |
 | `pullback_uptrend` | `stockbot/strategies/pullback_uptrend/` | same |
+
+**Decided (2026-11-14):** `trend_breakout_100d` is NOT a member either: stage 1 showed 84% of its signals were also near_52w_high candidates the same day, and that rule was NOT DEMONSTRATED. Its branch stays unmerged and unregistered.
 
 **Decided (owner, 2026-11-12):** `low_volatility` is NOT a member. It stays on its own branch, unmerged and unregistered (stage 1 showed the 15% sector cap holds a 10% stop to one position per sector, and the 21-session hold overlaps the next monthly signal in 74% of months; its expected edge is also far below the shared 0.15R gate). Its id stays on the allow-list only so that a later, separate family could register it. `near_52w_high` is out too (already registered as its own K = 1 family and run). A strategy not in this family is not corrected with these three.
 
@@ -23,16 +24,16 @@ Status: **plan, nothing registered, nothing run.** This file fixes the shared ru
 - **Sector rule:** a mapped symbol belongs to its sector in `data/reference/sector_map.csv`; every unmapped symbol is its own sector (`UNMAPPED:<SYMBOL>`), so the 15% sector cap never pools unmapped names. The 15% total-risk cap and the 12-position cap are unchanged.
 - **T1 (the decision test):** per member, the paired monthly series D(m) = sum over trades entered in month m of (actual net R minus mean net R of the trade's random draws), one value per month of the window. The **three series are tested together with one Westfall-Young step-down Max-T** (one-sided, alpha 0.05 family-wise, **B = 10,000**, studentized circular block bootstrap, the same block draw applied to all three series, seed **20261111**) at block lengths **2 and 3 months**. A member is "found" only if its adjusted p-value is at most 0.05 at **both** block lengths.
 - **T2:** paired statistics per member; reported only, never a decision input.
-- **T3:** placebo size check of the joint procedure (the T1 pipeline on the B1 draws alone, all three members at once, 1,000 replications); family-wise rejection rate outside 0.025 to 0.075 is labelled "size unreliable" and the owner decides. Nothing is recalibrated.
+- **T3:** placebo size check of the joint procedure (the T1 pipeline on the B1 draws alone, both members at once, 1,000 replications); family-wise rejection rate outside 0.025 to 0.075 is labelled "size unreliable" and the owner decides. Nothing is recalibrated.
 - **Conclusion per member:** DEMONSTRATED only if found by T1 **and** every shared gate is met; otherwise "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)".
-- **Ledger:** one `FAMILY_REGISTRATION` row for all three (budget 3); one `FAMILY_RESULTS` row that carries a result for each of the three members (a missing or extra member is refused). Re-running anything is a new trial and needs a recorded reason and the owner's approval.
+- **Ledger:** one `FAMILY_REGISTRATION` row for both (budget 2); one `FAMILY_RESULTS` row that carries a result for each of the two members (a missing or extra member is refused). Re-running anything is a new trial and needs a recorded reason and the owner's approval.
 
-The tool for T1 to T3 and the gates is `scripts/validate_family.py` (tests: `tests/unit/test_validate_family.py`). On synthetic data, under the null (three or four cross-correlated, heavy-tailed series, 130 months, dual rule) the family-wise rejection rate measured 4.1% to 5.2% (1,000 replications each, B = 1,000), and with an edge planted in one member only that member is found. A stress case with stronger autocorrelation (lag-1 0.2) measured 7.5%; the real series show about 0.08.
+The tool for T1 to T3 and the gates is `scripts/validate_family.py` (tests: `tests/unit/test_validate_family.py`). On synthetic data, under the null (two, three or four cross-correlated, heavy-tailed series, 130 months, dual rule) the family-wise rejection rate measured 4.1% to 5.2% (1,000 replications each, B = 1,000), and with an edge planted in one member only that member is found. A stress case with stronger autocorrelation (lag-1 0.2) measured 7.5%; the real series show about 0.08.
 
 ## Sequence
 
 1. **Stage 1** (each strategy branch, in its own folder only): the strategy, its `SPEC`, tests, its `PREREGISTRATION.md` draft, counts-only study if asked. No return or P&L looked at. No shared file is edited; if one must change, the branch STOPs and tells the owner.
-2. **Owner review** of the three stage-1 reports.
-3. **One registration**: the owner writes a single `FAMILY_REGISTRATION` row (K = 3, spec hashes, shared gate hash) on master. Nothing runs before it.
-4. **Runs**: one registered backtest per member, then its B1 and B2 (same seeds and rules for all three).
-5. **Joint validation**: `py scripts/validate_family.py --member ID=DIR` (three times, `--expect-k 3`, `--lake` for the alpha gate), then one `FAMILY_RESULTS` row with the four results. Report. STOP; the owner and reviewer decide.
+2. **Owner review** of the stage-1 reports.
+3. **One registration**: the owner writes a single `FAMILY_REGISTRATION` row (K = 2, spec hashes, shared gate hash) on master. Nothing runs before it.
+4. **Runs**: one registered backtest per member, then its B1 and B2 (same seeds and rules for both).
+5. **Joint validation**: `py scripts/validate_family.py --member ID=DIR` (twice, `--expect-k 2`, `--lake` for the alpha gate), then one `FAMILY_RESULTS` row with the two results. Report. STOP; the owner and reviewer decide.
