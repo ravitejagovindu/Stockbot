@@ -17,6 +17,7 @@ from stockbot.data.asof import AsOfView, active_view_name
 from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EventData, decide
 from stockbot.engine.exit_policies.registry import policies_for
+from stockbot.overlays import describe_default_overlays
 from stockbot.engine.types import ClosedTrade, Decisions, ExitRecord, State
 from stockbot.risk.costs import CostModel
 
@@ -32,13 +33,16 @@ class BacktestResult:
 
 
 def run_backtest(lake, start: date, end: date, initial_equity: float, strategies: Sequence, policies: Optional[Mapping[str, Any]], shared_config, event_data: EventData, *,
-                 overlays: Optional[Mapping[str, Any]] = None, state: Optional[State] = None, seed: Optional[int] = None) -> BacktestResult:
+                 overlays: Optional[Mapping[str, Any]] = None, state: Optional[State] = None, seed: Optional[int] = None,
+                 default_overlays: Optional[Sequence[str]] = None) -> BacktestResult:
     """``lake`` is a path (opened read-only here) or an already-open read-only connection from ``open_lake``. ``policies=None`` builds the mapping from the strategies' specs (library ids)."""
     if policies is None:
         policies = policies_for([s.spec for s in strategies])
     conn = open_lake(lake) if not hasattr(lake, "execute") else lake
     lake_file = Path(lake) if not hasattr(lake, "execute") else None
     print(f"asof_view: {active_view_name()}", flush=True)
+    effective = describe_default_overlays(shared_config, default_overlays)
+    print("overlays: " + (", ".join(f"{o['id']}@{o['version']}" for o in effective) if effective else "none (default overlays switched off by the runner argument default_overlays=[])"), flush=True)
     end_view = AsOfView(conn, end)
     days = [d for d in end_view.sessions() if start <= d <= end]
     st = state if state is not None else State.initial(initial_equity)
@@ -46,7 +50,7 @@ def run_backtest(lake, start: date, end: date, initial_equity: float, strategies
     curve: dict = {}
     with network_forbidden():
         for d in days:
-            dec, st = decide(d, st, AsOfView(conn, d), strategies, shared_config, event_data, policies=policies, overlays=overlays, strict=True, mode="backtest")
+            dec, st = decide(d, st, AsOfView(conn, d), strategies, shared_config, event_data, policies=policies, overlays=overlays, strict=True, mode="backtest", default_overlays=default_overlays)
             decisions.append(dec)
             curve[d] = st.cash + sum(p.shares_remaining * p.last_close for p in st.positions)
     trades = [c for dec in decisions for c in dec.closed]
@@ -67,5 +71,5 @@ def run_backtest(lake, start: date, end: date, initial_equity: float, strategies
                                       gross, paid, net, "END_OF_WINDOW", p.hold))
         st = replace(st, positions=(), cash=cash, realised_pnl_net=realised)
     manifest = run_manifest(shared_config=shared_config, strategies=strategies, window=(start, end), initial_equity=initial_equity, lake_path=lake_file,
-                            last_session=days[-1] if days else None, seed=seed)
+                            last_session=days[-1] if days else None, seed=seed, default_overlays=default_overlays)
     return BacktestResult(tuple(decisions), st, tuple(trades), curve, tuple(eow), manifest)

@@ -19,7 +19,8 @@ RENAMED = {"portfolio_risk": "risk", "exclusions": "earnings", "live": "trade_ma
 REVIEWED_CHANGES = {"validation_gates.max_drawdown_pct": (15.0, 20.0),       # 2026-11-11, owner: applies to every strategy; paper_criteria.max_drawdown_pct stays 12.0
                     "validation_gates.min_alpha_pct": (-2.0, 0.0)}            # shared-rules B2/B3: renamed from min_alpha_after_tax_pct, now PRE-TAX cash-credited alpha, floor 0.0
 RENAMED_KEYS = {"validation_gates.min_alpha_pct": "min_alpha_after_tax_pct"}   # shared key -> its legacy leaf name
-NEW_KEYS = {"reporting.after_tax_rates_pct"}                                    # shared-rules B2: reporting-only, outside validation_gates; no legacy counterpart
+NEW_KEYS = {"reporting.after_tax_rates_pct", "overlays.default", "overlays.market_switch_v1_trigger_sma_period", "overlays.market_switch_v1_trigger_vix",
+            "overlays.market_switch_v1_reentry_sma_period", "overlays.market_switch_v1_reentry_vix", "overlays.market_switch_v1_reentry_sessions"}   # market-switch: new shared section, numbers from the old macro.* keys (docs/shared/market-switch/BRIEF.md)                                    # shared-rules B2: reporting-only, outside validation_gates; no legacy counterpart
 
 
 def _legacy_path(section: str, key: str):

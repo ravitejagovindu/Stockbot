@@ -151,7 +151,7 @@ def test_overlay_signal_reaches_only_the_declaring_strategy_and_state_persists(l
     decs, st = run_days(lake_path, days(DS[298], DS[301]), [a, b], policies(FixedPolicy()), overlays={"counter": CountingOverlay()})
     assert [a.seen_overlays[d.isoformat()]["counter"]["n"] for d in days(DS[298], DS[301])] == [1, 2, 3, 4]
     assert all(v == {} for v in b.seen_overlays.values())
-    assert st.overlay_state == {"counter": {"n": 4}}
+    assert st.overlay_state["counter"] == {"n": 4} and set(st.overlay_state) == {"counter", "market_switch_v1"}      # the shared default market switch also runs
 
 
 def test_overlay_declaration_must_match_the_registered_version(lake_path):

@@ -246,6 +246,35 @@
    "source": "stockbot/risk/sizing.py::size_position"
   },
   {
+   "id": "overlays",
+   "name": "stockbot.overlays",
+   "kind": "package",
+   "path": "stockbot/overlays",
+   "daily": true,
+   "pos": [
+    130,
+    140
+   ],
+   "oneline": "Market-wide rules the engine applies to every strategy (the market switch).",
+   "meaning": "Shared default overlays. market_switch_v1 is the old kill switch carried over exactly: new entries are blocked while Nifty is below its 200-day average or VIX is above 22, until three qualifying sessions have passed. It is decided on the close and only blocks new entries.",
+   "modules": [
+    {
+     "n": "market_switch.py",
+     "path": "stockbot/overlays/market_switch.py",
+     "d": "market_switch_v1: the rule, its hysteresis and the logged reasons."
+    }
+   ],
+   "reads": "The as-of view (Nifty and VIX closes).",
+   "writes": "Nothing (its state is returned to the engine).",
+   "extra_called_by": "",
+   "may_import": [
+    "data"
+   ],
+   "not_reason": "An overlay reads the as-of view only; it must not know about strategies, the engine, risk or any runner.",
+   "read_more": "C.4",
+   "source": "stockbot/overlays/market_switch.py::MarketSwitch"
+  },
+  {
    "id": "engine",
    "name": "stockbot.engine",
    "kind": "package",
@@ -302,7 +331,8 @@
     "data",
     "universe",
     "risk",
-    "strategies"
+    "strategies",
+    "overlays"
    ],
    "not_reason": "The engine must not know who calls it: backtest, live and validation sit above it.",
    "read_more": "C.5",
@@ -388,6 +418,11 @@
      "n": "no_network.py",
      "path": "stockbot/backtest/no_network.py",
      "d": "Makes any network access raise during a run."
+    },
+    {
+     "n": "outputs.py",
+     "path": "stockbot/backtest/outputs.py",
+     "d": "Writes a run's files; daily.json carries the market-switch state, blocked.json the MARKET_SWITCH blocks."
     }
    ],
    "reads": "The lake (read-only).",
@@ -399,7 +434,8 @@
     "universe",
     "risk",
     "engine",
-    "strategies"
+    "strategies",
+    "overlays"
    ],
    "not_reason": "A backtest must never reach live code or validation; validation sits above it.",
    "read_more": "C.7",

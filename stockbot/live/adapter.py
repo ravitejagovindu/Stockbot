@@ -23,9 +23,10 @@ from stockbot.risk.costs import CostModel
 
 class LiveAdapter:
     def __init__(self, store: StateStore, lake, strategies: Sequence, policies: Mapping[str, Any], shared_config, event_data: EventData, *,
-                 overlays: Optional[Mapping[str, Any]] = None):
+                 overlays: Optional[Mapping[str, Any]] = None, default_overlays: Optional[Sequence[str]] = None):
         refuse_memory_view()
         self.store, self.strategies, self.policies, self.cfg, self.events, self.overlays = store, strategies, policies, shared_config, event_data, overlays
+        self.default_overlays = default_overlays                                 # None = the shared default (market switch); the same decide() call as the backtest
         self.conn = open_lake(lake) if not hasattr(lake, "execute") else lake
         self.costs = CostModel.from_shared(shared_config.costs)
 
@@ -68,7 +69,7 @@ class LiveAdapter:
             sessions = sessions[-1:]                                # first run: no history to replay
         out = []
         for d in sessions:
-            dec, st = decide(d, st, AsOfView(self.conn, d), self.strategies, self.cfg, self.events, policies=self.policies, overlays=self.overlays, strict=False, mode="live")
+            dec, st = decide(d, st, AsOfView(self.conn, d), self.strategies, self.cfg, self.events, policies=self.policies, overlays=self.overlays, strict=False, mode="live", default_overlays=self.default_overlays)
             self.store.append_decisions(dec, st)
             out.append(dec)
         return out

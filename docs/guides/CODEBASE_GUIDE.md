@@ -68,9 +68,10 @@ These are the rules enforced by `tests/unit/test_import_boundaries.py` (rule tab
 | `stockbot.data` | config | all others |
 | `stockbot.universe` | config, data | risk, engine, strategies, backtest, live, validation |
 | `stockbot.risk` | config, data | universe, engine, strategies, backtest, live, validation |
-| `stockbot.engine` | config, data, universe, risk, strategies (only `strategies.base` and registry) | backtest, live, validation |
+| `stockbot.overlays` | data | config, universe, risk, engine, strategies, backtest, live, validation |
+| `stockbot.engine` | config, data, universe, risk, overlays, strategies (only `strategies.base` and registry) | backtest, live, validation |
 | `stockbot.strategies` | data (view types only), plus the one module `stockbot.engine.exit_policy` (the exit-policy interface types, so a strategy can own an exit policy) | everything else, including the shared library `stockbot.engine.exit_policies` |
-| `stockbot.backtest` | config, data, universe, risk, engine, strategies | live, validation |
+| `stockbot.backtest` | config, data, universe, risk, engine, strategies, overlays | live, validation |
 | `stockbot.live` | config, data, universe, risk, engine, strategies, validation | backtest |
 | `stockbot.validation` | config, data, risk, backtest, engine, universe | live, strategies |
 | `stockbot.data_checks` | config, data | all others |
@@ -182,6 +183,18 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
   - `CostModel.from_shared(costs)`; `.buy_cost(value)`, `.sell_cost(value)`, `.tax_on_gain(net_gain)`
   - `compute_trade_r(*, entry_price, stop, shares_initial, pnl_gross, pnl_net, tax_est=0.0) -> dict`; `add_r_columns(df)`
 
+### C.4a `stockbot.overlays`
+
+**Meaning.** Market-wide rules the engine applies to every strategy, named in `shared.yaml` section `overlays` (the shared default). `market_switch_v1` is the old kill switch carried over exactly (see `docs/shared/market-switch/BRIEF.md`): ACTIVE (new entries blocked) when the Nifty close is below its 200-session average or the VIX close is above 22.0; CLEAR again after 3 consecutive sessions with the Nifty above its 20-session average and the VIX below 20.0. It reads the as-of view only, is decided on the close, and never touches open positions.
+
+| module | purpose |
+|---|---|
+| `__init__.py` | `resolve_default_overlays` (the one place configured ids become overlay objects) and `describe_default_overlays` (what the manifest and the config hash record). |
+| `market_switch.py` | `MarketSwitch`: the rule, its hysteresis state and the logged reasons (`NIFTY_BELOW_SMA200`, `VIX_ABOVE_22`, `REENTRY_COUNT n/3`). |
+
+- **Reads:** the as-of view. **Writes:** nothing. **Called by:** `engine.decide`, which backtest, paper and live all call.
+- **Imports:** data only.
+
 ### C.5 `stockbot.engine`
 
 **Meaning.** The heart. One pure function, `decide`, that takes "the state of the portfolio after yesterday" plus "the market as of today's close" and returns "what happened today and what to do tomorrow". Backtest and live both call it. *Pure* means: it has no database, network, clock or randomness of its own, so the same inputs always give the same outputs.
@@ -233,6 +246,7 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 |---|---|
 | `runner.py` | `run_backtest`: one `decide` call per session in strict mode, then closes open positions at the end of the window. |
 | `manifest.py` | `run_manifest`: records what is needed to reproduce a run (config hash, strategy hashes, git SHA, data snapshot id). |
+| `outputs.py` | The run files (`daily.json` with the market-switch state, `blocked.json` with `MARKET_SWITCH` blocks). |
 | `no_network.py` | `network_forbidden()`: a guard that makes any network access raise `NetworkAccessError` during a run. |
 
 - **Reads:** the lake (read-only). **Writes:** nothing (returns a `BacktestResult`). **Called by:** `validation` (results), tests, a future strategy-research script.
@@ -340,6 +354,8 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/evaluate_validation_gates_near_52w_high.py` | Computes every `validation_gates` value for one run and prints it beside the shared gate value (point estimates, 95% block-bootstrap intervals, descriptive sub-periods), the raw and cash-credited alpha, illustrative after-tax alpha and the reported implied annual return. | manual | `stockbot.config.shared`, `stockbot.risk.r_metrics`, `stockbot.validation.benchmark_alpha` |
 | `scripts/baseline_matched_random_near_52w_high.py` | B1: 20 matched random draws per actual trade through `draw_matched_random` and the library exit; forward reads capped; writes the actual trades and the draws as CSV. Read-only on the lake. | manual | `stockbot.validation.random_baseline` |
 | `scripts/validate_near_52w_high.py` | T1 (Max-T on entry-month sums, blocks 2 and 3), T2 (paired statistics, reported only), T3 (placebo size check) and the descriptive sub-periods. Reads CSV and JSON only; opens no database. | manual | `stockbot.validation.max_t_bootstrap`, `stockbot.validation.paired_stats` |
+| `scripts/run_with_market_switch.py` | Engine-only comparison runner: one strategy, with the shared default overlays (`--overlays default`) or without (`--overlays none`); writes the run files. | manual | `stockbot.backtest.runner`, `stockbot.backtest.outputs`, `stockbot.overlays` |
+| `scripts/market_switch_stats.py` | Descriptive statistics of the market switch on the real Nifty and VIX series (sessions ACTIVE and CLEAR, flips, periods) and the index-only comparison with cash while ACTIVE. Read-only. | manual | `stockbot.overlays`, `stockbot.data.asof` |
 | `scripts/validate_family.py` | Joint validation of a family of K strategies: T1 with ONE Westfall-Young Max-T across the K monthly-sum series (blocks 2 and 3, B 10,000, fixed seed, both must be significant), T2, the T3 placebo size check of the joint procedure, and the shared gates per member. Reads CSV and JSON only; opens the lake (index closes, read-only) only with `--lake`. See `docs/strategies/family_batch1/FAMILY.md`. | manual | `stockbot.validation.max_t_bootstrap`, `stockbot.validation.paired_stats`, `scripts/validate_near_52w_high.py` |
 | `scripts/paper_report.py` | Paper-trading criteria report. | manual | `stockbot.live.paper_report` |
 | `scripts/preflight_spot_check.py` | Data and adjustment spot checks. | manual | `stockbot.data_checks.preflight_spot_check` |

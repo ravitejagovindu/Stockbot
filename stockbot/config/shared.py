@@ -13,7 +13,7 @@ from typing import Any, Mapping, Optional
 import yaml
 
 SHARED_YAML = Path(__file__).resolve().parent / "shared.yaml"
-NON_OVERRIDABLE = frozenset({"runtime", "data", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "reporting", "paper_criteria"})
+NON_OVERRIDABLE = frozenset({"runtime", "data", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "reporting", "paper_criteria", "overlays"})
 
 
 @dataclass(frozen=True)
@@ -119,6 +119,18 @@ class PaperCriteria:
 
 
 @dataclass(frozen=True)
+class OverlaysConfig:
+    """Shared default overlays (market switch). ``default`` names the overlays the engine applies to EVERY strategy in backtest, paper and live; the five numbers are the old kill
+    switch's, carried over unchanged (macro.nifty_kill_sma_period, vix_kill_threshold, nifty_reentry_sma_period, vix_reentry_threshold, reentry_consecutive_sessions)."""
+    default: tuple
+    market_switch_v1_trigger_sma_period: int
+    market_switch_v1_trigger_vix: float
+    market_switch_v1_reentry_sma_period: int
+    market_switch_v1_reentry_vix: float
+    market_switch_v1_reentry_sessions: int
+
+
+@dataclass(frozen=True)
 class SharedConfig:
     runtime: RuntimeConfig
     data: DataConfig
@@ -132,6 +144,7 @@ class SharedConfig:
     validation_gates: ValidationGates
     reporting: ReportingConfig
     paper_criteria: PaperCriteria
+    overlays: OverlaysConfig
 
     def flat(self) -> dict[str, Any]:
         """{'section.key': value} for every scalar setting (the backtest windows as 'backtest.regimes' = list of dicts)."""
@@ -140,7 +153,7 @@ class SharedConfig:
             obj = getattr(self, sec.name)
             for f in fields(obj):
                 v = getattr(obj, f.name)
-                out[f"{sec.name}.{f.name}"] = [dict(name=w.name, role=w.role, start=w.start, end=w.end) for w in v] if f.name == "regimes" else v
+                out[f"{sec.name}.{f.name}"] = [dict(name=w.name, role=w.role, start=w.start, end=w.end) for w in v] if f.name == "regimes" else list(v) if f.name == "default" else v
         return out
 
 
@@ -161,9 +174,12 @@ def parse_shared_config(raw: Mapping[str, Any]) -> SharedConfig:
     rep = dict(raw["reporting"])
     if isinstance(rep.get("after_tax_rates_pct"), (list, tuple)):
         rep["after_tax_rates_pct"] = tuple(float(x) if isinstance(x, (int, float)) and not isinstance(x, bool) else x for x in rep["after_tax_rates_pct"])
+    ov = dict(raw["overlays"])
+    if isinstance(ov.get("default"), (list, tuple)):
+        ov["default"] = tuple(ov["default"])
     parts = {}
     for f in fields(SharedConfig):
-        d = bt if f.name == "backtest" else rep if f.name == "reporting" else raw[f.name]
+        d = bt if f.name == "backtest" else rep if f.name == "reporting" else ov if f.name == "overlays" else raw[f.name]
         parts[f.name] = _build(f.type if not isinstance(f.type, str) else globals()[f.type], d, f.name)
     cfg = SharedConfig(**parts)
     _validate(cfg)
@@ -190,6 +206,12 @@ def _validate(c: SharedConfig) -> None:
     rates = c.reporting.after_tax_rates_pct
     if not isinstance(rates, tuple) or any(not isinstance(x, float) or not (0.0 <= x < 100.0) for x in rates):
         raise ValueError("reporting.after_tax_rates_pct must be a list of rates in [0, 100)")
+    o = c.overlays
+    if not isinstance(o.default, tuple) or any(x not in ("market_switch_v1",) for x in o.default) or len(set(o.default)) != len(o.default):
+        raise ValueError("overlays.default must list known overlay ids (market_switch_v1) without repeats")
+    if not (o.market_switch_v1_trigger_sma_period >= 2 and o.market_switch_v1_reentry_sma_period >= 2 and o.market_switch_v1_reentry_sessions >= 1
+            and o.market_switch_v1_trigger_vix > 0 and o.market_switch_v1_reentry_vix > 0):
+        raise ValueError("overlays.market_switch_v1 numbers out of range")
     roles = [w.role for w in c.backtest.regimes]
     if any(r not in ("TUNE", "TEST") for r in roles) or "TEST" not in roles:
         raise ValueError("backtest.regimes: roles must be TUNE/TEST and include a TEST window")

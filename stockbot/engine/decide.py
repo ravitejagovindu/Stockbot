@@ -28,6 +28,7 @@ from stockbot.engine.exit_policy import Bar
 from stockbot.engine.fills import fill_ticket
 from stockbot.engine.stepping import step_position
 from stockbot.engine.types import Blocked, ClosedTrade, CorporateActionApplied, Decisions, Flag, PositionUpdate, State, Ticket
+from stockbot.overlays import resolve_default_overlays
 from stockbot.risk.arbitration import OpenPos, Proposal as RiskProposal, admission_order, arbitrate
 from stockbot.risk.caps import CapLimits
 from stockbot.risk.costs import CostModel
@@ -76,7 +77,9 @@ def _validate_session(as_of: date, state: State, view) -> None:
 
 
 def decide(as_of: date, state: State, view, strategies: Sequence, shared_config, event_data: EventData, *, policies: Mapping[str, Any],
-           overlays: Optional[Mapping[str, Any]] = None, strict: bool = True, mode: str = "backtest") -> tuple[Decisions, State]:
+           overlays: Optional[Mapping[str, Any]] = None, strict: bool = True, mode: str = "backtest",
+           default_overlays: Optional[Sequence[str]] = None) -> tuple[Decisions, State]:
+    """``default_overlays``: ids of the shared default overlays (market switch). None = the shared config's list; [] = explicitly none (a comparison run without them)."""
     if mode not in MODES:
         raise EngineInputError(f"mode must be one of {MODES}")
     _validate_session(as_of, state, view)
@@ -126,7 +129,17 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
             declared[oid] = ver
     overlay_state = dict(state.overlay_state)
     signals: dict = {}
+    shared_ov = resolve_default_overlays(shared_config, default_overlays)         # market-wide: every strategy, one code path for backtest, paper and live
+    blocking: dict = {}
+    for oid in sorted(shared_ov):
+        ov = shared_ov[oid]
+        sig, overlay_state[oid] = ov.evaluate(view, overlay_state.get(oid, {}))    # not guarded: a data error stops the session in every mode, as the old kill switch did
+        signals[oid] = sig
+        if sig.get("block_entries"):
+            blocking[oid] = sig.get("block_reason", "MARKET_SWITCH")
     for oid in sorted(declared):
+        if oid in shared_ov:
+            continue
         ov = overlays.get(oid)
         if ov is None or ov.version != declared[oid]:
             raise EngineInputError(f"overlay {oid}@{declared[oid]} declared but {'missing' if ov is None else 'registered as ' + ov.version}")
@@ -235,6 +248,9 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
                 continue
             if (sid, p.symbol) in originals:
                 blocked.append(Blocked(sid, p.symbol, "DUPLICATE_PROPOSAL", "propose"))
+                continue
+            if blocking:                                                  # market switch ACTIVE: new entries are blocked (open positions are managed as before)
+                blocked.append(Blocked(sid, p.symbol, sorted(blocking.values())[0], "overlay"))
                 continue
             size = size_position(equity=equity, risk_pct=pr.max_loss_pct_per_trade, entry=p.reference_price, stop=p.stop)
             if not size.ok:

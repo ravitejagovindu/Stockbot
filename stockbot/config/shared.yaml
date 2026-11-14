@@ -83,3 +83,16 @@ paper_criteria:
   min_profit_factor: 1.2
   max_drawdown_pct: 12.0
   max_skipped_ticket_rate: 0.40
+
+# Shared default overlays: applied to EVERY strategy by backtest, paper and live through the one engine call (stockbot.engine.decide). market_switch_v1 is the OLD kill switch carried over
+# exactly (scripts/provenance/regime/regime_filter.py; values from the old strategy_config.yaml macro section, config value wins over the old docstring/README "VIX 20 / SMA50"):
+#   ACTIVE (new entries blocked) when Nifty close < SMA(trigger_sma_period) OR India VIX close > trigger_vix (strict);
+#   CLEAR again after reentry_sessions CONSECUTIVE sessions with Nifty close > SMA(reentry_sma_period) AND VIX close < reentry_vix (strict); any miss resets the count.
+# Decided on the session close, applies to entries at the next open. Open positions are unaffected. Explicit opt-out for comparison: the runner argument default_overlays=[].
+overlays:
+  default: [market_switch_v1]
+  market_switch_v1_trigger_sma_period: 200     # macro.nifty_kill_sma_period
+  market_switch_v1_trigger_vix: 22.0           # macro.vix_kill_threshold
+  market_switch_v1_reentry_sma_period: 20      # macro.nifty_reentry_sma_period
+  market_switch_v1_reentry_vix: 20.0           # macro.vix_reentry_threshold
+  market_switch_v1_reentry_sessions: 3         # macro.reentry_consecutive_sessions

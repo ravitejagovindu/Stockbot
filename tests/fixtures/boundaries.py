@@ -12,7 +12,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-PACKAGES = ("config", "data", "universe", "risk", "engine", "strategies", "backtest", "live", "validation", "data_checks")
+PACKAGES = ("config", "data", "universe", "risk", "engine", "strategies", "overlays", "backtest", "live", "validation", "data_checks")
 LEGACY_TOP = ("data", "engine_core", "live_runner", "backtest", "config", "logging_config", "scripts", "tests")
 # which stockbot packages each stockbot package may import (itself is always allowed)
 ALLOWED = {
@@ -20,9 +20,10 @@ ALLOWED = {
     "data": {"config"},
     "universe": {"config", "data"},
     "risk": {"config", "data"},
-    "engine": {"config", "data", "universe", "risk", "strategies"},
+    "overlays": {"data"},                        # market-wide rules the engine applies to every strategy (market switch); reads the as-of view and indicators only
+    "engine": {"config", "data", "universe", "risk", "strategies", "overlays"},
     "strategies": {"data"},                      # plus the single engine module in STRATEGY_ENGINE_ALLOWED
-    "backtest": {"config", "data", "universe", "risk", "engine", "strategies"},
+    "backtest": {"config", "data", "universe", "risk", "engine", "strategies", "overlays"},
     "live": {"config", "data", "universe", "risk", "engine", "strategies", "validation"},          # never backtest; validation: trade-R reporting used by the (legacy) analytics routers
     "validation": {"config", "data", "risk", "backtest", "engine", "universe"},     # never live; risk: R definitions (Q2); engine + universe: the baseline reuses the engine stepping and the shared eligibility (Q5)
     "data_checks": {"config", "data"},
