@@ -62,7 +62,8 @@ def test_the_spec_carries_every_number_the_owner_fixed():
     assert (SPEC.id, SPEC.version, SPEC.status, SPEC.exit_policy) == ("pullback_uptrend", "1.0.0", "research", "fixed_hold_5")
     assert SPEC.params == {"min_bars": 250, "sma_period": 200, "sma_min_closes": 198, "rsi_period": 2, "rsi_max": 10.0, "top_n": 25, "stop_fraction": 0.92, "tie_adtv_sessions": 20}
     assert SPEC.universe_overrides == {} and SPEC.overlays == {}
-    assert SPEC.validation_ref is None and SPEC.smallest_edge_of_interest is None         # the owner supplies the edge; nothing is invented
+    assert SPEC.validation_ref is None and SPEC.smallest_edge_of_interest == 0.15 and SPEC.expected_trade_rate == 31.7        # the owner's final values
+    assert SPEC.prereg_ref == "docs/strategies/pullback_uptrend/PREREGISTRATION.md"
 
 
 @pytest.mark.parametrize("key,value", [("min_bars", 249), ("sma_period", 199), ("sma_min_closes", 197), ("rsi_period", 3), ("rsi_max", 9.0), ("top_n", 24), ("stop_fraction", 0.93), ("tie_adtv_sessions", 21)])

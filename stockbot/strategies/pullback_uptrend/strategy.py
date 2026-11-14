@@ -31,10 +31,10 @@ SPEC = StrategySpec(
     universe_overrides={},
     exit_policy="fixed_hold_5",
     status="research",
-    prereg_ref=None,
+    prereg_ref="docs/strategies/pullback_uptrend/PREREGISTRATION.md",     # the config hash covers it
     validation_ref=None,
-    expected_trade_rate=None,           # set by the owner from the stage-1 counts
-    smallest_edge_of_interest=None,     # the owner supplies it; never invented here
+    expected_trade_rate=31.7,           # trades per month: the stage-1 occupancy model with the sector cap; the owner set 31.7 (final)
+    smallest_edge_of_interest=0.15,     # R per trade, net of costs: the owner set 0.15 (final)
 )
 
 
