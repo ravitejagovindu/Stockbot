@@ -11,3 +11,29 @@ Next
 
 Blockers
 - Engine speed target: remaining time is pandas overhead in adtv and adjusted_bars (logic fixed by the brief).
+
+## Running with the fast view
+The default is still the SQL view. The memory view is chosen by one environment variable, `STOCKBOT_VIEW=memory`. Every run records which view it used (`asof_view` in the run manifest, and a line `asof_view: ...` at the start of the run).
+
+Windows cmd:
+```
+set STOCKBOT_DB=F:\Projects\Ravi\StockBot\finsight.db
+set STOCKBOT_VIEW=memory
+py -3 scripts\research_near_52w_high.py --start 2016-01-01 --end 2026-09-30 --out OUTDIR --execute
+py -3 scripts\baseline_matched_random_near_52w_high.py --run-dir OUTDIR --out-dir BASEDIR
+```
+Git Bash:
+```
+export STOCKBOT_DB='F:\Projects\Ravi\StockBot\finsight.db'
+export STOCKBOT_VIEW=memory
+py -3 scripts/research_near_52w_high.py --start 2016-01-01 --end 2026-09-30 --out OUTDIR --execute
+py -3 scripts/baseline_matched_random_near_52w_high.py --run-dir OUTDIR --out-dir BASEDIR
+```
+Leave `STOCKBOT_VIEW` unset (or `sql`) for the SQL view. The live path refuses the memory view with an error.
+
+What to expect, per process:
+- Engine-only full 2016-2026 run: about 55 minutes (SQL view: about 4 hours).
+- Matched-random baseline: about 22 minutes (SQL view: about 2 hours).
+- First read of the lake file when it is not in the disk cache: up to 16 minutes extra, once per process.
+- Memory: about 1 GB per process (peak 995 MB measured).
+- Run at most two at once.
