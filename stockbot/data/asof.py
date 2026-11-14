@@ -62,13 +62,22 @@ def _d(v) -> date:
     return date.fromisoformat(str(v)[:10])
 
 
+def active_view_name() -> str:
+    """Which as-of view the switch selects: "memory" when STOCKBOT_VIEW=memory, otherwise "sql". The one place the variable is read (run manifests and the live guard use this too)."""
+    return "memory" if os.environ.get("STOCKBOT_VIEW", "").strip().lower() == "memory" else "sql"
+
+
 class AsOfView:
     def __new__(cls, *args, **kwargs):
         """THE switch between the SQL view and the in-memory view (``STOCKBOT_VIEW=memory``, see ``stockbot.data.asof_memory``); unset or anything else = this SQL view.
-        Only a direct ``AsOfView(...)`` call is redirected; a subclass (``MemoryAsOfView``, a script's own subclass) is built as itself."""
-        if cls is AsOfView and os.environ.get("STOCKBOT_VIEW", "").strip().lower() == "memory":
-            from stockbot.data.asof_memory import MemoryAsOfView
-            return object.__new__(MemoryAsOfView)
+        A direct ``AsOfView(...)`` call becomes a ``MemoryAsOfView``; a subclass of ``AsOfView`` (a script's own capped view) is built as the same subclass on top of
+        ``MemoryAsOfView`` (its overrides still win, its ``super()`` reaches the in-memory fetches). ``MemoryAsOfView`` and classes already derived from it are built as themselves."""
+        if active_view_name() == "memory":
+            from stockbot.data.asof_memory import MemoryAsOfView, memory_variant
+            if cls is AsOfView:
+                return object.__new__(MemoryAsOfView)
+            if not issubclass(cls, MemoryAsOfView):
+                return object.__new__(memory_variant(cls))
         return object.__new__(cls)
 
     def __init__(self, conn, as_of: date):

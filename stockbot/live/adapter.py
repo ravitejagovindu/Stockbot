@@ -16,6 +16,7 @@ from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EventData, decide
 from stockbot.engine.reports import ExitReport, FillReport, NotTakenReport, ReportError, apply_effect, exit_effect, fill_effect, not_taken_effect
 from stockbot.engine.types import Decisions, State
+from stockbot.live import refuse_memory_view
 from stockbot.live.state_store import StateStore
 from stockbot.risk.costs import CostModel
 
@@ -23,6 +24,7 @@ from stockbot.risk.costs import CostModel
 class LiveAdapter:
     def __init__(self, store: StateStore, lake, strategies: Sequence, policies: Mapping[str, Any], shared_config, event_data: EventData, *,
                  overlays: Optional[Mapping[str, Any]] = None):
+        refuse_memory_view()
         self.store, self.strategies, self.policies, self.cfg, self.events, self.overlays = store, strategies, policies, shared_config, event_data, overlays
         self.conn = open_lake(lake) if not hasattr(lake, "execute") else lake
         self.costs = CostModel.from_shared(shared_config.costs)

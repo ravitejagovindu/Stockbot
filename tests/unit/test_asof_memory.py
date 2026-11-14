@@ -157,8 +157,10 @@ def test_the_switch_selects_the_view_and_defaults_to_sql(lake, monkeypatch):
     v = AsOfView(conn, DS[300])
     assert type(v) is MemoryAsOfView and isinstance(v, AsOfView) and v.as_of == DS[300]
 
-    class Mine(AsOfView):                                                       # a subclass is built as itself (e.g. a script's own capped view)
+    class Mine(AsOfView):                                                       # a subclass keeps its own overrides and sits on the memory view (see test_fast_view_followup)
         pass
+    assert isinstance(Mine(conn, DS[300]), Mine) and isinstance(Mine(conn, DS[300]), MemoryAsOfView)
+    monkeypatch.setenv("STOCKBOT_VIEW", "sql")
     assert type(Mine(conn, DS[300])) is Mine
 
 

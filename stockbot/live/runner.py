@@ -25,6 +25,7 @@ from stockbot.data.sector_map import SectorLookup  # noqa: F401  (the shared loo
 from stockbot.engine.decide import EventData
 from stockbot.engine.exit_policies.registry import policies_for
 from stockbot.engine.types import Decisions, to_plain
+from stockbot.live import refuse_memory_view
 from stockbot.live.adapter import LiveAdapter
 from stockbot.live.state_store import StateStore
 
@@ -126,6 +127,7 @@ class RunResult:
 
 def run_eod(*, cfg, book: Book, as_of: Optional[date] = None, store: Optional[StateStore] = None, lake: Optional[Path] = None, out_dir: Optional[Path] = None,
             reports: Sequence = (), mode: Optional[str] = None, today: Optional[date] = None) -> RunResult:
+    refuse_memory_view()
     mode = str(mode or cfg.runtime.mode).upper()
     strategies = strategies_for_mode(book, mode)
     as_of = as_of or expected_session(today or date.today())

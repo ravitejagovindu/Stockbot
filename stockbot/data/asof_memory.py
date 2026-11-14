@@ -187,3 +187,14 @@ class MemoryAsOfView(AsOfView):
         if n == 0:
             return None, 0
         return self._t.dates[int(days[0]) - self._t.date_base], n
+
+
+_VARIANTS: dict = {}
+
+
+def memory_variant(cls):
+    """``cls`` (a subclass of ``AsOfView``) rebuilt on top of ``MemoryAsOfView``: same name and module, its own methods first, the in-memory fetches behind them."""
+    got = _VARIANTS.get(cls)
+    if got is None:
+        got = _VARIANTS[cls] = type(cls.__name__, (cls, MemoryAsOfView), {"__module__": cls.__module__, "__qualname__": cls.__qualname__, "__doc__": cls.__doc__})
+    return got
