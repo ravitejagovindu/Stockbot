@@ -1,0 +1,45 @@
+{
+ "draws_per_trade": 20,
+ "min_filled": 10,
+ "seed": 20261111,
+ "policy": "fixed_hold_5",
+ "usable_trades": 4144,
+ "pairs_kept": 4135,
+ "dropped_pairs": 9,
+ "share_dropped": 0.002171814671814672,
+ "flag": null,
+ "draws_total": 81085,
+ "unfilled": {
+  "CORP_ACTION_ON_EXEC_DATE": 515,
+  "GAP_UP_TOO_LARGE": 930,
+  "GAP_THROUGH_STOP": 256,
+  "NO_BAR_OR_ALREADY_HELD": 25,
+  "OPEN_AT_END": 21,
+  "SIZE_ZERO": 48
+ },
+ "end_of_window": 9,
+ "excluded_ca": 3,
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "spec_config_hash": "81db6427ebc9e11980c2cbbfb86720c7e1e68eeb27073b05c95cc64ce4207044",
+ "asof_view": "memory",
+ "finsight_db": {
+  "before": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "after": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "unchanged": true
+ }
+}
