@@ -44,8 +44,8 @@ def test_sector_map_lookup():
     sec_hdfc = sector_for("HDFCBANK")
     assert sec_hdfc == "FINANCIALS"
 
-    # Unknown stock maps to UNKNOWN
-    assert sector_for("NON_EXISTENT_TICKER_XYZ") == "UNKNOWN"
+    # An unmapped stock is its own sector (the pooled UNKNOWN bucket is gone; see tests/unit/test_sector_map.py)
+    assert sector_for("NON_EXISTENT_TICKER_XYZ") == "UNMAPPED:NON_EXISTENT_TICKER_XYZ"
 
 
 # ---------------------------------------------------------------------------

@@ -12,6 +12,8 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Mapping, Optional, Sequence
 
+from stockbot.data.asof import active_view_name
+
 
 def shared_config_hash(shared_config) -> str:
     return hashlib.sha256(json.dumps(shared_config.flat(), sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")).hexdigest()
@@ -39,6 +41,7 @@ def run_manifest(*, shared_config, strategies: Sequence, window: tuple, initial_
         "git_sha": sha if sha is not None else git_sha(),
         "data_snapshot": data_snapshot_id(lake_path, last_session) if lake_path is not None else None,
         "seed": seed,
+        "asof_view": active_view_name(),
         "window": [window[0].isoformat(), window[1].isoformat()],
         "initial_equity": initial_equity,
     }

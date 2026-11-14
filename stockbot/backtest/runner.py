@@ -13,7 +13,7 @@ from typing import Any, Mapping, Optional, Sequence
 
 from stockbot.backtest.manifest import run_manifest
 from stockbot.backtest.no_network import network_forbidden
-from stockbot.data.asof import AsOfView
+from stockbot.data.asof import AsOfView, active_view_name
 from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EventData, decide
 from stockbot.engine.exit_policies.registry import policies_for
@@ -38,6 +38,7 @@ def run_backtest(lake, start: date, end: date, initial_equity: float, strategies
         policies = policies_for([s.spec for s in strategies])
     conn = open_lake(lake) if not hasattr(lake, "execute") else lake
     lake_file = Path(lake) if not hasattr(lake, "execute") else None
+    print(f"asof_view: {active_view_name()}", flush=True)
     end_view = AsOfView(conn, end)
     days = [d for d in end_view.sessions() if start <= d <= end]
     st = state if state is not None else State.initial(initial_equity)

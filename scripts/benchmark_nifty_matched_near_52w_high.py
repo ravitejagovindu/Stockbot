@@ -1,8 +1,11 @@
 """B2 benchmark for the near_52w_high validation: the Nifty matched to the strategy's own invested share, with the risk-free rate on the rest, and the annualised alpha against it.
 
 Daily benchmark return = s(t-1) x Nifty close-to-close return + (1 - s(t-1)) x risk_free_pct / 100 / 252, where s is the strategy's invested share of equity at the previous close
-(1 - cash / equity, from the run's daily.json). The run's mean share held constant is the second, reported variant. Both sides are price returns (the lake has no dividends); the tax rate
-is a parameter (the shared ltcg_tax_pct, 0.0), so after-tax equals pre-tax today.
+(1 - cash / equity, from the run's daily.json). The run's mean share held constant is the second, reported variant. Both sides are price returns (the lake has no dividends).
+
+The strategy side is credited the same way (shared-rules B1): its idle cash at the previous close earns risk_free_pct / 100 / 252 per day, applied AFTER THE FACT on the recorded equity and
+cash (it does not feed back into sizing). The formulas live in ONE module, stockbot/validation/benchmark_alpha.py; this script is a thin wrapper. Alpha is printed raw (no credit) and
+cash-credited (the gate value, pre-tax); after-tax lines at reporting.after_tax_rates_pct are illustrative, not tax advice, and decide nothing.
 
   py scripts/benchmark_nifty_matched_near_52w_high.py --run-dir DIR --lake PATH [--out-json FILE]
 
@@ -21,41 +24,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.data.asof import AsOfView  # noqa: E402
 from stockbot.data.lake import open_lake  # noqa: E402
+from stockbot.validation.benchmark_alpha import TRADING_DAYS, alpha_pct, alpha_report, benchmark_returns, cash_credited_equity, invested_share  # noqa: E402,F401  (the one shared implementation)
 
 NIFTY = "NIFTY50_INDEX"
-TRADING_DAYS = 252
-
-
-def invested_share(equity: pd.Series, cash: pd.Series) -> pd.Series:
-    """Share of equity not in cash at each close, clipped to 0..1."""
-    return (1.0 - cash / equity).clip(lower=0.0, upper=1.0)
-
-
-def benchmark_returns(nifty: pd.Series, share: pd.Series, risk_free_pct: float, *, constant_share: bool = False, trading_days: int = TRADING_DAYS) -> pd.Series:
-    """Daily benchmark returns from the second common date on; each day uses the share at the PREVIOUS close."""
-    idx = sorted(set(nifty.index) & set(share.index))
-    nifty, share = nifty.loc[idx], share.loc[idx]
-    if constant_share:
-        share = pd.Series(float(share.mean()), index=pd.Index(idx))
-    ret = nifty.pct_change().iloc[1:]
-    prev = share.shift(1).iloc[1:]
-    rf = risk_free_pct / 100.0 / trading_days
-    return prev * ret + (1.0 - prev) * rf
-
-
-def _after_tax_end(start: float, end: float, tax_pct: float) -> float:
-    return start + (end - start) * (1.0 - tax_pct / 100.0) if end > start else end
-
-
-def alpha_pct(strategy_equity: pd.Series, bench_returns: pd.Series, *, tax_pct: float = 0.0) -> dict:
-    """Annualised alpha in percentage points: strategy CAGR minus benchmark CAGR over the strategy's first to last date (365.25-day years), each after tax on a gain."""
-    first, last = strategy_equity.index[0], strategy_equity.index[-1]
-    years = (last - first).days / 365.25
-    s0, s1 = float(strategy_equity.iloc[0]), float(strategy_equity.iloc[-1])
-    b0, b1 = 1.0, float((1.0 + bench_returns).prod())
-    s1, b1 = _after_tax_end(s0, s1, tax_pct), _after_tax_end(b0, b1, tax_pct)
-    cs, cb = 100.0 * ((s1 / s0) ** (1.0 / years) - 1.0), 100.0 * ((b1 / b0) ** (1.0 / years) - 1.0)
-    return {"years": years, "strategy_cagr_pct": cs, "benchmark_cagr_pct": cb, "alpha_pct": cs - cb}
 
 
 def load_daily(run_dir: Path) -> tuple:
@@ -79,14 +50,18 @@ def main(argv=None) -> int:
     ap.add_argument("--lake")
     ap.add_argument("--out-json")
     args = ap.parse_args(argv)
-    gates = load_shared_config().validation_gates
+    cfg = load_shared_config()
+    gates = cfg.validation_gates
     equity, cash = load_daily(Path(args.run_dir))
     nifty = nifty_closes(args.lake, equity.index[0], equity.index[-1])
     share = invested_share(equity, cash)
     out = {}
     for tag, const in (("daily_share", False), ("constant_share", True)):
         b = benchmark_returns(nifty, share, gates.risk_free_pct, constant_share=const)
-        out[tag] = alpha_pct(equity, b, tax_pct=gates.ltcg_tax_pct)
+        rep = {"raw": alpha_pct(equity, b), "cash_credited_pre_tax": alpha_pct(cash_credited_equity(equity, cash, gates.risk_free_pct), b)}
+        rep["after_tax_illustrative_not_tax_advice"] = {str(float(t)): alpha_pct(cash_credited_equity(equity, cash, gates.risk_free_pct), b, tax_pct=float(t)) for t in cfg.reporting.after_tax_rates_pct}
+        out[tag] = rep
+    out["gate_alpha_pct"] = out["daily_share"]["cash_credited_pre_tax"]["alpha_pct"]
     out["mean_invested_share"] = float(share.mean())
     print(json.dumps(out, indent=1))
     if args.out_json:

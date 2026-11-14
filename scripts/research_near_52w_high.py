@@ -1,5 +1,5 @@
 """Research wiring for the near_52w_high strategy: ONE run of stockbot.backtest.runner.run_backtest with the shared config, the exit policy the strategy's spec names (fixed_hold_40, built by
-run_backtest from the spec because policies=None), and the sector lookup live uses (SectorLookup over data/reference/sector_map.csv; unmapped symbols share UNKNOWN).
+run_backtest from the spec because policies=None), and the shared sector lookup (SectorLookup over data/reference/sector_map.csv; every unmapped symbol is its own sector, UNMAPPED:<symbol>).
 
 It does NOT run unless --execute is given: without it the script only prints the plan (window, spec hash, shared-config hash). There is no parameter sweep and no loop over variants:
 one strategy, one spec, one window. The registered run is STOP 4 of the task; STOP 2 only proves the wiring on a fixture lake in tests/unit/test_research_near_52w_high.py.
@@ -24,7 +24,7 @@ from stockbot.backtest.runner import run_backtest  # noqa: E402
 from stockbot.config.paths import lake_path  # noqa: E402
 from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.engine.decide import EventData  # noqa: E402
-from stockbot.live.runner import SectorLookup  # noqa: E402
+from stockbot.data.sector_map import SectorLookup  # noqa: E402
 from stockbot.strategies.near_52w_high import NearHighStrategy, register  # noqa: E402
 from stockbot.strategies.registry import StrategyRegistry  # noqa: E402
 

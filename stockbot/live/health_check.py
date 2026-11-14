@@ -16,10 +16,12 @@ from typing import Optional, Sequence
 from stockbot.config.paths import lake_path, state_db_path
 from stockbot.data.asof import AsOfView
 from stockbot.data.lake import open_lake
+from stockbot.live import refuse_memory_view
 from stockbot.live.state_store import StateStore, StateStoreError
 
 
 def check(conn, store: StateStore, today: date, *, max_stale_days: int = 4, unreconciled_days: int = 3) -> list:
+    refuse_memory_view()
     problems = []
     ses = AsOfView(conn, today).sessions(lookback=unreconciled_days + 1)
     latest = ses[-1] if ses else None
