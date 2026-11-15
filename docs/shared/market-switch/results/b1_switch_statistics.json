@@ -1,0 +1,492 @@
+{
+ "asof_view": "sql",
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "sessions": 2674,
+ "active": 881,
+ "clear": 1793,
+ "share_active_pct": 32.94689603590127,
+ "flips_total": 117,
+ "activations": 59,
+ "periods": [
+  {
+   "start": "2016-02-10",
+   "end": "2016-03-02",
+   "sessions": 16,
+   "calendar_days": 22,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2016-11-15",
+   "end": "2016-12-09",
+   "sessions": 19,
+   "calendar_days": 25,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2016-12-14",
+   "end": "2017-01-02",
+   "sessions": 14,
+   "calendar_days": 20,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2017-01-04",
+   "end": "2017-01-06",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-03-19",
+   "end": "2018-04-06",
+   "sessions": 13,
+   "calendar_days": 19,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-10-04",
+   "end": "2018-11-01",
+   "sessions": 20,
+   "calendar_days": 29,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-11-05",
+   "end": "2018-11-07",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-11-12",
+   "end": "2018-11-14",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-11-16",
+   "end": "2018-11-20",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-11-22",
+   "end": "2018-11-28",
+   "sessions": 4,
+   "calendar_days": 7,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-12-06",
+   "end": "2018-12-13",
+   "sessions": 6,
+   "calendar_days": 8,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2018-12-21",
+   "end": "2018-12-28",
+   "sessions": 5,
+   "calendar_days": 8,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-01-03",
+   "end": "2019-01-09",
+   "sessions": 5,
+   "calendar_days": 7,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-01-11",
+   "end": "2019-01-16",
+   "sessions": 4,
+   "calendar_days": 6,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-01-23",
+   "end": "2019-02-01",
+   "sessions": 8,
+   "calendar_days": 10,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-02-12",
+   "end": "2019-03-05",
+   "sessions": 15,
+   "calendar_days": 22,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-04-18",
+   "end": "2019-05-24",
+   "sessions": 24,
+   "calendar_days": 37,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-07-30",
+   "end": "2019-08-27",
+   "sessions": 19,
+   "calendar_days": 29,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-08-29",
+   "end": "2019-09-11",
+   "sessions": 8,
+   "calendar_days": 14,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-09-13",
+   "end": "2019-09-23",
+   "sessions": 7,
+   "calendar_days": 11,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2019-10-04",
+   "end": "2019-10-10",
+   "sessions": 4,
+   "calendar_days": 7,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2020-02-26",
+   "end": "2020-08-24",
+   "sessions": 122,
+   "calendar_days": 181,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2020-08-31",
+   "end": "2020-10-05",
+   "sessions": 25,
+   "calendar_days": 36,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2020-10-15",
+   "end": "2020-11-14",
+   "sessions": 23,
+   "calendar_days": 31,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2020-11-25",
+   "end": "2020-12-03",
+   "sessions": 6,
+   "calendar_days": 9,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2020-12-21",
+   "end": "2021-05-18",
+   "sessions": 99,
+   "calendar_days": 149,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2022-01-24",
+   "end": "2022-04-04",
+   "sessions": 48,
+   "calendar_days": 71,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2022-04-19",
+   "end": "2022-07-08",
+   "sessions": 58,
+   "calendar_days": 81,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2022-07-12",
+   "end": "2022-07-14",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2022-07-18",
+   "end": "2022-07-20",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2022-07-22",
+   "end": "2022-07-26",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2022-07-28",
+   "end": "2022-08-01",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2022-09-28",
+   "end": "2022-10-18",
+   "sessions": 14,
+   "calendar_days": 21,
+   "reason_at_activation": "NIFTY_BELOW_SMA200+VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2023-02-28",
+   "end": "2023-04-03",
+   "sessions": 23,
+   "calendar_days": 35,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2024-05-27",
+   "end": "2024-06-06",
+   "sessions": 9,
+   "calendar_days": 11,
+   "reason_at_activation": "VIX_ABOVE_22",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2024-11-14",
+   "end": "2024-11-26",
+   "sessions": 7,
+   "calendar_days": 13,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2024-12-20",
+   "end": "2025-02-01",
+   "sessions": 31,
+   "calendar_days": 44,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2025-02-04",
+   "end": "2025-02-06",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2025-02-10",
+   "end": "2025-03-19",
+   "sessions": 26,
+   "calendar_days": 38,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2025-03-21",
+   "end": "2025-03-25",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2025-03-27",
+   "end": "2025-04-01",
+   "sessions": 3,
+   "calendar_days": 6,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2025-04-03",
+   "end": "2025-04-16",
+   "sessions": 8,
+   "calendar_days": 14,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2025-04-25",
+   "end": "2025-04-29",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2025-05-09",
+   "end": "2025-05-13",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-01-23",
+   "end": "2026-02-04",
+   "sessions": 9,
+   "calendar_days": 13,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-02-27",
+   "end": "2026-04-16",
+   "sessions": 30,
+   "calendar_days": 49,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-04-20",
+   "end": "2026-04-22",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-04-24",
+   "end": "2026-04-28",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-04-30",
+   "end": "2026-05-05",
+   "sessions": 3,
+   "calendar_days": 6,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-05-07",
+   "end": "2026-05-26",
+   "sessions": 14,
+   "calendar_days": 20,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-05-29",
+   "end": "2026-06-15",
+   "sessions": 12,
+   "calendar_days": 18,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-06-17",
+   "end": "2026-06-19",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-06-23",
+   "end": "2026-06-25",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-06-30",
+   "end": "2026-07-02",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-07-06",
+   "end": "2026-07-20",
+   "sessions": 11,
+   "calendar_days": 15,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-07-22",
+   "end": "2026-07-30",
+   "sessions": 7,
+   "calendar_days": 9,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-08-03",
+   "end": "2026-08-05",
+   "sessions": 3,
+   "calendar_days": 3,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-08-07",
+   "end": "2026-08-11",
+   "sessions": 3,
+   "calendar_days": 5,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": false
+  },
+  {
+   "start": "2026-08-13",
+   "end": "2026-10-16",
+   "sessions": 45,
+   "calendar_days": 65,
+   "reason_at_activation": "NIFTY_BELOW_SMA200",
+   "open_at_window_end": true
+  }
+ ],
+ "activation_reasons": {
+  "VIX_ABOVE_22": 8,
+  "NIFTY_BELOW_SMA200": 50,
+  "NIFTY_BELOW_SMA200+VIX_ABOVE_22": 1
+ }
+}

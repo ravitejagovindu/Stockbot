@@ -1,0 +1,139 @@
+{
+ "gates": [
+  {
+   "gate": "min_trades",
+   "gate_value": 40,
+   "comparison": ">=",
+   "observed": 739,
+   "interval": null,
+   "met": true,
+   "note": "a floor only; 40 trades have almost no power"
+  },
+  {
+   "gate": "min_expectancy_r",
+   "gate_value": 0.15,
+   "comparison": ">=",
+   "observed": 0.11454848288854264,
+   "interval": [
+    -0.006489275489903971,
+    0.23627114373236457
+   ],
+   "met": false,
+   "note": "the strategy's own absolute net R per usable trade, point estimate"
+  },
+  {
+   "gate": "min_profit_factor",
+   "gate_value": 1.3,
+   "comparison": ">=",
+   "observed": 1.2975121024047096,
+   "interval": [
+    0.9637669892535448,
+    1.8284928606471291
+   ],
+   "met": false,
+   "note": "net P&L of usable trades, point estimate"
+  },
+  {
+   "gate": "max_drawdown_pct",
+   "gate_value": 20.0,
+   "comparison": "<=",
+   "observed": 26.917579210066954,
+   "interval": null,
+   "met": false,
+   "note": "one path, no interval"
+  },
+  {
+   "gate": "min_alpha_pct",
+   "gate_value": 0.0,
+   "comparison": ">=",
+   "observed": -1.772130990407673,
+   "interval": [
+    -7.515435028598964,
+    4.635835307337155
+   ],
+   "met": false,
+   "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+  }
+ ],
+ "counts": {
+  "closed": 762,
+  "usable": 739,
+  "end_of_window": 12,
+  "excluded_ca": 11,
+  "entries_per_month": 5.684615384615385,
+  "invested_share_mean": 0.7324177428324626,
+  "invested_share_p5": 0.6273605240833139,
+  "invested_share_p95": 0.8177805968612429,
+  "open_positions_mean": 11.571054599850411,
+  "open_positions_max": 12
+ },
+ "all_met": false,
+ "alpha": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 6.529343889544004,
+   "benchmark_cagr_pct": 10.13819885044025,
+   "alpha_pct": -3.608854960896247
+  },
+  "cash_credited": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 8.366067860032578,
+   "benchmark_cagr_pct": 10.13819885044025,
+   "alpha_pct": -1.772130990407673
+  },
+  "gate_alpha_pct": -1.772130990407673,
+  "after_tax_label": "illustrative, not tax advice: tax charged on the end gain of the cash-credited strategy and of its benchmark; never a gate input",
+  "note": "Cash credit is applied after the fact on the recorded equity and cash (idle cash at the previous close earns risk_free_pct/100/252 per day); it does not feed back into sizing or any engine decision. The gate uses the cash-credited, pre-tax alpha.",
+  "risk_free_pct": 6.5,
+  "after_tax_illustrative": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 8.366067860032578,
+    "benchmark_cagr_pct": 10.13819885044025,
+    "alpha_pct": -1.772130990407673
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 7.135350526117046,
+    "benchmark_cagr_pct": 8.732228457775593,
+    "alpha_pct": -1.5968779316585469
+   }
+  }
+ },
+ "implied_annual_return": {
+  "non_gating": true,
+  "trades_per_year": 68.49016747018523,
+  "expectancy_r": 0.11454848288854264,
+  "max_loss_pct_per_trade": 1.0,
+  "implied_annual_return_pct": 7.845444776491932,
+  "matched_benchmark_cagr_pct": 10.13819885044025,
+  "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"
+ },
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "period": "2016-01-01 to 2019-12-31",
+   "trades": 298,
+   "expectancy_r": 0.014844480449919057,
+   "profit_factor": 1.0157252677732505,
+   "max_drawdown_pct": 21.51240413325477,
+   "invested_share_mean": 0.7647138927184709,
+   "alpha_pct": -10.527649158330377
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "period": "2020-01-01 to 2026-10-16",
+   "trades": 441,
+   "expectancy_r": 0.18192216254094587,
+   "profit_factor": 1.405043892631924,
+   "max_drawdown_pct": 19.67583244388848,
+   "invested_share_mean": 0.7135528116786688,
+   "alpha_pct": 3.775345873691503
+  }
+ },
+ "seed": 20261111,
+ "boot": 200,
+ "block_months": 3,
+ "gate_alpha_is_pre_tax": true,
+ "risk_free_pct": 6.5
+}

@@ -1,0 +1,140 @@
+{
+ "gates": [
+  {
+   "gate": "min_trades",
+   "gate_value": 40,
+   "comparison": ">=",
+   "observed": 2938,
+   "interval": null,
+   "met": true,
+   "note": "a floor only; 40 trades have almost no power"
+  },
+  {
+   "gate": "min_expectancy_r",
+   "gate_value": 0.15,
+   "comparison": ">=",
+   "observed": -0.11104576211483136,
+   "interval": [
+    -0.1605277351755156,
+    -0.057359920749678085
+   ],
+   "met": false,
+   "note": "the strategy's own absolute net R per usable trade, point estimate"
+  },
+  {
+   "gate": "min_profit_factor",
+   "gate_value": 1.3,
+   "comparison": ">=",
+   "observed": 0.8395689127202939,
+   "interval": [
+    0.6926045327813644,
+    1.0181667765744864
+   ],
+   "met": false,
+   "note": "net P&L of usable trades, point estimate"
+  },
+  {
+   "gate": "max_drawdown_pct",
+   "gate_value": 20.0,
+   "comparison": "<=",
+   "observed": 68.06313755652756,
+   "interval": null,
+   "met": false,
+   "note": "one path, no interval"
+  },
+  {
+   "gate": "min_alpha_pct",
+   "gate_value": 0.0,
+   "comparison": ">=",
+   "observed": -11.981478492169085,
+   "interval": [
+    -18.630217006483846,
+    -4.475401634762492
+   ],
+   "met": false,
+   "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+  }
+ ],
+ "counts": {
+  "closed": 2945,
+  "usable": 2938,
+  "end_of_window": 2,
+  "excluded_ca": 5,
+  "entries_per_month": 22.6,
+  "invested_share_mean": 0.5136178955754285,
+  "invested_share_p5": 0.0,
+  "invested_share_p95": 0.9999137942825296,
+  "open_positions_mean": 5.617053103964099,
+  "open_positions_max": 12
+ },
+ "all_met": false,
+ "alpha": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": -9.201192443133221,
+   "benchmark_cagr_pct": 5.64625955534086,
+   "alpha_pct": -14.847451998474082
+  },
+  "cash_credited": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": -6.335218936828224,
+   "benchmark_cagr_pct": 5.64625955534086,
+   "alpha_pct": -11.981478492169085
+  },
+  "gate_alpha_pct": -11.981478492169085,
+  "after_tax_label": "illustrative, not tax advice: tax charged on the end gain of the cash-credited strategy and of its benchmark; never a gate input",
+  "note": "Cash credit is applied after the fact on the recorded equity and cash (idle cash at the previous close earns risk_free_pct/100/252 per day); it does not feed back into sizing or any engine decision. The gate uses the cash-credited, pre-tax alpha.",
+  "risk_free_pct": 6.5,
+  "after_tax_illustrative": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": -6.335218936828224,
+    "benchmark_cagr_pct": 5.64625955534086,
+    "alpha_pct": -11.981478492169085
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": -6.335218936828224,
+    "benchmark_cagr_pct": 4.732968920220548,
+    "alpha_pct": -11.068187857048773
+   }
+  }
+ },
+ "implied_annual_return": {
+  "non_gating": true,
+  "trades_per_year": 272.29243846739405,
+  "expectancy_r": -0.11104576211483136,
+  "max_loss_pct_per_trade": 1.0,
+  "implied_annual_return_pct": -30.236921347717594,
+  "matched_benchmark_cagr_pct": 5.64625955534086,
+  "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"
+ },
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "period": "2016-01-01 to 2019-12-31",
+   "trades": 1077,
+   "expectancy_r": -0.14273920439695048,
+   "profit_factor": 0.7609195343056864,
+   "max_drawdown_pct": 51.44069782231588,
+   "invested_share_mean": 0.48814716404976716,
+   "alpha_pct": -18.721365132644564
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "period": "2020-01-01 to 2026-10-16",
+   "trades": 1861,
+   "expectancy_r": -0.09270409777423907,
+   "profit_factor": 0.9301040963847996,
+   "max_drawdown_pct": 43.523170366798986,
+   "invested_share_mean": 0.5284959413599678,
+   "alpha_pct": -7.7810396304505485
+  }
+ },
+ "seed": 20261111,
+ "boot": 200,
+ "block_months": 3,
+ "gate_alpha_is_pre_tax": true,
+ "risk_free_pct": 6.5,
+ "asof_view": "sql"
+}
