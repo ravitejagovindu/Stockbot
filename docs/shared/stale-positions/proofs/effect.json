@@ -1,0 +1,1778 @@
+{
+ "stored_runs": {
+  "near_52w_high 4B": {
+   "trades": 774,
+   "closed_by_rule": 8,
+   "of_which_stored_exit_END_OF_WINDOW": 3,
+   "of_which_symbol_linked": 0,
+   "trades_involving_a_linked_symbol": 7,
+   "list": [
+    {
+     "position_id": "near_52w_high:DHANI:2018-04-19",
+     "symbol": "DHANI",
+     "latest_symbol": "DHANI",
+     "linked": false,
+     "entry": "2018-04-19",
+     "stored_exit": "2018-10-30",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2018-06-14",
+     "closed_by_rule_on": "2018-07-12",
+     "sessions_earlier_than_stored_exit": 72
+    },
+    {
+     "position_id": "near_52w_high:ATGL:2021-06-04",
+     "symbol": "ATGL",
+     "latest_symbol": "ATGL",
+     "linked": false,
+     "entry": "2021-06-04",
+     "stored_exit": "2021-09-13",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2021-06-08",
+     "closed_by_rule_on": "2021-07-06",
+     "sessions_earlier_than_stored_exit": 46
+    },
+    {
+     "position_id": "near_52w_high:SUZLON:2023-09-27",
+     "symbol": "SUZLON",
+     "latest_symbol": "SUZLON",
+     "linked": false,
+     "entry": "2023-09-27",
+     "stored_exit": "2024-06-19",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2023-10-09",
+     "closed_by_rule_on": "2023-11-07",
+     "sessions_earlier_than_stored_exit": 152
+    },
+    {
+     "position_id": "near_52w_high:NACLIND:2025-04-02",
+     "symbol": "NACLIND",
+     "latest_symbol": "NACLIND",
+     "linked": false,
+     "entry": "2025-04-02",
+     "stored_exit": "2026-01-27",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2025-04-25",
+     "closed_by_rule_on": "2025-05-26",
+     "sessions_earlier_than_stored_exit": 168
+    },
+    {
+     "position_id": "near_52w_high:PFOCUS:2026-03-24",
+     "symbol": "PFOCUS",
+     "latest_symbol": "PFOCUS",
+     "linked": false,
+     "entry": "2026-03-24",
+     "stored_exit": "2026-07-29",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2026-05-12",
+     "closed_by_rule_on": "2026-06-10",
+     "sessions_earlier_than_stored_exit": 34
+    },
+    {
+     "position_id": "near_52w_high:GSKCONS:2020-03-27",
+     "symbol": "GSKCONS",
+     "latest_symbol": "GSKCONS",
+     "linked": false,
+     "entry": "2020-03-27",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW",
+     "last_bar": "2020-04-15",
+     "closed_by_rule_on": "2020-05-14",
+     "sessions_earlier_than_stored_exit": 1597
+    },
+    {
+     "position_id": "near_52w_high:HEXAWARE:2020-09-24",
+     "symbol": "HEXAWARE",
+     "latest_symbol": "HEXAWARE",
+     "linked": false,
+     "entry": "2020-09-24",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW",
+     "last_bar": "2020-10-30",
+     "closed_by_rule_on": "2020-11-27",
+     "sessions_earlier_than_stored_exit": 1458
+    },
+    {
+     "position_id": "near_52w_high:DIACABS:2026-07-30",
+     "symbol": "DIACABS",
+     "latest_symbol": "DIACABS",
+     "linked": false,
+     "entry": "2026-07-30",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW",
+     "last_bar": "2026-08-03",
+     "closed_by_rule_on": "2026-08-31",
+     "sessions_earlier_than_stored_exit": 32
+    }
+   ],
+   "linked_trades": [
+    {
+     "position_id": "near_52w_high:MCDOWELL-N:2017-11-20",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2017-11-20",
+     "exit": "2018-01-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "near_52w_high:CCAVENUE:2018-09-18",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-09-18",
+     "exit": "2018-09-21",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "near_52w_high:ZYDUSLIFE:2021-05-03",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2021-05-03",
+     "exit": "2021-06-29",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "near_52w_high:UNOMINDA:2021-12-21",
+     "symbol": "UNOMINDA",
+     "latest": "UNOMINDA",
+     "entry": "2021-12-21",
+     "exit": "2022-02-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "near_52w_high:ZYDUSLIFE:2023-03-28",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2023-03-28",
+     "exit": "2023-05-30",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "near_52w_high:WELSPUNLIV:2023-10-26",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2023-10-26",
+     "exit": "2023-12-22",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "near_52w_high:PCBL:2024-08-06",
+     "symbol": "PCBL",
+     "latest": "PCBL",
+     "entry": "2024-08-06",
+     "exit": "2024-10-03",
+     "reason": "TIME_EXIT"
+    }
+   ]
+  },
+  "pullback_uptrend run1": {
+   "trades": 4156,
+   "closed_by_rule": 3,
+   "of_which_stored_exit_END_OF_WINDOW": 1,
+   "of_which_symbol_linked": 0,
+   "trades_involving_a_linked_symbol": 67,
+   "list": [
+    {
+     "position_id": "pullback_uptrend:DISHTV:2021-10-05",
+     "symbol": "DISHTV",
+     "latest_symbol": "DISHTV",
+     "linked": false,
+     "entry": "2021-10-05",
+     "stored_exit": "2022-01-04",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2021-10-11",
+     "closed_by_rule_on": "2021-11-10",
+     "sessions_earlier_than_stored_exit": 38
+    },
+    {
+     "position_id": "pullback_uptrend:MAANALU:2024-11-07",
+     "symbol": "MAANALU",
+     "latest_symbol": "MAANALU",
+     "linked": false,
+     "entry": "2024-11-07",
+     "stored_exit": "2025-05-12",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2024-11-08",
+     "closed_by_rule_on": "2024-12-10",
+     "sessions_earlier_than_stored_exit": 102
+    },
+    {
+     "position_id": "pullback_uptrend:HDFC:2023-07-12",
+     "symbol": "HDFC",
+     "latest_symbol": "HDFC",
+     "linked": false,
+     "entry": "2023-07-12",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW",
+     "last_bar": "2023-07-12",
+     "closed_by_rule_on": "2023-08-09",
+     "sessions_earlier_than_stored_exit": 790
+    }
+   ],
+   "linked_trades": [
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2017-05-24",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2017-05-24",
+     "exit": "2017-05-31",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2017-07-05",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2017-07-05",
+     "exit": "2017-07-12",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:PHILIPCARB:2017-07-18",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2017-07-18",
+     "exit": "2017-07-25",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:MCDOWELL-N:2017-07-28",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2017-07-28",
+     "exit": "2017-08-04",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2017-08-10",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2017-08-10",
+     "exit": "2017-08-11",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:MCDOWELL-N:2017-08-14",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2017-08-14",
+     "exit": "2017-08-22",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2017-08-23",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2017-08-23",
+     "exit": "2017-08-31",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:MCDOWELL-N:2017-10-10",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2017-10-10",
+     "exit": "2017-10-17",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:PHILIPCARB:2018-03-09",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2018-03-09",
+     "exit": "2018-03-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:PHILIPCARB:2018-03-21",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2018-03-21",
+     "exit": "2018-03-28",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:PHILIPCARB:2018-04-12",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2018-04-12",
+     "exit": "2018-04-19",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:MCDOWELL-N:2018-05-09",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2018-05-09",
+     "exit": "2018-05-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNITDSPR:2019-08-21",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2019-08-21",
+     "exit": "2019-08-28",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:LTFOODS:2021-05-31",
+     "symbol": "LTFOODS",
+     "latest": "LTFOODS",
+     "entry": "2021-05-31",
+     "exit": "2021-06-07",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2021-07-27",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2021-07-27",
+     "exit": "2021-08-03",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2021-08-13",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2021-08-13",
+     "exit": "2021-08-23",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNOMINDA:2021-09-03",
+     "symbol": "UNOMINDA",
+     "latest": "UNOMINDA",
+     "entry": "2021-09-03",
+     "exit": "2021-09-13",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:PCBL:2021-10-20",
+     "symbol": "PCBL",
+     "latest": "PCBL",
+     "entry": "2021-10-20",
+     "exit": "2021-10-27",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2021-10-21",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2021-10-21",
+     "exit": "2021-10-28",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2022-02-04",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2022-02-04",
+     "exit": "2022-02-07",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNITDSPR:2022-03-07",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2022-03-07",
+     "exit": "2022-03-14",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNOMINDA:2022-03-31",
+     "symbol": "UNOMINDA",
+     "latest": "UNOMINDA",
+     "entry": "2022-03-31",
+     "exit": "2022-04-07",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNITDSPR:2022-04-20",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2022-04-20",
+     "exit": "2022-04-27",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AMIORG:2022-09-23",
+     "symbol": "AMIORG",
+     "latest": "ACUTAAS",
+     "entry": "2022-09-23",
+     "exit": "2022-09-26",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AEGISLOG:2022-11-09",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2022-11-09",
+     "exit": "2022-11-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNITDSPR:2023-01-06",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2023-01-06",
+     "exit": "2023-01-13",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:SWANCORP:2023-02-03",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2023-02-03",
+     "exit": "2023-02-03",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:SWANCORP:2023-02-06",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2023-02-06",
+     "exit": "2023-02-07",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AEGISLOG:2023-02-17",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2023-02-17",
+     "exit": "2023-02-24",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CCAVENUE:2023-02-20",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2023-02-20",
+     "exit": "2023-02-27",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2023-05-11",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2023-05-11",
+     "exit": "2023-05-18",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2023-06-15",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2023-06-15",
+     "exit": "2023-06-22",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2023-10-17",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2023-10-17",
+     "exit": "2023-10-25",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CCAVENUE:2023-12-01",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2023-12-01",
+     "exit": "2023-12-08",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNOMINDA:2023-12-04",
+     "symbol": "UNOMINDA",
+     "latest": "UNOMINDA",
+     "entry": "2023-12-04",
+     "exit": "2023-12-11",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:LTFOODS:2023-12-20",
+     "symbol": "LTFOODS",
+     "latest": "LTFOODS",
+     "entry": "2023-12-20",
+     "exit": "2023-12-28",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2023-12-28",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2023-12-28",
+     "exit": "2024-01-04",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2024-01-25",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2024-01-25",
+     "exit": "2024-02-02",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:TITAGARH:2024-02-14",
+     "symbol": "TITAGARH",
+     "latest": "TITAGARH",
+     "entry": "2024-02-14",
+     "exit": "2024-02-21",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CEMPRO:2024-03-01",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2024-03-01",
+     "exit": "2024-03-07",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:SWANCORP:2024-03-13",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2024-03-13",
+     "exit": "2024-03-13",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CCAVENUE:2024-03-27",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2024-03-27",
+     "exit": "2024-04-04",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2024-03-28",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2024-03-28",
+     "exit": "2024-04-05",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:ZYDUSLIFE:2024-04-05",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2024-04-05",
+     "exit": "2024-04-15",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CCAVENUE:2024-05-08",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2024-05-08",
+     "exit": "2024-05-15",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CCAVENUE:2024-05-28",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2024-05-28",
+     "exit": "2024-06-04",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CCAVENUE:2024-07-05",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2024-07-05",
+     "exit": "2024-07-12",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AMIORG:2024-07-24",
+     "symbol": "AMIORG",
+     "latest": "ACUTAAS",
+     "entry": "2024-07-24",
+     "exit": "2024-07-31",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AEGISLOG:2024-08-01",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2024-08-01",
+     "exit": "2024-08-02",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AEGISLOG:2024-08-05",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2024-08-05",
+     "exit": "2024-08-12",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:SWANCORP:2024-09-09",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2024-09-09",
+     "exit": "2024-09-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNOMINDA:2024-09-13",
+     "symbol": "UNOMINDA",
+     "latest": "UNOMINDA",
+     "entry": "2024-09-13",
+     "exit": "2024-09-20",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AEGISLOG:2024-09-23",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2024-09-23",
+     "exit": "2024-09-30",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNOMINDA:2024-10-08",
+     "symbol": "UNOMINDA",
+     "latest": "UNOMINDA",
+     "entry": "2024-10-08",
+     "exit": "2024-10-15",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AMIORG:2024-10-23",
+     "symbol": "AMIORG",
+     "latest": "ACUTAAS",
+     "entry": "2024-10-23",
+     "exit": "2024-10-30",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AMIORG:2025-03-13",
+     "symbol": "AMIORG",
+     "latest": "ACUTAAS",
+     "entry": "2025-03-13",
+     "exit": "2025-03-21",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNITDSPR:2025-05-29",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2025-05-29",
+     "exit": "2025-06-05",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AEGISLOG:2025-05-30",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2025-05-30",
+     "exit": "2025-06-06",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:LTFOODS:2025-06-18",
+     "symbol": "LTFOODS",
+     "latest": "LTFOODS",
+     "entry": "2025-06-18",
+     "exit": "2025-06-23",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "pullback_uptrend:LTFOODS:2025-08-26",
+     "symbol": "LTFOODS",
+     "latest": "LTFOODS",
+     "entry": "2025-08-26",
+     "exit": "2025-09-03",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CEMPRO:2025-08-29",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2025-08-29",
+     "exit": "2025-09-05",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:WELSPUNLIV:2026-06-12",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2026-06-12",
+     "exit": "2026-06-19",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CEMPRO:2026-07-28",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2026-07-28",
+     "exit": "2026-08-04",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CEMPRO:2026-08-07",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2026-08-07",
+     "exit": "2026-08-14",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:UNITDSPR:2026-09-02",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2026-09-02",
+     "exit": "2026-09-09",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:CEMPRO:2026-10-06",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2026-10-06",
+     "exit": "2026-10-13",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "pullback_uptrend:AMIORG:2025-04-23",
+     "symbol": "AMIORG",
+     "latest": "ACUTAAS",
+     "entry": "2025-04-23",
+     "exit": "2026-10-16",
+     "reason": "END_OF_WINDOW"
+    }
+   ]
+  },
+  "short_term_reversal run1": {
+   "trades": 4288,
+   "closed_by_rule": 9,
+   "of_which_stored_exit_END_OF_WINDOW": 3,
+   "of_which_symbol_linked": 0,
+   "trades_involving_a_linked_symbol": 70,
+   "list": [
+    {
+     "position_id": "short_term_reversal:NDTV:2022-09-12",
+     "symbol": "NDTV",
+     "latest_symbol": "NDTV",
+     "linked": false,
+     "entry": "2022-09-12",
+     "stored_exit": "2022-12-06",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2022-09-12",
+     "closed_by_rule_on": "2022-10-11",
+     "sessions_earlier_than_stored_exit": 38
+    },
+    {
+     "position_id": "short_term_reversal:TTML:2022-09-12",
+     "symbol": "TTML",
+     "latest_symbol": "TTML",
+     "linked": false,
+     "entry": "2022-09-12",
+     "stored_exit": "2022-12-06",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2022-09-12",
+     "closed_by_rule_on": "2022-10-11",
+     "sessions_earlier_than_stored_exit": 38
+    },
+    {
+     "position_id": "short_term_reversal:RELINFRA:2022-09-12",
+     "symbol": "RELINFRA",
+     "latest_symbol": "RELINFRA",
+     "linked": false,
+     "entry": "2022-09-12",
+     "stored_exit": "2022-12-12",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2022-09-12",
+     "closed_by_rule_on": "2022-10-11",
+     "sessions_earlier_than_stored_exit": 42
+    },
+    {
+     "position_id": "short_term_reversal:RELINFRA:2023-08-14",
+     "symbol": "RELINFRA",
+     "latest_symbol": "RELINFRA",
+     "linked": false,
+     "entry": "2023-08-14",
+     "stored_exit": "2023-11-12",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2023-08-14",
+     "closed_by_rule_on": "2023-09-12",
+     "sessions_earlier_than_stored_exit": 41
+    },
+    {
+     "position_id": "short_term_reversal:SUVEN:2024-01-30",
+     "symbol": "SUVEN",
+     "latest_symbol": "SUVEN",
+     "linked": false,
+     "entry": "2024-01-30",
+     "stored_exit": "2024-04-29",
+     "stored_reason": "TIME_EXIT",
+     "last_bar": "2024-01-30",
+     "closed_by_rule_on": "2024-02-27",
+     "sessions_earlier_than_stored_exit": 40
+    },
+    {
+     "position_id": "short_term_reversal:MAANALU:2024-11-07",
+     "symbol": "MAANALU",
+     "latest_symbol": "MAANALU",
+     "linked": false,
+     "entry": "2024-11-07",
+     "stored_exit": "2025-05-12",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2024-11-08",
+     "closed_by_rule_on": "2024-12-10",
+     "sessions_earlier_than_stored_exit": 102
+    },
+    {
+     "position_id": "short_term_reversal:KPIT:2019-02-20",
+     "symbol": "KPIT",
+     "latest_symbol": "KPIT",
+     "linked": false,
+     "entry": "2019-02-20",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW",
+     "last_bar": "2019-02-25",
+     "closed_by_rule_on": "2019-03-27",
+     "sessions_earlier_than_stored_exit": 1873
+    },
+    {
+     "position_id": "short_term_reversal:SUPPETRO:2022-04-05",
+     "symbol": "SUPPETRO",
+     "latest_symbol": "SUPPETRO",
+     "linked": false,
+     "entry": "2022-04-05",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW",
+     "last_bar": "2022-04-06",
+     "closed_by_rule_on": "2022-05-09",
+     "sessions_earlier_than_stored_exit": 1103
+    },
+    {
+     "position_id": "short_term_reversal:GUJGASLTD:2026-06-25",
+     "symbol": "GUJGASLTD",
+     "latest_symbol": "GUJGASLTD",
+     "linked": false,
+     "entry": "2026-06-25",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW",
+     "last_bar": "2026-06-30",
+     "closed_by_rule_on": "2026-07-28",
+     "sessions_earlier_than_stored_exit": 56
+    }
+   ],
+   "linked_trades": [
+    {
+     "position_id": "short_term_reversal:ZYDUSLIFE:2016-01-04",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2016-01-04",
+     "exit": "2016-01-06",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:ZYDUSLIFE:2016-01-07",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2016-01-07",
+     "exit": "2016-01-14",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2016-02-01",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2016-02-01",
+     "exit": "2016-02-08",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:TITAGARH:2016-03-04",
+     "symbol": "TITAGARH",
+     "latest": "TITAGARH",
+     "entry": "2016-03-04",
+     "exit": "2016-03-14",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2016-03-08",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2016-03-08",
+     "exit": "2016-03-15",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2016-04-12",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2016-04-12",
+     "exit": "2016-04-22",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2016-05-20",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2016-05-20",
+     "exit": "2016-05-27",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2016-08-10",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2016-08-10",
+     "exit": "2016-08-18",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:SWANCORP:2016-12-26",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2016-12-26",
+     "exit": "2017-01-02",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2017-04-06",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2017-04-06",
+     "exit": "2017-04-11",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2017-04-12",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2017-04-12",
+     "exit": "2017-04-20",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:INFIBEAM:2017-05-04",
+     "symbol": "INFIBEAM",
+     "latest": "CCAVENUE",
+     "entry": "2017-05-04",
+     "exit": "2017-05-11",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2017-05-22",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2017-05-22",
+     "exit": "2017-05-29",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:PHILIPCARB:2017-07-19",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2017-07-19",
+     "exit": "2017-07-26",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:ZYDUSLIFE:2017-11-16",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2017-11-16",
+     "exit": "2017-11-23",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:TITAGARH:2017-12-15",
+     "symbol": "TITAGARH",
+     "latest": "TITAGARH",
+     "entry": "2017-12-15",
+     "exit": "2017-12-22",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:MCDOWELL-N:2018-01-30",
+     "symbol": "MCDOWELL-N",
+     "latest": "UNITDSPR",
+     "entry": "2018-01-30",
+     "exit": "2018-02-06",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:PHILIPCARB:2018-02-06",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2018-02-06",
+     "exit": "2018-02-14",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-10-15",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-10-15",
+     "exit": "2018-10-22",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-10-23",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-10-23",
+     "exit": "2018-10-23",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-10-24",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-10-24",
+     "exit": "2018-10-25",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-10-30",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-10-30",
+     "exit": "2018-11-06",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-11-19",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-11-19",
+     "exit": "2018-11-27",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-11-28",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-11-28",
+     "exit": "2018-11-28",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-11-29",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-11-29",
+     "exit": "2018-12-06",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2018-12-11",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2018-12-11",
+     "exit": "2018-12-18",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2019-02-01",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2019-02-01",
+     "exit": "2019-02-05",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2019-02-06",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2019-02-06",
+     "exit": "2019-02-13",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2019-02-25",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2019-02-25",
+     "exit": "2019-03-05",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2019-05-02",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2019-05-02",
+     "exit": "2019-05-09",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:ZYDUSLIFE:2019-05-15",
+     "symbol": "ZYDUSLIFE",
+     "latest": "ZYDUSLIFE",
+     "entry": "2019-05-15",
+     "exit": "2019-05-22",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:UNITDSPR:2021-02-02",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2021-02-02",
+     "exit": "2021-02-09",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2021-03-24",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2021-03-24",
+     "exit": "2021-04-01",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:LTFOODS:2021-05-28",
+     "symbol": "LTFOODS",
+     "latest": "LTFOODS",
+     "entry": "2021-05-28",
+     "exit": "2021-06-04",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2021-07-14",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2021-07-14",
+     "exit": "2021-07-22",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:AEGISLOG:2021-08-09",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2021-08-09",
+     "exit": "2021-08-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2021-09-22",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2021-09-22",
+     "exit": "2021-09-29",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:WELSPUNLIV:2022-02-07",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2022-02-07",
+     "exit": "2022-02-08",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:WELSPUNLIV:2022-02-09",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2022-02-09",
+     "exit": "2022-02-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2022-03-31",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2022-03-31",
+     "exit": "2022-04-07",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:UNITDSPR:2022-08-03",
+     "symbol": "UNITDSPR",
+     "latest": "UNITDSPR",
+     "entry": "2022-08-03",
+     "exit": "2022-08-11",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2023-01-31",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2023-01-31",
+     "exit": "2023-02-07",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:SWANCORP:2023-02-06",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2023-02-06",
+     "exit": "2023-02-07",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:SWANCORP:2023-02-08",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2023-02-08",
+     "exit": "2023-02-15",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:SWANCORP:2023-03-20",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2023-03-20",
+     "exit": "2023-03-23",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:SWANCORP:2023-03-24",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2023-03-24",
+     "exit": "2023-03-28",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:WELSPUNLIV:2023-05-11",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2023-05-11",
+     "exit": "2023-05-18",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:PCBL:2023-07-19",
+     "symbol": "PCBL",
+     "latest": "PCBL",
+     "entry": "2023-07-19",
+     "exit": "2023-07-26",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2023-10-18",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2023-10-18",
+     "exit": "2023-10-23",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:SWANCORP:2024-03-13",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2024-03-13",
+     "exit": "2024-03-13",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:CEMPRO:2024-03-14",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2024-03-14",
+     "exit": "2024-03-21",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:AEGISLOG:2024-05-09",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2024-05-09",
+     "exit": "2024-05-16",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:TITAGARH:2024-06-10",
+     "symbol": "TITAGARH",
+     "latest": "TITAGARH",
+     "entry": "2024-06-10",
+     "exit": "2024-06-18",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CEMPRO:2024-07-08",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2024-07-08",
+     "exit": "2024-07-15",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:AEGISLOG:2024-08-05",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2024-08-05",
+     "exit": "2024-08-12",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:WELSPUNLIV:2024-09-05",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2024-09-05",
+     "exit": "2024-09-12",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CEMPRO:2024-09-11",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2024-09-11",
+     "exit": "2024-09-18",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:UNOMINDA:2024-09-11",
+     "symbol": "UNOMINDA",
+     "latest": "UNOMINDA",
+     "entry": "2024-09-11",
+     "exit": "2024-09-18",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CEMPRO:2024-10-16",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2024-10-16",
+     "exit": "2024-10-23",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:TIPSMUSIC:2024-12-12",
+     "symbol": "TIPSMUSIC",
+     "latest": "TIPSMUSIC",
+     "entry": "2024-12-12",
+     "exit": "2024-12-19",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:AMIORG:2025-01-02",
+     "symbol": "AMIORG",
+     "latest": "ACUTAAS",
+     "entry": "2025-01-02",
+     "exit": "2025-01-09",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:PCBL:2025-01-14",
+     "symbol": "PCBL",
+     "latest": "PCBL",
+     "entry": "2025-01-14",
+     "exit": "2025-01-21",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:WELSPUNLIV:2025-02-05",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2025-02-05",
+     "exit": "2025-02-12",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:AEGISLOG:2025-05-27",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2025-05-27",
+     "exit": "2025-06-03",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:WELSPUNLIV:2025-06-02",
+     "symbol": "WELSPUNLIV",
+     "latest": "WELSPUNLIV",
+     "entry": "2025-06-02",
+     "exit": "2025-06-09",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2025-06-27",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2025-06-27",
+     "exit": "2025-06-30",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:CCAVENUE:2025-07-01",
+     "symbol": "CCAVENUE",
+     "latest": "CCAVENUE",
+     "entry": "2025-07-01",
+     "exit": "2025-07-07",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "short_term_reversal:AEGISLOG:2025-07-04",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2025-07-04",
+     "exit": "2025-07-11",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:CEMPRO:2025-07-17",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2025-07-17",
+     "exit": "2025-07-24",
+     "reason": "TIME_EXIT"
+    },
+    {
+     "position_id": "short_term_reversal:AEGISLOG:2026-07-15",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2026-07-15",
+     "exit": "2026-07-22",
+     "reason": "TIME_EXIT"
+    }
+   ]
+  },
+  "riskadj_momentum run1": {
+   "trades": 650,
+   "closed_by_rule": 12,
+   "of_which_stored_exit_END_OF_WINDOW": 3,
+   "of_which_symbol_linked": 0,
+   "trades_involving_a_linked_symbol": 13,
+   "list": [
+    {
+     "position_id": "riskadj_momentum:BOMDYEING:2018-06-04",
+     "symbol": "BOMDYEING",
+     "latest_symbol": "BOMDYEING",
+     "linked": false,
+     "entry": "2018-06-04",
+     "stored_exit": "2018-10-30",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2018-07-03",
+     "closed_by_rule_on": "2018-07-31",
+     "sessions_earlier_than_stored_exit": 59
+    },
+    {
+     "position_id": "riskadj_momentum:DHANI:2018-06-04",
+     "symbol": "DHANI",
+     "latest_symbol": "DHANI",
+     "linked": false,
+     "entry": "2018-06-04",
+     "stored_exit": "2018-10-30",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2018-06-14",
+     "closed_by_rule_on": "2018-07-12",
+     "sessions_earlier_than_stored_exit": 72
+    },
+    {
+     "position_id": "riskadj_momentum:ATGL:2021-05-04",
+     "symbol": "ATGL",
+     "latest_symbol": "ATGL",
+     "linked": false,
+     "entry": "2021-05-04",
+     "stored_exit": "2021-09-13",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2021-06-08",
+     "closed_by_rule_on": "2021-07-06",
+     "sessions_earlier_than_stored_exit": 46
+    },
+    {
+     "position_id": "riskadj_momentum:ADANIGREEN:2021-05-04",
+     "symbol": "ADANIGREEN",
+     "latest_symbol": "ADANIGREEN",
+     "linked": false,
+     "entry": "2021-05-04",
+     "stored_exit": "2021-09-13",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2021-06-08",
+     "closed_by_rule_on": "2021-07-06",
+     "sessions_earlier_than_stored_exit": 46
+    },
+    {
+     "position_id": "riskadj_momentum:GPIL:2021-06-02",
+     "symbol": "GPIL",
+     "latest_symbol": "GPIL",
+     "linked": false,
+     "entry": "2021-06-02",
+     "stored_exit": "2021-09-27",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2021-06-17",
+     "closed_by_rule_on": "2021-07-15",
+     "sessions_earlier_than_stored_exit": 49
+    },
+    {
+     "position_id": "riskadj_momentum:CGPOWER:2021-06-02",
+     "symbol": "CGPOWER",
+     "latest_symbol": "CGPOWER",
+     "linked": false,
+     "entry": "2021-06-02",
+     "stored_exit": "2022-01-20",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2021-06-08",
+     "closed_by_rule_on": "2021-07-06",
+     "sessions_earlier_than_stored_exit": 136
+    },
+    {
+     "position_id": "riskadj_momentum:FLUOROCHEM:2022-02-02",
+     "symbol": "FLUOROCHEM",
+     "latest_symbol": "FLUOROCHEM",
+     "linked": false,
+     "entry": "2022-02-02",
+     "stored_exit": "2022-05-16",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2022-02-09",
+     "closed_by_rule_on": "2022-03-10",
+     "sessions_earlier_than_stored_exit": 43
+    },
+    {
+     "position_id": "riskadj_momentum:PCJEWELLER:2024-10-03",
+     "symbol": "PCJEWELLER",
+     "latest_symbol": "PCJEWELLER",
+     "linked": false,
+     "entry": "2024-10-03",
+     "stored_exit": "2025-01-07",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2024-10-07",
+     "closed_by_rule_on": "2024-11-04",
+     "sessions_earlier_than_stored_exit": 43
+    },
+    {
+     "position_id": "riskadj_momentum:E2E:2026-02-02",
+     "symbol": "E2E",
+     "latest_symbol": "E2E",
+     "linked": false,
+     "entry": "2026-02-02",
+     "stored_exit": "2026-06-11",
+     "stored_reason": "STOP_HIT",
+     "last_bar": "2026-02-23",
+     "closed_by_rule_on": "2026-03-24",
+     "sessions_earlier_than_stored_exit": 51
+    },
+    {
+     "position_id": "riskadj_momentum:TATASTLBSL:2021-07-02",
+     "symbol": "TATASTLBSL",
+     "latest_symbol": "TATASTLBSL",
+     "linked": false,
+     "entry": "2021-07-02",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW_COUNTED",
+     "last_bar": "2021-08-05",
+     "closed_by_rule_on": "2021-09-03",
+     "sessions_earlier_than_stored_exit": 1269
+    },
+    {
+     "position_id": "riskadj_momentum:BLISSGVS:2026-07-02",
+     "symbol": "BLISSGVS",
+     "latest_symbol": "BLISSGVS",
+     "linked": false,
+     "entry": "2026-07-02",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW_COUNTED",
+     "last_bar": "2026-07-02",
+     "closed_by_rule_on": "2026-07-30",
+     "sessions_earlier_than_stored_exit": 54
+    },
+    {
+     "position_id": "riskadj_momentum:HFCL:2026-08-04",
+     "symbol": "HFCL",
+     "latest_symbol": "HFCL",
+     "linked": false,
+     "entry": "2026-08-04",
+     "stored_exit": "2026-10-16",
+     "stored_reason": "END_OF_WINDOW_COUNTED",
+     "last_bar": "2026-09-02",
+     "closed_by_rule_on": "2026-10-01",
+     "sessions_earlier_than_stored_exit": 10
+    }
+   ],
+   "linked_trades": [
+    {
+     "position_id": "riskadj_momentum:SWANCORP:2017-01-03",
+     "symbol": "SWANCORP",
+     "latest": "SWANCORP",
+     "entry": "2017-01-03",
+     "exit": "2017-01-30",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:PHILIPCARB:2017-07-04",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2017-07-04",
+     "exit": "2017-07-27",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:PHILIPCARB:2017-09-04",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2017-09-04",
+     "exit": "2017-09-25",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:PHILIPCARB:2017-12-04",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2017-12-04",
+     "exit": "2018-01-17",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:PHILIPCARB:2018-02-02",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2018-02-02",
+     "exit": "2018-03-08",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:AEGISLOG:2023-04-05",
+     "symbol": "AEGISLOG",
+     "latest": "AEGISLOG",
+     "entry": "2023-04-05",
+     "exit": "2023-05-12",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:TITAGARH:2024-01-02",
+     "symbol": "TITAGARH",
+     "latest": "TITAGARH",
+     "entry": "2024-01-02",
+     "exit": "2024-02-05",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:TITAGARH:2024-03-02",
+     "symbol": "TITAGARH",
+     "latest": "TITAGARH",
+     "entry": "2024-03-02",
+     "exit": "2024-03-13",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:CEMPRO:2024-08-02",
+     "symbol": "CEMPRO",
+     "latest": "CEMPRO",
+     "entry": "2024-08-02",
+     "exit": "2024-09-09",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:AMIORG:2025-03-04",
+     "symbol": "AMIORG",
+     "latest": "ACUTAAS",
+     "entry": "2025-03-04",
+     "exit": "2025-04-07",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:ACUTAAS:2026-05-05",
+     "symbol": "ACUTAAS",
+     "latest": "ACUTAAS",
+     "entry": "2026-05-05",
+     "exit": "2026-07-24",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:ACUTAAS:2026-08-04",
+     "symbol": "ACUTAAS",
+     "latest": "ACUTAAS",
+     "entry": "2026-08-04",
+     "exit": "2026-10-08",
+     "reason": "STOP_HIT"
+    },
+    {
+     "position_id": "riskadj_momentum:PHILIPCARB:2018-04-03",
+     "symbol": "PHILIPCARB",
+     "latest": "PCBL",
+     "entry": "2018-04-03",
+     "exit": "2026-10-16",
+     "reason": "END_OF_WINDOW_COUNTED"
+    }
+   ]
+  }
+ },
+ "eligibility": {
+  "unit": "symbol-sessions (one linked stock on one session)",
+  "sessions": 2674,
+  "linked_stocks": 40,
+  "per_year": {
+   "2016": {
+    "gained": 52,
+    "lost": 0,
+    "eligible_both": 466,
+    "eligible_on": 518,
+    "eligible_off": 466
+   },
+   "2017": {
+    "gained": 94,
+    "lost": 0,
+    "eligible_both": 735,
+    "eligible_on": 829,
+    "eligible_off": 735
+   },
+   "2018": {
+    "gained": 411,
+    "lost": 0,
+    "eligible_both": 548,
+    "eligible_on": 959,
+    "eligible_off": 548
+   },
+   "2019": {
+    "gained": 135,
+    "lost": 0,
+    "eligible_both": 493,
+    "eligible_on": 628,
+    "eligible_off": 493
+   },
+   "2020": {
+    "gained": 0,
+    "lost": 0,
+    "eligible_both": 564,
+    "eligible_on": 564,
+    "eligible_off": 564
+   },
+   "2021": {
+    "gained": 0,
+    "lost": 0,
+    "eligible_both": 1198,
+    "eligible_on": 1198,
+    "eligible_off": 1198
+   },
+   "2022": {
+    "gained": 0,
+    "lost": 0,
+    "eligible_both": 1011,
+    "eligible_on": 1011,
+    "eligible_off": 1011
+   },
+   "2023": {
+    "gained": 5,
+    "lost": 0,
+    "eligible_both": 1639,
+    "eligible_on": 1644,
+    "eligible_off": 1639
+   },
+   "2024": {
+    "gained": 28,
+    "lost": 0,
+    "eligible_both": 2731,
+    "eligible_on": 2759,
+    "eligible_off": 2731
+   },
+   "2025": {
+    "gained": 172,
+    "lost": 0,
+    "eligible_both": 2461,
+    "eligible_on": 2633,
+    "eligible_off": 2461
+   },
+   "2026": {
+    "gained": 79,
+    "lost": 0,
+    "eligible_both": 1927,
+    "eligible_on": 2006,
+    "eligible_off": 1927
+   }
+  },
+  "total_gained": 976,
+  "total_lost": 0,
+  "per_stock_check_vs_eligible_symbols": {
+   "sessions_checked": 25,
+   "mismatches": 0
+  }
+ }
+}

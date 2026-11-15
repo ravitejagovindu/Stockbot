@@ -48,7 +48,11 @@ def test_the_frozen_120_samples_equal_the_view_bit_for_bit(conn):
 
 
 def test_the_scan_through_the_view_reproduces_the_frozen_old_path_result(conn):
+    from stockbot.data import symbol_links
     from stockbot.data_checks.f2_engine_scan import compare_with_frozen, scan
-    rdf, summary = scan(conn)
+    # The frozen result is the OLD path, symbol by symbol. The scan walks the lake's physical symbols, and with symbol links ON both names of a linked stock return the same combined series, so it would count
+    # that stock's large moves twice (783, 272, 513, 2 instead of 764, 267, 499, 2). The golden is therefore pinned with the links OFF (stale-positions report, A3 (v)).
+    with symbol_links.override(enabled=False):
+        rdf, summary = scan(conn)
     assert (summary["large_before"], summary["large_after"], summary["removed"], summary["created"]) == (764, 267, 499, 2)
     assert compare_with_frozen(rdf, summary) == []

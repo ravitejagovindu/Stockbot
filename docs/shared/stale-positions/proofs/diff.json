@@ -1,0 +1,14 @@
+{
+ "sessions": 450,
+ "first": "2016-01-07",
+ "last": "2026-10-07",
+ "per_session_symbol_sample": 250,
+ "linked_symbols": 81,
+ "compared": {
+  "symbol_sessions": 112500,
+  "eligible_unlinked_checked": 143570
+ },
+ "differences": [],
+ "differences_total": 0,
+ "identical": true
+}

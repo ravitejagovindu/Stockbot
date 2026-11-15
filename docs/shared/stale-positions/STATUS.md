@@ -7,8 +7,8 @@ Done
 - B5 edits in the three riskadj_momentum scripts (see the report).
 - Tests: tests/unit/test_stale_positions.py. Proofs and section E: scripts/stale_positions_proofs.py.
 
-Next
-- G1, full G2, G3, DB hash; report.
+Next (done)
+- Nothing; report written, branch pushed.
 
 Blockers
 - none
