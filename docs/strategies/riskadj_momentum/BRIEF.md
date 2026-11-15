@@ -1,6 +1,6 @@
 # riskadj_momentum: brief
 
-Strategy id `riskadj_momentum`. Branch `riskadj_momentum` (from origin/master 1ba2a38). Family `family_batch2`, K = 1. **Stage 1** (build, counts only, draft pre-registration). NO backtest on the real lake; no return of this strategy has been computed or looked at. Report: `Claude_Docs/RISKADJ_MOMENTUM_STAGE1_REPORT.md`.
+Strategy id `riskadj_momentum`. Branch `riskadj_momentum` (from origin/master 1ba2a38). Family `family_batch2`, K = 1. **Stage 2** (scripts, final pre-registration text, run commands; stage 1 was the build and the counts). NO backtest on the real lake; no return of this strategy has been computed or looked at. Reports: `Claude_Docs/RISKADJ_MOMENTUM_STAGE1_REPORT.md`, `Claude_Docs/RISKADJ_MOMENTUM_STAGE2_REPORT.md`. Positions and random draws still open on the last day of the window are closed at the last close and counted (PREREGISTRATION section 7a).
 
 ## Goal
 A long-only, monthly-rebalanced "risk-adjusted 12-1 momentum" rule on NSE equities: rank by trailing 12-month-minus-1-month return divided by the volatility of daily log returns over the same stretch; hold with an ATR-based trailing stop. Signals are taken on the close of the first trading session of each calendar month; entry is the engine's next open. The strategy only proposes; every shared mechanism (eligibility, sizing, caps, fills, costs, corporate actions, validation gates) is shared code.
