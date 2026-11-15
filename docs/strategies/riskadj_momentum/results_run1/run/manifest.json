@@ -1,0 +1,34 @@
+{
+ "shared_config_hash": "816ee5cb71b0618ed5c2065efc6de39f0f4a59ccf51862ceb3928d3665732bb3",
+ "overlays": [],
+ "strategies": {
+  "riskadj_momentum": {
+   "version": "1.0.0",
+   "config_hash": "72dbec2c3da600cfe6de049a64efd530171ef2f539075f53e57a05e972ef27dc",
+   "exit_policy": "trailing_atr3_floor8",
+   "overlays": {}
+  }
+ },
+ "git_sha": "5ed2bd4d5bcc48e77a039f348379ec7b9f5802d8",
+ "data_snapshot": {
+  "file": "finsight.db",
+  "size": 3432767488,
+  "mtime_ns": 1794121682892612300,
+  "last_session": "2026-10-16"
+ },
+ "seed": null,
+ "asof_view": "memory",
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "initial_equity": 1000000,
+ "end_of_window": {
+  "rule": "closed at the last session close, normal costs and slippage, counted as usable trades",
+  "trades": 10,
+  "closed_trades_total": 650,
+  "closed_before_window_end": 640,
+  "label_in_trades_json": "END_OF_WINDOW_COUNTED",
+  "engine_reason": "END_OF_WINDOW"
+ }
+}

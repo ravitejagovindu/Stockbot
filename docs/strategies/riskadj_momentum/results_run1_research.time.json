@@ -1,0 +1,1 @@
+{"cmd": ["py", "-3", "scripts/research_riskadj_momentum.py", "--execute", "--out", "docs/strategies/riskadj_momentum/results_run1/run"], "wall_seconds": 2984.7, "peak_working_set_mb": 8.8, "exit_code": 0}
