@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 INTERFACES = ["stockbot/engine/exit_policy.py::ExitPolicy", "stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"]
 APPROVED_STRATEGY_FOLDERS = list(B.APPROVED_STRATEGY_IDS)
 LIBRARY_OVERLAYS = ["stockbot/overlays/market_switch.py::MarketSwitch"]          # the optional library overlay (market-switch), the one allowed overlay home is stockbot/overlays/
+STRATEGY_POLICIES = ["stockbot/strategies/riskadj_momentum/exits.py::TrailingAtr3Floor8"]          # a strategy-owned exit policy (allowed in the strategy folder)
 LIBRARY_POLICIES = ["stockbot/engine/exit_policies/fixed_hold.py::FixedHold", "stockbot/engine/exit_policies/trailing_stop.py::TrailingStop"]
 
 
@@ -101,8 +102,8 @@ def test_the_strategies_folder_holds_only_approved_strategy_folders():
     assert len(folders) == len(set(folders)), f"more than one strategy class in a folder: {folders}"
 
 
-def test_the_allow_list_holds_exactly_the_five_approved_ids():
-    assert B.APPROVED_STRATEGY_IDS == ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend")
+def test_the_allow_list_holds_exactly_the_six_approved_ids():
+    assert B.APPROVED_STRATEGY_IDS == ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend", "riskadj_momentum")
 
 
 def test_an_unlisted_strategy_folder_fails_and_a_listed_or_absent_one_does_not(tmp_path):
@@ -163,7 +164,7 @@ def test_no_class_outside_tests_implements_the_strategy_or_overlay_or_exit_polic
     assert forbidden(hits) == [], forbidden(hits)
     # what is allowed is exactly the interface definitions plus the library's two policies (a new policy file must be added here on purpose)
     approved = approved_strategy_hits(hits)
-    assert sorted(f"{rel}::{name}" for rel, name, _ in hits if (rel, name) not in approved) == sorted(INTERFACES + LIBRARY_POLICIES + LIBRARY_OVERLAYS)
+    assert sorted(f"{rel}::{name}" for rel, name, _ in hits if (rel, name) not in approved) == sorted(INTERFACES + LIBRARY_POLICIES + LIBRARY_OVERLAYS + STRATEGY_POLICIES)
 
 
 def _cls(src: str) -> ast.ClassDef:
