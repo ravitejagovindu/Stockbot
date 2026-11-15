@@ -1,0 +1,167 @@
+{
+ "leads": {
+  "price_rule_2pct_old_symbols": 52,
+  "feed_note_pair_old_symbol_any_timing": 64,
+  "feed_note_pair_old_symbol_first_bar_within_5_sessions": 24,
+  "feed_note_names_stale_symbol_as_either_member": 79,
+  "both_price_rule_and_note_within_5": 9,
+  "price_rule_only": 43,
+  "union_price_or_note_within_5": 67,
+  "stale_with_same_isin_successor_in_isin_symbol_map": 114,
+  "isin_map_successor_by_boundary_type": {
+   "other": 54,
+   "pure_rename": 48,
+   "demerger_merger": 12
+  }
+ },
+ "q4": {
+  "definition_A_any_lead": {
+   "symbols": 750,
+   "ever_eligible": 126,
+   "eligible_in_window_2016": 104,
+   "fund_etf": 24,
+   "held_in_any_stored_run_distinct_symbols": 84,
+   "held_by_run": {
+    "near_52w_high 4B": {
+     "symbols": 16,
+     "trades": 29,
+     "trades_with_exit_after_the_last_bar": 3
+    },
+    "family_batch1 run1: pullback_uptrend": {
+     "symbols": 60,
+     "trades": 288,
+     "trades_with_exit_after_the_last_bar": 1
+    },
+    "family_batch1 run1: short_term_reversal": {
+     "symbols": 76,
+     "trades": 648,
+     "trades_with_exit_after_the_last_bar": 1
+    },
+    "riskadj_momentum run1": {
+     "symbols": 18,
+     "trades": 40,
+     "trades_with_exit_after_the_last_bar": 3
+    }
+   }
+  },
+  "definition_B_strict_lead": {
+   "symbols": 803,
+   "ever_eligible": 137,
+   "eligible_in_window_2016": 113,
+   "fund_etf": 24,
+   "held_in_any_stored_run_distinct_symbols": 91,
+   "held_by_run": {
+    "near_52w_high 4B": {
+     "symbols": 18,
+     "trades": 32,
+     "trades_with_exit_after_the_last_bar": 3
+    },
+    "family_batch1 run1: pullback_uptrend": {
+     "symbols": 64,
+     "trades": 321,
+     "trades_with_exit_after_the_last_bar": 1
+    },
+    "family_batch1 run1: short_term_reversal": {
+     "symbols": 82,
+     "trades": 687,
+     "trades_with_exit_after_the_last_bar": 1
+    },
+    "riskadj_momentum run1": {
+     "symbols": 20,
+     "trades": 53,
+     "trades_with_exit_after_the_last_bar": 3
+    }
+   }
+  },
+  "definition_C_A_and_no_isin_map_successor": {
+   "symbols": 712,
+   "ever_eligible": 123,
+   "eligible_in_window_2016": 102,
+   "fund_etf": 16,
+   "held_in_any_stored_run_distinct_symbols": 82,
+   "held_by_run": {
+    "near_52w_high 4B": {
+     "symbols": 16,
+     "trades": 29,
+     "trades_with_exit_after_the_last_bar": 3
+    },
+    "family_batch1 run1: pullback_uptrend": {
+     "symbols": 60,
+     "trades": 288,
+     "trades_with_exit_after_the_last_bar": 1
+    },
+    "family_batch1 run1: short_term_reversal": {
+     "symbols": 74,
+     "trades": 645,
+     "trades_with_exit_after_the_last_bar": 1
+    },
+    "riskadj_momentum run1": {
+     "symbols": 18,
+     "trades": 40,
+     "trades_with_exit_after_the_last_bar": 3
+    }
+   }
+  }
+ },
+ "gaps": {
+  "runs": 6433,
+  "symbols": 1613,
+  "by_length": {
+   "21-40": 1712,
+   "41-60": 1769,
+   "61-120": 2354,
+   "121-250": 405,
+   ">250": 193
+  },
+  "by_ratio": {
+   "<0.5": 237,
+   "0.5-0.9": 2972,
+   "0.9-1.1": 1899,
+   "1.1-2.0": 1124,
+   ">2.0": 201
+  },
+  "eligible_before_and_after_runs": 333,
+  "eligible_before_and_after_symbols": 204,
+  "eligible_before_and_after_by_length": {
+   "21-40": 47,
+   "41-60": 140,
+   "61-120": 127,
+   "121-250": 14,
+   ">250": 5
+  },
+  "eligible_before_and_after_by_ratio": {
+   "<0.5": 11,
+   "0.5-0.9": 156,
+   "0.9-1.1": 98,
+   "1.1-2.0": 59,
+   ">2.0": 9
+  },
+  "runs_starting_by_year": {
+   "2013": 580,
+   "2014": 549,
+   "2015": 104,
+   "2016": 122,
+   "2017": 428,
+   "2018": 297,
+   "2019": 360,
+   "2020": 681,
+   "2021": 631,
+   "2022": 445,
+   "2023": 628,
+   "2024": 750,
+   "2025": 513,
+   "2026": 345
+  }
+ },
+ "directed_pairs": {
+  "distinct_pairs": 64,
+  "old_symbol_stale": 64,
+  "old_stale_new_first_within_5_sessions": 24,
+  "old_stale_new_first_1_session": 24,
+  "old_stale_new_first_6_to_20": 4,
+  "old_stale_new_first_over_20": 35,
+  "old_stale_overlapping_history": 1,
+  "strict_pairs_within_2pct_after_logged_action": 9,
+  "strict_pairs_same_isin_in_map": 24
+ }
+}

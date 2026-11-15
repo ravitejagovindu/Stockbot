@@ -1,0 +1,115 @@
+symbol,boundary_to_next,boundary_reason
+8KMILES,other,gap of 89 sessions
+AARVEEDEN,other,gap of 329 sessions
+AEGISCHEM,pure_rename,continuous
+AHL,other,gap of 61 sessions
+ALSTOMT&D,pure_rename,continuous
+AMIORG,pure_rename,continuous
+AMTEKINDIA,other,price step 1.711 without a feed event
+ANANDAMRUB,other,gap of 443 sessions
+ASTERSILI,other,gap of 127 sessions
+ATLANTA,other,gap of 65 sessions
+AVANTI,other,gap of 49 sessions
+AXISGOLD,pure_rename,continuous
+AXISNIFTY,pure_rename,continuous
+BHARTISHIP,other,gap of 301 sessions
+BINANIIND,other,gap of 102 sessions
+BIRLAERIC,other,gap of 702 sessions
+BOROSIL,demerger_merger,feed ['DEMERGER'] within 45d
+CADILAHC,pure_rename,continuous
+COMPUAGE,other,gap of 354 sessions
+DAAWAT,pure_rename,continuous
+DEEPIND,demerger_merger,feed ['DEMERGER'] within 45d
+EBIXFOREX,pure_rename,continuous
+EXCEL,pure_rename,continuous
+FOURSOFT,other,gap of 143 sessions
+FRL,demerger_merger,feed ['MERGER'] within 45d
+FRLDVR,demerger_merger,feed ['MERGER'] within 45d
+GAL,pure_rename,continuous
+GAMMNINFRA,other,gap of 57 sessions
+GET&D,other,gap of 313 sessions
+GODHA,pure_rename,continuous
+GOLDSHARE,pure_rename,continuous
+GREENFIRE,other,gap of 388 sessions
+GUJFLUORO,demerger_merger,feed ['DEMERGER'] within 45d
+GUJGASLTD,demerger_merger,feed ['DEMERGER'] within 45d
+HDFCMFGETF,pure_rename,continuous
+HDFCNIFETF,pure_rename,continuous
+HDFCSENETF,pure_rename,continuous
+HEG,demerger_merger,feed ['DEMERGER'] within 45d
+HOTELRUGBY,other,gap of 206 sessions
+HOVS,other,gap of 117 sessions
+HYDROS&S,other,gap of 441 sessions
+IBULISL,pure_rename,continuous
+IBWSL,pure_rename,continuous
+ICICI500,pure_rename,continuous
+ICICIBANKN,pure_rename,continuous
+ICICIGOLD,pure_rename,continuous
+ICICINXT50,pure_rename,continuous
+ICICITECH,pure_rename,continuous
+IGOLD,pure_rename,continuous
+INFIBEAM,pure_rename,continuous
+ITDCEM,pure_rename,continuous
+JUBILANT,demerger_merger,feed ['DEMERGER'] within 45d
+KARDA,pure_rename,continuous
+KAVVERITEL,other,gap of 318 sessions
+KEERTI,other,gap of 126 sessions
+KOTAKGOLD,pure_rename,continuous
+KOTAKNIFTY,pure_rename,continuous
+KPIT,demerger_merger,feed ['MERGER'] within 45d
+KRITIIND,other,gap of 1671 sessions
+LSIL,other,gap of 63 sessions
+M50,pure_rename,continuous
+MAGMA,other,gap of 65 sessions
+MAX,demerger_merger,feed ['MERGER'] within 45d
+MCDOWELL-N,pure_rename,continuous
+MEGASOFT,other,gap of 64 sessions
+MIL,other,gap of 172 sessions
+MINDAIND,pure_rename,continuous
+MIRCELECTR,other,gap of 58 sessions
+NATHSEED,other,gap of 237 sessions
+NETFNV20,pure_rename,continuous
+ORIENTABRA,other,gap of 64 sessions
+PANTALOONR,pure_rename,continuous
+PERIATEA,other,gap of 435 sessions
+PHILIPCARB,pure_rename,continuous
+PIRLIFE,other,gap of 51 sessions
+PITTILAM,pure_rename,continuous
+PRETAILDVR,pure_rename,continuous
+REVATHI,other,gap of 132 sessions
+REVATHIEQU,other,gap of 64 sessions
+RUCHI,other,gap of 357 sessions
+SABTNL,other,gap of 49 sessions
+SAH,other,gap of 67 sessions
+SALONACOT,other,gap of 340 sessions
+SCAPDVR,other,gap of 127 sessions
+SEPOWER,other,gap of 92 sessions
+SHARRESLTD,other,gap of 25 sessions
+SIGNETIND,other,gap of 29 sessions
+SMOBILITY,pure_rename,continuous
+SONAMCLOCK,other,gap of 64 sessions
+SORILHOLD,other,gap of 124 sessions
+SPICEMOBI,other,gap of 68 sessions
+STAMPEDE,other,gap of 866 sessions
+SUNCLAYLTD,demerger_merger,feed ['DEMERGER'] within 45d
+SWANENERGY,pure_rename,continuous
+TATAMOTORS,demerger_merger,feed ['DEMERGER'] within 45d
+THEBYKE,other,gap of 49 sessions
+TIDEWATER,pure_rename,continuous
+TIMESGTY,other,gap of 71 sessions
+TIPSINDLTD,pure_rename,continuous
+TRIL,other,gap of 182 sessions
+TTKHEALTH,other,gap of 232 sessions
+TWL,pure_rename,continuous
+UTIBANKETF,pure_rename,continuous
+UTINEXT50,pure_rename,continuous
+UTINIFTETF,pure_rename,continuous
+UTISXN50,pure_rename,continuous
+VIKASGLOB,pure_rename,continuous
+VIPUL,other,gap of 55 sessions
+VISASTEEL,other,gap of 65 sessions
+WEIZFOREX,other,gap of 57 sessions
+WELSPUNIND,pure_rename,continuous
+YAARI,other,gap of 133 sessions
+YAARII,pure_rename,continuous
+ZENITHBIR,other,gap of 146 sessions
