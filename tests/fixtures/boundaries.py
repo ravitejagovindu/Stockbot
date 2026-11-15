@@ -33,7 +33,7 @@ ALLOWED = {
 STRATEGY_ENGINE_ALLOWED = ("stockbot.engine.exit_policy",)
 # the allow-list of strategy folders under stockbot/strategies/ (tests/unit/test_no_strategy_in_the_tree.py). A folder may be absent; a folder that exists must be listed here and obeys the
 # strategy import rules above. Adding an id is a deliberate, reviewed change to this file, never part of a strategy branch.
-APPROVED_STRATEGY_IDS = ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend")
+APPROVED_STRATEGY_IDS = ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend", "riskadj_momentum")
 NETWORK_LIBS = {"requests", "urllib", "urllib3", "yfinance", "httpx", "aiohttp", "http", "socket", "ftplib", "smtplib"}
 DB_LIBS = {"sqlalchemy", "sqlite3"}
 NO_NETWORK_PKGS = {"backtest", "engine", "strategies", "risk"}
