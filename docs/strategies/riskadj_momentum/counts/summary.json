@@ -1,0 +1,107 @@
+{
+ "signal_months": 130,
+ "first": "2016-01-01",
+ "last": "2026-10-01",
+ "eligible": {
+  "median": 274.5,
+  "min": 125,
+  "max": 635
+ },
+ "funnel_total_name_months": {
+  "short": 1640,
+  "stale": 0,
+  "gap": 1048,
+  "bad_price": 0,
+  "ret_not_positive": 12580,
+  "vol_not_positive": 0,
+  "atr_missing": 0,
+  "ok": 25715
+ },
+ "qualifying": {
+  "median": 170.5,
+  "p5": 0.0,
+  "p95": 447.99999999999994,
+  "min": 0,
+  "max": 534
+ },
+ "fewer_than_top_n_months": 11,
+ "months_with_zero_qualifying": 11,
+ "months_by_top_n_found": {
+  "0": 11,
+  "25": 119
+ },
+ "score_ties": {
+  "months_with_any_tie": 0,
+  "tie_groups": 0,
+  "names_in_ties": 0,
+  "qualifying_total": 25713,
+  "months_tie_straddles_the_cut": 0
+ },
+ "own_bar_t_minus_252_differs_from_calendar": {
+  "name_months": 131,
+  "of_qualifying": 25713
+ },
+ "unusable_stop_name_months": 2,
+ "top_names_total": 2975,
+ "sector": {
+  "mapped_share": 0.7677310924369748,
+  "unmapped_share": 0.2322689075630252,
+  "distinct_mapped_sectors_median": 7.5,
+  "max_names_one_sector": {
+   "median": 6.0,
+   "max": 12
+  },
+  "names_sharing_a_mapped_sector_share": 0.6309243697478991
+ },
+ "stop_distance_pct": {
+  "median": 11.933030121698632,
+  "p5": 8.0,
+  "p95": 19.376794801260168,
+  "min": 7.999999999999999,
+  "max": 43.622392340131015,
+  "mean": 12.472255948847668
+ },
+ "share_at_floor": 0.1603361344537815,
+ "implied_position_pct_of_equity": {
+  "median": 8.380101196439893,
+  "p5": 5.160812472359562,
+  "p95": 12.5,
+  "mean": 8.775103259651534
+ },
+ "overlap_with_previous_top": {
+  "months": 118,
+  "mean_names": 15.542372881355933,
+  "median_names": 16.0,
+  "share_of_top_n": 0.6216949152542373,
+  "min": 10,
+  "max": 22
+ },
+ "near_52w_high": {
+  "top_also_near_high_share": 0.41714285714285715,
+  "near_high_candidates_median": 60.5
+ },
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "asof_view": "memory",
+ "spec_config_hash": "57c4b0135dfc0c7ff944d97ee09b2f1f6c73f72ae908278bd1bb394266f42363",
+ "finsight_db": {
+  "before": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "after": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "unchanged": true
+ },
+ "seconds": 331.70738983154297
+}
