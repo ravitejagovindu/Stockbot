@@ -12,7 +12,8 @@ from typing import Callable, Optional, Sequence
 from stockbot.engine.corporate import apply_actions, due_actions
 from stockbot.engine.decide import bar_of
 from stockbot.engine.fills import fill_ticket
-from stockbot.engine.stepping import step_position
+from stockbot.engine.stale import no_bars_for, stale_sessions
+from stockbot.engine.stepping import close_no_bars, step_position
 from stockbot.engine.types import ClosedTrade, ExitRecord, Ticket
 from stockbot.risk.costs import CostModel
 
@@ -34,10 +35,18 @@ def simulate_ticket(t: Ticket, sessions: Sequence[date], view_at: Callable[[date
     if not plan.ok:
         return None, (), plan.reason
     pos, exits = plan.position, []
+    stale_n = stale_sessions(shared_config)
     for d in todo:
         view = view_at(d)
         bar = bar_of(view, pos.symbol)
         if bar is None:
+            if stale_n and no_bars_for(view, pos.symbol, stale_n):                     # the same closure as engine.decide: a filled draw, reason SYMBOL_NO_BARS
+                res = close_no_bars(pos, d, costs, ex.exit_slippage_pct)
+                exits.extend(res.exits)
+                pos = res.position
+                net = pos.gross_pnl - pos.costs_paid
+                return ClosedTrade(pos.position_id, pos.strategy_id, pos.symbol, pos.entry_date, d, pos.entry_price, pos.initial_stop, pos.shares_initial, pos.risk_inr,
+                                   pos.gross_pnl, pos.costs_paid, net, "SYMBOL_NO_BARS", pos.hold), tuple(exits), "CLOSED"
             continue
         due = due_actions(view.corporate_actions(pos.symbol), pos.entry_date, d, pos.ca_done)
         if due:

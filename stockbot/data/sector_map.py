@@ -10,6 +10,8 @@ import csv
 from functools import lru_cache
 from pathlib import Path
 
+from stockbot.data import symbol_links
+
 _PATH = Path(__file__).resolve().parents[2] / "data" / "reference" / "sector_map.csv"
 UNMAPPED_PREFIX = "UNMAPPED:"
 _NOT_A_SECTOR = ("", "UNKNOWN")        # a blank or legacy-placeholder CSV sector means "no sector known"
@@ -25,8 +27,13 @@ def _load() -> dict:
 
 
 def _mapped_sector(symbol: str):
-    sector = _load().get(symbol.strip().upper())
-    return None if sector is None or sector.upper() in _NOT_A_SECTOR else sector
+    table = _load()
+    names = [symbol] + [m for m in reversed(symbol_links.members(symbol)) if m != symbol]       # a linked stock: its own name first, then its other names, latest first
+    for n in names:
+        sector = table.get(n.strip().upper())
+        if sector is not None and sector.upper() not in _NOT_A_SECTOR:
+            return sector
+    return None
 
 
 def is_mapped(symbol: str) -> bool:
@@ -37,7 +44,7 @@ def is_mapped(symbol: str) -> bool:
 def sector_for(symbol: str) -> str:
     """The sector of ``symbol``; an unmapped symbol is its own sector, ``"UNMAPPED:<SYMBOL>"`` (upper case)."""
     sector = _mapped_sector(symbol)
-    return sector if sector is not None else f"{UNMAPPED_PREFIX}{symbol.strip().upper()}"
+    return sector if sector is not None else f"{UNMAPPED_PREFIX}{symbol_links.resolve(symbol).strip().upper()}"
 
 
 class SectorLookup:

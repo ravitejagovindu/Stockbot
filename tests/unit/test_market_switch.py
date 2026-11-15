@@ -365,6 +365,7 @@ def digest(default_overlays, declare=False):
 
 
 MASTER_SHARED_HASH = "816ee5cb71b0618ed5c2065efc6de39f0f4a59ccf51862ceb3928d3665732bb3"            # shared_config_hash computed on origin/master b27431d (same shared.yaml values, before any market-switch code existed)
+STALE_POSITIONS_SHARED_HASH = "da459624294741239ae85230317da357b5b141a62b81f897bfb3d0745e956248"   # the shared_config_hash with the three stale-positions settings (stale-positions report, "Hash effects")
 MASTER_DIGEST = "763ba4f23998c9919499a6549c77fe685a84d0f2e47857b32704e3b953377b7e"     # computed by the same procedure on origin/master b27431d, before any market-switch code existed
 
 
@@ -373,7 +374,16 @@ def test_a_run_with_default_overlays_off_is_byte_identical_to_master(monkeypatch
     d, res = digest(None)                                                                           # a strategy that declares nothing, no default overlays: the plain default call
     assert d == MASTER_DIGEST
     assert res.manifest["overlays"] == []
-    assert digest([])[0] == MASTER_DIGEST and res.manifest["shared_config_hash"] == MASTER_SHARED_HASH
+    assert digest([])[0] == MASTER_DIGEST
+    # stale-positions: three new shared settings (data.symbol_links_enabled, engine.stale_exit_sessions, reporting.stale_exit_stress_factor) enter the hash, so it is no longer MASTER_SHARED_HASH;
+    # with exactly those three keys left out the payload hashes to the master value (nothing else moved), and with them it is the new value.
+    import hashlib
+    from stockbot.config.shared import load_shared_config
+    flat = {k: v for k, v in load_shared_config().flat().items() if not k.startswith("overlays.")}
+    new_keys = {"data.symbol_links_enabled", "engine.stale_exit_sessions", "reporting.stale_exit_stress_factor"}
+    h = lambda d: hashlib.sha256(json.dumps(d, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")).hexdigest()
+    assert h({k: v for k, v in flat.items() if k not in new_keys}) == MASTER_SHARED_HASH
+    assert res.manifest["shared_config_hash"] == h(flat) == STALE_POSITIONS_SHARED_HASH != MASTER_SHARED_HASH
 
 
 def test_a_clear_switch_leaves_trades_equity_and_blocks_identical_only_the_logged_state_and_hashes_differ(monkeypatch):

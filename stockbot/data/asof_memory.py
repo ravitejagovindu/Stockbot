@@ -95,6 +95,7 @@ class _Tables:
         self.nifty_first = date.fromordinal(int(self.nifty[0])) if len(self.nifty) else None
         self._conn = conn
         self._actions = None
+        self._feed = None
 
     @property
     def actions(self) -> dict:
@@ -105,6 +106,19 @@ class _Tables:
                 acts.setdefault(sym, []).append((str(ex), date.fromisoformat(str(ex)[:10]), t, num, den))
             self._actions = acts
         return self._actions
+
+    @property
+    def feed_actions(self) -> dict:
+        """Rows whose note starts ``feed_symbol=NAME;``: NAME -> [(filed_symbol, ex_date text, ex_date, type, num, den)] (only used for linked stocks; loaded on first use)."""
+        if getattr(self, "_feed", None) is None:
+            feed: dict = {}
+            for sym, ex, t, num, den, notes in self._conn.execute("select symbol, ex_date, action_type, ratio_numerator, ratio_denominator, notes from corporate_actions_log where notes like 'feed_symbol=%' order by ex_date"):
+                rest = str(notes)[len("feed_symbol="):]
+                if ";" not in rest:
+                    continue
+                feed.setdefault(rest.split(";", 1)[0], []).append((sym, str(ex), date.fromisoformat(str(ex)[:10]), t, num, den))
+            self._feed = feed
+        return self._feed
 
     def symbols_on(self, ordinal: int) -> list:
         got = self._day_cache.get(ordinal)
@@ -136,8 +150,8 @@ class MemoryAsOfView(AsOfView):
         self._as_of_ord = self._as_of.toordinal()
 
     # ------------------------------------------------------------------ bars
-    def raw_bars(self, symbol: str, lookback: Optional[int] = 400, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
-        """Same contract as ``AsOfView.raw_bars`` (checks, bounds, ``lookback`` last bars, empty frame, dtypes, index of ``datetime.date``)."""
+    def _raw_bars_physical(self, symbol: str, lookback: Optional[int] = 400, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
+        """Same contract as ``AsOfView._raw_bars_physical`` (checks, bounds, ``lookback`` last bars, empty frame, dtypes, index of ``datetime.date``). The symbol-link logic is the base class's, not repeated here."""
         self._check(end, "end")
         self._check(start, "start")
         hi = _d(end) if end is not None else self._as_of
@@ -158,7 +172,18 @@ class MemoryAsOfView(AsOfView):
         return pd.DataFrame({"open_raw": px[:, 0].copy(), "high_raw": px[:, 1].copy(), "low_raw": px[:, 2].copy(), "close_raw": px[:, 3].copy(), "volume_raw": vol.copy()}, index=idx)
 
     # ----------------------------------------------------- actions, calendar
-    def corporate_actions(self, symbol: str) -> list[dict]:
+    def _feed_actions_physical(self, names) -> list[dict]:
+        lim = self._as_of.isoformat()
+        skip = set(names)
+        out = []
+        for name in names:
+            for filed, ex, exd, t, num, den in self._t.feed_actions.get(name, ()):
+                if filed not in skip and ex <= lim:
+                    out.append((ex, {"ex_date": exd, "action_type": t, "ratio_numerator": num, "ratio_denominator": den}))
+        out.sort(key=lambda x: x[0])
+        return [a for _, a in out]
+
+    def _corporate_actions_physical(self, symbol: str) -> list[dict]:
         lim = self._as_of.isoformat()
         return [{"ex_date": exd, "action_type": t, "ratio_numerator": num, "ratio_denominator": den}
                 for ex, exd, t, num, den in self._t.actions.get(symbol, ()) if ex <= lim]
@@ -177,7 +202,7 @@ class MemoryAsOfView(AsOfView):
     def _lake_first_date(self) -> Optional[date]:
         return self._t.nifty_first
 
-    def _first_and_count(self, symbol: str):
+    def _first_and_count_physical(self, symbol: str):
         sp = self._t.span.get(symbol)
         if sp is None:
             return None, 0

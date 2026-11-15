@@ -26,7 +26,8 @@ from stockbot.engine.apply import apply_decisions
 from stockbot.engine.corporate import apply_actions, due_actions
 from stockbot.engine.exit_policy import Bar
 from stockbot.engine.fills import fill_ticket
-from stockbot.engine.stepping import step_position
+from stockbot.engine.stale import no_bars_for, stale_detail, stale_sessions
+from stockbot.engine.stepping import close_no_bars, step_position
 from stockbot.engine.types import Blocked, ClosedTrade, CorporateActionApplied, Decisions, Flag, PositionUpdate, State, Ticket
 from stockbot.overlays import KNOWN, library_overlay, resolve_default_overlays
 from stockbot.risk.arbitration import OpenPos, Proposal as RiskProposal, admission_order, arbitrate
@@ -165,7 +166,8 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
 
     # ---- 2) fills of yesterday's tickets at today's open ------------------------------------------------------------------------------------
     eq_now = _equity(cash, state.positions)                       # marked at the previous close, before today's moves
-    held = {p.symbol for p in state.positions}
+    canon = getattr(view, "resolve_symbol", None) or (lambda s: s)         # a linked stock (renamed) is one symbol: a position under an old name blocks a new ticket under the new one
+    held = {canon(p.symbol) for p in state.positions}
     new_positions: list = []
     for t in state.pending:
         strat = by_id.get(t.strategy_id)
@@ -175,14 +177,14 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
         policy = policies[strat.spec.exit_policy]
         plan = fill_ticket(
             t, bar_of(view, t.symbol), as_of, execution=ex, risk_pct=pr.max_loss_pct_per_trade, equity=eq_now, cash=cash, costs=costs, policy_id=policy.id,
-            held=t.symbol in held, corporate_action_today=any(a["ex_date"] == as_of for a in view.corporate_actions(t.symbol)),
+            held=canon(t.symbol) in held, corporate_action_today=any(a["ex_date"] == as_of for a in view.corporate_actions(t.symbol)),
             confirm=lambda prop, price, strat=strat, t=t: guard("confirm_fill", t.strategy_id, lambda: strat.confirm_fill(prop, price, view), "CONFIRM_FILL_ERROR"),
             initial_exit_state=lambda pos, policy=policy, t=t: guard("exit_policy", t.strategy_id, lambda: dict(policy.initial_state(pos, view)), {}))
         if not plan.ok:
             blocked.append(Blocked(t.strategy_id, t.symbol, plan.reason, "fill"))
             continue
         cash += plan.cash_delta
-        held.add(t.symbol)
+        held.add(canon(t.symbol))
         new_positions.append(plan.position)
         fills.append(plan.fill)
         audit.append(("fill", {"ticket": t.ticket_id, "price": plan.fill.price, "shares": plan.fill.shares}))
@@ -190,9 +192,25 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
             flags.append(Flag("UNRECONCILED_FILL", "assumed fill; the operator's report overrides", t.strategy_id, t.symbol))
 
     # ---- 3) corporate actions, then step every open position through today's bar (new positions too: entry-bar stop) ---------------------------
+    stale_n = stale_sessions(shared_config)
     still_open: list = []
     for pos in list(state.positions) + new_positions:
         bar = bar_of(view, pos.symbol)
+        if bar is None and stale_n and no_bars_for(view, pos.symbol, stale_n):
+            # no bar for stale_exit_sessions consecutive sessions: closed in the book at the last close (SYMBOL_NO_BARS), an explicit flag for the operator, never silent
+            res = close_no_bars(pos, as_of, costs, ex.exit_slippage_pct)
+            cash += res.cash_delta
+            exits.extend(res.exits)
+            flags.append(Flag("SYMBOL_NO_BARS", stale_detail(pos.symbol, stale_n), pos.strategy_id, pos.symbol))
+            if mode == "live":
+                for e in res.exits:
+                    flags.append(Flag("UNRECONCILED_EXIT", f"assumed {e.reason}; the operator's report overrides", pos.strategy_id, pos.symbol))
+            p = res.position
+            net = p.gross_pnl - p.costs_paid
+            realised += net
+            closed.append(ClosedTrade(p.position_id, p.strategy_id, p.symbol, p.entry_date, as_of, p.entry_price, p.initial_stop, p.shares_initial, p.risk_inr,
+                                      p.gross_pnl, p.costs_paid, net, "SYMBOL_NO_BARS", p.hold))
+            continue
         if bar is None:
             flags.append(Flag("NO_BAR_POSITION_NOT_STEPPED", "", pos.strategy_id, pos.symbol))
             still_open.append(pos)
@@ -235,7 +253,7 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
     # ---- 4) proposals -> sizing -> arbitration ----------------------------------------------------------------------------------------------
     equity = _equity(cash, still_open)
     strategy_state = dict(state.strategy_state)
-    open_view = [OpenPos(p.symbol, p.sector, p.shares_remaining * p.entry_price, max(0.0, p.shares_remaining * (p.entry_price - p.live_stop)), p.strategy_id)
+    open_view = [OpenPos(canon(p.symbol), p.sector, p.shares_remaining * p.entry_price, max(0.0, p.shares_remaining * (p.entry_price - p.live_stop)), p.strategy_id)
                  for p in still_open]
     elig_cache: dict = {}
     risk_props: list = []

@@ -37,7 +37,8 @@ from stockbot.data.lake import open_lake  # noqa: E402
 from stockbot.engine.corporate import apply_actions, due_actions  # noqa: E402
 from stockbot.engine.decide import bar_of  # noqa: E402
 from stockbot.engine.fills import fill_ticket  # noqa: E402
-from stockbot.engine.stepping import step_position  # noqa: E402
+from stockbot.engine.stale import no_bars_for, stale_sessions  # noqa: E402
+from stockbot.engine.stepping import close_no_bars, step_position  # noqa: E402
 from stockbot.engine.types import ClosedTrade, Ticket  # noqa: E402
 from stockbot.risk.costs import CostModel  # noqa: E402
 from stockbot.risk.r_metrics import compute_trade_r  # noqa: E402
@@ -94,10 +95,17 @@ def simulate_ticket_own(t: Ticket, sessions, view_at, *, shared_config, policy, 
     if not plan.ok:
         return None, plan.reason
     pos = plan.position
+    stale_n = stale_sessions(shared_config)
     for d in todo:
         view = view_at(d)
         bar = bar_of(view, pos.symbol)
         if bar is None:
+            if stale_n and no_bars_for(view, pos.symbol, stale_n):                    # the shared no-bars closure (stockbot.engine.path): a filled draw, reason SYMBOL_NO_BARS
+                res = close_no_bars(pos, d, costs, ex.exit_slippage_pct)
+                pos = res.position
+                net = pos.gross_pnl - pos.costs_paid
+                return ClosedTrade(pos.position_id, pos.strategy_id, pos.symbol, pos.entry_date, d, pos.entry_price, pos.initial_stop, pos.shares_initial, pos.risk_inr,
+                                   pos.gross_pnl, pos.costs_paid, net, "SYMBOL_NO_BARS", pos.hold), "CLOSED"
             continue
         due = due_actions(view.corporate_actions(pos.symbol), pos.entry_date, d, pos.ca_done)
         if due:
@@ -247,7 +255,7 @@ def run_baseline(lake, run_dir, out_dir, *, draws: int = DRAWS, min_filled: int 
     meta = {"draws_per_trade": draws, "min_filled": min_filled, "seed": seed, "policy": SPEC.exit_policy, "stop_rule": "close - max(3 x ATR14, 0.08 x close) on the draw's own symbol",
             "usable_trades": len(use), "pairs_kept": kept, "dropped_pairs": dropped, "share_dropped": share,
             "flag": (f"more than 5% of trades lost their pair ({share:.1%}): the result is flagged" if share > LOSS_FLAG else None), "draws_total": int(len(d)),
-            "end_of_window_trades": eow_trades, "end_of_window_draws": eow_draws, "draws_closed_before_window_end": int(len(d)) - eow_draws, "unfilled": unfilled,
+            "end_of_window_trades": eow_trades, "end_of_window_draws": eow_draws, "draws_closed_before_window_end": int(len(d)) - eow_draws, "stale_exit_draws": int((d["exit_reason"] == "SYMBOL_NO_BARS").sum()) if len(d) else 0, "unfilled": unfilled,
             "excluded_ca": sum(1 for t in trades if t.get("excluded_ca", False)), "window": manifest["window"], "spec_config_hash": SPEC.config_hash(), "asof_view": active_view_name(),
             "end_of_window_rule": "open at the window end: closed at the last close with normal costs and slippage and counted as filled / usable"}
     for name, frame in (("actual_trades.csv", a), ("baseline_draws.csv", d)):

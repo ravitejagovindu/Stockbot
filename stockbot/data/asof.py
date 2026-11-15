@@ -26,6 +26,7 @@ from typing import Optional
 import pandas as pd
 
 from stockbot.config.paths import repo_root
+from stockbot.data import symbol_links as _links
 from stockbot.data.adjustments import compute_adtv, get_adjusted_series
 
 NIFTY, VIX = "NIFTY50_INDEX", "INDIA_VIX"
@@ -93,8 +94,35 @@ class AsOfView:
             raise FutureDataError(f"{what} {d} is after the as-of date {self._as_of}")
 
     # ------------------------------------------------------------------ bars
+    # ------------------------------------------------------------------ symbol links (the ONE implementation, shared by the SQL and the in-memory view)
+    # A linked stock (data/reference/symbol_links.csv, switch data.symbol_links_enabled) is ONE symbol under its latest name: the public methods below combine the physical symbols of its
+    # chain. The ``_*_physical`` methods are the data-fetch primitives of ONE physical symbol (the in-memory view replaces exactly these); an unlinked symbol goes straight to them.
+    def resolve_symbol(self, symbol: str) -> str:
+        """The latest name of a linked stock (any name of the chain resolves to it); the symbol itself when it is not linked or the switch is off."""
+        return _links.resolve(symbol)
+
+    def _chain(self, symbol: str):
+        """The physical symbols of a linked stock, oldest first; None when ``symbol`` is not linked (or the switch is off)."""
+        ms = _links.members(symbol)
+        return ms if ms else None
+
     def raw_bars(self, symbol: str, lookback: Optional[int] = DEFAULT_LOOKBACK, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
-        """Raw OHLCV (open_raw..volume_raw), index = datetime.date ascending, the last ``lookback`` bars in [start, end]; ``end`` defaults to as_of."""
+        """Raw OHLCV (open_raw..volume_raw), index = datetime.date ascending, the last ``lookback`` bars in [start, end]; ``end`` defaults to as_of.
+        A linked stock returns the bars of all its names as one series (point in time: only bars up to as_of)."""
+        chain = self._chain(symbol)
+        if chain is None:
+            return self._raw_bars_physical(symbol, lookback, start, end)
+        self._check(end, "end")
+        self._check(start, "start")
+        frames = [f for f in (self._raw_bars_physical(s, None, start, end) for s in chain) if not f.empty]
+        if not frames:
+            return pd.DataFrame(columns=["open_raw", "high_raw", "low_raw", "close_raw", "volume_raw"])
+        df = pd.concat(frames).sort_index()
+        df = df[~df.index.duplicated(keep="last")]
+        return df.iloc[-int(lookback):] if lookback else df
+
+    def _raw_bars_physical(self, symbol: str, lookback: Optional[int] = DEFAULT_LOOKBACK, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
+        """Raw OHLCV of ONE physical symbol (the SQL primitive)."""
         self._check(end, "end")
         self._check(start, "start")
         hi = _d(end) if end is not None else self._as_of
@@ -145,7 +173,32 @@ class AsOfView:
 
     # ----------------------------------------------------- actions, calendar
     def corporate_actions(self, symbol: str) -> list[dict]:
-        """Actions in corporate_actions_log known by as_of (ex_date <= as_of), oldest first."""
+        """Actions in corporate_actions_log known by as_of (ex_date <= as_of), oldest first. A linked stock gets the rows filed under ANY of its names plus rows filed under another symbol whose
+        note names one of them (``feed_symbol=NAME;``); an action present under more than one name (same ex-date, type and ratio) is returned ONCE."""
+        chain = self._chain(symbol)
+        if chain is None:
+            return self._corporate_actions_physical(symbol)
+        rows = [a for s in chain for a in self._corporate_actions_physical(s)] + list(self._feed_actions_physical(chain))
+        seen: set = set()
+        out: list = []
+        for a in rows:
+            key = (a["ex_date"], a["action_type"], a["ratio_numerator"], a["ratio_denominator"])
+            if key not in seen:
+                seen.add(key)
+                out.append(a)
+        return sorted(out, key=lambda a: (a["ex_date"], str(a["action_type"]), -1.0 if a["ratio_numerator"] is None else a["ratio_numerator"], -1.0 if a["ratio_denominator"] is None else a["ratio_denominator"]))
+
+    def _feed_actions_physical(self, names) -> list[dict]:
+        """Rows (ex_date <= as_of) filed under a symbol NOT in ``names`` whose note starts ``feed_symbol=<one of names>;`` (the SQL primitive)."""
+        marks = ",".join("?" * len(names))
+        likes = " or ".join("instr(notes, ?) = 1" for _ in names)
+        rows = self._conn.execute(
+            f"select ex_date, action_type, ratio_numerator, ratio_denominator from corporate_actions_log where ex_date<=? and symbol not in ({marks}) and ({likes}) order by ex_date",
+            [self._as_of.isoformat(), *names, *[f"feed_symbol={n};" for n in names]]).fetchall()
+        return [{"ex_date": date.fromisoformat(str(r[0])[:10]), "action_type": r[1], "ratio_numerator": r[2], "ratio_denominator": r[3]} for r in rows]
+
+    def _corporate_actions_physical(self, symbol: str) -> list[dict]:
+        """Actions filed under ONE physical symbol (the SQL primitive)."""
         rows = self._conn.execute(
             "select ex_date, action_type, ratio_numerator, ratio_denominator from corporate_actions_log where symbol=? and ex_date<=? order by ex_date",
             (symbol, self._as_of.isoformat())).fetchall()
@@ -167,7 +220,11 @@ class AsOfView:
     def _query_symbols(self, symbol: str) -> list:
         if not self._has_table("earnings_symbol_map"):
             return []
-        return [r[0] for r in self._conn.execute("select query_symbol from earnings_symbol_map where lake_symbol=? order by query_symbol", (symbol,)).fetchall()]
+        names = self._chain(symbol) or (symbol,)
+        if len(names) == 1:
+            return [r[0] for r in self._conn.execute("select query_symbol from earnings_symbol_map where lake_symbol=? order by query_symbol", (symbol,)).fetchall()]
+        marks = ",".join("?" * len(names))
+        return [r[0] for r in self._conn.execute(f"select distinct query_symbol from earnings_symbol_map where lake_symbol in ({marks}) order by query_symbol", list(names)).fetchall()]
 
     def earnings_coverage(self, symbol: str) -> bool:
         """True if the earnings collection returned data for this symbol (mapped, and at least one API response with rows). False means "no data", NOT "no events"."""
@@ -197,7 +254,12 @@ class AsOfView:
     # --------------------------------------------------------------- symbols
     def symbols_trading(self) -> list[str]:
         """Symbols with a bar on the as-of date itself (index series excluded)."""
-        return [s for s in self._symbols_on_as_of() if s not in (NIFTY, VIX)]
+        out = [s for s in self._symbols_on_as_of() if s not in (NIFTY, VIX)]
+        links = _links.active()
+        if links is None:
+            return out
+        mapped = [links.resolve(s) for s in out]
+        return out if mapped == out else sorted(set(mapped))          # a linked stock trades under its latest name only
 
     def _symbols_on_as_of(self) -> list[str]:
         """Data-fetch primitive: every symbol (index series included) with a bar on the as-of date, sorted."""
@@ -208,7 +270,16 @@ class AsOfView:
         return date.fromisoformat(str(r[0])[:10]) if r and r[0] else None
 
     def _first_and_count(self, symbol: str):
-        """Data-fetch primitive: (first bar date or None, number of bars) of ``symbol`` on or before the as-of date."""
+        """(first bar date or None, number of bars) on or before the as-of date; a linked stock: the earliest first bar and the total bar count over all its names (listing age carries over)."""
+        chain = self._chain(symbol)
+        if chain is None:
+            return self._first_and_count_physical(symbol)
+        parts = [self._first_and_count_physical(s) for s in chain]
+        firsts = [f for f, _ in parts if f is not None]
+        return (min(firsts) if firsts else None), sum(n for _, n in parts)
+
+    def _first_and_count_physical(self, symbol: str):
+        """Data-fetch primitive: (first bar date or None, number of bars) of ONE physical symbol on or before the as-of date."""
         r = self._conn.execute("select min(trade_date), count(*) from market_data_lake where symbol=? and trade_date<=?", (symbol, self._as_of.isoformat())).fetchone()
         return (date.fromisoformat(str(r[0])[:10]) if r and r[0] else None), int(r[1] or 0)
 
@@ -229,4 +300,5 @@ class AsOfView:
                 age = 252 + (cal - 365)
             else:
                 age = n
-        return SymbolInfo(symbol, first, n, symbol.strip().upper() in _fund_symbols(), age)
+        funds = _fund_symbols()
+        return SymbolInfo(symbol, first, n, any(m.strip().upper() in funds for m in (self._chain(symbol) or (symbol,))), age)

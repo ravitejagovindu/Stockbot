@@ -17,6 +17,7 @@ Outputs under --out: manifest.json (the run manifest, with asof_view and the end
 Nothing is printed about P&L. Known limitation: no ASM/GSM ranges for the historical window.
 """
 import argparse
+import types
 import dataclasses
 import json
 import sys
@@ -33,6 +34,7 @@ from stockbot.data.asof import active_view_name  # noqa: E402
 from stockbot.data.sector_map import SectorLookup  # noqa: E402
 from stockbot.engine.decide import EventData  # noqa: E402
 from stockbot.engine.exit_policies.registry import policies_for  # noqa: E402
+from stockbot.backtest.outputs import trade_records as shared_trade_records  # noqa: E402
 from stockbot.strategies.registry import StrategyRegistry  # noqa: E402
 from stockbot.strategies.riskadj_momentum import RiskAdjMomentumStrategy, TrailingAtr3Floor8, register  # noqa: E402
 
@@ -40,11 +42,15 @@ DEFAULT_START, DEFAULT_END = "2016-01-01", "2026-10-16"
 ENGINE_EOW, COUNTED_EOW = "END_OF_WINDOW", "END_OF_WINDOW_COUNTED"
 
 
-def trade_records(trades) -> list:
-    """The engine's closed trades as dicts; an END_OF_WINDOW closure is relabelled so that the shared gate code counts it (see the module docstring)."""
+def trade_records(trades, decisions=()) -> list:
+    """The engine's closed trades as dicts; an END_OF_WINDOW closure is relabelled so that the shared gate code counts it (see the module docstring). A trade closed by the shared no-bars rule
+    (SYMBOL_NO_BARS, usable like any other) also carries stale_exit, exit_price and last_close, as stockbot.backtest.outputs writes them."""
+    shared = {r["position_id"]: r for r in shared_trade_records(types.SimpleNamespace(trades=trades, decisions=decisions)) if r.get("stale_exit")}
     out = []
     for t in trades:
         d = dataclasses.asdict(t)
+        if t.position_id in shared:
+            d.update({k: shared[t.position_id][k] for k in ("stale_exit", "exit_price", "last_close")})
         d["end_of_window"] = d["exit_reason"] == ENGINE_EOW
         d["exit_reason_engine"] = d["exit_reason"]
         if d["end_of_window"]:
@@ -88,7 +94,7 @@ def main(argv=None) -> int:
     out.mkdir(parents=True, exist_ok=True)
     policies = policies_for([strategy.spec], extra=[TrailingAtr3Floor8()])
     res = run_backtest(args.lake or lake_path(), start, end, cfg.backtest.initial_equity, [strategy], policies, cfg, EventData(sectors=SectorLookup(), asm_ranges={}))
-    trades = trade_records(res.trades)
+    trades = trade_records(res.trades, res.decisions)
     n_eow = sum(1 for t in trades if t["end_of_window"])
     manifest = dict(res.manifest)
     manifest["end_of_window"] = {"rule": "closed at the last session close, normal costs and slippage, counted as usable trades", "trades": n_eow, "closed_trades_total": len(trades),

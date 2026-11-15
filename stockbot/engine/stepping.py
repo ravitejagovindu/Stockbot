@@ -92,3 +92,11 @@ def step_position(pos: Position, bar: Bar, day, view, policy: ExitPolicy, costs:
     if p.shares_remaining > 0 and queued:
         p = replace(p, pending_exit=min(queued, p.shares_remaining), pending_reason=reason)
     return StepOutcome(p, tuple(exits), cash, p.shares_remaining == 0, tuple(flags))
+
+
+def close_no_bars(pos: Position, day, costs: CostModel, exit_slippage_pct: float) -> StepOutcome:
+    """Close ``pos`` at its last available close x (1 - exit slippage) with the normal sell costs: reason SYMBOL_NO_BARS (see ``stockbot.engine.stale``). Pure."""
+    price = pos.last_close * (1.0 - exit_slippage_pct / 100.0)
+    rec, cash_in, gross, cost = _sell(pos, day, "SYMBOL_NO_BARS", price, pos.shares_remaining, costs, True)
+    p = replace(pos, shares_remaining=0, gross_pnl=pos.gross_pnl + gross, costs_paid=pos.costs_paid + cost, pending_exit=0, pending_reason="")
+    return StepOutcome(p, (rec,), cash_in, True, ("SYMBOL_NO_BARS",))

@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import benchmark_nifty_matched_riskadj_momentum as B2  # noqa: E402
+import evaluate_validation_gates_near_52w_high as S  # noqa: E402  (shared stale-exit report)
 from stockbot.validation import benchmark_alpha as BA  # noqa: E402
 from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.data.asof import active_view_name  # noqa: E402
@@ -113,8 +114,16 @@ def _reporting_inputs(max_loss_pct, after_tax_rates_pct) -> tuple:
 def evaluate(run_dir, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed: int = SEED, block: int = BLOCK, max_loss_pct=None, after_tax_rates_pct=None) -> dict:
     """Every gate from one run. The alpha gate is the cash-credited, PRE-TAX alpha (the strategy's idle cash earns risk_free_pct after the fact; no feedback into sizing). ``max_loss_pct`` and
     ``after_tax_rates_pct`` feed the non-gating report lines and default to the shared config (portfolio_risk.max_loss_pct_per_trade, reporting.after_tax_rates_pct)."""
-    max_loss_pct, rates = _reporting_inputs(max_loss_pct, after_tax_rates_pct)
     run = load_run(Path(run_dir))
+    kw = dict(boot=boot, seed=seed, block=block, max_loss_pct=max_loss_pct, after_tax_rates_pct=after_tax_rates_pct)
+    res = evaluate_run(run, nifty, gates, **kw)
+    res["stale_exit"] = S.stale_exit_report(run, nifty, gates, evaluate_run, **kw)          # reporting only (B3): the shared report, with this script's own gate evaluation for the stress line
+    return res
+
+
+def evaluate_run(run: dict, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed: int = SEED, block: int = BLOCK, max_loss_pct=None, after_tax_rates_pct=None) -> dict:
+    """The gate evaluation of one LOADED run: what ``evaluate`` did before the stale-exit report existed, unchanged."""
+    max_loss_pct, rates = _reporting_inputs(max_loss_pct, after_tax_rates_pct)
     equity, (eq2, cash) = run["equity"], run["daily"]
     table = trade_table(run["trades"])
     use = table[table["usable"]]
@@ -190,6 +199,7 @@ def format_table(res: dict) -> str:
           "", f"all gates met on their point estimates: {res['all_met']}", "", f"counts: {json.dumps(res['counts'])}", "", "DESCRIPTIVE sub-periods (values only; no pass or fail; never used to select, change or stop anything):"]
     for tag, d in res["descriptive"].items():
         L.append(f"  {tag}: {json.dumps(d)}")
+    L += S.stale_exit_lines(res.get("stale_exit"))
     return "\n".join(L)
 
 

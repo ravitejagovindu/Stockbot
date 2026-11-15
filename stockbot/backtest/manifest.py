@@ -40,8 +40,9 @@ def data_snapshot_id(lake_path: Path, last_session: Optional[date]) -> dict:
 
 
 def run_manifest(*, shared_config, strategies: Sequence, window: tuple, initial_equity: float, lake_path: Optional[Path] = None, last_session: Optional[date] = None,
-                 seed: Optional[int] = None, sha: Optional[str] = None, default_overlays: Optional[Sequence[str]] = None) -> dict[str, Any]:
-    return {
+                 seed: Optional[int] = None, sha: Optional[str] = None, default_overlays: Optional[Sequence[str]] = None, stale_exit_trades: Optional[Sequence] = None) -> dict[str, Any]:
+    """``stale_exit_trades``: the closed trades of the run with reason SYMBOL_NO_BARS (pass () when there are none); None leaves the stale_exit block out (callers that do not know the trades)."""
+    out = {
         "shared_config_hash": shared_config_hash(shared_config, default_overlays, strategies),
         "overlays": describe_effective_overlays(shared_config, strategies, default_overlays),
         "strategies": {s.spec.id: {"version": s.spec.version, "config_hash": s.spec.config_hash(), "exit_policy": s.spec.exit_policy, "overlays": dict(s.spec.overlays)}
@@ -53,3 +54,26 @@ def run_manifest(*, shared_config, strategies: Sequence, window: tuple, initial_
         "window": [window[0].isoformat(), window[1].isoformat()],
         "initial_equity": initial_equity,
     }
+    links = _symbol_links_block()
+    if links is not None:
+        out["symbol_links"] = links
+    if stale_exit_trades is not None:
+        out["stale_exit"] = stale_exit_block(shared_config, stale_exit_trades)
+    return out
+
+
+def _symbol_links_block() -> Optional[dict]:
+    """Whether symbol links were in force for this run and which table (sha256 of data/reference/symbol_links.csv)."""
+    from stockbot.config.paths import repo_root
+    from stockbot.data import symbol_links
+    p = repo_root() / "data" / "reference" / symbol_links.LINKS_FILE
+    links = symbol_links.active()
+    return {"enabled": symbol_links.enabled(), "linked_pairs": len(links.pairs) if links is not None else 0, "file_sha256": hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else None}
+
+
+def stale_exit_block(shared_config, trades: Sequence) -> dict:
+    """Reporting only (never a gate): how many trades the no-bars rule closed (SYMBOL_NO_BARS), their list and their total net P&L."""
+    rows = [t for t in trades if getattr(t, "exit_reason", None) == "SYMBOL_NO_BARS"]
+    eng = getattr(shared_config, "engine", None)
+    return {"sessions": getattr(eng, "stale_exit_sessions", None), "trades": len(rows), "net_pnl_total": float(sum(t.net_pnl for t in rows)),
+            "list": [{"position_id": t.position_id, "symbol": t.symbol, "entry_date": t.entry_date.isoformat(), "exit_date": t.exit_date.isoformat(), "net_pnl": float(t.net_pnl)} for t in rows]}

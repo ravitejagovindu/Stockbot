@@ -71,5 +71,6 @@ def run_backtest(lake, start: date, end: date, initial_equity: float, strategies
                                       gross, paid, net, "END_OF_WINDOW", p.hold))
         st = replace(st, positions=(), cash=cash, realised_pnl_net=realised)
     manifest = run_manifest(shared_config=shared_config, strategies=strategies, window=(start, end), initial_equity=initial_equity, lake_path=lake_file,
-                            last_session=days[-1] if days else None, seed=seed, default_overlays=default_overlays)
+                            last_session=days[-1] if days else None, seed=seed, default_overlays=default_overlays,
+                            stale_exit_trades=[t for t in trades if t.exit_reason == "SYMBOL_NO_BARS"])
     return BacktestResult(tuple(decisions), st, tuple(trades), curve, tuple(eow), manifest)

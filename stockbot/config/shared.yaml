@@ -14,6 +14,12 @@ data:
   adtv_sma_period: 20              # ADTV uses raw volume x raw close
   nifty_symbol: "NIFTY50_INDEX"
   vix_symbol: "INDIA_VIX"
+  symbol_links_enabled: true       # a renamed stock is ONE symbol under its latest name in the as-of views (data/reference/symbol_links.csv, built by scripts/build_symbol_links.py); applied on read, the lake is not modified
+
+# Engine rules common to backtest, paper and live (one code path: engine.decide, engine.path for the baseline).
+engine:
+  stale_exit_sessions: 20          # a held position whose symbol (after linking) has had no bar for this many CONSECUTIVE sessions is closed on that session at its last close, normal exit slippage and costs,
+                                   # reason SYMBOL_NO_BARS; the trade is usable like any other; nothing re-opens if bars resume
 
 execution:
   entry_fill: NEXT_OPEN            # signal at close T -> fill at open T+1
@@ -73,6 +79,7 @@ validation_gates:
 # Reporting only: nothing here is a gate and nothing here enters the validation_gates hash. The after-tax alpha lines are "illustrative, not tax advice".
 reporting:
   after_tax_rates_pct: [0.0, 20.0]
+  stale_exit_stress_factor: 0.5    # stress line only ("stress, not a gate"): every SYMBOL_NO_BARS exit price set to this factor x its last close, gate values recomputed
 
 # Q8: acceptance criteria for the paper run (live package); a strategy may not override them; revisited at pre-registration.
 paper_criteria:

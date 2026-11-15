@@ -30,6 +30,7 @@ import benchmark_nifty_matched_near_52w_high as B2  # noqa: E402
 from stockbot.validation import benchmark_alpha as BA  # noqa: E402
 from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.data.lake import open_lake  # noqa: E402,F401  (module-level name: tests replace it to trace the SQL)
+from stockbot.risk.costs import CostModel  # noqa: E402
 from stockbot.risk.r_metrics import compute_trade_r  # noqa: E402
 from stockbot.validation.max_t_bootstrap import _block_resample  # noqa: E402
 
@@ -112,8 +113,16 @@ def _reporting_inputs(max_loss_pct, after_tax_rates_pct) -> tuple:
 def evaluate(run_dir, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed: int = SEED, block: int = BLOCK, max_loss_pct=None, after_tax_rates_pct=None) -> dict:
     """Every gate from one run. The alpha gate is the cash-credited, PRE-TAX alpha (the strategy's idle cash earns risk_free_pct after the fact; no feedback into sizing). ``max_loss_pct`` and
     ``after_tax_rates_pct`` feed the non-gating report lines and default to the shared config (portfolio_risk.max_loss_pct_per_trade, reporting.after_tax_rates_pct)."""
-    max_loss_pct, rates = _reporting_inputs(max_loss_pct, after_tax_rates_pct)
     run = load_run(Path(run_dir))
+    kw = dict(boot=boot, seed=seed, block=block, max_loss_pct=max_loss_pct, after_tax_rates_pct=after_tax_rates_pct)
+    res = evaluate_run(run, nifty, gates, **kw)
+    res["stale_exit"] = stale_exit_report(run, nifty, gates, evaluate_run, **kw)
+    return res
+
+
+def evaluate_run(run: dict, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed: int = SEED, block: int = BLOCK, max_loss_pct=None, after_tax_rates_pct=None) -> dict:
+    """The gate evaluation of one LOADED run (``load_run``): what ``evaluate`` did before the stale-exit report existed, unchanged."""
+    max_loss_pct, rates = _reporting_inputs(max_loss_pct, after_tax_rates_pct)
     equity, (eq2, cash) = run["equity"], run["daily"]
     table = trade_table(run["trades"])
     use = table[table["usable"]]
@@ -174,6 +183,50 @@ def evaluate(run_dir, nifty: pd.Series, gates: dict, *, boot: int = 10000, seed:
             "boot": boot, "block_months": block, "gate_alpha_is_pre_tax": True, "risk_free_pct": gates["risk_free_pct"]}
 
 
+# ------------------------------------------------------------------------------------------------------------------------------ stale exits (reporting only)
+def stress_run(run: dict, factor: float, shared_config=None) -> dict:
+    """A copy of ``run`` in which every trade closed by the no-bars rule (exit_reason SYMBOL_NO_BARS) is sold at ``factor`` x its last close instead (sell costs recomputed; the difference in net P&L
+    is carried into the daily equity and cash from the exit date on). Positions are marked at the last close until the exit, so nothing before the exit date changes. Reporting only: "stress, not a gate"."""
+    cfg = shared_config or load_shared_config()
+    costs, slip = CostModel.from_shared(cfg.costs), cfg.execution.exit_slippage_pct
+    trades = [dict(t) for t in run["trades"]]
+    equity = run["equity"].astype(float).copy()
+    eq2, cash = run["daily"][0].astype(float).copy(), run["daily"][1].astype(float).copy()
+    for t in trades:
+        if t["exit_reason"] != "SYMBOL_NO_BARS":
+            continue
+        shares = float(t["shares_initial"])
+        price = float(t["exit_price"]) if t.get("exit_price") is not None else float(t["entry_price"]) + float(t["gross_pnl"]) / shares
+        last = float(t["last_close"]) if t.get("last_close") is not None else price / (1.0 - slip / 100.0)
+        stressed = factor * last
+        gross2 = float(t["gross_pnl"]) - (price - stressed) * shares
+        costs2 = float(t["costs"]) - costs.sell_cost(price * shares) + costs.sell_cost(stressed * shares)
+        net2 = gross2 - costs2
+        delta = net2 - float(t["net_pnl"])
+        t["gross_pnl"], t["costs"], t["net_pnl"] = gross2, costs2, net2
+        x = date.fromisoformat(t["exit_date"])
+        for ser in (equity, eq2, cash):
+            ser[[d >= x for d in ser.index]] += delta
+    return {"manifest": run["manifest"], "trades": trades, "equity": equity, "daily": (eq2, cash)}
+
+
+def stale_exit_report(run: dict, nifty: pd.Series, gates: dict, eval_run, *, shared_config=None, **kw) -> dict:
+    """Reporting beside the gates, never gating: the number of trades closed by the no-bars rule (SYMBOL_NO_BARS), their list and total net P&L and, when there are any, every gate value
+    recomputed with each of those trades' exit price set to ``reporting.stale_exit_stress_factor`` x its last close, labelled "stress, not a gate". ``eval_run(run, nifty, gates, **kw)`` is the
+    caller's own gate evaluation (a strategy-side script passes its own)."""
+    cfg = shared_config or load_shared_config()
+    stale = [t for t in run["trades"] if t["exit_reason"] == "SYMBOL_NO_BARS"]
+    out = {"trades": len(stale), "net_pnl_total": float(sum(float(t["net_pnl"]) for t in stale)),
+           "list": [{"position_id": t["position_id"], "symbol": t["symbol"], "entry_date": t["entry_date"], "exit_date": t["exit_date"], "net_pnl": float(t["net_pnl"])} for t in stale],
+           "usable": "these trades count like any other (gates, T1, T2, equity curve)"}
+    if stale:
+        factor = float(cfg.reporting.stale_exit_stress_factor)
+        r = eval_run(stress_run(run, factor, cfg), nifty, gates, **kw)
+        out["stress"] = {"label": "stress, not a gate", "factor": factor, "gates": r["gates"], "all_met": r["all_met"],
+                         "alpha_cash_credited_pct": r["alpha"]["cash_credited"]["alpha_pct"], "net_pnl_total_stressed": float(sum(float(t["net_pnl"]) for t in stress_run(run, factor, cfg)["trades"] if t["exit_reason"] == "SYMBOL_NO_BARS"))}
+    return out
+
+
 def format_table(res: dict) -> str:
     L = ["gate | registered value | observed | 95% interval | met", "---|---|---|---|---"]
     for r in res["gates"]:
@@ -189,7 +242,23 @@ def format_table(res: dict) -> str:
           "", f"all gates met on their point estimates: {res['all_met']}", "", f"counts: {json.dumps(res['counts'])}", "", "DESCRIPTIVE sub-periods (values only; no pass or fail; never used to select, change or stop anything):"]
     for tag, d in res["descriptive"].items():
         L.append(f"  {tag}: {json.dumps(d)}")
+    L += stale_exit_lines(res.get("stale_exit"))
     return "\n".join(L)
+
+
+def stale_exit_lines(st) -> list:
+    """The stale-exit part of the printed report (reporting only)."""
+    if not st:
+        return []
+    L = ["", f"stale exits (reporting only): {st['trades']} trade(s) closed by the no-bars rule (SYMBOL_NO_BARS), total net P&L {st['net_pnl_total']:.2f}"]
+    L += [f"  {t['symbol']} {t['entry_date']} to {t['exit_date']} net P&L {t['net_pnl']:.2f}" for t in st["list"]]
+    if st.get("stress"):
+        sx = st["stress"]
+        L.append(f"STRESS ({sx['label']}): every stale exit sold at {sx['factor']} x its last close; all gates met: {sx['all_met']}")
+        for g in sx["gates"]:
+            iv = "-" if g["interval"] is None else f"{g['interval'][0]:.3f} to {g['interval'][1]:.3f}"
+            L.append(f"  {g['gate']} | {g['comparison']} {g['gate_value']} | {g['observed']:.4f} | {iv} | {'YES' if g['met'] else 'NO'}")
+    return L
 
 
 def main(argv=None) -> int:

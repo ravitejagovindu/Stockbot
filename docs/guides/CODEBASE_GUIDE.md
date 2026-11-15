@@ -103,6 +103,7 @@ Extra rules in the same test: no strategy imports another strategy (`base`, `reg
 | `lake.py` | `open_lake`: opens `finsight.db` read-only (SQLite `mode=ro` plus `query_only`), so a write raises an error. |
 | `asof.py` | `AsOfView`: the point-in-time window onto the lake. The only way code above `data` reads market data. |
 | `asof_memory.py` | `MemoryAsOfView`: the same view answered from tables loaded once into memory (selected by `STOCKBOT_VIEW=memory`); only the data fetches differ, all rules are `AsOfView`'s. |
+| `symbol_links.py` | `Links`, `active()`: the renamed-stock link table (`data/reference/symbol_links.csv`) and its switch `data.symbol_links_enabled`; the as-of views apply it on read, so a linked stock is one symbol under its latest name. |
 | `adjustments.py` | Pure functions that adjust raw prices for splits and bonuses, and compute ADTV. Never touches the database. |
 | `indicators.py` | Pure indicator functions: `sma`, `rma`, `atr`, `donchian_low`, `donchian_high`. |
 | `sector_map.py` | The one sector rule for backtest, paper and live: `sector_for(symbol)` reads `data/reference/sector_map.csv`; a symbol not in it is its own sector, `UNMAPPED:<SYMBOL>` (never a shared bucket). `is_mapped(symbol)`; `SectorLookup`, the mapping every path hands to `EventData(sectors=...)`. |
@@ -211,6 +212,7 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 | `stockbot/engine/exit_policies/` (package `stockbot.engine.exit_policies`) | The shared library of exit policies: `fixed_hold.py` (`FixedHold`, id `fixed_hold_<N>`), `trailing_stop.py` (`TrailingStop`, id `trailing_pct_<P>`) and `registry.py` (`resolve(policy_id)`, `policies_for(specs, extra=None)`). It imports only the interface. Plain-English guide: `docs/exit_policies/EXIT_POLICIES.md`. |
 | `reports.py` | Operator reports in live (`FillReport`, `ExitReport`, `NotTakenReport`) turned into `ReportEffect`s that change the state. |
 | `path.py` | `simulate_ticket`: one position's path under the same fill and stepping rules (used by the matched-random baseline). |
+| `stale.py` | The no-bars rule (`engine.stale_exit_sessions`): `no_bars_for` and the flag text; a held position whose symbol has no bar for that many sessions is closed at its last close (reason `SYMBOL_NO_BARS`) by `decide` and by `simulate_ticket`. |
 
 - **Reads:** the `AsOfView` it is handed, the shared config, the `State`. **Writes:** nothing outside its return value. **Called by:** `stockbot/backtest/runner.py`, `stockbot/live/adapter.py`, `stockbot/validation/random_baseline.py`, tests.
 - **Imports:** config, data, universe, risk, `strategies.base`/registry; no network, no `sqlite3`.
@@ -369,6 +371,11 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/f2_verify_engine_path.py` | The 57 verification rows through the as-of view. | manual | `stockbot.data_checks.f2_verify_engine_path` |
 | `scripts/f2_verify_list.py` | Extends the verified corporate-action csv. | one-off | `stockbot.data_checks.f2_verify_list` |
 | `scripts/f2_split_rename_links.py` | Rename and split link finder. | one-off | `stockbot.data_checks.f2_split_rename_links` |
+| `scripts/build_symbol_links.py` | Builds `data/reference/symbol_links.csv` and `symbol_links_not_linked.csv` from `isin_symbol_map.csv` and the lake (read-only). | one-off | `stockbot.data.symbol_links` (the table it writes) |
+| `scripts/stale_symbols_inventory.py` | Inventory of symbols that stop having bars (counts and lists; read-only). | one-off | `stockbot.data.adjustments` |
+| `scripts/stale_symbols_tables.py` | Second step of that inventory: directed rename pairs, leads, gap tables. | one-off | `stockbot.data.adjustments` |
+| `scripts/stale_positions_proofs.py` | Proofs and effect numbers for symbol links and the no-bars rule (read-only). | one-off | `stockbot.data.asof`, `stockbot.data.asof_memory` |
+| `scripts/addendum_riskadj_momentum_run1.py` | Descriptive addendum for the registered riskadj_momentum run 1, computed from its stored files (concentration, stale-bar removal, drawdown episodes, lake facts); no engine run. | one-off | `stockbot.data.asof`, `stockbot.data.adjustments` |
 | `scripts/f2_event_evidence.py` | Evidence tier for each corporate-action event. | one-off | `stockbot.data.ingestion.f2_event_evidence` |
 | `scripts/f2_load_corporate_actions.py` | Append-only load of corporate actions into the log. | one-off | `stockbot.data.ingestion.f2_load_corporate_actions` |
 | `scripts/f2_build_isin_symbol_map.py` | Builds the ISIN-to-symbol map. | one-off | `stockbot.data.ingestion.f2_build_isin_symbol_map` |

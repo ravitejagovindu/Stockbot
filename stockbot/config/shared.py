@@ -13,7 +13,7 @@ from typing import Any, Mapping, Optional
 import yaml
 
 SHARED_YAML = Path(__file__).resolve().parent / "shared.yaml"
-NON_OVERRIDABLE = frozenset({"runtime", "data", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "reporting", "paper_criteria", "overlays"})
+NON_OVERRIDABLE = frozenset({"runtime", "data", "engine", "execution", "costs", "portfolio_risk", "exclusions", "live", "backtest", "validation_gates", "reporting", "paper_criteria", "overlays"})
 
 
 @dataclass(frozen=True)
@@ -28,6 +28,12 @@ class DataConfig:
     adtv_sma_period: int
     nifty_symbol: str
     vix_symbol: str
+    symbol_links_enabled: bool        # the as-of views treat a renamed stock as ONE symbol under its latest name (data/reference/symbol_links.csv); applied on read, the lake is never modified
+
+
+@dataclass(frozen=True)
+class EngineConfig:
+    stale_exit_sessions: int          # a held position whose symbol has had no bar for this many consecutive sessions is closed at its last close (reason SYMBOL_NO_BARS)
 
 
 @dataclass(frozen=True)
@@ -105,6 +111,7 @@ class ValidationGates:
 class ReportingConfig:
     """Reporting only; never a gate, never part of the validation_gates hash."""
     after_tax_rates_pct: tuple
+    stale_exit_stress_factor: float   # stress line only: each SYMBOL_NO_BARS exit price set to this factor x its last close ("stress, not a gate")
 
 
 @dataclass(frozen=True)
@@ -134,6 +141,7 @@ class OverlaysConfig:
 class SharedConfig:
     runtime: RuntimeConfig
     data: DataConfig
+    engine: EngineConfig
     execution: ExecutionConfig
     costs: CostsConfig
     portfolio_risk: PortfolioRiskConfig
@@ -203,6 +211,12 @@ def _validate(c: SharedConfig) -> None:
         raise ValueError("costs must be >= 0")
     if c.exclusions.known_ahead_days < 0 or c.live.earnings_alert_days < 0:
         raise ValueError("day counts must be >= 0")
+    if not isinstance(c.data.symbol_links_enabled, bool):
+        raise ValueError("data.symbol_links_enabled must be true or false")
+    if not isinstance(c.engine.stale_exit_sessions, int) or isinstance(c.engine.stale_exit_sessions, bool) or c.engine.stale_exit_sessions < 1:
+        raise ValueError("engine.stale_exit_sessions must be an integer >= 1")
+    if not (0.0 <= float(c.reporting.stale_exit_stress_factor) <= 1.0):
+        raise ValueError("reporting.stale_exit_stress_factor must be in [0, 1]")
     rates = c.reporting.after_tax_rates_pct
     if not isinstance(rates, tuple) or any(not isinstance(x, float) or not (0.0 <= x < 100.0) for x in rates):
         raise ValueError("reporting.after_tax_rates_pct must be a list of rates in [0, 100)")
