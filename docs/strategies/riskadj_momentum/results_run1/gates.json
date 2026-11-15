@@ -1,0 +1,144 @@
+{
+ "gates": [
+  {
+   "gate": "min_trades",
+   "gate_value": 40,
+   "comparison": ">=",
+   "observed": 647,
+   "interval": null,
+   "met": true,
+   "note": "a floor only; 40 trades have almost no power"
+  },
+  {
+   "gate": "min_expectancy_r",
+   "gate_value": 0.15,
+   "comparison": ">=",
+   "observed": 0.21094166682448642,
+   "interval": [
+    0.041183713655009835,
+    0.397605764045356
+   ],
+   "met": true,
+   "note": "the strategy's own absolute net R per usable trade, point estimate"
+  },
+  {
+   "gate": "min_profit_factor",
+   "gate_value": 1.3,
+   "comparison": ">=",
+   "observed": 1.450443534587045,
+   "interval": [
+    1.0062217504027688,
+    2.0706903590000847
+   ],
+   "met": true,
+   "note": "net P&L of usable trades, point estimate"
+  },
+  {
+   "gate": "max_drawdown_pct",
+   "gate_value": 20.0,
+   "comparison": "<=",
+   "observed": 34.32225292385747,
+   "interval": null,
+   "met": false,
+   "note": "one path, no interval"
+  },
+  {
+   "gate": "min_alpha_pct",
+   "gate_value": 0.0,
+   "comparison": ">=",
+   "observed": 5.453832148241,
+   "interval": [
+    -3.6937465161090968,
+    16.134974672087733
+   ],
+   "met": true,
+   "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+  }
+ ],
+ "counts": {
+  "closed": 650,
+  "usable": 647,
+  "end_of_window": 10,
+  "usable_closed_before_window_end": 637,
+  "end_of_window_counted_as_usable": 10,
+  "excluded_ca": 3,
+  "entries_per_month": 4.976923076923077,
+  "invested_share_mean": 0.6043889509244885,
+  "invested_share_p5": 0.0,
+  "invested_share_p95": 0.9541596949465552,
+  "open_positions_mean": 7.977561705310396,
+  "open_positions_max": 12,
+  "baseline_end_of_window_draws": 140,
+  "baseline_draws_total": 12720
+ },
+ "all_met": false,
+ "alpha": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 11.076975501108489,
+   "benchmark_cagr_pct": 8.466621473253966,
+   "alpha_pct": 2.610354027854523
+  },
+  "cash_credited": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 13.920453621494966,
+   "benchmark_cagr_pct": 8.466621473253966,
+   "alpha_pct": 5.453832148241
+  },
+  "gate_alpha_pct": 5.453832148241,
+  "after_tax_label": "illustrative, not tax advice: tax charged on the end gain of the cash-credited strategy and of its benchmark; never a gate input",
+  "note": "Cash credit is applied after the fact on the recorded equity and cash (idle cash at the previous close earns risk_free_pct/100/252 per day); it does not feed back into sizing or any engine decision. The gate uses the cash-credited, pre-tax alpha.",
+  "risk_free_pct": 6.5,
+  "after_tax_illustrative": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 13.920453621494966,
+    "benchmark_cagr_pct": 8.466621473253966,
+    "alpha_pct": 5.453832148241
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 12.20532982980771,
+    "benchmark_cagr_pct": 7.225349476663889,
+    "alpha_pct": 4.97998035314382
+   }
+  }
+ },
+ "implied_annual_return": {
+  "non_gating": true,
+  "trades_per_year": 59.96365135752347,
+  "expectancy_r": 0.21094166682448642,
+  "max_loss_pct_per_trade": 1.0,
+  "implied_annual_return_pct": 12.648832566238378,
+  "matched_benchmark_cagr_pct": 8.466621473253966,
+  "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"
+ },
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "period": "2016-01-01 to 2019-12-31",
+   "trades": 200,
+   "expectancy_r": 0.24526256511523375,
+   "profit_factor": 1.5265990807967869,
+   "max_drawdown_pct": 20.35366743614895,
+   "invested_share_mean": 0.5429760308393359,
+   "alpha_pct": 1.9667871830610917
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "period": "2020-01-01 to 2026-10-16",
+   "trades": 447,
+   "expectancy_r": 0.19558556020670234,
+   "profit_factor": 1.4303849717716979,
+   "max_drawdown_pct": 31.334075770820903,
+   "invested_share_mean": 0.6402616637230432,
+   "alpha_pct": 7.462086824585934
+  }
+ },
+ "seed": 20261111,
+ "boot": 10000,
+ "block_months": 3,
+ "gate_alpha_is_pre_tax": true,
+ "risk_free_pct": 6.5,
+ "asof_view": "memory"
+}

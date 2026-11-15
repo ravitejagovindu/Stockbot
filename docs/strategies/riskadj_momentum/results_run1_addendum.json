@@ -1,0 +1,1130 @@
+{
+ "inputs": "stored files of docs/strategies/riskadj_momentum/results_run1 (no engine run, no new draws); lake read-only",
+ "concentration": {
+  "n_usable_trades": 647,
+  "n_pairs": 647,
+  "net_r": {
+   "total": 136.47925843544272,
+   "mean_all": 0.21094166682448642,
+   "top5_sum": 48.77366019239659,
+   "top5_share_of_total": 0.3573704953523576,
+   "top10_sum": 81.45258731154604,
+   "top10_share_of_total": 0.5968129387959319,
+   "top20_sum": 127.39727148985338,
+   "top20_share_of_total": 0.9334551854274231,
+   "mean_without_top5": 0.13661308137546121,
+   "n_without_top5": 642,
+   "mean_without_top10": 0.08638409909559913,
+   "n_without_top10": 637,
+   "ranked_by": "net R of the trade, highest first"
+  },
+  "net_pnl_inr": {
+   "total": 2203356.591850821,
+   "mean_all": 3405.4970507740663,
+   "top5_sum": 911011.996313576,
+   "top5_share_of_total": 0.41346552786007523,
+   "top10_sum": 1570387.1680751226,
+   "top10_share_of_total": 0.712724927904655,
+   "top20_sum": 2556271.97286146,
+   "top20_share_of_total": 1.1601717045329416,
+   "mean_without_top5": 2012.9978123633105,
+   "n_without_top5": 642,
+   "mean_without_top10": 993.6725647970143,
+   "n_without_top10": 637,
+   "ranked_by": "net P&L (INR) of the trade, highest first"
+  },
+  "paired_difference": {
+   "total": 78.8303621568594,
+   "mean_all": 0.12183981786222473,
+   "top5_sum": 44.62924993492276,
+   "top5_share_of_total": 0.566142901210043,
+   "top10_sum": 74.45950107389062,
+   "top10_share_of_total": 0.9445535836271882,
+   "top20_sum": 118.15550636505837,
+   "top20_share_of_total": 1.498857840205636,
+   "mean_without_top5": 0.05327276047030627,
+   "n_without_top5": 642,
+   "mean_without_top10": 0.006861634353169166,
+   "n_without_top10": 637,
+   "ranked_by": "paired difference (net R minus mean of its draws), highest first"
+  },
+  "note": "shares are top-k sum / total over all usable trades (or all pairs); 'mean_without_topk' is the mean of the rest; rank is within the same quantity"
+ },
+ "stale_positions": {
+  "PHILIPCARB": {
+   "position_id": "riskadj_momentum:PHILIPCARB:2018-04-03",
+   "entry": "2018-04-03",
+   "exit": "2026-10-16",
+   "slot_sessions": 2117,
+   "net_pnl": 1727.1841445122327,
+   "shares_initial": 440.0,
+   "blocked_proposals_while_held_by_reason": {
+    "ALREADY_HELD": 317,
+    "BLOCKED_BY_RISK": 1661,
+    "CORP_ACTION_ON_EXEC_DATE": 5,
+    "SIZE_ZERO": 7,
+    "GAP_UP_TOO_LARGE": 13
+   },
+   "blocked_by_risk_rule_while_held": {
+    "sector_SERVICES": 9,
+    "sector_CONSUMER": 86,
+    "sector_IT": 43,
+    "sector_HEALTHCARE": 45,
+    "sector_FINANCIALS": 155,
+    "sector_ENERGY": 17,
+    "sector_CHEMICALS": 15,
+    "sector_METALS": 7,
+    "sector_INDUSTRIALS": 49,
+    "sector_AUTO": 15,
+    "sector_REALTY": 1
+   },
+   "blocked_total_while_held": 2003
+  },
+  "TATASTLBSL": {
+   "position_id": "riskadj_momentum:TATASTLBSL:2021-07-02",
+   "entry": "2021-07-02",
+   "exit": "2026-10-16",
+   "slot_sessions": 1312,
+   "net_pnl": 17905.838351521357,
+   "shares_initial": 1926.0,
+   "blocked_proposals_while_held_by_reason": {
+    "ALREADY_HELD": 177,
+    "BLOCKED_BY_RISK": 1036,
+    "GAP_UP_TOO_LARGE": 6,
+    "CORP_ACTION_ON_EXEC_DATE": 2,
+    "SIZE_ZERO": 1
+   },
+   "blocked_by_risk_rule_while_held": {
+    "sector_INDUSTRIALS": 48,
+    "sector_IT": 9,
+    "sector_METALS": 4,
+    "sector_CHEMICALS": 7,
+    "sector_FINANCIALS": 59,
+    "sector_AUTO": 15,
+    "sector_CONSUMER": 8,
+    "sector_HEALTHCARE": 12,
+    "sector_REALTY": 1
+   },
+   "blocked_total_while_held": 1222
+  }
+ },
+ "blocked_reasons_whole_run": {
+  "RISK sector_FINANCIALS": 168,
+  "RISK sector_METALS": 17,
+  "RISK sector_ENERGY": 28,
+  "BLOCKED_BY_RISK": 1431,
+  "ALREADY_HELD": 385,
+  "SIZE_ZERO": 9,
+  "CORP_ACTION_ON_EXEC_DATE": 6,
+  "RISK sector_AUTO": 18,
+  "GAP_UP_TOO_LARGE": 15,
+  "RISK sector_SERVICES": 9,
+  "RISK sector_CONSUMER": 86,
+  "RISK sector_IT": 43,
+  "RISK sector_HEALTHCARE": 45,
+  "RISK sector_CHEMICALS": 15,
+  "RISK sector_INDUSTRIALS": 49,
+  "RISK sector_REALTY": 1
+ },
+ "mtm_check": {
+  "2018-04-17": {
+   "engine_equity_minus_cash": 1198286.4499999997,
+   "sum_shares_x_lake_close": 1198286.4500000002,
+   "ratio": 1.0000000000000004,
+   "open_positions": 10
+  },
+  "2018-06-01": {
+   "engine_equity_minus_cash": 394129.19999999995,
+   "sum_shares_x_lake_close": 394129.19999999995,
+   "ratio": 1.0,
+   "open_positions": 3
+  },
+  "2018-12-03": {
+   "engine_equity_minus_cash": 753824.5,
+   "sum_shares_x_lake_close": 753824.5,
+   "ratio": 1.0,
+   "open_positions": 8
+  },
+  "2021-07-30": {
+   "engine_equity_minus_cash": 1712152.95,
+   "sum_shares_x_lake_close": 1712152.95,
+   "ratio": 1.0,
+   "open_positions": 10
+  },
+  "2021-11-01": {
+   "engine_equity_minus_cash": 1018500.8999999999,
+   "sum_shares_x_lake_close": 1018500.9,
+   "ratio": 1.0000000000000002,
+   "open_positions": 6
+  },
+  "2022-06-01": {
+   "engine_equity_minus_cash": 294161.6000000001,
+   "sum_shares_x_lake_close": 294161.6,
+   "ratio": 0.9999999999999996,
+   "open_positions": 2
+  },
+  "2024-06-03": {
+   "engine_equity_minus_cash": 1359879.3499999999,
+   "sum_shares_x_lake_close": 1359879.35,
+   "ratio": 1.0000000000000002,
+   "open_positions": 5
+  }
+ },
+ "removal": {
+  "control_matches_registered": {
+   "expectancy": 0.21094166682448642,
+   "pf": 1.450443534587045,
+   "dd": 34.32225292385747,
+   "alpha": 5.453832148241
+  },
+  "removed_gates": [
+   {
+    "gate": "min_trades",
+    "registered": ">= 40",
+    "observed": 645,
+    "interval": null,
+    "met": true
+   },
+   {
+    "gate": "min_expectancy_r",
+    "registered": ">= 0.15",
+    "observed": 0.21016349378081986,
+    "interval": [
+     0.04030048323678658,
+     0.39663906343757593
+    ],
+    "met": true
+   },
+   {
+    "gate": "min_profit_factor",
+    "registered": ">= 1.3",
+    "observed": 1.4464298546949892,
+    "interval": [
+     1.0023494565818007,
+     2.0644307046148183
+    ],
+    "met": true
+   },
+   {
+    "gate": "max_drawdown_pct",
+    "registered": "<= 20.0",
+    "observed": 34.53113868258752,
+    "interval": null,
+    "met": false
+   },
+   {
+    "gate": "min_alpha_pct",
+    "registered": ">= 0.0",
+    "observed": 6.198978522967202,
+    "interval": [
+     -3.0732887064230914,
+     16.939161664878394
+    ],
+    "met": true
+   }
+  ],
+  "removed_counts": {
+   "closed": 648,
+   "usable": 645,
+   "end_of_window": 8,
+   "open_positions_mean": 6.695213163799552,
+   "open_positions_max": 12,
+   "invested_share_mean": 0.5284486414792784
+  },
+  "removed_all_met": false,
+  "removed_alpha": {
+   "raw": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 11.011727702036712,
+    "benchmark_cagr_pct": 8.208397573937765,
+    "alpha_pct": 2.8033301280989473
+   },
+   "cash_credited": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 14.407376096904967,
+    "benchmark_cagr_pct": 8.208397573937765,
+    "alpha_pct": 6.198978522967202
+   }
+  },
+  "t1": {
+   "full (registered inputs)": {
+    "pairs": 647,
+    "block2": {
+     "observed_mean": 0.6063874012066107,
+     "observed_t": 2.0236823673299815,
+     "adjusted_p_value": 0.0082,
+     "fwer_significant": true
+    },
+    "block3": {
+     "observed_mean": 0.6063874012066107,
+     "observed_t": 2.0236823673299815,
+     "adjusted_p_value": 0.0096,
+     "fwer_significant": true
+    }
+   },
+   "two positions and their baseline pairs removed": {
+    "pairs": 645,
+    "block2": {
+     "observed_mean": 0.6002562798774241,
+     "observed_t": 2.0009203843303505,
+     "adjusted_p_value": 0.009,
+     "fwer_significant": true
+    },
+    "block3": {
+     "observed_mean": 0.6002562798774241,
+     "observed_t": 2.0009203843303505,
+     "adjusted_p_value": 0.01,
+     "fwer_significant": true
+    }
+   }
+  },
+  "method_note": "trades, expectancy, profit factor and intervals: the stored trades minus the two positions (exact). Drawdown and alpha: stored daily equity and cash minus an estimated path of the two positions (shares x lake close, forward filled, until the exit date; realised net P&L after). It is a subtraction, NOT a re-simulation: slots and cash freed by the two positions are not re-used."
+ },
+ "drawdown_episodes": [
+  {
+   "peak_date": "2024-02-08",
+   "trough_date": "2025-10-14",
+   "recovery_date": null,
+   "depth_pct": 34.32225292385747
+  },
+  {
+   "peak_date": "2018-08-31",
+   "trough_date": "2019-08-05",
+   "recovery_date": "2020-09-07",
+   "depth_pct": 21.936414748746664
+  },
+  {
+   "peak_date": "2022-01-17",
+   "trough_date": "2023-03-28",
+   "recovery_date": "2023-07-11",
+   "depth_pct": 21.694232669148963
+  },
+  {
+   "peak_date": "2018-01-11",
+   "trough_date": "2018-02-06",
+   "recovery_date": "2018-04-25",
+   "depth_pct": 13.753233995235107
+  },
+  {
+   "peak_date": "2018-04-30",
+   "trough_date": "2018-07-06",
+   "recovery_date": "2018-08-17",
+   "depth_pct": 7.943495244260409
+  }
+ ],
+ "deepest_episode_detail": {
+  "peak_to_trough": {
+   "from": "2024-02-08",
+   "to": "2025-10-14",
+   "sessions": 418,
+   "invested_share_mean": 0.5873273510499596,
+   "invested_share_min": 0.11625535327407788,
+   "invested_share_max": 0.9998296444070103,
+   "stop_outs": 124,
+   "exits_all_reasons": 124,
+   "entries": 125,
+   "net_pnl_of_stop_outs": -791377.9332979005
+  }
+ },
+ "lake": {
+  "PHILIPCARB": {
+   "bars": 1311,
+   "first_bar": "2013-01-01",
+   "last_bar": "2018-04-19",
+   "ca_rows_total": 1,
+   "ca_rows_within_365_days_of_last_bar": [
+    [
+     "2018-04-19",
+     "SPLIT",
+     2.0,
+     10.0,
+     "WEAK",
+     "feed_symbol=PCBL; Face Value Split (Sub-Division) - From Rs 10/- Per Share To Rs 2/- Per Share"
+    ]
+   ],
+   "ca_rows_after_last_bar": [],
+   "last_ca_row": [
+    "2018-04-19",
+    "SPLIT",
+    2.0,
+    10.0,
+    "WEAK"
+   ],
+   "securities_master": [],
+   "feed_symbol_in_notes": [
+    "PCBL"
+   ],
+   "bars_for_symbol_PCBL": [
+    2105,
+    "2018-04-20",
+    "2026-10-16"
+   ]
+  },
+  "TATASTLBSL": {
+   "bars": 2069,
+   "first_bar": "2013-01-01",
+   "last_bar": "2021-08-05",
+   "ca_rows_total": 6,
+   "ca_rows_within_365_days_of_last_bar": [],
+   "ca_rows_after_last_bar": [],
+   "last_ca_row": [
+    "2014-09-15",
+    "DIVIDEND",
+    null,
+    null,
+    "NOT_PRICE_MOVING"
+   ],
+   "securities_master": [],
+   "feed_symbol_in_notes": [
+    "TATASTLBSL"
+   ]
+  }
+ },
+ "stale_pattern_registered_runs": {
+  "near_52w_high 4B (docs/strategies/near_52w_high/results_4B)": {
+   "available": true,
+   "trades": 774,
+   "flagged_count": 8,
+   "flagged_terminal": 3,
+   "flagged": [
+    {
+     "symbol": "DHANI",
+     "entry": "2018-04-19",
+     "exit": "2018-10-30",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 91,
+     "sessions_held": 132,
+     "last_bar_in_lake": "2025-10-27",
+     "net_pnl": 6286.332905056258,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "ATGL",
+     "entry": "2021-06-04",
+     "exit": "2021-09-13",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 65,
+     "sessions_held": 69,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -14507.915301447836,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "SUZLON",
+     "entry": "2023-09-27",
+     "exit": "2024-06-19",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 66,
+     "sessions_held": 180,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 124375.14644428961,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "NACLIND",
+     "entry": "2025-04-02",
+     "exit": "2026-01-27",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 144,
+     "sessions_held": 203,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 44723.96475905937,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "PFOCUS",
+     "entry": "2026-03-24",
+     "exit": "2026-07-29",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 44,
+     "sessions_held": 85,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 3155.8578845377087,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "GSKCONS",
+     "entry": "2020-03-27",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 1617,
+     "sessions_held": 1627,
+     "last_bar_in_lake": "2020-04-15",
+     "net_pnl": 4205.770244332996,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "HEXAWARE",
+     "entry": "2020-09-24",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 1478,
+     "sessions_held": 1504,
+     "last_bar_in_lake": "2020-10-30",
+     "net_pnl": 483.19883947967764,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "DIACABS",
+     "entry": "2026-07-30",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 52,
+     "sessions_held": 55,
+     "last_bar_in_lake": "2026-08-03",
+     "net_pnl": -6921.872415942167,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  },
+  "family_batch1 run1: pullback_uptrend": {
+   "available": true,
+   "trades": 4156,
+   "flagged_count": 4,
+   "flagged_terminal": 2,
+   "flagged": [
+    {
+     "symbol": "DISHTV",
+     "entry": "2021-10-05",
+     "exit": "2022-01-04",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 63,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -198.5459035974662,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "MAANALU",
+     "entry": "2024-11-07",
+     "exit": "2025-05-12",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 121,
+     "sessions_held": 124,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -1938.6266360694492,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "HDFC",
+     "entry": "2023-07-12",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 810,
+     "sessions_held": 811,
+     "last_bar_in_lake": "2023-07-12",
+     "net_pnl": -101.48507622743753,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "AMIORG",
+     "entry": "2025-04-23",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 368,
+     "sessions_held": 370,
+     "last_bar_in_lake": "2025-04-24",
+     "net_pnl": -260.3743652778212,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  },
+  "family_batch1 run1: short_term_reversal": {
+   "available": true,
+   "trades": 4288,
+   "flagged_count": 9,
+   "flagged_terminal": 3,
+   "flagged": [
+    {
+     "symbol": "NDTV",
+     "entry": "2022-09-12",
+     "exit": "2022-12-06",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 59,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -3934.575679719985,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "TTML",
+     "entry": "2022-09-12",
+     "exit": "2022-12-06",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 59,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -2494.3192384999134,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "RELINFRA",
+     "entry": "2022-09-12",
+     "exit": "2022-12-12",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 63,
+     "last_bar_in_lake": "2025-06-04",
+     "net_pnl": -574.7467474369961,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "RELINFRA",
+     "entry": "2023-08-14",
+     "exit": "2023-11-12",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 56,
+     "sessions_held": 62,
+     "last_bar_in_lake": "2025-06-04",
+     "net_pnl": 388.41878257877033,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "SUVEN",
+     "entry": "2024-01-30",
+     "exit": "2024-04-29",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 55,
+     "sessions_held": 61,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 508.81349710286906,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "MAANALU",
+     "entry": "2024-11-07",
+     "exit": "2025-05-12",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 121,
+     "sessions_held": 124,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -6621.411489108108,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "KPIT",
+     "entry": "2019-02-20",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 1893,
+     "sessions_held": 1897,
+     "last_bar_in_lake": "2019-02-25",
+     "net_pnl": 896.7848132296655,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "SUPPETRO",
+     "entry": "2022-04-05",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 1123,
+     "sessions_held": 1125,
+     "last_bar_in_lake": "2022-04-06",
+     "net_pnl": -98.41670278890219,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "GUJGASLTD",
+     "entry": "2026-06-25",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 76,
+     "sessions_held": 79,
+     "last_bar_in_lake": "2026-06-30",
+     "net_pnl": -165.05671616270462,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  },
+  "riskadj_momentum run1 (this run, all 650 trades)": {
+   "available": true,
+   "trades": 650,
+   "flagged_count": 13,
+   "flagged_terminal": 4,
+   "flagged": [
+    {
+     "symbol": "BOMDYEING",
+     "entry": "2018-06-04",
+     "exit": "2018-10-30",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 78,
+     "sessions_held": 101,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -45318.21977762246,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "DHANI",
+     "entry": "2018-06-04",
+     "exit": "2018-10-30",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 91,
+     "sessions_held": 101,
+     "last_bar_in_lake": "2025-10-27",
+     "net_pnl": -6479.4465959653035,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "ATGL",
+     "entry": "2021-05-04",
+     "exit": "2021-09-13",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 65,
+     "sessions_held": 91,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 5794.328187602259,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "ADANIGREEN",
+     "entry": "2021-05-04",
+     "exit": "2021-09-13",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 65,
+     "sessions_held": 91,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 19432.474887057397,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "GPIL",
+     "entry": "2021-06-02",
+     "exit": "2021-09-27",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 68,
+     "sessions_held": 81,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 23778.69799401824,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "CGPOWER",
+     "entry": "2021-06-02",
+     "exit": "2022-01-20",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 75,
+     "sessions_held": 161,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 179612.31616933332,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "FLUOROCHEM",
+     "entry": "2022-02-02",
+     "exit": "2022-05-16",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 62,
+     "sessions_held": 69,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -27939.9290008505,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "PCJEWELLER",
+     "entry": "2024-10-03",
+     "exit": "2025-01-07",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 66,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -31536.25119463825,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "E2E",
+     "entry": "2026-02-02",
+     "exit": "2026-06-11",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 54,
+     "sessions_held": 87,
+     "last_bar_in_lake": "2026-08-10",
+     "net_pnl": 74933.59238209022,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "PHILIPCARB",
+     "entry": "2018-04-03",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW_COUNTED",
+     "longest_missing_run_sessions": 2105,
+     "sessions_held": 2118,
+     "last_bar_in_lake": "2018-04-19",
+     "net_pnl": 1727.1841445122327,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "TATASTLBSL",
+     "entry": "2021-07-02",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW_COUNTED",
+     "longest_missing_run_sessions": 1289,
+     "sessions_held": 1313,
+     "last_bar_in_lake": "2021-08-05",
+     "net_pnl": 17905.838351521357,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "BLISSGVS",
+     "entry": "2026-07-02",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW_COUNTED",
+     "longest_missing_run_sessions": 74,
+     "sessions_held": 75,
+     "last_bar_in_lake": "2026-07-02",
+     "net_pnl": 505.4844334881631,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "HFCL",
+     "entry": "2026-08-04",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW_COUNTED",
+     "longest_missing_run_sessions": 30,
+     "sessions_held": 52,
+     "last_bar_in_lake": "2026-09-02",
+     "net_pnl": 20310.247357135755,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  }
+ },
+ "stale_pattern_other_stored_runs": {
+  "market_switch near_52w_high with": {
+   "available": true,
+   "trades": 660,
+   "flagged_count": 5,
+   "flagged_terminal": 2,
+   "flagged": [
+    {
+     "symbol": "DMART",
+     "entry": "2020-01-31",
+     "exit": "2020-06-19",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 53,
+     "sessions_held": 94,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 9263.151487562795,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "VINYLINDIA",
+     "entry": "2022-09-12",
+     "exit": "2022-12-26",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 64,
+     "sessions_held": 73,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -27079.455210699674,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "SUZLON",
+     "entry": "2023-08-29",
+     "exit": "2024-02-01",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 66,
+     "sessions_held": 107,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 64738.671651853445,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "ESSAROIL",
+     "entry": "2016-01-04",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 2647,
+     "sessions_held": 2673,
+     "last_bar_in_lake": "2016-02-09",
+     "net_pnl": 980.4162185761372,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "EQUITAS",
+     "entry": "2023-01-09",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 917,
+     "sessions_held": 935,
+     "last_bar_in_lake": "2023-02-02",
+     "net_pnl": -6720.998951341766,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  },
+  "market_switch near_52w_high without": {
+   "available": true,
+   "trades": 762,
+   "flagged_count": 8,
+   "flagged_terminal": 3,
+   "flagged": [
+    {
+     "symbol": "DMART",
+     "entry": "2020-01-31",
+     "exit": "2020-06-19",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 53,
+     "sessions_held": 94,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 8963.84531054464,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "ATGL",
+     "entry": "2021-06-04",
+     "exit": "2021-09-13",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 65,
+     "sessions_held": 69,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -15432.97329941259,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "PCJEWELLER",
+     "entry": "2022-08-23",
+     "exit": "2023-01-11",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 98,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 20275.29366076544,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "SUZLON",
+     "entry": "2023-08-29",
+     "exit": "2024-02-01",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 66,
+     "sessions_held": 107,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 92427.55185765134,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "PFOCUS",
+     "entry": "2026-03-24",
+     "exit": "2026-07-29",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 44,
+     "sessions_held": 85,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 3278.7130083938914,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "ESSAROIL",
+     "entry": "2016-01-04",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 2647,
+     "sessions_held": 2673,
+     "last_bar_in_lake": "2016-02-09",
+     "net_pnl": 980.4162185761372,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "GSKCONS",
+     "entry": "2020-03-27",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 1617,
+     "sessions_held": 1627,
+     "last_bar_in_lake": "2020-04-15",
+     "net_pnl": 3361.548195466397,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "DIACABS",
+     "entry": "2026-07-30",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 52,
+     "sessions_held": 55,
+     "last_bar_in_lake": "2026-08-03",
+     "net_pnl": -7559.082251936832,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  },
+  "market_switch pullback_uptrend with": {
+   "available": true,
+   "trades": 2945,
+   "flagged_count": 5,
+   "flagged_terminal": 2,
+   "flagged": [
+    {
+     "symbol": "DISHTV",
+     "entry": "2021-10-05",
+     "exit": "2022-01-04",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 63,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -224.71817553996135,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "NDTV",
+     "entry": "2022-09-12",
+     "exit": "2022-12-06",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 59,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -909.9481442839098,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "MAANALU",
+     "entry": "2024-11-07",
+     "exit": "2025-05-12",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 121,
+     "sessions_held": 124,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -1938.6266360694492,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "HDFC",
+     "entry": "2023-07-12",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 810,
+     "sessions_held": 811,
+     "last_bar_in_lake": "2023-07-12",
+     "net_pnl": -187.63015245487506,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    },
+    {
+     "symbol": "AMIORG",
+     "entry": "2025-04-23",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 368,
+     "sessions_held": 370,
+     "last_bar_in_lake": "2025-04-24",
+     "net_pnl": -289.77848911115973,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  },
+  "market_switch near_52w_high repro 2016": {
+   "available": true,
+   "trades": 83,
+   "flagged_count": 1,
+   "flagged_terminal": 1,
+   "flagged": [
+    {
+     "symbol": "ESSAROIL",
+     "entry": "2016-01-04",
+     "exit": "2016-12-30",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 220,
+     "sessions_held": 246,
+     "last_bar_in_lake": "2016-02-09",
+     "net_pnl": 980.4162185761372,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  },
+  "market_switch short_term_reversal with": {
+   "available": true,
+   "trades": 3247,
+   "flagged_count": 8,
+   "flagged_terminal": 1,
+   "flagged": [
+    {
+     "symbol": "NDTV",
+     "entry": "2022-09-12",
+     "exit": "2022-12-06",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 59,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -3167.768698905206,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "TTML",
+     "entry": "2022-09-12",
+     "exit": "2022-12-06",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 57,
+     "sessions_held": 59,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -58.08102135344678,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "RELINFRA",
+     "entry": "2023-08-14",
+     "exit": "2023-11-12",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 56,
+     "sessions_held": 62,
+     "last_bar_in_lake": "2025-06-04",
+     "net_pnl": 369.49258964539047,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "SUVEN",
+     "entry": "2024-01-30",
+     "exit": "2024-04-29",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 55,
+     "sessions_held": 61,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 488.05494276216143,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "GREENPOWER",
+     "entry": "2024-02-19",
+     "exit": "2024-05-18",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 59,
+     "sessions_held": 61,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -33.93450947051319,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "MAANALU",
+     "entry": "2024-11-07",
+     "exit": "2025-05-12",
+     "exit_reason": "STOP_HIT",
+     "longest_missing_run_sessions": 121,
+     "sessions_held": 124,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": -7290.380753827916,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "SUVEN",
+     "entry": "2025-06-10",
+     "exit": "2025-09-09",
+     "exit_reason": "TIME_EXIT",
+     "longest_missing_run_sessions": 58,
+     "sessions_held": 64,
+     "last_bar_in_lake": "2026-10-16",
+     "net_pnl": 292.86097787737526,
+     "kind": "gap inside the hold, bars resume before the exit date"
+    },
+    {
+     "symbol": "GUJGASLTD",
+     "entry": "2026-06-30",
+     "exit": "2026-10-16",
+     "exit_reason": "END_OF_WINDOW",
+     "longest_missing_run_sessions": 76,
+     "sessions_held": 77,
+     "last_bar_in_lake": "2026-06-30",
+     "net_pnl": -191.29984849988472,
+     "kind": "no bar from the gap until the exit date (terminal)"
+    }
+   ]
+  }
+ }
+}
