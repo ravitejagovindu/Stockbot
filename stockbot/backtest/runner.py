@@ -17,7 +17,7 @@ from stockbot.data.asof import AsOfView, active_view_name
 from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EventData, decide
 from stockbot.engine.exit_policies.registry import policies_for
-from stockbot.overlays import describe_default_overlays
+from stockbot.overlays import describe_effective_overlays
 from stockbot.engine.types import ClosedTrade, Decisions, ExitRecord, State
 from stockbot.risk.costs import CostModel
 
@@ -41,8 +41,8 @@ def run_backtest(lake, start: date, end: date, initial_equity: float, strategies
     conn = open_lake(lake) if not hasattr(lake, "execute") else lake
     lake_file = Path(lake) if not hasattr(lake, "execute") else None
     print(f"asof_view: {active_view_name()}", flush=True)
-    effective = describe_default_overlays(shared_config, default_overlays)
-    print("overlays: " + (", ".join(f"{o['id']}@{o['version']}" for o in effective) if effective else "none (default overlays switched off by the runner argument default_overlays=[])"), flush=True)
+    effective = describe_effective_overlays(shared_config, strategies, default_overlays)
+    print("overlays: " + (", ".join(f"{o['id']}@{o['version']}" for o in effective) if effective else "none"), flush=True)
     end_view = AsOfView(conn, end)
     days = [d for d in end_view.sessions() if start <= d <= end]
     st = state if state is not None else State.initial(initial_equity)

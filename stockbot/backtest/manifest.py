@@ -13,12 +13,16 @@ from pathlib import Path
 from typing import Any, Mapping, Optional, Sequence
 
 from stockbot.data.asof import active_view_name
-from stockbot.overlays import describe_default_overlays
+from stockbot.overlays import describe_effective_overlays
 
 
-def shared_config_hash(shared_config, default_overlays: Optional[Sequence[str]] = None) -> str:
-    """Hash of the shared config (canonical JSON) PLUS the default overlays in force (id, version, numbers; ``[]`` = switched off), so a run with and a run without the market switch differ."""
-    payload = {**shared_config.flat(), "overlays.effective": describe_default_overlays(shared_config, default_overlays)}
+def shared_config_hash(shared_config, default_overlays: Optional[Sequence[str]] = None, strategies: Sequence = ()) -> str:
+    """Hash of the shared config (canonical JSON). The ``overlays.*`` numbers are left out and the library overlays in force (shared defaults plus strategy-declared; id, version, numbers) are added
+    only when there are any, so a run with no overlay hashes exactly as on master and a run with the market switch differs."""
+    payload = {k: v for k, v in shared_config.flat().items() if not k.startswith("overlays.")}
+    eff = describe_effective_overlays(shared_config, strategies, default_overlays)
+    if eff:
+        payload["overlays.effective"] = eff
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")).hexdigest()
 
 
@@ -38,8 +42,8 @@ def data_snapshot_id(lake_path: Path, last_session: Optional[date]) -> dict:
 def run_manifest(*, shared_config, strategies: Sequence, window: tuple, initial_equity: float, lake_path: Optional[Path] = None, last_session: Optional[date] = None,
                  seed: Optional[int] = None, sha: Optional[str] = None, default_overlays: Optional[Sequence[str]] = None) -> dict[str, Any]:
     return {
-        "shared_config_hash": shared_config_hash(shared_config, default_overlays),
-        "overlays": describe_default_overlays(shared_config, default_overlays),
+        "shared_config_hash": shared_config_hash(shared_config, default_overlays, strategies),
+        "overlays": describe_effective_overlays(shared_config, strategies, default_overlays),
         "strategies": {s.spec.id: {"version": s.spec.version, "config_hash": s.spec.config_hash(), "exit_policy": s.spec.exit_policy, "overlays": dict(s.spec.overlays)}
                        for s in sorted(strategies, key=lambda s: s.spec.id)},
         "git_sha": sha if sha is not None else git_sha(),

@@ -17,7 +17,7 @@ from tests.fixtures import boundaries as B
 ROOT = Path(__file__).resolve().parents[2]
 INTERFACES = ["stockbot/engine/exit_policy.py::ExitPolicy", "stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"]
 APPROVED_STRATEGY_FOLDERS = list(B.APPROVED_STRATEGY_IDS)
-LIBRARY_OVERLAYS = ["stockbot/overlays/market_switch.py::MarketSwitch"]          # the shared default overlay (market-switch), the one allowed overlay home is stockbot/overlays/
+LIBRARY_OVERLAYS = ["stockbot/overlays/market_switch.py::MarketSwitch"]          # the optional library overlay (market-switch), the one allowed overlay home is stockbot/overlays/
 LIBRARY_POLICIES = ["stockbot/engine/exit_policies/fixed_hold.py::FixedHold", "stockbot/engine/exit_policies/trailing_stop.py::TrailingStop"]
 
 

@@ -21,7 +21,7 @@ from stockbot.data.asof import AsOfView, NIFTY, VIX
 from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EngineInputError, decide
 from stockbot.engine.types import State, to_plain
-from stockbot.overlays import describe_default_overlays, resolve_default_overlays
+from stockbot.overlays import resolve_default_overlays
 from stockbot.overlays.market_switch import ACTIVE, CLEAR, MarketSwitch, MarketSwitchDataError, MarketSwitchParams
 from tests.fixtures import mini_lake
 from tests.fixtures.dummies import FixedPolicy, ScriptedStrategy, make_spec
@@ -230,8 +230,12 @@ def lake_with_vix(tmp_path, vix_by_index):
     return p
 
 
-def strat():
-    return ScriptedStrategy(make_spec("dummy"), {SIG.isoformat(): [{"symbol": "FIXCO", "stop": STOP}]})
+DECLARES = {"market_switch_v1": "1.0.0"}
+
+
+def strat(declare=True, sid="dummy"):
+    """A scripted strategy that proposes FIXCO on the signal session; it DECLARES the market switch (StrategySpec.overlays) unless declare=False."""
+    return ScriptedStrategy(make_spec(sid, overlays=DECLARES if declare else {}), {SIG.isoformat(): [{"symbol": "FIXCO", "stop": STOP}]})
 
 
 def days(a, b):
@@ -307,9 +311,9 @@ def test_live_adapter_and_backtest_share_the_one_decide_call_and_the_default_com
     for mod in (runner, adapter):
         src = inspect.getsource(mod)
         assert "decide(" in src and "default_overlays" in src and "market_switch" not in src.lower() and "MarketSwitch" not in src      # neither adapter knows the rule: only decide() does
-    assert list(CFG.overlays.default) == ["market_switch_v1"]
-    assert set(resolve_default_overlays(CFG)) == {"market_switch_v1"} and resolve_default_overlays(CFG, []) == {}
-    assert "resolve_default_overlays" in inspect.getsource(decide)
+    assert list(CFG.overlays.default) == []                                                          # NOT a shared default: a strategy declares it
+    assert resolve_default_overlays(CFG) == {} and set(resolve_default_overlays(CFG, ["market_switch_v1"])) == {"market_switch_v1"}
+    assert "resolve_default_overlays" in inspect.getsource(decide) and "library_overlay" in inspect.getsource(decide)
 
 
 def test_the_live_adapter_blocks_entries_when_the_switch_is_active_and_none_when_switched_off(tmp_path):
@@ -322,6 +326,10 @@ def test_the_live_adapter_blocks_entries_when_the_switch_is_active_and_none_when
     for d in days(DS[298], SIG):
         dec, st = decide(d, st, AsOfView(conn, d), [s], CFG, EVENTS, policies=policies(FixedPolicy()), strict=False, mode="live", default_overlays=None)   # exactly what the adapter passes
     assert [b.reason for b in dec.blocked] == ["MARKET_SWITCH"] and dec.new_tickets == ()
+    st2, s2 = State.initial(1_000_000.0), strat(declare=False)                                       # the same session, strategy not declaring the switch: a ticket is made
+    for d in days(DS[298], SIG):
+        dec2, st2 = decide(d, st2, AsOfView(conn, d), [s2], CFG, EVENTS, policies=policies(FixedPolicy()), strict=False, mode="live")
+    assert not dec2.blocked and len(dec2.new_tickets) == 1 and "market_switch_v1" not in dec2.overlay_state_after
 
 
 def test_unknown_default_overlay_is_refused():
@@ -329,14 +337,14 @@ def test_unknown_default_overlay_is_refused():
         resolve_default_overlays(CFG, ["nope"])
 
 
-def digest(default_overlays):
+def digest(default_overlays, declare=False):
     """The same deterministic fixture run as the digest taken on master b27431d (before this branch): decisions, final state, trades, equity, daily, blocked."""
     import tempfile
     from stockbot.backtest.runner import run_backtest
     tmp = Path(tempfile.mkdtemp())
     p = tmp / "lake.db"
     _make(p)
-    s1 = ScriptedStrategy(make_spec("dummy"), {DS[300].isoformat(): [{"symbol": "FIXCO", "stop": 159.115349}], DS[310].isoformat(): [{"symbol": "FIXCO", "stop": 150.0}]})
+    s1 = ScriptedStrategy(make_spec("dummy", overlays=DECLARES if declare else {}), {DS[300].isoformat(): [{"symbol": "FIXCO", "stop": 159.115349}], DS[310].isoformat(): [{"symbol": "FIXCO", "stop": 150.0}]})
     conn = open_lake(p)
     st, decs = State.initial(1_000_000.0), []
     for d in days(DS[295], DS[329]):
@@ -346,7 +354,7 @@ def digest(default_overlays):
     for d in decs:
         h.update(json.dumps(to_plain(d), sort_keys=True, default=str).encode())
     h.update(json.dumps(to_plain(st), sort_keys=True, default=str).encode())
-    s2 = ScriptedStrategy(make_spec("dummy"), {DS[300].isoformat(): [{"symbol": "FIXCO", "stop": 159.115349}]})
+    s2 = ScriptedStrategy(make_spec("dummy", overlays=DECLARES if declare else {}), {DS[300].isoformat(): [{"symbol": "FIXCO", "stop": 159.115349}]})
     res = run_backtest(p, DS[295], DS[329], 1_000_000.0, [s2], policies(FixedPolicy(max_days=3)), CFG, EVENTS, default_overlays=default_overlays)
     h.update(json.dumps([dataclasses.asdict(t) for t in res.trades], default=str, indent=1).encode())
     h.update(json.dumps({d.isoformat(): v for d, v in res.equity_curve.items()}, indent=1).encode())
@@ -356,31 +364,33 @@ def digest(default_overlays):
     return h.hexdigest(), res
 
 
+MASTER_SHARED_HASH = "816ee5cb71b0618ed5c2065efc6de39f0f4a59ccf51862ceb3928d3665732bb3"            # shared_config_hash computed on origin/master b27431d (same shared.yaml values, before any market-switch code existed)
 MASTER_DIGEST = "763ba4f23998c9919499a6549c77fe685a84d0f2e47857b32704e3b953377b7e"     # computed by the same procedure on origin/master b27431d, before any market-switch code existed
 
 
 def test_a_run_with_default_overlays_off_is_byte_identical_to_master(monkeypatch):
     monkeypatch.delenv("STOCKBOT_VIEW", raising=False)
-    d, res = digest([])
+    d, res = digest(None)                                                                           # a strategy that declares nothing, no default overlays: the plain default call
     assert d == MASTER_DIGEST
     assert res.manifest["overlays"] == []
+    assert digest([])[0] == MASTER_DIGEST and res.manifest["shared_config_hash"] == MASTER_SHARED_HASH
 
 
 def test_a_clear_switch_leaves_trades_equity_and_blocks_identical_only_the_logged_state_and_hashes_differ(monkeypatch):
     monkeypatch.delenv("STOCKBOT_VIEW", raising=False)
-    _, off = digest([])
-    _, on = digest(None)
+    _, off = digest(None)
+    _, on = digest(None, declare=True)
     assert [dataclasses.asdict(t) for t in on.trades] == [dataclasses.asdict(t) for t in off.trades] and on.equity_curve == off.equity_curve
-    assert on.manifest["overlays"] == describe_default_overlays(CFG) and on.manifest["overlays"][0]["id"] == "market_switch_v1"
+    assert on.manifest["overlays"][0]["id"] == "market_switch_v1" and on.manifest["strategies"]["dummy"]["overlays"] == DECLARES
     assert on.manifest["shared_config_hash"] != off.manifest["shared_config_hash"]
     assert on.manifest["overlays"][0]["params"] == {"trigger_sma_period": 200, "trigger_vix": 22.0, "reentry_sma_period": 20, "reentry_vix": 20.0, "reentry_sessions": 3}
-    assert on.manifest["strategies"] == off.manifest["strategies"]                                  # strategy spec hashes are untouched
+    assert on.manifest["strategies"]["dummy"]["config_hash"] != off.manifest["strategies"]["dummy"]["config_hash"]      # declaring it enters the strategy's spec hash
 
 
 def test_daily_json_carries_the_state_only_when_the_overlay_ran(tmp_path):
     from stockbot.backtest.outputs import write_run_files
-    _, on = digest(None)
-    _, off = digest([])
+    _, on = digest(None, declare=True)
+    _, off = digest(None)
     a, b = tmp_path / "on", tmp_path / "off"
     write_run_files(on, a)
     write_run_files(off, b)
@@ -393,3 +403,58 @@ def test_daily_json_carries_the_state_only_when_the_overlay_ran(tmp_path):
 
 def test_the_params_and_defaults_are_the_old_kill_switch_numbers():
     assert MarketSwitchParams.from_shared(CFG) == MarketSwitchParams(200, 22.0, 20, 20.0, 3)
+
+
+# ---------------------------------------------------------------------------------------------------------------- opt-in through StrategySpec.overlays
+def test_a_strategy_that_does_not_declare_the_switch_is_never_blocked_and_logs_no_state(tmp_path):
+    p = lake_with_vix(tmp_path, {mini_lake.BREAKOUT: 30.0})                      # the switch would be ACTIVE on the signal session
+    decs, st = run_days(p, days(DS[298], DS[304]), [strat(declare=False)], policies(FixedPolicy()))
+    by = {d.as_of: d for d in decs}
+    assert len(by[SIG].new_tickets) == 1 and not by[SIG].blocked
+    assert all("market_switch_v1" not in d.overlay_state_after for d in decs)
+
+
+def test_only_the_declaring_strategy_is_blocked_when_two_run_together(tmp_path):
+    p = lake_with_vix(tmp_path, {mini_lake.BREAKOUT: 30.0})
+    decs, _ = run_days(p, days(DS[298], DS[304]), [strat(True, "with_switch"), strat(False, "without_switch")], policies(FixedPolicy()))
+    by = {d.as_of: d for d in decs}
+    assert [(b.strategy_id, b.reason) for b in by[SIG].blocked] == [("with_switch", "MARKET_SWITCH")]
+    assert [t.strategy_id for t in by[SIG].new_tickets] == ["without_switch"]
+
+
+def test_the_explicit_shared_default_list_still_applies_the_switch_to_every_strategy(tmp_path):
+    p = lake_with_vix(tmp_path, {mini_lake.BREAKOUT: 30.0})
+    conn, st, s = open_lake(p), State.initial(1_000_000.0), strat(declare=False)
+    for d in days(DS[298], SIG):
+        dec, st = decide(d, st, AsOfView(conn, d), [s], CFG, EVENTS, policies=policies(FixedPolicy()), default_overlays=["market_switch_v1"])
+    assert [b.reason for b in dec.blocked] == ["MARKET_SWITCH"]
+
+
+def test_an_unknown_overlay_id_or_a_wrong_version_is_a_clear_error_in_every_mode(base_lake):
+    for strict, mode in ((True, "backtest"), (False, "live"), (False, "paper")):
+        bad = ScriptedStrategy(make_spec("dummy", overlays={"no_such_overlay": "1.0.0"}), {})
+        with pytest.raises(EngineInputError, match=r"no_such_overlay@1.0.0 declared but unknown"):
+            run_days(base_lake, days(DS[298], DS[299]), [bad], policies(FixedPolicy()), strict=strict, mode=mode)
+        old = ScriptedStrategy(make_spec("dummy", overlays={"market_switch_v1": "0.9.0"}), {})
+        with pytest.raises(EngineInputError, match=r"declared but registered as 1.0.0"):
+            run_days(base_lake, days(DS[298], DS[299]), [old], policies(FixedPolicy()), strict=strict, mode=mode)
+
+
+def test_the_declared_switch_blocks_in_backtest_paper_and_live_through_the_same_call(tmp_path):
+    p = lake_with_vix(tmp_path, {mini_lake.BREAKOUT: 30.0})
+    seen = []
+    for strict, mode in ((True, "backtest"), (False, "live"), (False, "paper")):
+        decs, _ = run_days(p, days(DS[298], DS[304]), [strat()], policies(FixedPolicy()), strict=strict, mode=mode)
+        seen.append([(d.as_of, b.reason) for d in decs for b in d.blocked])
+    assert seen[0] == seen[1] == seen[2] == [(SIG, "MARKET_SWITCH")]
+
+
+def test_the_registered_research_strategies_declare_no_overlay_so_their_scripts_behave_as_on_master():
+    import importlib
+    for mod in ("near_52w_high", "pullback_uptrend", "short_term_reversal"):
+        from stockbot.strategies.registry import StrategyRegistry
+        m = importlib.import_module(f"stockbot.strategies.{mod}")
+        reg = StrategyRegistry()
+        m.register(reg)
+        assert dict(reg.get(mod).overlays) == {}
+    assert list(CFG.overlays.default) == []

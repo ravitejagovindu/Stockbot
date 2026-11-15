@@ -120,7 +120,7 @@ class PaperCriteria:
 
 @dataclass(frozen=True)
 class OverlaysConfig:
-    """Shared default overlays (market switch). ``default`` names the overlays the engine applies to EVERY strategy in backtest, paper and live; the five numbers are the old kill
+    """Overlay library settings (market switch). ``default`` names overlays the engine applies to EVERY strategy (empty: the switch is optional, a strategy declares it); the five numbers are the old kill
     switch's, carried over unchanged (macro.nifty_kill_sma_period, vix_kill_threshold, nifty_reentry_sma_period, vix_reentry_threshold, reentry_consecutive_sessions)."""
     default: tuple
     market_switch_v1_trigger_sma_period: int

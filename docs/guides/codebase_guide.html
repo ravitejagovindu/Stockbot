@@ -429,7 +429,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
     140
    ],
    "oneline": "Market-wide rules the engine applies to every strategy (the market switch).",
-   "meaning": "Shared default overlays. market_switch_v1 is the old kill switch carried over exactly: new entries are blocked while Nifty is below its 200-day average or VIX is above 22, until three qualifying sessions have passed. It is decided on the close and only blocks new entries.",
+   "meaning": "Optional overlay library: a strategy declares an overlay in its spec; none is a shared default. market_switch_v1 is the old kill switch: new entries are blocked while Nifty is below its 200-day average or VIX is above 22, until three qualifying sessions pass.",
    "modules": [
     {
      "n": "market_switch.py",

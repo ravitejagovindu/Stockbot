@@ -2,7 +2,7 @@
 
   py scripts/run_with_market_switch.py --strategy near_52w_high --out DIR --execute [--overlays default|none] [--start 2016-01-01] [--end 2026-10-16] [--lake PATH]
 
---overlays default (the default) applies the shared default overlays (market_switch_v1); --overlays none passes default_overlays=[] (the explicit opt-out: the manifest says "overlays": []).
+--overlays market_switch makes the strategy DECLARE market_switch_v1 (spec.overlays, so the spec hash differs); --overlays none (the default) runs the strategy as registered (no overlay, as on master).
 Without --execute only the plan is printed. The strategy's own spec, exit policy and the shared config are used unchanged; STOCKBOT_VIEW is honoured (the run manifest records asof_view).
 Descriptive comparison runs only; nothing here registers anything or writes a ledger row.
 """
@@ -22,7 +22,7 @@ from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.data.asof import active_view_name  # noqa: E402
 from stockbot.data.sector_map import SectorLookup  # noqa: E402
 from stockbot.engine.decide import EventData  # noqa: E402
-from stockbot.overlays import describe_default_overlays  # noqa: E402
+from stockbot.overlays import describe_effective_overlays  # noqa: E402
 from stockbot.strategies.registry import StrategyRegistry  # noqa: E402
 
 STRATEGIES = {"near_52w_high": ("stockbot.strategies.near_52w_high", "NearHighStrategy"),
@@ -46,15 +46,19 @@ def main(argv=None) -> int:
     ap.add_argument("--start", default="2016-01-01")
     ap.add_argument("--end", default="2026-10-16")
     ap.add_argument("--out")
-    ap.add_argument("--overlays", choices=("default", "none"), default="default")
+    ap.add_argument("--overlays", choices=("market_switch", "none"), default="none")
     ap.add_argument("--execute", action="store_true")
     args = ap.parse_args(argv)
     cfg = load_shared_config()
     strategy = build_strategy(args.strategy)
-    ids = [] if args.overlays == "none" else None
+    if args.overlays == "market_switch":
+        import dataclasses
+        from stockbot.overlays.market_switch import ID, VERSION
+        strategy = type(strategy)(dataclasses.replace(strategy.spec, overlays={ID: VERSION}))
+    ids = None
     start, end = date.fromisoformat(args.start), date.fromisoformat(args.end)
     plan = {"strategy": args.strategy, "spec_config_hash": strategy.spec.config_hash(), "exit_policy": strategy.spec.exit_policy, "window": [start.isoformat(), end.isoformat()],
-            "overlays": describe_default_overlays(cfg, ids), "shared_config_hash": shared_config_hash(cfg, ids), "asof_view": active_view_name(), "lake": str(args.lake or lake_path())}
+            "overlays": describe_effective_overlays(cfg, [strategy], ids), "shared_config_hash": shared_config_hash(cfg, ids, [strategy]), "asof_view": active_view_name(), "lake": str(args.lake or lake_path())}
     print(json.dumps(plan, indent=1))
     if not args.execute:
         print("plan only: pass --execute to run", file=sys.stderr)

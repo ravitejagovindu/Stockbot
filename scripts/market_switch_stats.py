@@ -22,14 +22,14 @@ from stockbot.config.paths import lake_path  # noqa: E402
 from stockbot.config.shared import load_shared_config  # noqa: E402
 from stockbot.data.asof import AsOfView, NIFTY, VIX, active_view_name  # noqa: E402
 from stockbot.data.lake import open_lake  # noqa: E402
-from stockbot.overlays import resolve_default_overlays  # noqa: E402
+from stockbot.overlays import library_overlay  # noqa: E402
 
 COST_ONE_SIDE = 0.0022
 CASH_RATE = 0.065
 
 
 def switch_states(conn, start: date, end: date, cfg):
-    ms = resolve_default_overlays(cfg)["market_switch_v1"]
+    ms = library_overlay(cfg, "market_switch_v1")
     end_view = AsOfView(conn, end)
     days = [d for d in end_view.sessions() if start <= d <= end]
     st, rows = {}, []
