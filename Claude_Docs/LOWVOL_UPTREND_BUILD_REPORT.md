@@ -52,7 +52,12 @@ Mean position 11.9% of equity gives 100 / 11.9 = 8.4 slots (the 15% sector cap p
 - `tests/unit/test_lowvol_uptrend_scripts.py` (19): the plan without `--execute` (SQL and memory view), refusal without `--out` or into a used folder, the registered window, the end-of-window rule (closed at the last close and counted; the shared gates count them), baseline equivalence with the shared helper (exact), the baseline stop rule on each draw's own symbol, SQL = memory byte for byte, B2 and gates from the run folder, `validate_family` loading the member and a dry run with `--expect-k 1` on a fixture family of one, the manifest `symbol_links` and `stale_exit` blocks.
 
 ## Gates and the database
-__GATES__
+| gate | result |
+|---|---|
+| G1 (`pytest tests/unit tests/integration`) | **1,278 passed, 9 skipped, 0 failed** (19 min) |
+| full G2 (`STOCKBOT_DATA_TESTS=1 STOCKBOT_FINAL_CHECK=1 pytest tests`) | **1,408 passed, 0 failed** (22 min) |
+| G3 (`tests/unit/test_g3_fixture_baseline.py`) | 2 passed |
+| `finsight.db` sha256 | `dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752` before and after (checked after the counts study and after the gates) |
 
 ## Decisions needed
 1. **`expected_trade_rate` 1.3** (6-month hold) versus 2.7 (3-month hold). It only feeds the spec hash and the power section; the choice is yours.
