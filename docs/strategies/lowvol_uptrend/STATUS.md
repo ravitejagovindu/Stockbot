@@ -1,6 +1,6 @@
 # lowvol_uptrend: status
 
-Last updated: 2026-11-16 (build, counts, scripts and final pre-registration text done; waiting for the owner's review).
+Last updated: 2026-11-16 (registered run 1 done; report Claude_Docs/LOWVOL_UPTREND_RUN1_REPORT.md; waiting for the owner).
 
 ## Done
 - Approved shared edits (own commit 3998fd9): `lowvol_uptrend` in APPROVED_STRATEGY_IDS; allow-list of seven ids and the strategy-owned policy `LvTrailingAtr3Floor8` in `tests/unit/test_no_strategy_in_the_tree.py`.

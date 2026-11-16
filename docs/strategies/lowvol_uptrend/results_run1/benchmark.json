@@ -1,0 +1,61 @@
+{
+ "daily_share": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 6.118141101708718,
+   "benchmark_cagr_pct": 10.36892833570029,
+   "alpha_pct": -4.250787233991571
+  },
+  "cash_credited_pre_tax": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 7.935359905806316,
+   "benchmark_cagr_pct": 10.36892833570029,
+   "alpha_pct": -2.433568429893973
+  },
+  "after_tax_illustrative_not_tax_advice": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 7.935359905806316,
+    "benchmark_cagr_pct": 10.36892833570029,
+    "alpha_pct": -2.433568429893973
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 6.750740057982019,
+    "benchmark_cagr_pct": 8.941724431653553,
+    "alpha_pct": -2.190984373671534
+   }
+  }
+ },
+ "constant_share": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 6.118141101708718,
+   "benchmark_cagr_pct": 9.64922248329243,
+   "alpha_pct": -3.5310813815837117
+  },
+  "cash_credited_pre_tax": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 7.935359905806316,
+   "benchmark_cagr_pct": 9.64922248329243,
+   "alpha_pct": -1.7138625774861138
+  },
+  "after_tax_illustrative_not_tax_advice": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 7.935359905806316,
+    "benchmark_cagr_pct": 9.64922248329243,
+    "alpha_pct": -1.7138625774861138
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 6.750740057982019,
+    "benchmark_cagr_pct": 8.289410704162915,
+    "alpha_pct": -1.538670646180896
+   }
+  }
+ },
+ "gate_alpha_pct": -2.433568429893973,
+ "mean_invested_share": 0.734283477072988,
+ "asof_view": "memory"
+}

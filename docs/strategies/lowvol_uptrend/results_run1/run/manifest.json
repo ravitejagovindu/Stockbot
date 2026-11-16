@@ -1,0 +1,60 @@
+{
+ "shared_config_hash": "da459624294741239ae85230317da357b5b141a62b81f897bfb3d0745e956248",
+ "overlays": [],
+ "strategies": {
+  "lowvol_uptrend": {
+   "version": "1.0.0",
+   "config_hash": "52e7ee3ccc2e150d7e4b6b54266bb2c73a8788612691ece475bfa7d1bb0e9e68",
+   "exit_policy": "lv_trailing_atr3_floor8",
+   "overlays": {}
+  }
+ },
+ "git_sha": "017b9e44c04831c4c44fe377e3550ead7606ae8e",
+ "data_snapshot": {
+  "file": "finsight.db",
+  "size": 3432767488,
+  "mtime_ns": 1794121682892612300,
+  "last_session": "2026-10-16"
+ },
+ "seed": null,
+ "asof_view": "memory",
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "initial_equity": 1000000,
+ "symbol_links": {
+  "enabled": true,
+  "linked_pairs": 41,
+  "file_sha256": "9d953ad442d81b9785e2f2cf5f5f8762eeaa9a1aebc03204349218e3f32f84c7"
+ },
+ "stale_exit": {
+  "sessions": 20,
+  "trades": 2,
+  "net_pnl_total": 53967.248360019665,
+  "list": [
+   {
+    "position_id": "lowvol_uptrend:GSKCONS:2020-04-03",
+    "symbol": "GSKCONS",
+    "entry_date": "2020-04-03",
+    "exit_date": "2020-05-14",
+    "net_pnl": 6523.20778917182
+   },
+   {
+    "position_id": "lowvol_uptrend:JBCHEPHARM:2026-04-02",
+    "symbol": "JBCHEPHARM",
+    "entry_date": "2026-04-02",
+    "exit_date": "2026-08-13",
+    "net_pnl": 47444.04057084784
+   }
+  ]
+ },
+ "end_of_window": {
+  "rule": "closed at the last session close, normal costs and slippage, counted as usable trades",
+  "trades": 6,
+  "closed_trades_total": 413,
+  "closed_before_window_end": 407,
+  "label_in_trades_json": "END_OF_WINDOW_COUNTED",
+  "engine_reason": "END_OF_WINDOW"
+ }
+}
