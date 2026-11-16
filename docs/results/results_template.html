@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StockBot backtest results</title>
+<style>
+:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--good:#0ca30c;--goodtext:#006300;--crit:#d03b3b;--warn:#fab219;--chip:#f0efec}
+@media (prefers-color-scheme:dark){:root{--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--axis:#383835;
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#0ca30c;--goodtext:#0ca30c;--crit:#e66767;--chip:#2c2c2a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px 14px 48px}
+h1{font-size:22px;margin:4px 0 2px}
+h2{font-size:17px;margin:30px 0 4px}
+p.sub{color:var(--ink2);margin:0 0 12px;font-size:13.5px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0 4px}
+.tile{background:var(--surface);border:1px solid var(--grid);border-radius:12px;padding:12px}
+.tile b{display:block;font-size:26px;line-height:1.1}
+.tile span{color:var(--ink2);font-size:12.5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--grid);border-radius:12px;padding:14px;border-left:5px solid var(--c)}
+.card h3{margin:0;font-size:16px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.card .rule{color:var(--ink2);font-size:13px;margin:4px 0 10px}
+.chip{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--ink2);white-space:nowrap}
+.chip.pass{background:var(--good);color:#fff}.chip.run{background:var(--warn);color:#0b0b0b}
+.checks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.check{font-size:12px;padding:3px 8px;border-radius:8px;border:1px solid var(--grid);color:var(--ink2)}
+.check i{font-style:normal;font-weight:700;margin-right:4px}
+.check.ok i{color:var(--goodtext)}.check.no i{color:var(--crit)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{font-size:12px;color:var(--ink2)}.nums b{display:block;font-size:16px;color:var(--ink)}
+.card details{margin-top:10px;font-size:13px}.card summary{cursor:pointer;color:var(--ink2)}
+.note{font-size:12.5px;color:var(--ink2);margin-top:8px}
+.panel{background:var(--surface);border:1px solid var(--grid);border-radius:12px;padding:12px;position:relative}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.legend button{font:inherit;font-size:12.5px;border:1px solid var(--grid);background:transparent;color:var(--ink);border-radius:999px;padding:3px 9px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.legend button.off{opacity:.4}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block}
+svg{display:block;width:100%;height:auto;touch-action:pan-y}
+svg text{fill:var(--muted);font-size:11px}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:7px 9px;font-size:12px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:none;min-width:150px;z-index:2}
+.tip .r{display:flex;justify-content:space-between;gap:12px}.tip .r span{display:flex;align-items:center;gap:6px}
+.bars .row{display:grid;grid-template-columns:120px 1fr 58px;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.bars .track{position:relative;height:16px}
+.bars .bar{position:absolute;top:2px;height:12px;background:var(--c);border-radius:4px}
+.bars .ref{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--axis)}
+.bars .zero{position:absolute;top:-4px;bottom:-4px;width:0;border-left:1px solid var(--axis)}
+.bars .val{text-align:right;font-variant-numeric:tabular-nums}
+.key{font-size:12px;color:var(--ink2);margin-top:6px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}th{color:var(--ink2);font-weight:600}
+table.small{min-width:0}
+ul.notes{padding-left:18px;color:var(--ink2);font-size:13.5px}
+</style>
+</head>
+<body>
+<main>
+<h1>StockBot backtest results</h1>
+<p class="sub" id="sub"></p>
+<div class="tiles" id="tiles"></div>
+
+<h2>Scoreboard</h2>
+<p class="sub">A strategy passes only if it beats random picks (T1) and meets all five gates. Tap "Details" for the numbers.</p>
+<div class="cards" id="cards"></div>
+
+<h2>Account value over time</h2>
+<p class="sub">Each account starts at 100. After trading costs, before tax, with no interest on idle cash. Tap a name to hide or show it.</p>
+<div class="panel"><div class="legend" id="legend"></div><svg id="eq" viewBox="0 0 720 340" role="img" aria-label="Account value by strategy, monthly"></svg><div class="tip" id="tip"></div></div>
+
+<h2>Return against the matched Nifty</h2>
+<p class="sub">Points per year above or below the Nifty benchmark held at the same invested share. Gate: 0 or better.</p>
+<div class="panel bars" id="alpha"></div>
+
+<h2>Worst drawdown</h2>
+<p class="sub">Largest fall from a peak. Shorter is better.</p>
+<div class="panel bars" id="dd"></div>
+
+<h2>All numbers</h2>
+<div class="panel scroll"><table id="tbl"></table></div>
+
+<h2 id="mst"></h2>
+<p class="sub" id="msv"></p>
+<div class="panel scroll"><table class="small" id="ms"></table></div>
+
+<h2>How to read this page</h2>
+<ul class="notes">
+<li>"Not demonstrated" means the registered rule was not met. It is not proof that there is no edge.</li>
+<li>R is the amount risked on a trade (1% of the account). An expectancy of 0.15 R means the average trade made 15% of what it risked.</li>
+<li>All tests use the same ten years of data, so each extra test makes a lucky pass more likely.</li>
+<li>This page is built from the stored result files by docs/results/build_results_page.py. The ledger and each strategy's report are the record.</li>
+</ul>
+</main>
+<script>
+const D=/*__DATA__*/null;
+const $=id=>document.getElementById(id), col=r=>`var(--s${r.slot})`;
+const f=(v,d=1)=>v==null?"n/a":Number(v).toFixed(d), done=D.runs.filter(r=>r.status==="done");
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+$("sub").textContent=`Window ${D.window}. Starting account Rs ${D.start_equity.toLocaleString("en-IN")}. Updated ${D.updated}.`;
+$("tiles").innerHTML=[[D.summary.tested,"strategies tested"],[D.summary.passed,"passed"],[D.summary.running,"running now"],[D.nifty_worst_drawdown_pct.toFixed(0)+"%","Nifty's worst fall in this window"]]
+ .map(t=>`<div class="tile"><b>${t[0]}</b><span>${t[1]}</span></div>`).join("");
+
+$("cards").innerHTML=D.runs.map(r=>{
+ if(r.status!=="done")return `<div class="card" style="--c:${col(r)}"><h3>${esc(r.name)}<span class="chip run">Running</span></h3><p class="rule">${esc(r.rule)}</p><div class="note">${esc(r.note)} Results appear here when the run is recorded.</div></div>`;
+ const chk=(ok,l)=>`<span class="check ${ok?"ok":"no"}"><i>${ok?"✓":"✗"}</i>${l}</span>`;
+ const t1p=r.t1?Object.values(r.t1).map(v=>"p = "+f(v.p,3)).join(", "):"n/a";
+ const rows=r.gates.map(g=>`<tr><td>${g.label}</td><td>${g.cmp} ${g.need}</td><td>${f(g.observed,g.key==="min_trades"?0:2)}</td><td>${g.interval?f(g.interval[0],2)+" to "+f(g.interval[1],2):""}</td><td>${g.met?"✓ met":"✗ not met"}</td></tr>`).join("");
+ return `<div class="card" style="--c:${col(r)}"><h3>${esc(r.name)}<span class="chip ${r.verdict==="PASSED"?"pass":""}">${r.verdict==="PASSED"?"Passed":"Not demonstrated"}</span></h3>
+ <p class="rule">${esc(r.rule)}</p>
+ <div class="checks">${chk(r.t1_ok,"Beats random")}${r.gates.map(g=>chk(g.met,g.label)).join("")}</div>
+ <div class="nums"><div><b>${f(r.cagr_pct)}%</b>per year</div><div><b>${f(r.max_drawdown_pct,0)}%</b>worst drawdown</div><div><b>${f(r.stats.win_rate_pct,0)}%</b>win rate</div></div>
+ <details><summary>Details</summary>
+ <div class="scroll"><table class="small"><tr><th>Gate</th><th>Needed</th><th>Observed</th><th>95% range</th><th></th></tr>${rows}
+ <tr><td>Beats random (T1)</td><td>significant</td><td>${t1p}</td><td></td><td>${r.t1_ok?"✓ met":"✗ not met"}</td></tr></table></div>
+ <div class="note">Matched Nifty ${f(r.benchmark_cagr_pct)}% a year (${esc(r.alpha_basis)}). ${r.trades} trades, ${f(r.entries_per_month)} a month, median hold ${f(r.stats.median_hold_days,0)} days. Average win ${f(r.stats.avg_win_r,2)} R, average loss ${f(r.stats.avg_loss_r,2)} R. Fees Rs ${Math.round(r.stats.fees).toLocaleString("en-IN")} on Rs ${Math.round(r.stats.gross_pnl).toLocaleString("en-IN")} profit before fees. About ${f(100*r.invested_share,0)}% invested. Tested in ${esc(r.family)}.</div></details>
+ ${r.note?`<div class="note">${esc(r.note)}</div>`:""}</div>`}).join("");
+
+// equity line chart
+const hidden=new Set(), L=36,R=10,T=10,B=24; let W=720,H=340; const months=[...new Set(done.flatMap(r=>r.equity.map(e=>e[0])))].sort();
+const series=done.map(r=>({r,m:new Map(r.equity)}));
+function drawEq(){
+ W=Math.max(300,$("eq").parentElement.clientWidth-24);H=Math.round(Math.max(240,Math.min(380,W*0.62)));$("eq").setAttribute("viewBox",`0 0 ${W} ${H}`);
+ const vis=series.filter(s=>!hidden.has(s.r.id)), ymax=Math.max(120,...vis.flatMap(s=>[...s.m.values()]))*1.05;
+ const x=i=>L+(W-L-R)*i/(months.length-1), y=v=>T+(H-T-B)*(1-v/ymax);
+ let g="";const step=ymax>400?100:ymax>200?50:25;
+ for(let v=0;v<=ymax;v+=step)g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="${v===100?1.5:1}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+ months.forEach((m,i)=>{if(m.endsWith("-01")&&(+m.slice(0,4))%2===0)g+=`<text x="${x(i)}" y="${H-8}" text-anchor="middle">${m.slice(0,4)}</text>`});
+ vis.forEach(s=>{const pts=months.map((m,i)=>s.m.has(m)?`${x(i).toFixed(1)},${y(s.m.get(m)).toFixed(1)}`:null).filter(Boolean).join(" ");
+  g+=`<polyline points="${pts}" fill="none" stroke="${col(s.r)}" stroke-width="2" stroke-linejoin="round"/>`});
+ g+=`<line id="cx" y1="${T}" y2="${H-B}" stroke="var(--axis)" stroke-width="1" style="display:none"/><rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent" id="hit"/>`;
+ $("eq").innerHTML=g;
+ const hit=$("hit"),cx=$("cx"),tip=$("tip");
+ const move=ev=>{const b=$("eq").getBoundingClientRect(),px=(ev.clientX-b.left)*W/b.width,i=Math.max(0,Math.min(months.length-1,Math.round((px-L)/(W-L-R)*(months.length-1))));
+  cx.setAttribute("x1",x(i));cx.setAttribute("x2",x(i));cx.style.display="";
+  tip.innerHTML=`<b>${months[i]}</b>`+vis.filter(s=>s.m.has(months[i])).sort((a,b)=>b.m.get(months[i])-a.m.get(months[i])).map(s=>`<div class="r"><span><i class="dot" style="--c:${col(s.r)}"></i>${esc(s.r.name)}</span><b>${f(s.m.get(months[i]),0)}</b></div>`).join("");
+  tip.style.display="block";const pw=$("eq").parentElement.getBoundingClientRect();let lx=ev.clientX-pw.left+14;if(lx+170>pw.width)lx=ev.clientX-pw.left-180;tip.style.left=Math.max(4,lx)+"px";tip.style.top="48px"};
+ hit.addEventListener("pointermove",move);hit.addEventListener("pointerdown",move);hit.addEventListener("pointerleave",()=>{cx.style.display="none";tip.style.display="none"});
+}
+$("legend").innerHTML=done.map(r=>`<button data-id="${r.id}"><i class="dot" style="--c:${col(r)}"></i>${esc(r.name)}</button>`).join("");
+$("legend").querySelectorAll("button").forEach(b=>b.onclick=()=>{const id=b.dataset.id;hidden.has(id)?hidden.delete(id):hidden.add(id);b.classList.toggle("off");drawEq()});
+drawEq();addEventListener("resize",drawEq);
+
+// alpha (diverging around zero) and drawdown bars
+(function(){const v=done.map(r=>r.alpha_pct),lo=Math.min(0,...v)*1.1,hi=Math.max(0,...v)*1.1||1,span=hi-lo,pos=x=>100*(x-lo)/span;
+ $("alpha").innerHTML=done.map(r=>{const a=r.alpha_pct,l=pos(Math.min(0,a)),w=Math.max(.6,Math.abs(a)/span*100);
+  return `<div class="row" title="${esc(r.name)}: ${f(a)} points a year"><div>${esc(r.name)}</div><div class="track"><div class="zero" style="left:${pos(0)}%"></div><div class="bar" style="--c:${col(r)};left:${l}%;width:${w}%"></div></div><div class="val">${a>0?"+":""}${f(a)}</div></div>`}).join("")
+  +`<div class="key">Solid line = 0 (same as the matched Nifty). The 52-week-high run did not credit idle cash, which lowers its figure by a point or two.</div>`;
+ const mx=Math.max(D.nifty_worst_drawdown_pct,...done.map(r=>r.max_drawdown_pct))*1.05,p=x=>100*x/mx;
+ $("dd").innerHTML=done.map(r=>`<div class="row" title="${esc(r.name)}: ${f(r.max_drawdown_pct)}%"><div>${esc(r.name)}</div><div class="track"><div class="ref" style="left:${p(D.drawdown_gate_pct)}%"></div><div class="ref" style="left:${p(D.nifty_worst_drawdown_pct)}%"></div><div class="bar" style="--c:${col(r)};left:0;width:${p(r.max_drawdown_pct)}%"></div></div><div class="val">${f(r.max_drawdown_pct,0)}%</div></div>`).join("")
+  +`<div class="key">Dashed lines: the ${D.drawdown_gate_pct}% gate (left) and the Nifty's own worst fall, ${D.nifty_worst_drawdown_pct}% (right).</div>`})();
+
+$("tbl").innerHTML=`<tr><th>Strategy</th><th>Verdict</th><th>Trades</th><th>Win rate</th><th>Expectancy (R)</th><th>Profit factor</th><th>Per year</th><th>Matched Nifty</th><th>Alpha (pts)</th><th>Worst drawdown</th><th>T1 p (2, 3 months)</th></tr>`+
+ D.runs.map(r=>r.status!=="done"?`<tr><td>${esc(r.name)}</td><td>Running</td>${"<td></td>".repeat(9)}</tr>`:
+ `<tr><td><i class="dot" style="--c:${col(r)}"></i> ${esc(r.name)}</td><td>${r.verdict==="PASSED"?"Passed":"Not demonstrated"}</td><td>${r.trades}</td><td>${f(r.stats.win_rate_pct,0)}%</td><td>${f(r.expectancy_r,2)}</td><td>${f(r.profit_factor,2)}</td><td>${f(r.cagr_pct)}%</td><td>${f(r.benchmark_cagr_pct)}%</td><td>${f(r.alpha_pct)}</td><td>${f(r.max_drawdown_pct)}%</td><td>${r.t1?Object.values(r.t1).map(v=>f(v.p,3)).join(", "):""}</td></tr>`).join("");
+
+$("mst").textContent=D.market_switch.title;$("msv").textContent=D.market_switch.verdict+" Descriptive comparison, not a registered test.";
+$("ms").innerHTML=`<tr><th>Measure</th><th>Without switch</th><th>With switch</th></tr>`+D.market_switch.rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+</script>
+</body>
+</html>
