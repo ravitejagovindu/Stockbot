@@ -1,0 +1,368 @@
+{
+ "inputs": "stored files of docs/strategies/lowvol_uptrend/results_run1 and riskadj_momentum results_run1 equity (no engine run, no new draws); lake read-only for (d)",
+ "a_concentration": {
+  "n_usable_trades": 405,
+  "n_pairs": 405,
+  "net_r": {
+   "total": 57.23288575461302,
+   "mean_all": 0.1413157672953408,
+   "ranked_by": "net R of the trade, highest first",
+   "top5_sum": 34.3671027652882,
+   "top5_share_of_total": 0.6004782444945681,
+   "top10_sum": 54.521928785779885,
+   "top10_share_of_total": 0.9526328799764455,
+   "top20_sum": 86.03664985422273,
+   "top20_share_of_total": 1.5032729648319034,
+   "mean_without_top5": 0.05716445747331207,
+   "n_without_top5": 400,
+   "mean_without_top10": 0.006863182199577689,
+   "n_without_top10": 395
+  },
+  "net_pnl_inr": {
+   "total": 671136.3115046308,
+   "mean_all": 1657.1266950731626,
+   "ranked_by": "net P&L (INR) of the trade, highest first",
+   "top5_sum": 471241.284885316,
+   "top5_share_of_total": 0.7021543564359272,
+   "top10_sum": 758585.689607189,
+   "top10_share_of_total": 1.1303004719063763,
+   "top20_sum": 1208265.7732496678,
+   "top20_share_of_total": 1.8003284169513019,
+   "mean_without_top5": 499.73756654828554,
+   "n_without_top5": 400,
+   "mean_without_top10": -221.39083063938784,
+   "n_without_top10": 395
+  },
+  "paired_difference": {
+   "total": 21.505153828486357,
+   "mean_all": 0.05309914525552187,
+   "ranked_by": "paired difference (net R minus mean of its draws), highest first",
+   "top5_sum": 30.88699109279807,
+   "top5_share_of_total": 1.436259946761425,
+   "top10_sum": 49.55740034391758,
+   "top10_share_of_total": 2.3044429600067495,
+   "top20_sum": 75.70554816012418,
+   "top20_share_of_total": 3.5203444143627745,
+   "mean_without_top5": -0.023454593160779354,
+   "n_without_top5": 400,
+   "mean_without_top10": -0.07101834560868664,
+   "n_without_top10": 395
+  }
+ },
+ "b_drawdown_episodes": [
+  {
+   "peak_date": "2021-10-18",
+   "trough_date": "2022-06-20",
+   "recovery_date": "2023-11-30",
+   "depth_pct": 25.972427892406824
+  },
+  {
+   "peak_date": "2024-09-27",
+   "trough_date": "2026-10-08",
+   "recovery_date": null,
+   "depth_pct": 22.90344906626453
+  },
+  {
+   "peak_date": "2018-08-28",
+   "trough_date": "2020-04-03",
+   "recovery_date": "2020-07-24",
+   "depth_pct": 15.486817333354368
+  },
+  {
+   "peak_date": "2018-02-01",
+   "trough_date": "2018-03-07",
+   "recovery_date": "2018-07-12",
+   "depth_pct": 9.240375254959599
+  },
+  {
+   "peak_date": "2021-01-11",
+   "trough_date": "2021-05-04",
+   "recovery_date": "2021-07-01",
+   "depth_pct": 8.137817925900373
+  }
+ ],
+ "c_riskadj_run1_drawdown_episodes": [
+  {
+   "peak_date": "2024-02-08",
+   "trough_date": "2025-10-14",
+   "recovery_date": null,
+   "depth_pct": 34.32225292385747
+  },
+  {
+   "peak_date": "2018-08-31",
+   "trough_date": "2019-08-05",
+   "recovery_date": "2020-09-07",
+   "depth_pct": 21.936414748746664
+  },
+  {
+   "peak_date": "2022-01-17",
+   "trough_date": "2023-03-28",
+   "recovery_date": "2023-07-11",
+   "depth_pct": 21.694232669148963
+  },
+  {
+   "peak_date": "2018-01-11",
+   "trough_date": "2018-02-06",
+   "recovery_date": "2018-04-25",
+   "depth_pct": 13.753233995235107
+  },
+  {
+   "peak_date": "2018-04-30",
+   "trough_date": "2018-07-06",
+   "recovery_date": "2018-08-17",
+   "depth_pct": 7.943495244260409
+  }
+ ],
+ "c_calendar_month_overlap": {
+  "definition": "months from the peak month to the trough month (or the recovery month; to the last month if not recovered) of each episode; lists the shared months per pair of episodes",
+  "rows": [
+   {
+    "lowvol_episode": 1,
+    "peak": "2021-10-18",
+    "depth_pct": 25.972427892406824,
+    "vs_riskadj_peak_to_trough_months": {
+     "1": [],
+     "2": [],
+     "3": [
+      "2022-01",
+      "2022-02",
+      "2022-03",
+      "2022-04",
+      "2022-05",
+      "2022-06"
+     ],
+     "4": [],
+     "5": []
+    },
+    "vs_riskadj_peak_to_recovery_months": {
+     "1": [],
+     "2": [],
+     "3": [
+      "2022-01",
+      "2022-02",
+      "2022-03",
+      "2022-04",
+      "2022-05",
+      "2022-06",
+      "2022-07",
+      "2022-08",
+      "2022-09",
+      "2022-10",
+      "2022-11",
+      "2022-12",
+      "2023-01",
+      "2023-02",
+      "2023-03",
+      "2023-04",
+      "2023-05",
+      "2023-06",
+      "2023-07"
+     ],
+     "4": [],
+     "5": []
+    }
+   },
+   {
+    "lowvol_episode": 2,
+    "peak": "2024-09-27",
+    "depth_pct": 22.90344906626453,
+    "vs_riskadj_peak_to_trough_months": {
+     "1": [
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10"
+     ],
+     "2": [],
+     "3": [],
+     "4": [],
+     "5": []
+    },
+    "vs_riskadj_peak_to_recovery_months": {
+     "1": [
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12",
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04",
+      "2026-05",
+      "2026-06",
+      "2026-07",
+      "2026-08",
+      "2026-09",
+      "2026-10"
+     ],
+     "2": [],
+     "3": [],
+     "4": [],
+     "5": []
+    }
+   },
+   {
+    "lowvol_episode": 3,
+    "peak": "2018-08-28",
+    "depth_pct": 15.486817333354368,
+    "vs_riskadj_peak_to_trough_months": {
+     "1": [],
+     "2": [
+      "2018-08",
+      "2018-09",
+      "2018-10",
+      "2018-11",
+      "2018-12",
+      "2019-01",
+      "2019-02",
+      "2019-03",
+      "2019-04",
+      "2019-05",
+      "2019-06",
+      "2019-07",
+      "2019-08"
+     ],
+     "3": [],
+     "4": [],
+     "5": []
+    },
+    "vs_riskadj_peak_to_recovery_months": {
+     "1": [],
+     "2": [
+      "2018-08",
+      "2018-09",
+      "2018-10",
+      "2018-11",
+      "2018-12",
+      "2019-01",
+      "2019-02",
+      "2019-03",
+      "2019-04",
+      "2019-05",
+      "2019-06",
+      "2019-07",
+      "2019-08",
+      "2019-09",
+      "2019-10",
+      "2019-11",
+      "2019-12",
+      "2020-01",
+      "2020-02",
+      "2020-03",
+      "2020-04",
+      "2020-05",
+      "2020-06",
+      "2020-07"
+     ],
+     "3": [],
+     "4": [],
+     "5": [
+      "2018-08"
+     ]
+    }
+   },
+   {
+    "lowvol_episode": 4,
+    "peak": "2018-02-01",
+    "depth_pct": 9.240375254959599,
+    "vs_riskadj_peak_to_trough_months": {
+     "1": [],
+     "2": [],
+     "3": [],
+     "4": [
+      "2018-02"
+     ],
+     "5": []
+    },
+    "vs_riskadj_peak_to_recovery_months": {
+     "1": [],
+     "2": [],
+     "3": [],
+     "4": [
+      "2018-02",
+      "2018-03",
+      "2018-04"
+     ],
+     "5": [
+      "2018-04",
+      "2018-05",
+      "2018-06",
+      "2018-07"
+     ]
+    }
+   },
+   {
+    "lowvol_episode": 5,
+    "peak": "2021-01-11",
+    "depth_pct": 8.137817925900373,
+    "vs_riskadj_peak_to_trough_months": {
+     "1": [],
+     "2": [],
+     "3": [],
+     "4": [],
+     "5": []
+    },
+    "vs_riskadj_peak_to_recovery_months": {
+     "1": [],
+     "2": [],
+     "3": [],
+     "4": [],
+     "5": []
+    }
+   }
+  ]
+ },
+ "c_monthly_return_correlation": {
+  "common_months": 129,
+  "first": "2016-02",
+  "last": "2026-10",
+  "pearson": 0.5833621179351751,
+  "note": "monthly returns of the daily equity curves (last equity of the month over the previous month's last equity); the first month of each run is dropped"
+ },
+ "d_positions_held_over_5_sessions_without_a_bar": [
+  {
+   "symbol": "GSKCONS",
+   "position_id": "lowvol_uptrend:GSKCONS:2020-04-03",
+   "entry_date": "2020-04-03",
+   "exit_date": "2020-05-14",
+   "exit_reason": "SYMBOL_NO_BARS",
+   "net_pnl": 6523.20778917182,
+   "longest_run_of_sessions_without_a_bar": 19,
+   "held_sessions_with_run_over_5": 14,
+   "first_such_session": "2020-04-23"
+  },
+  {
+   "symbol": "JBCHEPHARM",
+   "position_id": "lowvol_uptrend:JBCHEPHARM:2026-04-02",
+   "entry_date": "2026-04-02",
+   "exit_date": "2026-08-13",
+   "exit_reason": "SYMBOL_NO_BARS",
+   "net_pnl": 47444.04057084784,
+   "longest_run_of_sessions_without_a_bar": 19,
+   "held_sessions_with_run_over_5": 14,
+   "first_such_session": "2026-07-24"
+  }
+ ]
+}
