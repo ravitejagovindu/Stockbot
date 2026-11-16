@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[2]
 INTERFACES = ["stockbot/engine/exit_policy.py::ExitPolicy", "stockbot/strategies/base.py::Overlay", "stockbot/strategies/base.py::Strategy"]
 APPROVED_STRATEGY_FOLDERS = list(B.APPROVED_STRATEGY_IDS)
 LIBRARY_OVERLAYS = ["stockbot/overlays/market_switch.py::MarketSwitch"]          # the optional library overlay (market-switch), the one allowed overlay home is stockbot/overlays/
-STRATEGY_POLICIES = ["stockbot/strategies/riskadj_momentum/exits.py::TrailingAtr3Floor8", "stockbot/strategies/lowvol_uptrend/exits.py::LvTrailingAtr3Floor8"]          # a strategy-owned exit policy (allowed in the strategy folder)
+STRATEGY_POLICIES = ["stockbot/strategies/riskadj_momentum/exits.py::TrailingAtr3Floor8", "stockbot/strategies/lowvol_uptrend/exits.py::LvTrailingAtr3Floor8",
+                    "stockbot/strategies/riskadj_momentum_daily/exits.py::RmdTrailingAtr3Floor8"]          # a strategy-owned exit policy (allowed in the strategy folder)
 LIBRARY_POLICIES = ["stockbot/engine/exit_policies/fixed_hold.py::FixedHold", "stockbot/engine/exit_policies/trailing_stop.py::TrailingStop"]
 
 
@@ -102,8 +103,8 @@ def test_the_strategies_folder_holds_only_approved_strategy_folders():
     assert len(folders) == len(set(folders)), f"more than one strategy class in a folder: {folders}"
 
 
-def test_the_allow_list_holds_exactly_the_seven_approved_ids():
-    assert B.APPROVED_STRATEGY_IDS == ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend", "riskadj_momentum", "lowvol_uptrend")
+def test_the_allow_list_holds_exactly_the_eight_approved_ids():
+    assert B.APPROVED_STRATEGY_IDS == ("near_52w_high", "short_term_reversal", "trend_breakout_100d", "low_volatility", "pullback_uptrend", "riskadj_momentum", "lowvol_uptrend", "riskadj_momentum_daily")
 
 
 def test_an_unlisted_strategy_folder_fails_and_a_listed_or_absent_one_does_not(tmp_path):
