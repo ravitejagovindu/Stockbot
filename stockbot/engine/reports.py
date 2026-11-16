@@ -14,6 +14,8 @@ from dataclasses import dataclass, field, replace
 from datetime import date
 from typing import Any, Mapping, Optional
 
+from stockbot.data import symbol_links as _links
+from stockbot.engine import exit_history as XH
 from stockbot.engine.types import ClosedTrade, Position, State, Ticket, _d, to_plain
 from stockbot.risk.costs import CostModel
 
@@ -137,6 +139,11 @@ def apply_effect(state: State, e: ReportEffect) -> State:
             positions[ids.index(e.position.position_id)] = e.position
         else:
             positions.append(e.position)
+    strategy_state = state.strategy_state
     if e.closed is not None:
         positions = [p for p in positions if p.position_id != e.closed.position_id]
-    return replace(state, pending=pending, positions=tuple(positions), cash=state.cash + e.cash_delta, realised_pnl_net=state.realised_pnl_net + e.realised_delta)
+        own = (strategy_state or {}).get(e.closed.strategy_id)
+        if own is not None and XH.KEY in own:                 # the strategy opted in (its state already carries the engine-owned key): record the reported exit too
+            strategy_state = {**strategy_state, e.closed.strategy_id: XH.with_history(own, list(own[XH.KEY]) + [[_links.resolve(e.closed.symbol), e.closed.exit_date.isoformat(), e.closed.exit_reason]])}
+    return replace(state, pending=pending, positions=tuple(positions), cash=state.cash + e.cash_delta, realised_pnl_net=state.realised_pnl_net + e.realised_delta,
+                   strategy_state=strategy_state)

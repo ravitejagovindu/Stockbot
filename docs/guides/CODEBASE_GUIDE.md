@@ -212,6 +212,7 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 | `stockbot/engine/exit_policies/` (package `stockbot.engine.exit_policies`) | The shared library of exit policies: `fixed_hold.py` (`FixedHold`, id `fixed_hold_<N>`), `trailing_stop.py` (`TrailingStop`, id `trailing_pct_<P>`) and `registry.py` (`resolve(policy_id)`, `policies_for(specs, extra=None)`). It imports only the interface. Plain-English guide: `docs/exit_policies/EXIT_POLICIES.md`. |
 | `reports.py` | Operator reports in live (`FillReport`, `ExitReport`, `NotTakenReport`) turned into `ReportEffect`s that change the state. |
 | `path.py` | `simulate_ticket`: one position's path under the same fill and stepping rules (used by the matched-random baseline). |
+| `exit_history.py` | Engine-owned exit history for strategies that opt in (class attribute `exit_history_sessions`): `[canonical symbol, exit session, reason]` of the strategy's own closed positions under the reserved state key `_exits`, written by `decide` (and by `apply_effect` for reported exits) before proposals; a strategy that does not opt in is unchanged. |
 | `stale.py` | The no-bars rule (`engine.stale_exit_sessions`): `no_bars_for` and the flag text; a held position whose symbol has no bar for that many sessions is closed at its last close (reason `SYMBOL_NO_BARS`) by `decide` and by `simulate_ticket`. |
 
 - **Reads:** the `AsOfView` it is handed, the shared config, the `State`. **Writes:** nothing outside its return value. **Called by:** `stockbot/backtest/runner.py`, `stockbot/live/adapter.py`, `stockbot/validation/random_baseline.py`, tests.
@@ -376,6 +377,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/stale_symbols_tables.py` | Second step of that inventory: directed rename pairs, leads, gap tables. | one-off | `stockbot.data.adjustments` |
 | `scripts/stale_positions_proofs.py` | Proofs and effect numbers for symbol links and the no-bars rule (read-only). | one-off | `stockbot.data.asof`, `stockbot.data.asof_memory` |
 | `scripts/addendum_riskadj_momentum_run1.py` | Descriptive addendum for the registered riskadj_momentum run 1, computed from its stored files (concentration, stale-bar removal, drawdown episodes, lake facts); no engine run. | one-off | `stockbot.data.asof`, `stockbot.data.adjustments` |
+| `scripts/addendum_lowvol_uptrend_run1.py` | Descriptive addendum for the registered lowvol_uptrend run 1 (concentration, deepest drawdown episodes and their overlap with riskadj_momentum run 1, positions held through bar-less stretches), computed from stored files; no engine run. | one-off | `stockbot.data.symbol_links` |
 | `scripts/f2_event_evidence.py` | Evidence tier for each corporate-action event. | one-off | `stockbot.data.ingestion.f2_event_evidence` |
 | `scripts/f2_load_corporate_actions.py` | Append-only load of corporate actions into the log. | one-off | `stockbot.data.ingestion.f2_load_corporate_actions` |
 | `scripts/f2_build_isin_symbol_map.py` | Builds the ISIN-to-symbol map. | one-off | `stockbot.data.ingestion.f2_build_isin_symbol_map` |

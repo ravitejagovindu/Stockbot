@@ -3,6 +3,11 @@
 A strategy only PROPOSES: it returns proposals (symbol, stop, optional target, rank) and its own plain-data state. It never receives a connection,
 a clock, other strategies' proposals, portfolio caps or other strategies' state. Sizing, caps, arbitration, fills, costs and exits belong to shared code.
 ``rank`` is meaningful only inside one strategy (decision D6).
+
+Optional opt-in (engine-owned exit history): a strategy that sets a CLASS attribute ``exit_history_sessions = N`` (N > 0; not a spec field) receives, inside the ``strategy_state`` given to
+``propose``, the reserved key ``"_exits"`` (see ``stockbot.engine.exit_history``): a list of ``[canonical symbol, exit session ISO date, exit reason]`` for ITS OWN positions closed in the last N sessions,
+including the exits of the current session (visible to the proposals of that same session). The engine writes it before ``propose`` and restores it after, whatever the strategy returns; the same
+record is appended for operator-reported exits in live. A strategy that does not set the attribute sees no such key and its state is unchanged.
 """
 from __future__ import annotations
 
