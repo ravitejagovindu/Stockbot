@@ -27,4 +27,5 @@ Reviewer note: a 35% limit will rarely bind within a paper phase of a few months
 ## Operations
 - Daily job at 19:30 IST (data update, then the paper run).
 - A daily report or dashboard is deliberately NOT planned for now (last item, owner instruction).
-- Open: risk per trade for the paper phase (shared rule is 1.0%); the daily data update is not built yet.
+- Risk per trade in the paper phase: 1.0% (the shared rule, as in the backtest), owner decision 2026-11-16.
+- Data: ONE working database with the same tables, appended daily; research and backtests run on a frozen snapshot copy pinned by sha256 (owner decision 2026-11-16). Not built yet.
