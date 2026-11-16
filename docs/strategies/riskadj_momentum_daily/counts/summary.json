@@ -1,0 +1,120 @@
+{
+ "sessions": 2674,
+ "first": "2016-01-01",
+ "last": "2026-10-16",
+ "sessions_with_a_top_list": 2459,
+ "eligible": {
+  "median": 275.0,
+  "min": 123,
+  "max": 635
+ },
+ "funnel_total_name_sessions": {
+  "short": 32363,
+  "stale": 0,
+  "gap": 21677,
+  "bad_price": 0,
+  "ret_not_positive": 261852,
+  "vol_not_positive": 0,
+  "atr_missing": 0,
+  "ok": 532372
+ },
+ "qualifying": {
+  "median": 171.0,
+  "p5": 0.0,
+  "p95": 457.0,
+  "min": 0,
+  "max": 539
+ },
+ "fewer_than_top_n_sessions": 216,
+ "sessions_with_zero_qualifying": 215,
+ "sessions_by_top_n_found": {
+  "0": 215,
+  "23": 1,
+  "25": 2458
+ },
+ "score_ties": {
+  "sessions_with_any_tie": 0,
+  "tie_groups": 0,
+  "names_in_ties": 0,
+  "qualifying_total": 532328,
+  "sessions_tie_straddles_the_cut": 0
+ },
+ "unusable_stop_name_sessions": 44,
+ "top_names_total": 61473,
+ "sector": {
+  "mapped_share": 0.7680770419533779,
+  "unmapped_share": 0.2319229580466221,
+  "distinct_mapped_sectors": {
+   "median": 8,
+   "min": 4
+  },
+  "max_names_one_sector": {
+   "median": 6,
+   "max": 13
+  },
+  "depth_for_12_names_under_the_sector_cap": {
+   "sessions_reached": 2459,
+   "sessions_not_reached": 0,
+   "median": 17,
+   "p95": 41.0,
+   "max": 55,
+   "sessions_needing_more_than_25": 447
+  }
+ },
+ "stop_distance_pct": {
+  "median": 11.79176543645806,
+  "p5": 8.0,
+  "p95": 19.568132379229514,
+  "min": 7.999999999999999,
+  "max": 99.0095787662417,
+  "mean": 12.466284299411488
+ },
+ "share_at_floor": 0.1594683844940055,
+ "implied_position_pct_of_equity": {
+  "median": 8.48049433639662,
+  "p5": 5.110349730343206,
+  "p95": 12.5,
+  "mean": 8.79609681069254
+ },
+ "day_to_day_overlap_top25": {
+  "pairs": 2458,
+  "mean_names": 23.018714401952806,
+  "median_names": 23.0,
+  "share_of_top_n": 0.9207485760781122,
+  "min": 18,
+  "max": 25
+ },
+ "top12_changes": {
+  "pairs": 2458,
+  "sessions_with_any_change": 1998,
+  "share_of_sessions_with_any_change": 0.8128559804719284,
+  "mean_new_names": 1.1537835638730676,
+  "median_new_names": 1.0,
+  "max_new_names": 6
+ },
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "asof_view": "memory",
+ "spec_config_hash": "5eee31361115f024f207b6b19d61fe37edc80268ca67a0ca39b38f1faca5d105",
+ "finsight_db": {
+  "before": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "after": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "unchanged": true
+ },
+ "seconds": 5874.624354839325,
+ "cooldown_applied": false
+}

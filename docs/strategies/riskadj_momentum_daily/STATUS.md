@@ -1,13 +1,17 @@
 # riskadj_momentum_daily: status
 
-Last updated: 2026-11-16. **STOPPED, waiting for the owner.**
+Last updated: 2026-11-16 (build, counts, scripts and final pre-registration text done; waiting for the owner's review).
 
-## Finding (step 3)
-`propose(view, eligible, as_of, strategy_state, overlays)` (`stockbot/strategies/base.py:30`, called at `stockbot/engine/decide.py:267`) receives only the as-of view, the eligible list, its own previous `strategy_state` and overlay signals. It never receives positions, closed trades or exit dates. Closed trades are created in `decide` step 3 (`decide.py` lines about 190 to 230, `ClosedTrade`, reason STOP_HIT / SYMBOL_NO_BARS) and go into `Decisions.closed` only; `strategy_state_after` is whatever `propose` returned last time. An exit policy is not called on the bar where the stop is hit (`engine/stepping.py:60` returns before `policy.step`), so a strategy-owned policy cannot record it either. Operator-reported exits in live (`engine/reports.py:109` `exit_effect`, `apply_effect`) also bypass `decide`.
-Inferring stop-outs from the lake would mean replaying fills, sizing and caps inside the strategy: not the actual STOP_HIT history.
+## Done
+- Shared engine change (approved, own commit 433b1e1): opt-in exit history (`stockbot/engine/exit_history.py`, `decide.py`, `reports.apply_effect`, `strategies/base.py` docstring, two guide rows); proof in the report (fixture byte-identity of riskadj_momentum and lowvol_uptrend, full G2 1,422 passed, 14 new tests).
+- Allow-list edits (own commit 125d44d): eight ids, the strategy-owned policy class `RmdTrailingAtr3Floor8`.
+- Strategy (`stockbot/strategies/riskadj_momentum_daily/`), final spec hash `5b06f092df061bff1532093d21ea21c88c3f2db64ddd66e0cbe81bd5c0446e19`; `expected_trade_rate` 8.1 (proposed).
+- Counts study over the real lake (counts only): `counts/`.
+- Scripts: `research_`, `baseline_matched_random_` (own draw loop, pool of option C), `benchmark_nifty_matched_`, `evaluate_validation_gates_` `riskadj_momentum_daily.py`, `signal_count_riskadj_momentum_daily.py`; tests in `tests/unit/test_riskadj_momentum_daily_strategy.py` and `test_riskadj_momentum_daily_scripts.py` (fixture lakes only).
+- `PREREGISTRATION.md` final text (family_batch4, K = 1, gates hash e9b6407f...8054); `RUN_COMMANDS.md` (output folder `results_run1/`).
 
-## Smallest change (not made)
-In `decide`, before step 4, for a strategy that opts in with a class attribute (`exit_history_sessions = 25`, NOT a spec field, so no spec hash changes): append this session's closed trades `(canon(symbol), as_of, exit_reason)` of that strategy to `strategy_state[sid]["_exits"]`, prune older than that many sessions, and hand the state to `propose` as today. Strategies without the attribute are untouched (journals and goldens byte-identical). Live adds the same append in `apply_effect` for reported exits. Same code path for backtest, paper and live; the state is journaled.
+## Open items (owner)
+Review; register `family_batch4` (K = 1) on master at the commit carrying the pre-registration; authorise the registered run.
 
-## Baseline
-The matched-random cooldown is possible inside the strategy-side draw loop without a shared change (a symbol whose earlier draw ended STOP_HIT within 21 sessions before the new signal session is dropped from the pool before sampling); the semantics need the owner's confirmation.
+## Next step
+None until the owner replies. No backtest on the real lake has been run; no return of this strategy has been looked at.
