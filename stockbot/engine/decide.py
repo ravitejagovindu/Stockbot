@@ -23,6 +23,7 @@ from datetime import date
 from typing import Any, Mapping, Optional, Sequence
 
 from stockbot.engine.apply import apply_decisions
+from stockbot.engine import exit_history as XH
 from stockbot.engine.corporate import apply_actions, due_actions
 from stockbot.engine.exit_policy import Bar
 from stockbot.engine.fills import fill_ticket
@@ -253,6 +254,13 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
     # ---- 4) proposals -> sizing -> arbitration ----------------------------------------------------------------------------------------------
     equity = _equity(cash, still_open)
     strategy_state = dict(state.strategy_state)
+    history: dict = {}                                                 # opt-in strategies only (exit_history_sessions): the engine-owned exit history, see engine.exit_history
+    for sid in ids:
+        n_hist = XH.history_sessions(by_id[sid])
+        if n_hist > 0:
+            prior = (strategy_state.get(sid) or {}).get(XH.KEY, ())
+            history[sid] = XH.merged(prior, XH.entries(closed, sid, as_of, canon), view.sessions(lookback=n_hist))
+            strategy_state[sid] = XH.with_history(strategy_state.get(sid) or {}, history[sid])
     open_view = [OpenPos(canon(p.symbol), p.sector, p.shares_remaining * p.entry_price, max(0.0, p.shares_remaining * (p.entry_price - p.live_stop)), p.strategy_id)
                  for p in still_open]
     elig_cache: dict = {}
@@ -268,6 +276,8 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
         if out is None:
             continue
         props, strategy_state[sid] = list(out[0]), dict(out[1])
+        if sid in history:                                              # engine-owned key: a strategy cannot drop or alter it
+            strategy_state[sid] = XH.with_history(strategy_state[sid], history[sid])
         elig_set = set(eligible)
         for p in props:
             if p.strategy_id != sid:

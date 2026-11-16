@@ -1,0 +1,22 @@
+{
+ "lowvol_uptrend": {
+  "blocked.json": "211fa4d26a9a4b81bbe7677d0617f6ce4761a591941395e0efe2d16464887bff",
+  "daily.json": "4d074fc403b5c35aaf5d3af9fbe9cbb66d213347192de1e1480398d3e13c6c3f",
+  "equity_curve.json": "392e5668cb34aac6e48c24a6383e7fc0bf39f3b1c09f27a9030f1ce7244c5100",
+  "journal_rows": 48,
+  "journal_sha": "9f7782a9154fa20f13a48284441bdba1e4b0708c7726451e98f6b2e519f627d9",
+  "n_trades": 11,
+  "state_sha": "05e306cf9a31f26748d338bfd012850fb548cf74ab22f89effbf937272fe1271",
+  "trades.json": "37c56ab860bd07ea7a5685ce8b125a2f0227b252a7b0c4fa3dd44e9683a9bc7e"
+ },
+ "riskadj_momentum": {
+  "blocked.json": "d2ac93eece66094a4d0454bfa34846f67be3f38391a6f7004011448bd2d523b8",
+  "daily.json": "85df370bf967f49c60895327fca39ff9d2e3d32cdb196baa77f7e57f4656a4a4",
+  "equity_curve.json": "e472e847860e10264453167699284b5ec19bc35b72a65b4b4793d4e4f909af98",
+  "journal_rows": 48,
+  "journal_sha": "4ab99dc29dd74b77a1d10d11181c6c43f1a3d7e40fb8a26ab9ac76adb4495904",
+  "n_trades": 19,
+  "state_sha": "9cdc8ec849f11fe35e96a664b34f8d796e2a61e4bbb37f957068f359769ed08e",
+  "trades.json": "ea046a5f196402016f5fc6db28deb4604efbae9a6f9cf30912ee220851c9fe34"
+ }
+}
