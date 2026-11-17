@@ -40,8 +40,9 @@ def data_snapshot_id(lake_path: Path, last_session: Optional[date]) -> dict:
 
 
 def run_manifest(*, shared_config, strategies: Sequence, window: tuple, initial_equity: float, lake_path: Optional[Path] = None, last_session: Optional[date] = None,
-                 seed: Optional[int] = None, sha: Optional[str] = None, default_overlays: Optional[Sequence[str]] = None, stale_exit_trades: Optional[Sequence] = None) -> dict[str, Any]:
-    """``stale_exit_trades``: the closed trades of the run with reason SYMBOL_NO_BARS (pass () when there are none); None leaves the stale_exit block out (callers that do not know the trades)."""
+                 seed: Optional[int] = None, sha: Optional[str] = None, default_overlays: Optional[Sequence[str]] = None, stale_exit_trades: Optional[Sequence] = None,
+                 db_check: Optional[Mapping] = None) -> dict[str, Any]:
+    """``db_check``: runcheck.manifest_block (db-guard); None leaves the block out, as in manifests written before the guard. ``stale_exit_trades``: the closed trades of the run with reason SYMBOL_NO_BARS (pass () when there are none); None leaves the stale_exit block out (callers that do not know the trades)."""
     out = {
         "shared_config_hash": shared_config_hash(shared_config, default_overlays, strategies),
         "overlays": describe_effective_overlays(shared_config, strategies, default_overlays),
@@ -54,6 +55,8 @@ def run_manifest(*, shared_config, strategies: Sequence, window: tuple, initial_
         "window": [window[0].isoformat(), window[1].isoformat()],
         "initial_equity": initial_equity,
     }
+    if db_check is not None:
+        out["db_check"] = dict(db_check)          # db-guard R1/R4: file sha256 before/after (long step), correction counter, sealed dates and table digests before/after
     links = _symbol_links_block()
     if links is not None:
         out["symbol_links"] = links

@@ -329,6 +329,152 @@ SQLite's own bookkeeping table (`name`, `seq`): the last id handed out for each 
 
 ---
 
+### C.27 The guard tables and triggers (added by the database guard)
+
+The guard (`docs/shared/db-guard/GUARD.md`, code in `stockbot/data/guard/`) keeps its state in six tables of `finsight.db`; they hold no market data and no query of the engine reads them. A run reads their numbers (correction counter, sealed dates) into its manifest.
+
+| table | what it holds |
+|---|---|
+| `_guard_registry` | The class of every table. One row per table: DATED_APPEND_ONLY, INSERT_ONLY or EXEMPT (with the reason). Copied from stockbot/data/guard/registry.py when the guard is installed. Columns: `tbl` Table name.; `class` DATED_APPEND_ONLY, INSERT_ONLY or EXEMPT.; `date_col` The date column the seal compares against (dated tables).; `key_cols` Columns that identify a row, comma separated.; `volatile_cols` Columns left out of the same-row comparison and the day checksum (ids, load times).; `reason` Why an EXEMPT table is exempt. |
+| `_guard_seal` | Sealed-through date per dated table. Rows of a dated table dated on or before this date cannot be changed, deleted or added to. Moves forward only (backwards needs a correction). Columns: `tbl` Table name.; `sealed_through` ISO date; 0000-00-00 means nothing is sealed.; `sealed_at` When it was last moved. |
+| `_guard_day_checksum` | Checksum of each sealed day. Stored when a day is sealed; `audit` recomputes them to find a change made with the triggers removed. Columns: `tbl` Table name.; `day` The sealed day.; `n_rows` Rows on that day at seal time.; `sha256` sha256 over the day's rows (all columns except ids and load times).; `sealed_at` When the day was sealed. |
+| `_guard_window` | The one correction window. A single row. While is_open is 1 and expires_at is in the future, changes to sealed rows are allowed and logged. A window dies by itself after 15 minutes. Columns: `id` Always 1.; `is_open` 1 while a correction window is open.; `reason` Why it was opened.; `opened_at` When it was opened.; `expires_at` When it stops being valid. |
+| `_guard_counter` | Number of correction windows ever opened. A single row that only goes up. Every run manifest records it; an unchanged counter means no sealed history was changed deliberately. Columns: `id` Always 1.; `corrections` Count of windows opened. |
+| `_guard_change_log` | Every change made inside a correction window. One row per changed row: time, table, key, before, after, reason and the counter value. Never edited or deleted. Columns: `id` Row number.; `at` When.; `tbl` Table changed (or _guard_window for open and close).; `op` INSERT, UPDATE, DELETE, REPLACE, OPEN or CLOSE.; `key` The row key.; `before_json` The row before (JSON).; `after_json` The row after (JSON).; `reason` The window's reason.; `correction_no` The counter value of that window. |
+
+The guard also installs 128 triggers (names begin `g_`). For each dated table: `_bi` refuses an INSERT of a sealed date, `_bu` refuses an UPDATE, `_bd` refuses a DELETE, and `_lc`, `_li`, `_lu`, `_ld` log changes while a correction window is open. For each insert-only table: `_bu` and `_bd` refuse UPDATE and DELETE, `_bi` refuses an insert that would replace a row with a different one, `_bs` ignores an identical re-insert, and the same four log triggers. Names `g__*` protect the guard's own tables. Every trigger:
+
+```
+g__counter_bd
+g__counter_bu
+g__day_bd
+g__day_bu
+g__log_bd
+g__log_bu
+g__registry_bd
+g__registry_bu
+g__seal_bd
+g__seal_bu
+g__window_bd
+g__window_close
+g__window_open
+g_account_ledger_bd
+g_account_ledger_bi
+g_account_ledger_bs
+g_account_ledger_bu
+g_account_ledger_lc
+g_account_ledger_ld
+g_account_ledger_li
+g_account_ledger_lu
+g_asm_gsm_daily_snapshot_bd
+g_asm_gsm_daily_snapshot_bi
+g_asm_gsm_daily_snapshot_bu
+g_asm_gsm_daily_snapshot_lc
+g_asm_gsm_daily_snapshot_ld
+g_asm_gsm_daily_snapshot_li
+g_asm_gsm_daily_snapshot_lu
+g_asm_gsm_snapshot_raw_bd
+g_asm_gsm_snapshot_raw_bi
+g_asm_gsm_snapshot_raw_bu
+g_asm_gsm_snapshot_raw_lc
+g_asm_gsm_snapshot_raw_ld
+g_asm_gsm_snapshot_raw_li
+g_asm_gsm_snapshot_raw_lu
+g_corporate_actions_log_bd
+g_corporate_actions_log_bi
+g_corporate_actions_log_bs
+g_corporate_actions_log_bu
+g_corporate_actions_log_lc
+g_corporate_actions_log_ld
+g_corporate_actions_log_li
+g_corporate_actions_log_lu
+g_earnings_api_raw_bd
+g_earnings_api_raw_bi
+g_earnings_api_raw_bs
+g_earnings_api_raw_bu
+g_earnings_api_raw_lc
+g_earnings_api_raw_ld
+g_earnings_api_raw_li
+g_earnings_api_raw_lu
+g_earnings_board_meeting_bd
+g_earnings_board_meeting_bi
+g_earnings_board_meeting_bs
+g_earnings_board_meeting_bu
+g_earnings_board_meeting_lc
+g_earnings_board_meeting_ld
+g_earnings_board_meeting_li
+g_earnings_board_meeting_lu
+g_earnings_results_filing_bd
+g_earnings_results_filing_bi
+g_earnings_results_filing_bs
+g_earnings_results_filing_bu
+g_earnings_results_filing_lc
+g_earnings_results_filing_ld
+g_earnings_results_filing_li
+g_earnings_results_filing_lu
+g_earnings_symbol_map_bd
+g_earnings_symbol_map_bi
+g_earnings_symbol_map_bs
+g_earnings_symbol_map_bu
+g_earnings_symbol_map_lc
+g_earnings_symbol_map_ld
+g_earnings_symbol_map_li
+g_earnings_symbol_map_lu
+g_index_gap_fill_bd
+g_index_gap_fill_bi
+g_index_gap_fill_bu
+g_index_gap_fill_lc
+g_index_gap_fill_ld
+g_index_gap_fill_li
+g_index_gap_fill_lu
+g_isin_symbol_map_bd
+g_isin_symbol_map_bi
+g_isin_symbol_map_bs
+g_isin_symbol_map_bu
+g_isin_symbol_map_lc
+g_isin_symbol_map_ld
+g_isin_symbol_map_li
+g_isin_symbol_map_lu
+g_market_data_lake_bd
+g_market_data_lake_bi
+g_market_data_lake_bu
+g_market_data_lake_lc
+g_market_data_lake_ld
+g_market_data_lake_li
+g_market_data_lake_lu
+g_market_data_lake_yahoo_archive_bd
+g_market_data_lake_yahoo_archive_bi
+g_market_data_lake_yahoo_archive_bs
+g_market_data_lake_yahoo_archive_bu
+g_market_data_lake_yahoo_archive_lc
+g_market_data_lake_yahoo_archive_ld
+g_market_data_lake_yahoo_archive_li
+g_market_data_lake_yahoo_archive_lu
+g_securities_master_bd
+g_securities_master_bi
+g_securities_master_bs
+g_securities_master_bu
+g_securities_master_lc
+g_securities_master_ld
+g_securities_master_li
+g_securities_master_lu
+g_shares_outstanding_bd
+g_shares_outstanding_bi
+g_shares_outstanding_bu
+g_shares_outstanding_lc
+g_shares_outstanding_ld
+g_shares_outstanding_li
+g_shares_outstanding_lu
+g_trade_analytics_log_bd
+g_trade_analytics_log_bi
+g_trade_analytics_log_bs
+g_trade_analytics_log_bu
+g_trade_analytics_log_lc
+g_trade_analytics_log_ld
+g_trade_analytics_log_li
+g_trade_analytics_log_lu
+```
+
 ## D. What a reader must know about the lake
 
 1. **`NIFTY50_INDEX` and `INDIA_VIX` live in `market_data_lake`**, in the same table and columns as equities (volume is 0 for the index series). `AsOfView.index_bars` returns them; `AsOfView.symbols_trading` excludes them. They are the only symbols whose name is not an NSE equity symbol.

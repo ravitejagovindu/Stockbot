@@ -1,10 +1,10 @@
 {
  "meta": {
-  "measured_at": "2026-11-10 08:56",
-  "measured_date": "2026-11-10",
+  "measured_at": "2026-11-17 15:06",
+  "measured_date": "2026-11-17",
   "db_file": "finsight.db",
-  "db_size_bytes": 3432767488,
-  "db_modified": "2026-11-08 12:38:02",
+  "db_size_bytes": 3433537536,
+  "db_modified": "2026-11-17 14:44:50",
   "generator": "py scripts/gen_data_catalogue.py --json"
  },
  "objects": [
@@ -67,6 +67,21 @@
    "type": "index",
    "name": "ix_erf_isin",
    "table": "earnings_results_filing"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex__guard_day_checksum_1",
+   "table": "_guard_day_checksum"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex__guard_registry_1",
+   "table": "_guard_registry"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex__guard_seal_1",
+   "table": "_guard_seal"
   },
   {
    "type": "index",
@@ -167,6 +182,36 @@
    "type": "index",
    "name": "sqlite_autoindex_shares_outstanding_1",
    "table": "shares_outstanding"
+  },
+  {
+   "type": "table",
+   "name": "_guard_change_log",
+   "table": "_guard_change_log"
+  },
+  {
+   "type": "table",
+   "name": "_guard_counter",
+   "table": "_guard_counter"
+  },
+  {
+   "type": "table",
+   "name": "_guard_day_checksum",
+   "table": "_guard_day_checksum"
+  },
+  {
+   "type": "table",
+   "name": "_guard_registry",
+   "table": "_guard_registry"
+  },
+  {
+   "type": "table",
+   "name": "_guard_seal",
+   "table": "_guard_seal"
+  },
+  {
+   "type": "table",
+   "name": "_guard_window",
+   "table": "_guard_window"
   },
   {
    "type": "table",
@@ -300,6 +345,646 @@
   },
   {
    "type": "trigger",
+   "name": "g__counter_bd",
+   "table": "_guard_counter"
+  },
+  {
+   "type": "trigger",
+   "name": "g__counter_bu",
+   "table": "_guard_counter"
+  },
+  {
+   "type": "trigger",
+   "name": "g__day_bd",
+   "table": "_guard_day_checksum"
+  },
+  {
+   "type": "trigger",
+   "name": "g__day_bu",
+   "table": "_guard_day_checksum"
+  },
+  {
+   "type": "trigger",
+   "name": "g__log_bd",
+   "table": "_guard_change_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g__log_bu",
+   "table": "_guard_change_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g__registry_bd",
+   "table": "_guard_registry"
+  },
+  {
+   "type": "trigger",
+   "name": "g__registry_bu",
+   "table": "_guard_registry"
+  },
+  {
+   "type": "trigger",
+   "name": "g__seal_bd",
+   "table": "_guard_seal"
+  },
+  {
+   "type": "trigger",
+   "name": "g__seal_bu",
+   "table": "_guard_seal"
+  },
+  {
+   "type": "trigger",
+   "name": "g__window_bd",
+   "table": "_guard_window"
+  },
+  {
+   "type": "trigger",
+   "name": "g__window_close",
+   "table": "_guard_window"
+  },
+  {
+   "type": "trigger",
+   "name": "g__window_open",
+   "table": "_guard_window"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_bd",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_bi",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_bs",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_bu",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_lc",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_ld",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_li",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_account_ledger_lu",
+   "table": "account_ledger"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_daily_snapshot_bd",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_daily_snapshot_bi",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_daily_snapshot_bu",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_daily_snapshot_lc",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_daily_snapshot_ld",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_daily_snapshot_li",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_daily_snapshot_lu",
+   "table": "asm_gsm_daily_snapshot"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_snapshot_raw_bd",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_snapshot_raw_bi",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_snapshot_raw_bu",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_snapshot_raw_lc",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_snapshot_raw_ld",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_snapshot_raw_li",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_asm_gsm_snapshot_raw_lu",
+   "table": "asm_gsm_snapshot_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_bd",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_bi",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_bs",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_bu",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_lc",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_ld",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_li",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_corporate_actions_log_lu",
+   "table": "corporate_actions_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_bd",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_bi",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_bs",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_bu",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_lc",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_ld",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_li",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_api_raw_lu",
+   "table": "earnings_api_raw"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_bd",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_bi",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_bs",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_bu",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_lc",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_ld",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_li",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_board_meeting_lu",
+   "table": "earnings_board_meeting"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_bd",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_bi",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_bs",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_bu",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_lc",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_ld",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_li",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_results_filing_lu",
+   "table": "earnings_results_filing"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_bd",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_bi",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_bs",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_bu",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_lc",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_ld",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_li",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_earnings_symbol_map_lu",
+   "table": "earnings_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_index_gap_fill_bd",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "trigger",
+   "name": "g_index_gap_fill_bi",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "trigger",
+   "name": "g_index_gap_fill_bu",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "trigger",
+   "name": "g_index_gap_fill_lc",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "trigger",
+   "name": "g_index_gap_fill_ld",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "trigger",
+   "name": "g_index_gap_fill_li",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "trigger",
+   "name": "g_index_gap_fill_lu",
+   "table": "index_gap_fill"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_bd",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_bi",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_bs",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_bu",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_lc",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_ld",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_li",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_isin_symbol_map_lu",
+   "table": "isin_symbol_map"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_bd",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_bi",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_bu",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_lc",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_ld",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_li",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_lu",
+   "table": "market_data_lake"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_bd",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_bi",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_bs",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_bu",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_lc",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_ld",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_li",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_lake_yahoo_archive_lu",
+   "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_bd",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_bi",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_bs",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_bu",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_lc",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_ld",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_li",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_securities_master_lu",
+   "table": "securities_master"
+  },
+  {
+   "type": "trigger",
+   "name": "g_shares_outstanding_bd",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "trigger",
+   "name": "g_shares_outstanding_bi",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "trigger",
+   "name": "g_shares_outstanding_bu",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "trigger",
+   "name": "g_shares_outstanding_lc",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "trigger",
+   "name": "g_shares_outstanding_ld",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "trigger",
+   "name": "g_shares_outstanding_li",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "trigger",
+   "name": "g_shares_outstanding_lu",
+   "table": "shares_outstanding"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_bd",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_bi",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_bs",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_bu",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_lc",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_ld",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_li",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
+   "name": "g_trade_analytics_log_lu",
+   "table": "trade_analytics_log"
+  },
+  {
+   "type": "trigger",
    "name": "trg_tal_no_delete",
    "table": "trade_analytics_log"
   },
@@ -310,6 +995,455 @@
   }
  ],
  "tables": {
+  "_guard_change_log": {
+   "rows": 0,
+   "date_column": "at",
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "at",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "tbl",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "op",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "key",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "before_json",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "after_json",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "reason",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "correction_no",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [],
+   "sample": []
+  },
+  "_guard_counter": {
+   "rows": 1,
+   "date_column": null,
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 1,
+     "example": 1
+    },
+    {
+     "name": "corrections",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1,
+     "example": 0
+    }
+   ],
+   "indexes": [],
+   "sample": [
+    [
+     1,
+     0
+    ]
+   ]
+  },
+  "_guard_day_checksum": {
+   "rows": 3457,
+   "date_column": null,
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "tbl",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 3457,
+     "example": "asm_gsm_daily_snapshot"
+    },
+    {
+     "name": "day",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 2,
+     "nonnull_rows": 3457,
+     "example": "2026-11-08"
+    },
+    {
+     "name": "n_rows",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 3457,
+     "example": 253
+    },
+    {
+     "name": "sha256",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 3457,
+     "example": "62e5826bd2120f8cdf8543cec832609855eedff1d4a2f880901fb35703b3e9d0"
+    },
+    {
+     "name": "sealed_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 3457,
+     "example": "2026-11-17T09:06:58.018"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex__guard_day_checksum_1",
+     "unique": true,
+     "columns": [
+      "tbl",
+      "day"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "asm_gsm_daily_snapshot",
+     "2026-11-08",
+     253,
+     "62e5826bd2120f8cdf8543cec832609855eedff1d4a2f880901fb35703b3e9d0",
+     "2026-11-17T09:06:58.018"
+    ],
+    [
+     "asm_gsm_snapshot_raw",
+     "2026-11-08",
+     2,
+     "16456ab5115debf8d61d54bc7e8c27a8750f23b181935aa34ce19eed5840f046",
+     "2026-11-17T09:06:58.050"
+    ],
+    [
+     "shares_outstanding",
+     "2020-01-01",
+     2217,
+     "03af207970af431f1a4fa8c4104d4475c21108652432c86a97b8449abc77aa84",
+     "2026-11-17T09:14:50.201"
+    ]
+   ]
+  },
+  "_guard_registry": {
+   "rows": 25,
+   "date_column": null,
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "tbl",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 25,
+     "example": "account_ledger"
+    },
+    {
+     "name": "class",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 25,
+     "example": "INSERT_ONLY"
+    },
+    {
+     "name": "date_col",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 5,
+     "example": "snapshot_date"
+    },
+    {
+     "name": "key_cols",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 25,
+     "example": "id"
+    },
+    {
+     "name": "volatile_cols",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 25,
+     "example": "created_at"
+    },
+    {
+     "name": "reason",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 10,
+     "example": "live-system working table (positions are updated daily)"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex__guard_registry_1",
+     "unique": true,
+     "columns": [
+      "tbl"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "account_ledger",
+     "INSERT_ONLY",
+     null,
+     "id",
+     "created_at",
+     null
+    ],
+    [
+     "active_positions",
+     "EXEMPT",
+     null,
+     "",
+     "",
+     "live-system working table (positions are updated daily)"
+    ],
+    [
+     "trade_analytics_log",
+     "INSERT_ONLY",
+     null,
+     "id",
+     "closed_at",
+     null
+    ]
+   ]
+  },
+  "_guard_seal": {
+   "rows": 5,
+   "date_column": null,
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "tbl",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 5,
+     "example": "asm_gsm_daily_snapshot"
+    },
+    {
+     "name": "sealed_through",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 5,
+     "example": "2026-11-08"
+    },
+    {
+     "name": "sealed_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 5,
+     "example": "2026-11-17T09:06:58.018"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "sqlite_autoindex__guard_seal_1",
+     "unique": true,
+     "columns": [
+      "tbl"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     "asm_gsm_daily_snapshot",
+     "2026-11-08",
+     "2026-11-17T09:06:58.018"
+    ],
+    [
+     "asm_gsm_snapshot_raw",
+     "2026-11-08",
+     "2026-11-17T09:06:58.050"
+    ],
+    [
+     "shares_outstanding",
+     "2020-01-01",
+     "2026-11-17T09:14:50.201"
+    ]
+   ]
+  },
+  "_guard_window": {
+   "rows": 1,
+   "date_column": null,
+   "first": null,
+   "last": null,
+   "distinct_dates": null,
+   "symbols": null,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 1,
+     "example": 1
+    },
+    {
+     "name": "is_open",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 1,
+     "example": 0
+    },
+    {
+     "name": "reason",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "opened_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    },
+    {
+     "name": "expires_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 0,
+     "example": null
+    }
+   ],
+   "indexes": [],
+   "sample": [
+    [
+     1,
+     0,
+     null,
+     null,
+     null
+    ]
+   ]
+  },
   "account_ledger": {
    "rows": 0,
    "date_column": "transaction_date",
@@ -4467,6 +5601,38 @@
     "note"
    ],
    "rows": 18
+  },
+  {
+   "file": "symbol_links.csv",
+   "columns": [
+    "old_symbol",
+    "new_symbol",
+    "latest_symbol",
+    "isin",
+    "old_last_bar",
+    "new_first_bar",
+    "sessions_between",
+    "split_bonus_factor",
+    "boundary_ratio_after_factor"
+   ],
+   "rows": 41
+  },
+  {
+   "file": "symbol_links_not_linked.csv",
+   "columns": [
+    "old_symbol",
+    "new_symbol",
+    "isin",
+    "map_boundary_type",
+    "map_boundary_reason",
+    "old_last_bar",
+    "new_first_bar",
+    "sessions_between",
+    "split_bonus_factor",
+    "boundary_ratio_after_factor",
+    "reason"
+   ],
+   "rows": 413
   },
   {
    "file": "unadjusted_events.csv",

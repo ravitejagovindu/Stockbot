@@ -108,6 +108,15 @@ Extra rules in the same test: no strategy imports another strategy (`base`, `reg
 | `indicators.py` | Pure indicator functions: `sma`, `rma`, `atr`, `donchian_low`, `donchian_high`. |
 | `sector_map.py` | The one sector rule for backtest, paper and live: `sector_for(symbol)` reads `data/reference/sector_map.csv`; a symbol not in it is its own sector, `UNMAPPED:<SYMBOL>` (never a shared bucket). `is_mapped(symbol)`; `SectorLookup`, the mapping every path hands to `EventData(sectors=...)`. |
 
+Subpackage `stockbot.data.guard` (the database guard, design in `docs/shared/db-guard/GUARD.md`: sealed history, logged corrections, run-time database checks; touches the database only to guard it, never reads market data):
+
+| module | purpose |
+|---|---|
+| `registry.py` | The class of every table (DATED_APPEND_ONLY, INSERT_ONLY, EXEMPT with a reason), the columns that identify a row, and the tables a backtest reads. Adding a table = one `Rule` here. |
+| `core.py` | `install`, `ensure`, `seal_table`, `correct`, `open_window` / `close_window`, `audit`, `status`, `uninstall`: the guard state tables (`_guard_*`) and the triggers that refuse UPDATE, DELETE and back-dated INSERT on sealed rows. |
+| `runcheck.py` | `snapshot`, `differences`, `verdict`, `short_step`: the file and guard fingerprint a backtest-type run takes before and after (INVALID, exit code 3, when anything changed). |
+| `writers.py` | `refuse_if_sealed`, `split_new`: what an ingestion writer uses so it never tries to change a sealed or insert-only row. |
+
 Subpackage `stockbot.data.db` (the older, ORM layer used by the dashboard side; writes to `finsight.db`):
 
 | module | purpose |
@@ -316,7 +325,7 @@ Subpackage `stockbot.validation.ledger` (`__init__.py` holds the writers; the re
 
 | module | purpose |
 |---|---|
-| `check_all.py` | `py scripts/check_all.py [--data] [--final]`: runs G1, G3, G5, G6 (and G2 with `--data`) and prints G4's file size and mtime. |
+| `check_all.py` | `py scripts/check_all.py [--data] [--final]`: runs G1, G3, G5, G6 (and G2 with `--data`) and prints G4: the guard state of the database (installed, correction counter, sealed dates). |
 | `data_catalogue.py` | Writes `docs/guides/data_catalogue.md` and, with `--json`, `docs/guides/data_catalogue.json`: machine-measured facts about every table (read-only). |
 | `guide_html.py` | Builds `docs/guides/codebase_guide.html` (the interactive picture version of this guide) from `docs/guides/codebase_guide_data.json` and `docs/guides/codebase_guide_template.html`. Standard library only. |
 | `data_guide_html.py` | Builds `docs/guides/data_guide.html` (the interactive picture version of `DATA_GUIDE.md`) from `docs/guides/data_guide_data.json`, the measured export `docs/guides/data_catalogue.json` and `docs/guides/data_guide_template.html`. Standard library only; reuses `guide_html.py`. |
@@ -379,6 +388,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/addendum_riskadj_momentum_run1.py` | Descriptive addendum for the registered riskadj_momentum run 1, computed from its stored files (concentration, stale-bar removal, drawdown episodes, lake facts); no engine run. | one-off | `stockbot.data.asof`, `stockbot.data.adjustments` |
 | `scripts/addendum_lowvol_uptrend_run1.py` | Descriptive addendum for the registered lowvol_uptrend run 1 (concentration, deepest drawdown episodes and their overlap with riskadj_momentum run 1, positions held through bar-less stretches), computed from stored files; no engine run. | one-off | `stockbot.data.symbol_links` |
 | `scripts/addendum_riskadj_momentum_daily_run1.py` | Derived facts and descriptive addendum for the registered riskadj_momentum_daily run 1 (hold times, blocked reasons, cooldown counts, concentration, drawdown episodes, side by side with riskadj_momentum run 1, re-entries), computed from stored files; no engine run, no lake access. | one-off | `stockbot.data.symbol_links` |
+| `scripts/guard.py` | The database guard command line: `install`, `status`, `seal`, `correct --reason R -- FILE.sql`, `open-correction`, `close-correction`, `audit`, `uninstall --yes-remove-guard`. | manual | `stockbot.data.guard` |
 | `scripts/f2_event_evidence.py` | Evidence tier for each corporate-action event. | one-off | `stockbot.data.ingestion.f2_event_evidence` |
 | `scripts/f2_load_corporate_actions.py` | Append-only load of corporate actions into the log. | one-off | `stockbot.data.ingestion.f2_load_corporate_actions` |
 | `scripts/f2_build_isin_symbol_map.py` | Builds the ISIN-to-symbol map. | one-off | `stockbot.data.ingestion.f2_build_isin_symbol_map` |
@@ -423,11 +433,11 @@ All tests are under `tests/` and run with pytest (`pytest.ini`). The "golden che
 | **G1** unit and integration suite | Behaviour of every module on small synthetic data; no real database needed. | `tests/unit/`, `tests/integration/` | `py -m pytest tests/unit tests/integration -q` |
 | **G2** real-database tests | The as-of view, corporate-action adjustment, calendar and frozen golden results behave correctly on the real lake (read-only). | `tests/data_integrity/` | `set STOCKBOT_DATA_TESTS=1` then `py -m pytest tests/data_integrity -q` |
 | **G3** fixture-lake baseline | The engine reproduces a hand-derived trade on a small synthetic lake: fill 177.177, 553 shares, exit at stop x 0.999. | `tests/unit/test_g3_fixture_baseline.py` | `py -m pytest tests/unit/test_g3_fixture_baseline.py -q` |
-| **G4** database unchanged | `finsight.db` has not been written: its sha256, size and modification time match the recorded baseline. | `docs/restructure/BASELINE.md` (hash), by hand | `check_all.py` prints size and mtime; hash with `sha256sum finsight.db` |
+| **G4** database guarded | `finsight.db` has the guard installed, every table has a class, the correction counter and sealed dates are as recorded; every backtest-type run records the file hash before and after and is INVALID if it changed. | `docs/shared/db-guard/GUARD.md`, the `db_check` block of each run manifest | `py scripts/guard.py status`; `check_all.py` prints it |
 | **G5** import boundaries | The layer rules of section C.0, and that every module imports in a fresh interpreter. | `tests/unit/test_import_boundaries.py`, `tests/unit/test_every_module_imports_alone.py` | included in `check_all.py` |
 | **G6** engine properties | Backtest and live give identical decisions; no look-ahead; idempotency; determinism; strategy isolation; baseline reuse; strict mode. | `tests/unit/test_engine_decide.py`, `test_engine_live.py`, `test_engine_backtest.py`, `test_engine_corporate.py`, `test_engine_types.py`, `test_risk_arbitration.py` | included in `check_all.py` |
 
-`py scripts/check_all.py` runs G1, G3, G5, G6 and prints G4's size and mtime; `--data` adds G2; `--final` additionally requires the import-boundary allowlists to be empty.
+`py scripts/check_all.py` runs G1, G3, G5, G6 and prints G4 (the guard state of the database); `--data` adds G2; `--final` additionally requires the import-boundary allowlists to be empty.
 
 **What an env-gated test is.** A test that is skipped unless an environment variable is set, because it needs the real 3.4 GB database or takes minutes. `STOCKBOT_DATA_TESTS=1` turns on the real-database tests (`tests/data_integrity/` and one check in `tests/unit/test_guides_consistent.py`); they open the database read-only and fail loudly if the file is missing. `STOCKBOT_FINAL_CHECK=1` turns on the "allowlists must be empty" check of the boundary test. Without the variables these tests report as skipped, not as passed.
 
@@ -747,7 +757,7 @@ flowchart TD
     G6 --> OK
     OK -- yes --> D["data change or release: G2 with STOCKBOT_DATA_TESTS=1"]
     D --> GF["tests/golden frozen files plus SHA256SUMS"]
-    D --> G4["G4 finsight.db sha256 and mtime unchanged"]
+    D --> G4["G4 database guard installed and counters as recorded"]
     OK -- no --> FIX["fix the code, never the expected values"]
     D --> FIN["check_all --data --final: allowlists must be empty"]
 ```
@@ -795,5 +805,5 @@ Plain English: the quick checks run after every change; the real-database checks
 | an import is refused by the build | `tests/unit/test_import_boundaries.py` and section C.0 |
 | a test is skipped | it is env-gated: `STOCKBOT_DATA_TESTS=1` (real database) or `STOCKBOT_FINAL_CHECK=1` |
 | I need to know what is in a table | DATA_GUIDE section C and `docs/guides/data_catalogue.md` |
-| the database may have been written | G4: `sha256sum finsight.db` against `docs/restructure/BASELINE.md`; `py scripts/check_all.py` prints size and mtime |
+| the database may have been written | G4: `py scripts/guard.py status` and `py scripts/guard.py audit`; the manifest of each run says whether the file changed (`db_check`); `py scripts/check_all.py` prints the guard state |
 | what was deliberately left undone before live | `docs/restructure/PRE_LIVE_LIST.md` |

@@ -146,7 +146,8 @@ def main(argv=None) -> int:
     (out / "session_counts.json").write_text(json.dumps(rows), encoding="utf-8")
     (out / "summary.json").write_text(json.dumps(summ, indent=1, default=float), encoding="utf-8")
     print(json.dumps({k: summ[k] for k in ("sessions", "fewer_than_top_n_sessions", "qualifying", "score_ties", "stop_distance_pct", "share_at_floor", "implied_position_pct_of_equity")}, indent=1, default=float))
-    return 0 if before == after else 1
+    from stockbot.data.guard.runcheck import verdict
+    return verdict(before, after, "signal count")
 
 
 def summarise(rows) -> dict:

@@ -170,16 +170,20 @@ def load(csv_path: Path, db_path: str) -> dict:
             if a["action_type"] == "OTHER" and str(a["note"]).startswith("UNPARSED"):
                 unresolved.append((sym, r.exDate, r.subject, "unparsed ratio"))
             recs.append((sym, ex.isoformat(), a["action_type"], a["num"], a["den"], a["note"][:500], SOURCE, loaded_at))
+    from stockbot.data.guard.writers import split_new, sqlite_fetch
     con = sqlite3.connect(db_path, timeout=60)
     before = con.execute("select count(*) from corporate_actions_log").fetchone()[0]
+    # db-guard: corporate_actions_log is INSERT_ONLY; only new events are inserted, a stored event with other values is reported, never changed (scripts/guard.py correct)
+    names = ("symbol", "ex_date", "action_type", "ratio_numerator", "ratio_denominator", "notes", "source", "loaded_at")
+    new, _same, diff = split_new(sqlite_fetch(con), "corporate_actions_log", [dict(zip(names, r)) for r in recs], ("symbol", "ex_date", "action_type"), ("ratio_numerator", "ratio_denominator", "notes"))
     with con:
         con.executemany(
             "INSERT OR IGNORE INTO corporate_actions_log "
             "(symbol, ex_date, action_type, ratio_numerator, ratio_denominator, notes, source, loaded_at) "
-            "VALUES (?,?,?,?,?,?,?,?)", recs)
+            "VALUES (?,?,?,?,?,?,?,?)", [tuple(r[c] for c in names) for r in new])
     after = con.execute("select count(*) from corporate_actions_log").fetchone()[0]
     con.close()
-    return {"parsed_rows": len(recs), "inserted": after - before, "unresolved": unresolved}
+    return {"parsed_rows": len(recs), "inserted": after - before, "unresolved": unresolved, "differ_from_stored_not_applied": len(diff)}
 
 
 def main() -> None:

@@ -5,8 +5,8 @@
   "guide_file": "docs/guides/DATA_GUIDE.md",
   "banner": "The lake (finsight.db) is read-only for the engine.",
   "example_note": "Everything labelled EXAMPLE is made up. Numbers without that label are measured or quoted from a named report, with their date.",
-  "built_at": "2026-11-10",
-  "built_from_commit": "412a298"
+  "built_at": "2026-11-17",
+  "built_from_commit": "0f4d91d"
  },
  "views": [
   {
@@ -98,6 +98,11 @@
    "id": "unused",
    "label": "Empty or unused",
    "desc": "No rows, no reader, or SQLite's own bookkeeping."
+  },
+  {
+   "id": "guard",
+   "label": "Database guard",
+   "desc": "The guard's own tables: classes, seals, correction window, counter and change log."
   }
  ],
  "databases": [
@@ -1239,6 +1244,186 @@
    "issues": [],
    "status": "internal",
    "source": "docs/guides/DATA_GUIDE.md::C.26",
+   "scripts": []
+  },
+  {
+   "id": "_guard_registry",
+   "group": "guard",
+   "engine": false,
+   "oneline": "The class of every table.",
+   "purpose": "One row per table: DATED_APPEND_ONLY, INSERT_ONLY or EXEMPT (with the reason). Copied from stockbot/data/guard/registry.py when the guard is installed.",
+   "columns": {
+    "tbl": "Table name.",
+    "class": "DATED_APPEND_ONLY, INSERT_ONLY or EXEMPT.",
+    "date_col": "The date column the seal compares against (dated tables).",
+    "key_cols": "Columns that identify a row, comma separated.",
+    "volatile_cols": "Columns left out of the same-row comparison and the day checksum (ids, load times).",
+    "reason": "Why an EXEMPT table is exempt."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/guard/core.py",
+     "what": "the guard module (scripts/guard.py)"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/guard/runcheck.py",
+     "what": "run checks (R1/R4)"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.27",
+   "scripts": []
+  },
+  {
+   "id": "_guard_seal",
+   "group": "guard",
+   "engine": false,
+   "oneline": "Sealed-through date per dated table.",
+   "purpose": "Rows of a dated table dated on or before this date cannot be changed, deleted or added to. Moves forward only (backwards needs a correction).",
+   "columns": {
+    "tbl": "Table name.",
+    "sealed_through": "ISO date; 0000-00-00 means nothing is sealed.",
+    "sealed_at": "When it was last moved."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/guard/core.py",
+     "what": "the guard module (scripts/guard.py)"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/guard/runcheck.py",
+     "what": "run checks (R1/R4)"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.27",
+   "scripts": []
+  },
+  {
+   "id": "_guard_day_checksum",
+   "group": "guard",
+   "engine": false,
+   "oneline": "Checksum of each sealed day.",
+   "purpose": "Stored when a day is sealed; `audit` recomputes them to find a change made with the triggers removed.",
+   "columns": {
+    "tbl": "Table name.",
+    "day": "The sealed day.",
+    "n_rows": "Rows on that day at seal time.",
+    "sha256": "sha256 over the day's rows (all columns except ids and load times).",
+    "sealed_at": "When the day was sealed."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/guard/core.py",
+     "what": "the guard module (scripts/guard.py)"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/guard/runcheck.py",
+     "what": "run checks (R1/R4)"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.27",
+   "scripts": []
+  },
+  {
+   "id": "_guard_window",
+   "group": "guard",
+   "engine": false,
+   "oneline": "The one correction window.",
+   "purpose": "A single row. While is_open is 1 and expires_at is in the future, changes to sealed rows are allowed and logged. A window dies by itself after 15 minutes.",
+   "columns": {
+    "id": "Always 1.",
+    "is_open": "1 while a correction window is open.",
+    "reason": "Why it was opened.",
+    "opened_at": "When it was opened.",
+    "expires_at": "When it stops being valid."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/guard/core.py",
+     "what": "the guard module (scripts/guard.py)"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/guard/runcheck.py",
+     "what": "run checks (R1/R4)"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.27",
+   "scripts": []
+  },
+  {
+   "id": "_guard_counter",
+   "group": "guard",
+   "engine": false,
+   "oneline": "Number of correction windows ever opened.",
+   "purpose": "A single row that only goes up. Every run manifest records it; an unchanged counter means no sealed history was changed deliberately.",
+   "columns": {
+    "id": "Always 1.",
+    "corrections": "Count of windows opened."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/guard/core.py",
+     "what": "the guard module (scripts/guard.py)"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/guard/runcheck.py",
+     "what": "run checks (R1/R4)"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.27",
+   "scripts": []
+  },
+  {
+   "id": "_guard_change_log",
+   "group": "guard",
+   "engine": false,
+   "oneline": "Every change made inside a correction window.",
+   "purpose": "One row per changed row: time, table, key, before, after, reason and the counter value. Never edited or deleted.",
+   "columns": {
+    "id": "Row number.",
+    "at": "When.",
+    "tbl": "Table changed (or _guard_window for open and close).",
+    "op": "INSERT, UPDATE, DELETE, REPLACE, OPEN or CLOSE.",
+    "key": "The row key.",
+    "before_json": "The row before (JSON).",
+    "after_json": "The row after (JSON).",
+    "reason": "The window's reason.",
+    "correction_no": "The counter value of that window."
+   },
+   "written_by": [
+    {
+     "path": "stockbot/data/guard/core.py",
+     "what": "the guard module (scripts/guard.py)"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/guard/runcheck.py",
+     "what": "run checks (R1/R4)"
+    }
+   ],
+   "issues": [],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.27",
    "scripts": []
   }
  ],
@@ -2980,6 +3165,774 @@
    "table": "trade_analytics_log",
    "plain": "Aborts any DELETE with the message append-only.",
    "source": "docs/guides/DATA_GUIDE.md::B"
+  },
+  {
+   "name": "g__counter_bd",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__counter_bu",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__day_bd",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__day_bu",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__log_bd",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__log_bu",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__registry_bd",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__registry_bu",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__seal_bd",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__seal_bu",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__window_bd",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__window_close",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g__window_open",
+   "table": "_guard_*",
+   "plain": "Protects the guard's own state tables (no delete, no edit of the log, the counter only goes up) or logs the opening and closing of a correction window.",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_bd",
+   "table": "account_ledger",
+   "plain": "Refuses a DELETE on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_bi",
+   "table": "account_ledger",
+   "plain": "Refuses an INSERT that would change or replace history on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_bs",
+   "table": "account_ledger",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_bu",
+   "table": "account_ledger",
+   "plain": "Refuses an UPDATE on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_lc",
+   "table": "account_ledger",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_ld",
+   "table": "account_ledger",
+   "plain": "While a correction window is open, logs a DELETE on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_li",
+   "table": "account_ledger",
+   "plain": "While a correction window is open, logs an INSERT on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_account_ledger_lu",
+   "table": "account_ledger",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on account_ledger (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_daily_snapshot_bd",
+   "table": "asm_gsm_daily_snapshot",
+   "plain": "Refuses a DELETE on asm_gsm_daily_snapshot (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_daily_snapshot_bi",
+   "table": "asm_gsm_daily_snapshot",
+   "plain": "Refuses an INSERT that would change or replace history on asm_gsm_daily_snapshot (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_daily_snapshot_bu",
+   "table": "asm_gsm_daily_snapshot",
+   "plain": "Refuses an UPDATE on asm_gsm_daily_snapshot (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_daily_snapshot_lc",
+   "table": "asm_gsm_daily_snapshot",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on asm_gsm_daily_snapshot (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_daily_snapshot_ld",
+   "table": "asm_gsm_daily_snapshot",
+   "plain": "While a correction window is open, logs a DELETE on asm_gsm_daily_snapshot (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_daily_snapshot_li",
+   "table": "asm_gsm_daily_snapshot",
+   "plain": "While a correction window is open, logs an INSERT on asm_gsm_daily_snapshot (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_daily_snapshot_lu",
+   "table": "asm_gsm_daily_snapshot",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on asm_gsm_daily_snapshot (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_snapshot_raw_bd",
+   "table": "asm_gsm_snapshot_raw",
+   "plain": "Refuses a DELETE on asm_gsm_snapshot_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_snapshot_raw_bi",
+   "table": "asm_gsm_snapshot_raw",
+   "plain": "Refuses an INSERT that would change or replace history on asm_gsm_snapshot_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_snapshot_raw_bu",
+   "table": "asm_gsm_snapshot_raw",
+   "plain": "Refuses an UPDATE on asm_gsm_snapshot_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_snapshot_raw_lc",
+   "table": "asm_gsm_snapshot_raw",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on asm_gsm_snapshot_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_snapshot_raw_ld",
+   "table": "asm_gsm_snapshot_raw",
+   "plain": "While a correction window is open, logs a DELETE on asm_gsm_snapshot_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_snapshot_raw_li",
+   "table": "asm_gsm_snapshot_raw",
+   "plain": "While a correction window is open, logs an INSERT on asm_gsm_snapshot_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_asm_gsm_snapshot_raw_lu",
+   "table": "asm_gsm_snapshot_raw",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on asm_gsm_snapshot_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_bd",
+   "table": "corporate_actions_log",
+   "plain": "Refuses a DELETE on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_bi",
+   "table": "corporate_actions_log",
+   "plain": "Refuses an INSERT that would change or replace history on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_bs",
+   "table": "corporate_actions_log",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_bu",
+   "table": "corporate_actions_log",
+   "plain": "Refuses an UPDATE on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_lc",
+   "table": "corporate_actions_log",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_ld",
+   "table": "corporate_actions_log",
+   "plain": "While a correction window is open, logs a DELETE on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_li",
+   "table": "corporate_actions_log",
+   "plain": "While a correction window is open, logs an INSERT on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_corporate_actions_log_lu",
+   "table": "corporate_actions_log",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on corporate_actions_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_bd",
+   "table": "earnings_api_raw",
+   "plain": "Refuses a DELETE on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_bi",
+   "table": "earnings_api_raw",
+   "plain": "Refuses an INSERT that would change or replace history on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_bs",
+   "table": "earnings_api_raw",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_bu",
+   "table": "earnings_api_raw",
+   "plain": "Refuses an UPDATE on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_lc",
+   "table": "earnings_api_raw",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_ld",
+   "table": "earnings_api_raw",
+   "plain": "While a correction window is open, logs a DELETE on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_li",
+   "table": "earnings_api_raw",
+   "plain": "While a correction window is open, logs an INSERT on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_api_raw_lu",
+   "table": "earnings_api_raw",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on earnings_api_raw (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_bd",
+   "table": "earnings_board_meeting",
+   "plain": "Refuses a DELETE on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_bi",
+   "table": "earnings_board_meeting",
+   "plain": "Refuses an INSERT that would change or replace history on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_bs",
+   "table": "earnings_board_meeting",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_bu",
+   "table": "earnings_board_meeting",
+   "plain": "Refuses an UPDATE on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_lc",
+   "table": "earnings_board_meeting",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_ld",
+   "table": "earnings_board_meeting",
+   "plain": "While a correction window is open, logs a DELETE on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_li",
+   "table": "earnings_board_meeting",
+   "plain": "While a correction window is open, logs an INSERT on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_board_meeting_lu",
+   "table": "earnings_board_meeting",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on earnings_board_meeting (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_bd",
+   "table": "earnings_results_filing",
+   "plain": "Refuses a DELETE on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_bi",
+   "table": "earnings_results_filing",
+   "plain": "Refuses an INSERT that would change or replace history on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_bs",
+   "table": "earnings_results_filing",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_bu",
+   "table": "earnings_results_filing",
+   "plain": "Refuses an UPDATE on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_lc",
+   "table": "earnings_results_filing",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_ld",
+   "table": "earnings_results_filing",
+   "plain": "While a correction window is open, logs a DELETE on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_li",
+   "table": "earnings_results_filing",
+   "plain": "While a correction window is open, logs an INSERT on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_results_filing_lu",
+   "table": "earnings_results_filing",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on earnings_results_filing (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_bd",
+   "table": "earnings_symbol_map",
+   "plain": "Refuses a DELETE on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_bi",
+   "table": "earnings_symbol_map",
+   "plain": "Refuses an INSERT that would change or replace history on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_bs",
+   "table": "earnings_symbol_map",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_bu",
+   "table": "earnings_symbol_map",
+   "plain": "Refuses an UPDATE on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_lc",
+   "table": "earnings_symbol_map",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_ld",
+   "table": "earnings_symbol_map",
+   "plain": "While a correction window is open, logs a DELETE on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_li",
+   "table": "earnings_symbol_map",
+   "plain": "While a correction window is open, logs an INSERT on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_earnings_symbol_map_lu",
+   "table": "earnings_symbol_map",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on earnings_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_index_gap_fill_bd",
+   "table": "index_gap_fill",
+   "plain": "Refuses a DELETE on index_gap_fill (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_index_gap_fill_bi",
+   "table": "index_gap_fill",
+   "plain": "Refuses an INSERT that would change or replace history on index_gap_fill (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_index_gap_fill_bu",
+   "table": "index_gap_fill",
+   "plain": "Refuses an UPDATE on index_gap_fill (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_index_gap_fill_lc",
+   "table": "index_gap_fill",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on index_gap_fill (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_index_gap_fill_ld",
+   "table": "index_gap_fill",
+   "plain": "While a correction window is open, logs a DELETE on index_gap_fill (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_index_gap_fill_li",
+   "table": "index_gap_fill",
+   "plain": "While a correction window is open, logs an INSERT on index_gap_fill (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_index_gap_fill_lu",
+   "table": "index_gap_fill",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on index_gap_fill (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_bd",
+   "table": "isin_symbol_map",
+   "plain": "Refuses a DELETE on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_bi",
+   "table": "isin_symbol_map",
+   "plain": "Refuses an INSERT that would change or replace history on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_bs",
+   "table": "isin_symbol_map",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_bu",
+   "table": "isin_symbol_map",
+   "plain": "Refuses an UPDATE on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_lc",
+   "table": "isin_symbol_map",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_ld",
+   "table": "isin_symbol_map",
+   "plain": "While a correction window is open, logs a DELETE on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_li",
+   "table": "isin_symbol_map",
+   "plain": "While a correction window is open, logs an INSERT on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_isin_symbol_map_lu",
+   "table": "isin_symbol_map",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on isin_symbol_map (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_bd",
+   "table": "market_data_lake",
+   "plain": "Refuses a DELETE on market_data_lake (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_bi",
+   "table": "market_data_lake",
+   "plain": "Refuses an INSERT that would change or replace history on market_data_lake (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_bu",
+   "table": "market_data_lake",
+   "plain": "Refuses an UPDATE on market_data_lake (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_lc",
+   "table": "market_data_lake",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on market_data_lake (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_ld",
+   "table": "market_data_lake",
+   "plain": "While a correction window is open, logs a DELETE on market_data_lake (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_li",
+   "table": "market_data_lake",
+   "plain": "While a correction window is open, logs an INSERT on market_data_lake (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_lu",
+   "table": "market_data_lake",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on market_data_lake (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_bd",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "Refuses a DELETE on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_bi",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "Refuses an INSERT that would change or replace history on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_bs",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_bu",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "Refuses an UPDATE on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_lc",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_ld",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "While a correction window is open, logs a DELETE on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_li",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "While a correction window is open, logs an INSERT on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_lake_yahoo_archive_lu",
+   "table": "market_data_lake_yahoo_archive",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on market_data_lake_yahoo_archive (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_bd",
+   "table": "securities_master",
+   "plain": "Refuses a DELETE on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_bi",
+   "table": "securities_master",
+   "plain": "Refuses an INSERT that would change or replace history on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_bs",
+   "table": "securities_master",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_bu",
+   "table": "securities_master",
+   "plain": "Refuses an UPDATE on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_lc",
+   "table": "securities_master",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_ld",
+   "table": "securities_master",
+   "plain": "While a correction window is open, logs a DELETE on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_li",
+   "table": "securities_master",
+   "plain": "While a correction window is open, logs an INSERT on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_securities_master_lu",
+   "table": "securities_master",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on securities_master (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_shares_outstanding_bd",
+   "table": "shares_outstanding",
+   "plain": "Refuses a DELETE on shares_outstanding (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_shares_outstanding_bi",
+   "table": "shares_outstanding",
+   "plain": "Refuses an INSERT that would change or replace history on shares_outstanding (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_shares_outstanding_bu",
+   "table": "shares_outstanding",
+   "plain": "Refuses an UPDATE on shares_outstanding (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_shares_outstanding_lc",
+   "table": "shares_outstanding",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on shares_outstanding (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_shares_outstanding_ld",
+   "table": "shares_outstanding",
+   "plain": "While a correction window is open, logs a DELETE on shares_outstanding (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_shares_outstanding_li",
+   "table": "shares_outstanding",
+   "plain": "While a correction window is open, logs an INSERT on shares_outstanding (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_shares_outstanding_lu",
+   "table": "shares_outstanding",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on shares_outstanding (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_bd",
+   "table": "trade_analytics_log",
+   "plain": "Refuses a DELETE on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_bi",
+   "table": "trade_analytics_log",
+   "plain": "Refuses an INSERT that would change or replace history on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_bs",
+   "table": "trade_analytics_log",
+   "plain": "Ignores an INSERT of a row that is already stored unchanged on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_bu",
+   "table": "trade_analytics_log",
+   "plain": "Refuses an UPDATE on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_lc",
+   "table": "trade_analytics_log",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_ld",
+   "table": "trade_analytics_log",
+   "plain": "While a correction window is open, logs a DELETE on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_li",
+   "table": "trade_analytics_log",
+   "plain": "While a correction window is open, logs an INSERT on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_trade_analytics_log_lu",
+   "table": "trade_analytics_log",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.27"
   }
  ],
  "views_note": {

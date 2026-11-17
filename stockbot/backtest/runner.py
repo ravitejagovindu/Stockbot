@@ -14,6 +14,7 @@ from typing import Any, Mapping, Optional, Sequence
 from stockbot.backtest.manifest import run_manifest
 from stockbot.backtest.no_network import network_forbidden
 from stockbot.data.asof import AsOfView, active_view_name
+from stockbot.data.guard import runcheck
 from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EventData, decide
 from stockbot.engine.exit_policies.registry import policies_for
@@ -40,6 +41,8 @@ def run_backtest(lake, start: date, end: date, initial_equity: float, strategies
         policies = policies_for([s.spec for s in strategies])
     conn = open_lake(lake) if not hasattr(lake, "execute") else lake
     lake_file = Path(lake) if not hasattr(lake, "execute") else None
+    # db-guard R1/R4: a run is a long step: the file is hashed (sha256) before and after; with an open connection only the guard record (counter, sealed dates, digests) is compared
+    db_before = runcheck.snapshot(lake_file, full_hash=True) if lake_file is not None else {"guard": runcheck.guard_record(conn)}
     print(f"asof_view: {active_view_name()}", flush=True)
     effective = describe_effective_overlays(shared_config, strategies, default_overlays)
     print("overlays: " + (", ".join(f"{o['id']}@{o['version']}" for o in effective) if effective else "none"), flush=True)
@@ -70,7 +73,11 @@ def run_backtest(lake, start: date, end: date, initial_equity: float, strategies
             trades.append(ClosedTrade(p.position_id, p.strategy_id, p.symbol, p.entry_date, days[-1], p.entry_price, p.initial_stop, p.shares_initial, p.risk_inr,
                                       gross, paid, net, "END_OF_WINDOW", p.hold))
         st = replace(st, positions=(), cash=cash, realised_pnl_net=realised)
+    db_after = runcheck.snapshot(lake_file, full_hash=True) if lake_file is not None else {"guard": runcheck.guard_record(conn)}
     manifest = run_manifest(shared_config=shared_config, strategies=strategies, window=(start, end), initial_equity=initial_equity, lake_path=lake_file,
                             last_session=days[-1] if days else None, seed=seed, default_overlays=default_overlays,
-                            stale_exit_trades=[t for t in trades if t.exit_reason == "SYMBOL_NO_BARS"])
+                            stale_exit_trades=[t for t in trades if t.exit_reason == "SYMBOL_NO_BARS"], db_check=runcheck.manifest_block(db_before, db_after))
+    diffs = runcheck.differences(db_before, db_after)
+    if diffs:
+        raise runcheck.RunInvalid("backtest", diffs)
     return BacktestResult(tuple(decisions), st, tuple(trades), curve, tuple(eow), manifest)

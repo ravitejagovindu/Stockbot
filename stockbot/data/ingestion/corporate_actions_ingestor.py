@@ -39,6 +39,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from stockbot.data.db.connection import get_session
 from stockbot.data.db.models import CorporateActionsLog
+from stockbot.data.guard.writers import session_fetch, split_new
 from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 logger = logging.getLogger(__name__)
@@ -414,9 +415,10 @@ class CorporateActionsIngestor(BaseIngestor):
 
     def _bulk_upsert(self, events: list[dict]) -> int:
         """
-        Upsert a list of normalised corporate action events into the DB.
+        Add the NEW corporate action events to the log (db-guard: corporate_actions_log is INSERT_ONLY).
 
-        Uses SQLite ``ON CONFLICT DO UPDATE`` on ``(symbol, ex_date, action_type)``.
+        A row whose (symbol, ex_date, action_type) already exists is never changed: an identical one is skipped, a different one (new ratio or notes) is reported in the log and NOT applied;
+        changing a stored fact is a deliberate ``py -3 scripts/guard.py correct`` (logged). Before the guard this was ``ON CONFLICT DO UPDATE``.
 
         Args:
             events: List of normalised event dicts.
@@ -429,15 +431,11 @@ class CorporateActionsIngestor(BaseIngestor):
             return 0
 
         with get_session() as session:
-            stmt = sqlite_insert(CorporateActionsLog).values(valid_events)
-            stmt = stmt.on_conflict_do_update(
-                index_elements=["symbol", "ex_date", "action_type"],
-                set_={
-                    "ratio_numerator": stmt.excluded.ratio_numerator,
-                    "ratio_denominator": stmt.excluded.ratio_denominator,
-                    "notes": stmt.excluded.notes,
-                },
-            )
-            session.execute(stmt)
+            new, same, diff = split_new(session_fetch(session), "corporate_actions_log", valid_events, ("symbol", "ex_date", "action_type"), ("ratio_numerator", "ratio_denominator", "notes"))
+            if new:
+                session.execute(sqlite_insert(CorporateActionsLog).values(new))
+            if diff:
+                logger.warning("[CORP_ACTIONS] %d stored event(s) differ from the fetched ones and were NOT changed (corporate_actions_log is insert-only; use scripts/guard.py correct): %s",
+                               len(diff), [d[0] for d in diff[:5]])
 
         return len(valid_events)

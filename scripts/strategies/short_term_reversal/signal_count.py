@@ -435,17 +435,10 @@ def render_markdown(sm: dict) -> str:
 
 # ------------------------------------------------------------------------------------------------------------------------------------------ G4 helper
 def fingerprint(path, *, with_hash: bool = True) -> dict:
-    """sha256 / size / mtime of a FILE (reads bytes; does not open it as a database). Used before and after the study: they must be identical."""
-    p = Path(path)
-    st = p.stat()
-    h = None
-    if with_hash:
-        d = hashlib.sha256()
-        with open(p, "rb") as f:
-            for chunk in iter(lambda: f.read(8 * 1024 * 1024), b""):
-                d.update(chunk)
-        h = d.hexdigest()
-    return dict(path=str(p), size=st.st_size, mtime_ns=st.st_mtime_ns, mtime_iso=datetime.fromtimestamp(st.st_mtime).isoformat(), sha256=h)
+    """The database fingerprint of one file, taken before and after the study (they must be identical): size, mtime_ns, -wal size, the sha256 of the file bytes when ``with_hash``, and the guard record
+    of the tables a run reads (correction counter, sealed dates, digests of the insert-only tables). One shared implementation: stockbot.data.guard.runcheck.snapshot."""
+    from stockbot.data.guard.runcheck import snapshot
+    return snapshot(path, full_hash=with_hash)
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------- CLI
@@ -508,7 +501,8 @@ def cli(eligible_fn: Callable, *, max_positions: int = 12, risk_pct: float = 1.0
     sm = summarise(res)
     sm["finsight_db"] = fp
     _write_report(sm, f"\nfinsight.db before: {json.dumps(before)}\nfinsight.db after:  {json.dumps(after)}\nunchanged: {before == after}\n", args)
-    return 0 if before == after else 1
+    from stockbot.data.guard.runcheck import verdict
+    return verdict(before, after, "signal count")
 
 
 if __name__ == "__main__":      # pragma: no cover - the wrapper injects the shared eligibility rule
