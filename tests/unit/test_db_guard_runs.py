@@ -245,3 +245,27 @@ def test_check_all_prints_the_guard_state_not_a_pinned_hash(tmp_path, monkeypatc
     assert check_all.run(runner=lambda args, env: 0, out=lines.append) == 0
     g4 = [l for l in lines if "G4" in l]
     assert g4 and "installed; correction counter 0" in g4[0] and "sha256" not in g4[0] and "dcade" not in g4[0]
+
+
+# -------------------------------------------------------------------------------------------------------------------- migration proof tool
+def test_the_table_proof_is_identical_before_and_after_install_and_differs_after_a_change(tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("table_proof", ROOT / "docs" / "shared" / "db-guard" / "table_proof.py")
+    tp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tp)
+    p, con = (lambda d: (d, sqlite3.connect(str(d), isolation_level=None)))(tmp_path / "t.db")
+    con.executescript((ROOT / "tests" / "fixtures" / "real_schema.sql").read_text(encoding="utf-8"))
+    con.execute("INSERT INTO market_data_lake(symbol,trade_date,open_raw,high_raw,low_raw,close_raw,volume_raw) VALUES ('A','2020-01-01',1,1,1,1,1)")
+    con.execute("INSERT INTO earnings_api_raw VALUES ('e','q','2020-01-01',200,1,x'00ff')")
+    con.close()
+    before = tp.proof(str(p))
+    c = sqlite3.connect(str(p), isolation_level=None)
+    guard.install(c)
+    c.close()
+    after = tp.proof(str(p))
+    assert tp.compare(before, after) == [] and before["integrity_check"] == [["ok"]] == after["integrity_check"]
+    assert set(after["tables"]) - set(before["tables"]) >= {"_guard_seal", "_guard_registry"}
+    c = sqlite3.connect(str(p), isolation_level=None)
+    guard.correct(c, "t", "UPDATE market_data_lake SET close_raw=2;")
+    c.close()
+    assert any("market_data_lake: sha256" in x for x in tp.compare(before, tp.proof(str(p))))
