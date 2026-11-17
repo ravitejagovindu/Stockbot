@@ -209,3 +209,39 @@ def test_manifests_written_before_the_guard_have_no_db_check_and_stay_valid():
 def test_guard_state_tables_are_not_listed_among_the_tables_a_run_reads(guarded):
     r = run_backtest(guarded, DS[298], DS[299], 1e6, [strategy()], POL, CFG, EVENTS)
     assert not any(t.startswith("_guard") for t in r.manifest["db_check"]["guard_before"]["tables"])
+
+
+# -------------------------------------------------------------------------------------------------------------------- R1: who may open the database
+def test_no_reading_package_opens_a_database_itself():
+    import re
+    pat = re.compile(r"sqlite3\.connect\(|create_engine\(")
+    bad = []
+    for pkg in ("backtest", "validation", "engine", "strategies", "risk", "universe", "overlays", "config"):
+        for f in (ROOT / "stockbot" / pkg).rglob("*.py"):
+            if pat.search(f.read_text(encoding="utf-8")):
+                bad.append(f.relative_to(ROOT).as_posix())
+    for f in (ROOT / "stockbot" / "live").rglob("*.py"):
+        if pat.search(f.read_text(encoding="utf-8")) and f.name != "state_store.py":              # state_store.py is the separate live STATE database (decision D5)
+            bad.append(f.relative_to(ROOT).as_posix())
+    assert not bad, f"these modules open a database without open_lake: {bad}"
+
+
+def test_every_connection_in_data_checks_is_read_only():
+    import re
+    for f in (ROOT / "stockbot" / "data_checks").glob("*.py"):
+        for m in re.finditer(r"sqlite3\.connect\(([^\n]*)", f.read_text(encoding="utf-8")):
+            assert "mode=ro" in m.group(1), f"{f.name}: {m.group(0)[:120]}"
+
+
+def test_check_all_prints_the_guard_state_not_a_pinned_hash(tmp_path, monkeypatch):
+    from stockbot.data_checks import check_all
+    p = tmp_path / "c.db"
+    c = sqlite3.connect(str(p), isolation_level=None)
+    c.executescript((ROOT / "tests" / "fixtures" / "real_schema.sql").read_text(encoding="utf-8"))
+    guard.install(c)
+    c.close()
+    monkeypatch.setenv("STOCKBOT_DB", str(p))
+    lines = []
+    assert check_all.run(runner=lambda args, env: 0, out=lines.append) == 0
+    g4 = [l for l in lines if "G4" in l]
+    assert g4 and "installed; correction counter 0" in g4[0] and "sha256" not in g4[0] and "dcade" not in g4[0]

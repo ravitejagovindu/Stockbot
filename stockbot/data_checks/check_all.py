@@ -7,7 +7,8 @@ Steps (each is a pytest run in its own process; the exit code is the OR of all s
   G6  parity / lookahead / idempotency / determinism / isolation / baseline reuse / strict mode   tests/unit/test_engine_*.py
   G2  env-gated real-database tests only with --data (STOCKBOT_DATA_TESTS=1; read-only on finsight.db)
 --final adds STOCKBOT_FINAL_CHECK=1 (the allowlist-empty test of the boundary file, required at STOP 5).
-G4 (finsight.db unchanged) is a hash / mtime check done by the reviewer's commands; it is printed here for reference only (size and mtime, no hashing of 3.4 GB).
+G4 (the database) is no longer a comparison with a pinned hash (db-guard): it prints the guard state of the file (installed, classes, correction counter, sealed dates, unregistered tables,
+missing triggers) and the size / mtime for reference. Every backtest-type run checks the file itself before and after (stockbot.data.guard.runcheck).
 """
 from __future__ import annotations
 
@@ -31,6 +32,25 @@ STEPS = (
 DATA_STEP = ("G2 real-database tests (read-only)", ["tests/data_integrity", "-q"])
 
 
+def guard_line(db: Path) -> str:
+    """One line about the guard state of the database file (read-only)."""
+    import sqlite3
+    from stockbot.data import guard
+    try:
+        con = sqlite3.connect(f"file:{db.resolve().as_posix()}?mode=ro", uri=True, timeout=60)
+        try:
+            st = guard.status(con)
+        finally:
+            con.close()
+    except sqlite3.Error as e:
+        return f"unreadable ({e})"
+    if not st["installed"]:
+        return f"NOT INSTALLED; unregistered tables: {st['unregistered']}"
+    sealed = {t: v["sealed_through"] for t, v in st["tables"].items() if "sealed_through" in v}
+    return (f"installed; correction counter {st['correction_counter']}; window open {st['window_open']}; sealed through {sealed}; unregistered {st['unregistered']}; "
+            f"missing triggers {len(st['missing_triggers'])}")
+
+
 def run_pytest(args: Sequence[str], env: dict) -> int:
     return subprocess.run([sys.executable, "-m", "pytest", *args, "-p", "no:cacheprovider"], cwd=ROOT, env=env).returncode
 
@@ -48,13 +68,14 @@ def run(*, data: bool = False, final: bool = False, runner: Optional[Callable[[S
         t0 = time.time()
         code = runner(args, env)
         results.append((name, code, time.time() - t0))
-    db = ROOT / "finsight.db"
+    from stockbot.config.paths import lake_path
+    db = lake_path()
     out("")
     for name, code, secs in results:
         out(f"  {'PASS' if code == 0 else 'FAIL'}  {name}  ({secs:.0f}s)")
     if db.exists():
         st = db.stat()
-        out(f"  G4   finsight.db size {st.st_size} mtime_ns {st.st_mtime_ns} (compare with docs/restructure/BASELINE.md; the sha256 is checked by the reviewer)")
+        out(f"  G4   {db.name} guard: {guard_line(db)}; size {st.st_size} mtime_ns {st.st_mtime_ns} (for reference)")
     bad = [n for n, c, _ in results if c != 0]
     out("ALL CHECKS PASSED" if not bad else f"FAILED: {', '.join(bad)}")
     return 1 if bad else 0

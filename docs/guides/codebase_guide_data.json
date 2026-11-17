@@ -5,8 +5,8 @@
   "banner": "Strategies only propose. Everything else is shared.",
   "guide_file": "docs/guides/CODEBASE_GUIDE.md",
   "example_note": "Example, not real data: every number in the examples is made up.",
-  "built_at": "2026-11-09",
-  "built_from_commit": "22b5372",
+  "built_at": "2026-11-17",
+  "built_from_commit": "0459751",
   "source": "docs/guides/CODEBASE_GUIDE.md"
  },
  "views": [
@@ -143,6 +143,11 @@
      "name": "stockbot.data.db",
      "path": "stockbot/data/db",
      "d": "Older ORM layer used by the dashboard side."
+    },
+    {
+     "name": "stockbot.data.guard",
+     "path": "stockbot/data/guard",
+     "d": "The database guard: sealed history, logged corrections, run-time checks (docs/shared/db-guard/GUARD.md)."
     },
     {
      "name": "stockbot.data.ingestion",
@@ -1454,7 +1459,7 @@
    "path": "stockbot/data/lake.py",
    "source": "stockbot/data/lake.py::open_lake",
    "plain": "The price database is opened read-only. Tests prove it is unchanged.",
-   "why": "G4 compares its hash and modified time."
+   "why": "G4 checks the guard state of the database; every run records the file hash before and after."
   },
   {
    "id": "n5",
@@ -1691,8 +1696,8 @@
     "docs/restructure/BASELINE.md",
     "scripts/check_all.py"
    ],
-   "tip": "G4: compare sha256 of finsight.db with the baseline; check_all prints size and modified time.",
-   "source": "docs/restructure/BASELINE.md"
+   "tip": "G4: py scripts/guard.py status shows the guard, the correction counter and the sealed dates; each run manifest records the file hash before and after.",
+   "source": "docs/shared/db-guard/GUARD.md"
   },
   {
    "id": "s14",
