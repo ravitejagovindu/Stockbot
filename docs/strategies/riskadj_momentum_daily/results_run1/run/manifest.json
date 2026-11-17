@@ -1,0 +1,172 @@
+{
+ "shared_config_hash": "da459624294741239ae85230317da357b5b141a62b81f897bfb3d0745e956248",
+ "overlays": [],
+ "strategies": {
+  "riskadj_momentum_daily": {
+   "version": "1.0.0",
+   "config_hash": "5b06f092df061bff1532093d21ea21c88c3f2db64ddd66e0cbe81bd5c0446e19",
+   "exit_policy": "rmd_trailing_atr3_floor8",
+   "overlays": {}
+  }
+ },
+ "git_sha": "6f25689e28be83b8376fa4dabc4ca47bfce610fe",
+ "data_snapshot": {
+  "file": "finsight.db",
+  "size": 3432767488,
+  "mtime_ns": 1794121682892612300,
+  "last_session": "2026-10-16"
+ },
+ "seed": null,
+ "asof_view": "memory",
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "initial_equity": 1000000,
+ "symbol_links": {
+  "enabled": true,
+  "linked_pairs": 41,
+  "file_sha256": "9d953ad442d81b9785e2f2cf5f5f8762eeaa9a1aebc03204349218e3f32f84c7"
+ },
+ "stale_exit": {
+  "sessions": 20,
+  "trades": 18,
+  "net_pnl_total": 701745.075351254,
+  "list": [
+   {
+    "position_id": "riskadj_momentum_daily:BOMDYEING:2018-06-26",
+    "symbol": "BOMDYEING",
+    "entry_date": "2018-06-26",
+    "exit_date": "2018-07-31",
+    "net_pnl": -2932.4711998257085
+   },
+   {
+    "position_id": "riskadj_momentum_daily:GSKCONS:2020-03-19",
+    "symbol": "GSKCONS",
+    "entry_date": "2020-03-19",
+    "exit_date": "2020-05-14",
+    "net_pnl": 19805.75762146516
+   },
+   {
+    "position_id": "riskadj_momentum_daily:MAGMA:2021-03-24",
+    "symbol": "MAGMA",
+    "entry_date": "2021-03-24",
+    "exit_date": "2021-07-06",
+    "net_pnl": 35193.660214664415
+   },
+   {
+    "position_id": "riskadj_momentum_daily:ADANIENSOL:2021-04-20",
+    "symbol": "ADANIENSOL",
+    "entry_date": "2021-04-20",
+    "exit_date": "2021-07-06",
+    "net_pnl": 52985.7593707537
+   },
+   {
+    "position_id": "riskadj_momentum_daily:CGPOWER:2021-05-17",
+    "symbol": "CGPOWER",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-07-06",
+    "net_pnl": -6056.115491686073
+   },
+   {
+    "position_id": "riskadj_momentum_daily:ATGL:2021-05-17",
+    "symbol": "ATGL",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-07-06",
+    "net_pnl": 39965.888839611966
+   },
+   {
+    "position_id": "riskadj_momentum_daily:GPIL:2021-06-02",
+    "symbol": "GPIL",
+    "entry_date": "2021-06-02",
+    "exit_date": "2021-07-15",
+    "net_pnl": 53411.44132292426
+   },
+   {
+    "position_id": "riskadj_momentum_daily:CDSL:2021-07-07",
+    "symbol": "CDSL",
+    "entry_date": "2021-07-07",
+    "exit_date": "2021-08-18",
+    "net_pnl": 114508.19933807818
+   },
+   {
+    "position_id": "riskadj_momentum_daily:JSWENERGY:2021-07-16",
+    "symbol": "JSWENERGY",
+    "entry_date": "2021-07-16",
+    "exit_date": "2021-08-26",
+    "net_pnl": 62753.30712015509
+   },
+   {
+    "position_id": "riskadj_momentum_daily:TATASTLBSL:2021-06-21",
+    "symbol": "TATASTLBSL",
+    "entry_date": "2021-06-21",
+    "exit_date": "2021-09-03",
+    "net_pnl": 21163.84887572086
+   },
+   {
+    "position_id": "riskadj_momentum_daily:TRIDENT:2022-01-19",
+    "symbol": "TRIDENT",
+    "entry_date": "2022-01-19",
+    "exit_date": "2022-02-18",
+    "net_pnl": 14535.963104172153
+   },
+   {
+    "position_id": "riskadj_momentum_daily:PCJEWELLER:2022-08-23",
+    "symbol": "PCJEWELLER",
+    "entry_date": "2022-08-23",
+    "exit_date": "2022-10-11",
+    "net_pnl": 10418.638570665164
+   },
+   {
+    "position_id": "riskadj_momentum_daily:NEWGEN:2023-10-25",
+    "symbol": "NEWGEN",
+    "entry_date": "2023-10-25",
+    "exit_date": "2023-11-30",
+    "net_pnl": 7264.437240756026
+   },
+   {
+    "position_id": "riskadj_momentum_daily:TECHNOE:2024-06-05",
+    "symbol": "TECHNOE",
+    "entry_date": "2024-06-05",
+    "exit_date": "2024-07-05",
+    "net_pnl": -578.7335497923937
+   },
+   {
+    "position_id": "riskadj_momentum_daily:SHAILY:2024-12-16",
+    "symbol": "SHAILY",
+    "entry_date": "2024-12-16",
+    "exit_date": "2025-01-27",
+    "net_pnl": -5585.685093281482
+   },
+   {
+    "position_id": "riskadj_momentum_daily:E2E:2026-02-02",
+    "symbol": "E2E",
+    "entry_date": "2026-02-02",
+    "exit_date": "2026-03-24",
+    "net_pnl": 16496.226700931973
+   },
+   {
+    "position_id": "riskadj_momentum_daily:DIACABS:2026-03-17",
+    "symbol": "DIACABS",
+    "entry_date": "2026-03-17",
+    "exit_date": "2026-08-31",
+    "net_pnl": 236001.58944594458
+   },
+   {
+    "position_id": "riskadj_momentum_daily:HFCL:2026-08-03",
+    "symbol": "HFCL",
+    "entry_date": "2026-08-03",
+    "exit_date": "2026-10-01",
+    "net_pnl": 32393.36291999604
+   }
+  ]
+ },
+ "end_of_window": {
+  "rule": "closed at the last session close, normal costs and slippage, counted as usable trades",
+  "trades": 11,
+  "closed_trades_total": 1048,
+  "closed_before_window_end": 1037,
+  "label_in_trades_json": "END_OF_WINDOW_COUNTED",
+  "engine_reason": "END_OF_WINDOW"
+ }
+}

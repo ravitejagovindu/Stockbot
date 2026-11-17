@@ -1,0 +1,1 @@
+{"cmd": ["py", "-3", "scripts/validate_family.py", "--member", "riskadj_momentum_daily=docs/strategies/riskadj_momentum_daily/results_run1", "--expect-k", "1", "--lake", "F:\\Projects\\Ravi\\StockBot\\finsight.db", "--out-json", "F:\\Projects\\Ravi\\StockBot_runs\\family_batch4\\validate_family.json"], "wall_seconds": 64.0, "peak_working_set_mb": 8.7, "exit_code": 0}

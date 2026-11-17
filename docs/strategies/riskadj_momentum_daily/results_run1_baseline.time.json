@@ -1,0 +1,1 @@
+{"cmd": ["py", "-3", "scripts/baseline_matched_random_riskadj_momentum_daily.py", "--run-dir", "docs/strategies/riskadj_momentum_daily/results_run1/run", "--out-dir", "docs/strategies/riskadj_momentum_daily/results_run1/baseline"], "wall_seconds": 4229.0, "peak_working_set_mb": 8.8, "exit_code": 0}

@@ -1,0 +1,340 @@
+{
+ "gates": [
+  {
+   "gate": "min_trades",
+   "gate_value": 40,
+   "comparison": ">=",
+   "observed": 1044,
+   "interval": null,
+   "met": true,
+   "note": "a floor only; 40 trades have almost no power"
+  },
+  {
+   "gate": "min_expectancy_r",
+   "gate_value": 0.15,
+   "comparison": ">=",
+   "observed": 0.20789281253070335,
+   "interval": [
+    0.06776580469749198,
+    0.3719549778176001
+   ],
+   "met": true,
+   "note": "the strategy's own absolute net R per usable trade, point estimate"
+  },
+  {
+   "gate": "min_profit_factor",
+   "gate_value": 1.3,
+   "comparison": ">=",
+   "observed": 1.4331333398512345,
+   "interval": [
+    1.050772413304931,
+    1.9447380763885465
+   ],
+   "met": true,
+   "note": "net P&L of usable trades, point estimate"
+  },
+  {
+   "gate": "max_drawdown_pct",
+   "gate_value": 20.0,
+   "comparison": "<=",
+   "observed": 36.148238795277685,
+   "interval": null,
+   "met": false,
+   "note": "one path, no interval"
+  },
+  {
+   "gate": "min_alpha_pct",
+   "gate_value": 0.0,
+   "comparison": ">=",
+   "observed": 7.061097222846666,
+   "interval": [
+    -5.159543979182307,
+    20.98085242527774
+   ],
+   "met": true,
+   "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+  }
+ ],
+ "counts": {
+  "closed": 1048,
+  "usable": 1044,
+  "end_of_window": 11,
+  "usable_closed_before_window_end": 1033,
+  "end_of_window_counted_as_usable": 11,
+  "excluded_ca": 4,
+  "entries_per_month": 8.03076923076923,
+  "invested_share_mean": 0.8029808419318638,
+  "invested_share_p5": 0.0,
+  "invested_share_p95": 0.9999883331242816,
+  "open_positions_mean": 10.55459985041137,
+  "open_positions_max": 12,
+  "baseline_end_of_window_draws": 176,
+  "baseline_draws_total": 20479
+ },
+ "all_met": false,
+ "alpha": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 15.171405137936222,
+   "benchmark_cagr_pct": 9.569030298685522,
+   "alpha_pct": 5.6023748392507
+  },
+  "cash_credited": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 16.630127521532188,
+   "benchmark_cagr_pct": 9.569030298685522,
+   "alpha_pct": 7.061097222846666
+  },
+  "gate_alpha_pct": 7.061097222846666,
+  "after_tax_label": "illustrative, not tax advice: tax charged on the end gain of the cash-credited strategy and of its benchmark; never a gate input",
+  "note": "Cash credit is applied after the fact on the recorded equity and cash (idle cash at the previous close earns risk_free_pct/100/252 per day); it does not feed back into sizing or any engine decision. The gate uses the cash-credited, pre-tax alpha.",
+  "risk_free_pct": 6.5,
+  "after_tax_illustrative": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 16.630127521532188,
+    "benchmark_cagr_pct": 9.569030298685522,
+    "alpha_pct": 7.061097222846666
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 14.735704360577472,
+    "benchmark_cagr_pct": 8.216942606782872,
+    "alpha_pct": 6.5187617537946
+   }
+  }
+ },
+ "implied_annual_return": {
+  "non_gating": true,
+  "trades_per_year": 96.75742197411824,
+  "expectancy_r": 0.20789281253070335,
+  "max_loss_pct_per_trade": 1.0,
+  "implied_annual_return_pct": 20.115172587419522,
+  "matched_benchmark_cagr_pct": 9.569030298685522,
+  "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"
+ },
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "period": "2016-01-01 to 2019-12-31",
+   "trades": 312,
+   "expectancy_r": 0.16852196922632665,
+   "profit_factor": 1.2986049619792872,
+   "max_drawdown_pct": 29.076959681819663,
+   "invested_share_mean": 0.705174358790806,
+   "alpha_pct": -2.1406653904269213
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "period": "2020-01-01 to 2026-10-16",
+   "trades": 732,
+   "expectancy_r": 0.224673827709618,
+   "profit_factor": 1.4609560568900952,
+   "max_drawdown_pct": 29.39842475226983,
+   "invested_share_mean": 0.860111880069946,
+   "alpha_pct": 12.70063777711814
+  }
+ },
+ "seed": 20261111,
+ "boot": 10000,
+ "block_months": 3,
+ "gate_alpha_is_pre_tax": true,
+ "risk_free_pct": 6.5,
+ "stale_exit": {
+  "trades": 18,
+  "net_pnl_total": 701745.075351254,
+  "list": [
+   {
+    "position_id": "riskadj_momentum_daily:BOMDYEING:2018-06-26",
+    "symbol": "BOMDYEING",
+    "entry_date": "2018-06-26",
+    "exit_date": "2018-07-31",
+    "net_pnl": -2932.4711998257085
+   },
+   {
+    "position_id": "riskadj_momentum_daily:GSKCONS:2020-03-19",
+    "symbol": "GSKCONS",
+    "entry_date": "2020-03-19",
+    "exit_date": "2020-05-14",
+    "net_pnl": 19805.75762146516
+   },
+   {
+    "position_id": "riskadj_momentum_daily:MAGMA:2021-03-24",
+    "symbol": "MAGMA",
+    "entry_date": "2021-03-24",
+    "exit_date": "2021-07-06",
+    "net_pnl": 35193.660214664415
+   },
+   {
+    "position_id": "riskadj_momentum_daily:ADANIENSOL:2021-04-20",
+    "symbol": "ADANIENSOL",
+    "entry_date": "2021-04-20",
+    "exit_date": "2021-07-06",
+    "net_pnl": 52985.7593707537
+   },
+   {
+    "position_id": "riskadj_momentum_daily:CGPOWER:2021-05-17",
+    "symbol": "CGPOWER",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-07-06",
+    "net_pnl": -6056.115491686073
+   },
+   {
+    "position_id": "riskadj_momentum_daily:ATGL:2021-05-17",
+    "symbol": "ATGL",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-07-06",
+    "net_pnl": 39965.888839611966
+   },
+   {
+    "position_id": "riskadj_momentum_daily:GPIL:2021-06-02",
+    "symbol": "GPIL",
+    "entry_date": "2021-06-02",
+    "exit_date": "2021-07-15",
+    "net_pnl": 53411.44132292426
+   },
+   {
+    "position_id": "riskadj_momentum_daily:CDSL:2021-07-07",
+    "symbol": "CDSL",
+    "entry_date": "2021-07-07",
+    "exit_date": "2021-08-18",
+    "net_pnl": 114508.19933807818
+   },
+   {
+    "position_id": "riskadj_momentum_daily:JSWENERGY:2021-07-16",
+    "symbol": "JSWENERGY",
+    "entry_date": "2021-07-16",
+    "exit_date": "2021-08-26",
+    "net_pnl": 62753.30712015509
+   },
+   {
+    "position_id": "riskadj_momentum_daily:TATASTLBSL:2021-06-21",
+    "symbol": "TATASTLBSL",
+    "entry_date": "2021-06-21",
+    "exit_date": "2021-09-03",
+    "net_pnl": 21163.84887572086
+   },
+   {
+    "position_id": "riskadj_momentum_daily:TRIDENT:2022-01-19",
+    "symbol": "TRIDENT",
+    "entry_date": "2022-01-19",
+    "exit_date": "2022-02-18",
+    "net_pnl": 14535.963104172153
+   },
+   {
+    "position_id": "riskadj_momentum_daily:PCJEWELLER:2022-08-23",
+    "symbol": "PCJEWELLER",
+    "entry_date": "2022-08-23",
+    "exit_date": "2022-10-11",
+    "net_pnl": 10418.638570665164
+   },
+   {
+    "position_id": "riskadj_momentum_daily:NEWGEN:2023-10-25",
+    "symbol": "NEWGEN",
+    "entry_date": "2023-10-25",
+    "exit_date": "2023-11-30",
+    "net_pnl": 7264.437240756026
+   },
+   {
+    "position_id": "riskadj_momentum_daily:TECHNOE:2024-06-05",
+    "symbol": "TECHNOE",
+    "entry_date": "2024-06-05",
+    "exit_date": "2024-07-05",
+    "net_pnl": -578.7335497923937
+   },
+   {
+    "position_id": "riskadj_momentum_daily:SHAILY:2024-12-16",
+    "symbol": "SHAILY",
+    "entry_date": "2024-12-16",
+    "exit_date": "2025-01-27",
+    "net_pnl": -5585.685093281482
+   },
+   {
+    "position_id": "riskadj_momentum_daily:E2E:2026-02-02",
+    "symbol": "E2E",
+    "entry_date": "2026-02-02",
+    "exit_date": "2026-03-24",
+    "net_pnl": 16496.226700931973
+   },
+   {
+    "position_id": "riskadj_momentum_daily:DIACABS:2026-03-17",
+    "symbol": "DIACABS",
+    "entry_date": "2026-03-17",
+    "exit_date": "2026-08-31",
+    "net_pnl": 236001.58944594458
+   },
+   {
+    "position_id": "riskadj_momentum_daily:HFCL:2026-08-03",
+    "symbol": "HFCL",
+    "entry_date": "2026-08-03",
+    "exit_date": "2026-10-01",
+    "net_pnl": 32393.36291999604
+   }
+  ],
+  "usable": "these trades count like any other (gates, T1, T2, equity curve)",
+  "stress": {
+   "label": "stress, not a gate",
+   "factor": 0.5,
+   "gates": [
+    {
+     "gate": "min_trades",
+     "gate_value": 40,
+     "comparison": ">=",
+     "observed": 1044,
+     "interval": null,
+     "met": true,
+     "note": "a floor only; 40 trades have almost no power"
+    },
+    {
+     "gate": "min_expectancy_r",
+     "gate_value": 0.15,
+     "comparison": ">=",
+     "observed": 0.1367142163422403,
+     "interval": [
+      -0.000939917771682526,
+      0.2994949138155917
+     ],
+     "met": false,
+     "note": "the strategy's own absolute net R per usable trade, point estimate"
+    },
+    {
+     "gate": "min_profit_factor",
+     "gate_value": 1.3,
+     "comparison": ">=",
+     "observed": 1.1813546853946566,
+     "interval": [
+      0.8706652474098049,
+      1.5972512623467032
+     ],
+     "met": false,
+     "note": "net P&L of usable trades, point estimate"
+    },
+    {
+     "gate": "max_drawdown_pct",
+     "gate_value": 20.0,
+     "comparison": "<=",
+     "observed": 59.949306632267266,
+     "interval": null,
+     "met": false,
+     "note": "one path, no interval"
+    },
+    {
+     "gate": "min_alpha_pct",
+     "gate_value": 0.0,
+     "comparison": ">=",
+     "observed": 0.5364253461445525,
+     "interval": [
+      -16.51152815404581,
+      20.894212522909058
+     ],
+     "met": true,
+     "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+    }
+   ],
+   "all_met": false,
+   "alpha_cash_credited_pct": 0.5364253461445525,
+   "net_pnl_total_stressed": -1188159.6120568973
+  }
+ },
+ "asof_view": "memory"
+}
