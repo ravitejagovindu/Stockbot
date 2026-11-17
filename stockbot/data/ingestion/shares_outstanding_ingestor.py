@@ -38,6 +38,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 from stockbot.data.db.connection import get_session
 from stockbot.data.db.models import SharesOutstanding
+from stockbot.data.guard.writers import session_fetch, split_new
 from stockbot.data.ingestion.base_ingestor import BaseIngestor
 
 logger = logging.getLogger(__name__)
@@ -254,10 +255,8 @@ class SharesOutstandingIngestor(BaseIngestor):
         source: str,
     ) -> None:
         """
-        Upsert a shares_outstanding row.
-
-        Uses SQLite ``ON CONFLICT DO UPDATE`` so repeated runs on the same date
-        update the count rather than fail.
+        Add a shares_outstanding row for a new (symbol, effective_date). An existing row is never changed (db-guard: the table is sealed by date; before the guard this was
+        ``ON CONFLICT DO UPDATE``): the same values are skipped, other values are reported and not applied.
 
         Args:
             symbol: NSE ticker.
@@ -266,17 +265,9 @@ class SharesOutstandingIngestor(BaseIngestor):
             source: Data source label for audit purposes.
         """
         with get_session() as session:
-            stmt = sqlite_insert(SharesOutstanding).values(
-                symbol=symbol,
-                effective_date=effective_date,
-                shares_count=shares_count,
-                source=source,
-            )
-            stmt = stmt.on_conflict_do_update(
-                index_elements=["symbol", "effective_date"],
-                set_={
-                    "shares_count": stmt.excluded.shares_count,
-                    "source": stmt.excluded.source,
-                },
-            )
-            session.execute(stmt)
+            row = {"symbol": symbol, "effective_date": effective_date, "shares_count": shares_count, "source": source}
+            new, _same, diff = split_new(session_fetch(session), "shares_outstanding", [row], ("symbol", "effective_date"), ("shares_count", "source"))
+            if new:
+                session.execute(sqlite_insert(SharesOutstanding).values(**row))
+            elif diff:
+                logger.warning("[SHARES] %s %s already stored with other values (%s); NOT changed: shares_outstanding is sealed by date (use scripts/guard.py correct)", symbol, effective_date, diff[0][1])

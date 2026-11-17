@@ -15,7 +15,8 @@ import pandas as pd
 import requests
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from stockbot.data.db.connection import engine
+from stockbot.data.db.connection import engine  # noqa: F401
+from stockbot.data.guard.writers import refuse_if_sealed, session_fetch
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,21 @@ class BhavcopyIngestor:
                 "zip",
             ),
         ]
+
+    def store_day(self, session: Session, df: pd.DataFrame, target_date: date) -> None:
+        """Replace the equity rows of ``target_date`` with ``df`` in ONE transaction: a failure leaves the day as it was.
+        Refused when ``market_data_lake`` is sealed through that date (db-guard): a sealed day is never deleted or reloaded here. What stays unsafe on an UNSEALED day: the rows of that day are
+        replaced (as before), and ``ingest`` still turns an unparsable price into 0.0 (zero-fill); only a later seal of the day freezes what was stored."""
+        refuse_if_sealed(session_fetch(session), "market_data_lake", target_date)
+        try:
+            session.execute(text("DELETE FROM market_data_lake WHERE trade_date = :td AND symbol NOT IN ('NIFTY50_INDEX', 'INDIA_VIX')"), {"td": target_date})
+            cols = [c for c in df.columns]
+            recs = [{k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in r.items()} for r in df.to_dict("records")]
+            session.execute(text(f"INSERT INTO market_data_lake ({', '.join(cols)}) VALUES ({', '.join(':' + c for c in cols)})"), recs)      # same transaction as the delete (pandas to_sql opens its own)
+            session.commit()
+        except BaseException:
+            session.rollback()                  # a failed reload leaves the day exactly as it was
+            raise
 
     def ingest(self, session: Session, target_date: date) -> int:
         """
@@ -149,18 +165,8 @@ class BhavcopyIngestor:
             cols_to_keep = ["symbol", "trade_date", "open_raw", "high_raw", "low_raw", "close_raw", "volume_raw", "exchange"]
             df = df[cols_to_keep]
 
-            # 4. Insert into Database
-            # Delete existing equity data for this date to prevent duplicate collisions
-            session.execute(
-                text(
-                    "DELETE FROM market_data_lake WHERE trade_date = :td "
-                    "AND symbol NOT IN ('NIFTY50_INDEX', 'INDIA_VIX')"
-                ),
-                {"td": target_date},
-            )
-            session.commit()
-
-            df.to_sql("market_data_lake", con=engine, if_exists="append", index=False)
+            # 4. Insert into Database (db-guard: one transaction; a sealed day is refused BEFORE anything is deleted)
+            self.store_day(session, df, target_date)
 
             logger.info(f"Successfully ingested {len(df)} symbols from Bhavcopy for {target_date}.")
             return len(df)

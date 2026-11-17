@@ -11,6 +11,7 @@ import urllib.request
 from sqlalchemy import text
 
 from stockbot.data.db.connection import get_session
+from stockbot.data.guard.writers import session_fetch, split_new
 
 logger = logging.getLogger(__name__)
 
@@ -94,14 +95,18 @@ def ingest_securities_master() -> int:
         return 0
 
     with get_session() as s:
-        # Bulk upsert using INSERT OR REPLACE INTO SQLite
-        s.execute(
-            text("""
-                INSERT OR REPLACE INTO securities_master (symbol, company_name, series, listing_date, isin)
-                VALUES (:symbol, :company_name, :series, :listing_date, :isin)
-            """),
-            records,
-        )
+        # db-guard: securities_master is INSERT_ONLY. New symbols are added; a stored symbol is never replaced (a change = scripts/guard.py correct). Before the guard: INSERT OR REPLACE.
+        new, _same, diff = split_new(session_fetch(s), "securities_master", records, ("symbol",), ("company_name", "series", "listing_date", "isin"))
+        if new:
+            s.execute(
+                text("""
+                    INSERT INTO securities_master (symbol, company_name, series, listing_date, isin)
+                    VALUES (:symbol, :company_name, :series, :listing_date, :isin)
+                """),
+                new,
+            )
+        if diff:
+            logger.warning("[SECURITIES] %d stored securities differ from the fetched ones and were NOT changed (securities_master is insert-only; use scripts/guard.py correct): %s", len(diff), [d[0][0] for d in diff[:5]])
         s.commit()
 
     logger.info(f"[SECURITIES] Ingested {len(records)} securities into securities_master.")
@@ -128,13 +133,18 @@ def fetch_and_save_symbol_listing_date(symbol: str, session=None) -> Optional[da
                     isin = meta.get("isin", "")
                     
                     def _insert(s):
-                        s.execute(
-                            text("""
-                                INSERT OR REPLACE INTO securities_master (symbol, company_name, series, listing_date, isin)
-                                VALUES (:symbol, :company_name, 'EQ', :listing_date, :isin)
-                            """),
-                            {"symbol": sym, "company_name": c_name[:200], "listing_date": str(parsed), "isin": isin[:30]},
-                        )
+                        row = {"symbol": sym, "company_name": c_name[:200], "series": "EQ", "listing_date": str(parsed), "isin": isin[:30]}
+                        new, _same, diff = split_new(session_fetch(s), "securities_master", [row], ("symbol",), ("company_name", "series", "listing_date", "isin"))
+                        if new:
+                            s.execute(
+                                text("""
+                                    INSERT INTO securities_master (symbol, company_name, series, listing_date, isin)
+                                    VALUES (:symbol, :company_name, :series, :listing_date, :isin)
+                                """),
+                                new[0],
+                            )
+                        elif diff:
+                            logger.warning("[SECURITIES] %s already stored with other values; NOT changed (securities_master is insert-only; use scripts/guard.py correct)", sym)
                         s.commit()
 
                     if session:
