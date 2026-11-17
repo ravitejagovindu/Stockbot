@@ -1,0 +1,1332 @@
+{
+ "files": 3416,
+ "rows": 7233694,
+ "first": "2013-01-01",
+ "last": "2026-10-16",
+ "b1_series": {
+  "EQ": {
+   "rows": 5628539,
+   "days": 3416,
+   "symbols": 3965,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "BE": {
+   "rows": 517788,
+   "days": 3416,
+   "symbols": 2274,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "SM": {
+   "rows": 334599,
+   "days": 3339,
+   "symbols": 781,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "GB": {
+   "rows": 89213,
+   "days": 2565,
+   "symbols": 69,
+   "first": "2016-06-13",
+   "last": "2026-10-16"
+  },
+  "BZ": {
+   "rows": 68190,
+   "days": 3027,
+   "symbols": 306,
+   "first": "2014-07-09",
+   "last": "2026-10-16"
+  },
+  "ST": {
+   "rows": 66960,
+   "days": 1669,
+   "symbols": 723,
+   "first": "2018-03-28",
+   "last": "2026-10-16"
+  },
+  "GS": {
+   "rows": 43542,
+   "days": 1785,
+   "symbols": 158,
+   "first": "2018-12-26",
+   "last": "2026-10-16"
+  },
+  "N6": {
+   "rows": 34299,
+   "days": 3416,
+   "symbols": 72,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "N2": {
+   "rows": 33128,
+   "days": 3416,
+   "symbols": 82,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "N4": {
+   "rows": 25503,
+   "days": 3416,
+   "symbols": 68,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "N5": {
+   "rows": 23553,
+   "days": 3416,
+   "symbols": 73,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "N1": {
+   "rows": 23548,
+   "days": 3415,
+   "symbols": 124,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "N3": {
+   "rows": 19825,
+   "days": 3413,
+   "symbols": 73,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "N8": {
+   "rows": 19047,
+   "days": 3411,
+   "symbols": 51,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "TB": {
+   "rows": 16296,
+   "days": 1062,
+   "symbols": 663,
+   "first": "2021-06-16",
+   "last": "2026-10-16"
+  },
+  "N7": {
+   "rows": 14782,
+   "days": 3411,
+   "symbols": 65,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "N9": {
+   "rows": 13991,
+   "days": 3406,
+   "symbols": 47,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "NE": {
+   "rows": 13764,
+   "days": 3061,
+   "symbols": 36,
+   "first": "2013-01-02",
+   "last": "2026-10-16"
+  },
+  "ND": {
+   "rows": 10845,
+   "days": 3012,
+   "symbols": 44,
+   "first": "2013-01-02",
+   "last": "2026-10-16"
+  },
+  "NC": {
+   "rows": 10080,
+   "days": 3093,
+   "symbols": 44,
+   "first": "2013-01-02",
+   "last": "2026-10-16"
+  },
+  "IV": {
+   "rows": 9215,
+   "days": 2335,
+   "symbols": 22,
+   "first": "2017-05-18",
+   "last": "2026-10-16"
+  },
+  "NB": {
+   "rows": 9192,
+   "days": 3203,
+   "symbols": 49,
+   "first": "2013-01-03",
+   "last": "2026-10-16"
+  },
+  "MF": {
+   "rows": 9159,
+   "days": 2178,
+   "symbols": 248,
+   "first": "2013-01-01",
+   "last": "2026-10-07"
+  },
+  "NJ": {
+   "rows": 8827,
+   "days": 2790,
+   "symbols": 33,
+   "first": "2013-01-04",
+   "last": "2026-10-16"
+  },
+  "NF": {
+   "rows": 8417,
+   "days": 3094,
+   "symbols": 37,
+   "first": "2013-01-03",
+   "last": "2026-10-16"
+  },
+  "N0": {
+   "rows": 7621,
+   "days": 919,
+   "symbols": 163,
+   "first": "2023-01-02",
+   "last": "2026-10-16"
+  },
+  "E1": {
+   "rows": 7609,
+   "days": 2191,
+   "symbols": 69,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "NL": {
+   "rows": 7318,
+   "days": 3318,
+   "symbols": 27,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "NH": {
+   "rows": 6815,
+   "days": 2679,
+   "symbols": 37,
+   "first": "2013-02-26",
+   "last": "2026-10-16"
+  },
+  "NO": {
+   "rows": 6274,
+   "days": 2904,
+   "symbols": 22,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "RR": {
+   "rows": 6059,
+   "days": 1871,
+   "symbols": 6,
+   "first": "2019-04-01",
+   "last": "2026-10-16"
+  },
+  "NI": {
+   "rows": 5502,
+   "days": 2719,
+   "symbols": 21,
+   "first": "2013-01-01",
+   "last": "2026-10-15"
+  },
+  "NG": {
+   "rows": 4877,
+   "days": 2516,
+   "symbols": 27,
+   "first": "2013-09-30",
+   "last": "2026-10-16"
+  },
+  "NN": {
+   "rows": 4662,
+   "days": 2385,
+   "symbols": 24,
+   "first": "2013-01-31",
+   "last": "2026-10-16"
+  },
+  "NS": {
+   "rows": 4503,
+   "days": 2817,
+   "symbols": 15,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "NK": {
+   "rows": 4457,
+   "days": 2467,
+   "symbols": 23,
+   "first": "2014-02-17",
+   "last": "2026-10-16"
+  },
+  "SG": {
+   "rows": 3778,
+   "days": 864,
+   "symbols": 755,
+   "first": "2020-11-18",
+   "last": "2026-10-16"
+  },
+  "P1": {
+   "rows": 3373,
+   "days": 2461,
+   "symbols": 10,
+   "first": "2013-01-01",
+   "last": "2026-08-20"
+  },
+  "NM": {
+   "rows": 3247,
+   "days": 2248,
+   "symbols": 22,
+   "first": "2013-01-01",
+   "last": "2026-10-16"
+  },
+  "NP": {
+   "rows": 3205,
+   "days": 2121,
+   "symbols": 12,
+   "first": "2013-01-02",
+   "last": "2026-09-24"
+  },
+  "BL": {
+   "rows": 3194,
+   "days": 1101,
+   "symbols": 877,
+   "first": "2013-01-04",
+   "last": "2026-10-15"
+  },
+  "P2": {
+   "rows": 3100,
+   "days": 2137,
+   "symbols": 3,
+   "first": "2013-01-01",
+   "last": "2022-02-23"
+  },
+  "NR": {
+   "rows": 3074,
+   "days": 2488,
+   "symbols": 15,
+   "first": "2013-01-02",
+   "last": "2026-10-16"
+  },
+  "NU": {
+   "rows": 3020,
+   "days": 2322,
+   "symbols": 15,
+   "first": "2013-01-02",
+   "last": "2026-10-15"
+  },
+  "NQ": {
+   "rows": 2950,
+   "days": 1693,
+   "symbols": 15,
+   "first": "2013-01-04",
+   "last": "2026-01-07"
+  },
+  "NX": {
+   "rows": 2735,
+   "days": 2290,
+   "symbols": 16,
+   "first": "2013-08-07",
+   "last": "2026-10-16"
+  },
+  "Y1": {
+   "rows": 2605,
+   "days": 2100,
+   "symbols": 13,
+   "first": "2013-10-29",
+   "last": "2026-09-17"
+  },
+  "NW": {
+   "rows": 2463,
+   "days": 2091,
+   "symbols": 15,
+   "first": "2013-08-07",
+   "last": "2026-10-05"
+  },
+  "NZ": {
+   "rows": 2418,
+   "days": 1885,
+   "symbols": 13,
+   "first": "2013-08-13",
+   "last": "2026-10-16"
+  },
+  "Y9": {
+   "rows": 2306,
+   "days": 1814,
+   "symbols": 5,
+   "first": "2014-07-18",
+   "last": "2026-10-14"
+  },
+  "NY": {
+   "rows": 2033,
+   "days": 1642,
+   "symbols": 10,
+   "first": "2013-08-07",
+   "last": "2026-10-09"
+  },
+  "DR": {
+   "rows": 1842,
+   "days": 1842,
+   "symbols": 1,
+   "first": "2013-01-01",
+   "last": "2020-06-17"
+  },
+  "NV": {
+   "rows": 1811,
+   "days": 1605,
+   "symbols": 12,
+   "first": "2013-08-08",
+   "last": "2026-10-07"
+  },
+  "Y3": {
+   "rows": 1798,
+   "days": 1591,
+   "symbols": 11,
+   "first": "2013-10-29",
+   "last": "2026-10-01"
+  },
+  "Y5": {
+   "rows": 1732,
+   "days": 1374,
+   "symbols": 13,
+   "first": "2014-02-11",
+   "last": "2026-10-15"
+  },
+  "Y7": {
+   "rows": 1637,
+   "days": 1440,
+   "symbols": 7,
+   "first": "2014-07-18",
+   "last": "2026-10-14"
+  },
+  "NT": {
+   "rows": 1581,
+   "days": 1335,
+   "symbols": 16,
+   "first": "2013-01-02",
+   "last": "2026-10-16"
+  },
+  "YI": {
+   "rows": 1517,
+   "days": 1427,
+   "symbols": 7,
+   "first": "2018-04-10",
+   "last": "2026-10-15"
+  },
+  "YL": {
+   "rows": 1434,
+   "days": 1412,
+   "symbols": 4,
+   "first": "2018-07-17",
+   "last": "2026-10-06"
+  },
+  "YK": {
+   "rows": 1300,
+   "days": 1187,
+   "symbols": 7,
+   "first": "2018-03-27",
+   "last": "2026-09-30"
+  },
+  "Y8": {
+   "rows": 1299,
+   "days": 1205,
+   "symbols": 10,
+   "first": "2014-07-18",
+   "last": "2026-10-16"
+  },
+  "YH": {
+   "rows": 1155,
+   "days": 1050,
+   "symbols": 4,
+   "first": "2018-04-19",
+   "last": "2026-08-25"
+  },
+  "YV": {
+   "rows": 1102,
+   "days": 1027,
+   "symbols": 8,
+   "first": "2019-02-12",
+   "last": "2026-10-09"
+  },
+  "Y6": {
+   "rows": 1076,
+   "days": 972,
+   "symbols": 8,
+   "first": "2013-11-21",
+   "last": "2026-10-16"
+  },
+  "YB": {
+   "rows": 1074,
+   "days": 1030,
+   "symbols": 4,
+   "first": "2014-07-21",
+   "last": "2026-10-14"
+  },
+  "IL": {
+   "rows": 1032,
+   "days": 675,
+   "symbols": 46,
+   "first": "2013-01-02",
+   "last": "2018-06-27"
+  },
+  "YR": {
+   "rows": 962,
+   "days": 920,
+   "symbols": 8,
+   "first": "2018-11-26",
+   "last": "2026-10-16"
+  },
+  "YO": {
+   "rows": 959,
+   "days": 953,
+   "symbols": 7,
+   "first": "2018-07-24",
+   "last": "2026-03-10"
+  },
+  "YA": {
+   "rows": 954,
+   "days": 886,
+   "symbols": 9,
+   "first": "2014-07-21",
+   "last": "2026-10-15"
+  },
+  "YW": {
+   "rows": 919,
+   "days": 900,
+   "symbols": 5,
+   "first": "2019-02-11",
+   "last": "2026-10-16"
+  },
+  "YP": {
+   "rows": 893,
+   "days": 851,
+   "symbols": 6,
+   "first": "2018-11-12",
+   "last": "2026-10-16"
+  },
+  "YZ": {
+   "rows": 885,
+   "days": 832,
+   "symbols": 6,
+   "first": "2019-02-25",
+   "last": "2026-10-15"
+  },
+  "Y2": {
+   "rows": 885,
+   "days": 855,
+   "symbols": 5,
+   "first": "2013-12-30",
+   "last": "2026-10-16"
+  },
+  "YM": {
+   "rows": 876,
+   "days": 791,
+   "symbols": 8,
+   "first": "2018-03-23",
+   "last": "2026-10-16"
+  },
+  "SZ": {
+   "rows": 841,
+   "days": 610,
+   "symbols": 22,
+   "first": "2019-12-10",
+   "last": "2026-10-16"
+  },
+  "YN": {
+   "rows": 833,
+   "days": 822,
+   "symbols": 6,
+   "first": "2018-07-24",
+   "last": "2025-04-03"
+  },
+  "YS": {
+   "rows": 829,
+   "days": 829,
+   "symbols": 3,
+   "first": "2018-11-22",
+   "last": "2026-10-16"
+  },
+  "YT": {
+   "rows": 819,
+   "days": 804,
+   "symbols": 6,
+   "first": "2018-11-19",
+   "last": "2026-10-12"
+  },
+  "IT": {
+   "rows": 764,
+   "days": 648,
+   "symbols": 12,
+   "first": "2014-08-13",
+   "last": "2024-11-14"
+  },
+  "YG": {
+   "rows": 762,
+   "days": 748,
+   "symbols": 6,
+   "first": "2014-07-21",
+   "last": "2026-09-02"
+  },
+  "YY": {
+   "rows": 760,
+   "days": 760,
+   "symbols": 5,
+   "first": "2019-02-20",
+   "last": "2026-10-06"
+  },
+  "W3": {
+   "rows": 740,
+   "days": 740,
+   "symbols": 2,
+   "first": "2020-08-13",
+   "last": "2023-08-09"
+  },
+  "YJ": {
+   "rows": 736,
+   "days": 646,
+   "symbols": 2,
+   "first": "2018-04-20",
+   "last": "2021-06-24"
+  },
+  "YX": {
+   "rows": 711,
+   "days": 711,
+   "symbols": 4,
+   "first": "2019-02-08",
+   "last": "2024-09-10"
+  },
+  "W1": {
+   "rows": 710,
+   "days": 706,
+   "symbols": 5,
+   "first": "2013-01-11",
+   "last": "2024-09-10"
+  },
+  "X1": {
+   "rows": 699,
+   "days": 624,
+   "symbols": 9,
+   "first": "2021-03-03",
+   "last": "2026-03-18"
+  },
+  "Z5": {
+   "rows": 691,
+   "days": 645,
+   "symbols": 6,
+   "first": "2019-09-27",
+   "last": "2026-07-30"
+  },
+  "Z8": {
+   "rows": 688,
+   "days": 669,
+   "symbols": 7,
+   "first": "2019-09-26",
+   "last": "2026-10-15"
+  },
+  "YQ": {
+   "rows": 659,
+   "days": 659,
+   "symbols": 4,
+   "first": "2018-11-06",
+   "last": "2026-03-05"
+  },
+  "Z9": {
+   "rows": 652,
+   "days": 607,
+   "symbols": 6,
+   "first": "2019-09-11",
+   "last": "2026-09-29"
+  },
+  "ZF": {
+   "rows": 643,
+   "days": 590,
+   "symbols": 8,
+   "first": "2020-02-06",
+   "last": "2026-10-16"
+  },
+  "W2": {
+   "rows": 636,
+   "days": 636,
+   "symbols": 2,
+   "first": "2013-01-08",
+   "last": "2018-09-27"
+  },
+  "Z3": {
+   "rows": 614,
+   "days": 608,
+   "symbols": 5,
+   "first": "2019-08-27",
+   "last": "2025-09-10"
+  },
+  "Z2": {
+   "rows": 610,
+   "days": 600,
+   "symbols": 7,
+   "first": "2019-03-05",
+   "last": "2026-10-15"
+  },
+  "YC": {
+   "rows": 574,
+   "days": 545,
+   "symbols": 9,
+   "first": "2014-09-15",
+   "last": "2026-10-16"
+  },
+  "Z7": {
+   "rows": 485,
+   "days": 479,
+   "symbols": 5,
+   "first": "2019-11-14",
+   "last": "2026-10-05"
+  },
+  "D1": {
+   "rows": 464,
+   "days": 464,
+   "symbols": 2,
+   "first": "2014-09-04",
+   "last": "2019-04-15"
+  },
+  "Y0": {
+   "rows": 454,
+   "days": 432,
+   "symbols": 3,
+   "first": "2023-07-04",
+   "last": "2026-10-16"
+  },
+  "YU": {
+   "rows": 453,
+   "days": 453,
+   "symbols": 3,
+   "first": "2018-11-16",
+   "last": "2023-10-12"
+  },
+  "Z4": {
+   "rows": 448,
+   "days": 448,
+   "symbols": 4,
+   "first": "2019-08-26",
+   "last": "2026-10-15"
+  },
+  "ZC": {
+   "rows": 428,
+   "days": 428,
+   "symbols": 4,
+   "first": "2019-09-11",
+   "last": "2026-08-04"
+  },
+  "ZH": {
+   "rows": 415,
+   "days": 405,
+   "symbols": 8,
+   "first": "2020-03-02",
+   "last": "2026-10-16"
+  },
+  "ZD": {
+   "rows": 398,
+   "days": 394,
+   "symbols": 7,
+   "first": "2020-02-05",
+   "last": "2026-05-06"
+  },
+  "ZB": {
+   "rows": 391,
+   "days": 341,
+   "symbols": 8,
+   "first": "2019-09-13",
+   "last": "2026-05-15"
+  },
+  "Z1": {
+   "rows": 389,
+   "days": 389,
+   "symbols": 1,
+   "first": "2019-04-02",
+   "last": "2022-01-19"
+  },
+  "Y4": {
+   "rows": 371,
+   "days": 371,
+   "symbols": 7,
+   "first": "2013-11-20",
+   "last": "2026-10-16"
+  },
+  "ZK": {
+   "rows": 348,
+   "days": 329,
+   "symbols": 8,
+   "first": "2020-02-11",
+   "last": "2026-09-21"
+  },
+  "Z6": {
+   "rows": 335,
+   "days": 335,
+   "symbols": 5,
+   "first": "2019-09-09",
+   "last": "2026-09-25"
+  },
+  "E3": {
+   "rows": 325,
+   "days": 325,
+   "symbols": 1,
+   "first": "2019-04-12",
+   "last": "2020-08-07"
+  },
+  "Q1": {
+   "rows": 318,
+   "days": 302,
+   "symbols": 2,
+   "first": "2016-05-05",
+   "last": "2018-02-06"
+  },
+  "ZG": {
+   "rows": 285,
+   "days": 285,
+   "symbols": 4,
+   "first": "2020-02-05",
+   "last": "2026-02-06"
+  },
+  "AN": {
+   "rows": 283,
+   "days": 283,
+   "symbols": 3,
+   "first": "2023-04-05",
+   "last": "2026-10-14"
+  },
+  "ZJ": {
+   "rows": 269,
+   "days": 268,
+   "symbols": 6,
+   "first": "2020-02-24",
+   "last": "2026-09-11"
+  },
+  "ZE": {
+   "rows": 266,
+   "days": 266,
+   "symbols": 3,
+   "first": "2020-04-15",
+   "last": "2024-12-04"
+  },
+  "ZI": {
+   "rows": 242,
+   "days": 241,
+   "symbols": 4,
+   "first": "2020-09-30",
+   "last": "2026-10-09"
+  },
+  "T0": {
+   "rows": 241,
+   "days": 123,
+   "symbols": 61,
+   "first": "2024-03-28",
+   "last": "2026-09-16"
+  },
+  "ZA": {
+   "rows": 238,
+   "days": 238,
+   "symbols": 2,
+   "first": "2019-11-13",
+   "last": "2023-02-02"
+  },
+  "ZR": {
+   "rows": 191,
+   "days": 190,
+   "symbols": 5,
+   "first": "2022-12-30",
+   "last": "2026-10-16"
+  },
+  "AT": {
+   "rows": 184,
+   "days": 184,
+   "symbols": 3,
+   "first": "2023-08-01",
+   "last": "2025-07-08"
+  },
+  "YD": {
+   "rows": 179,
+   "days": 177,
+   "symbols": 2,
+   "first": "2014-09-29",
+   "last": "2019-06-18"
+  },
+  "ZP": {
+   "rows": 158,
+   "days": 158,
+   "symbols": 4,
+   "first": "2023-01-05",
+   "last": "2026-08-27"
+  },
+  "AP": {
+   "rows": 157,
+   "days": 157,
+   "symbols": 3,
+   "first": "2023-08-08",
+   "last": "2025-07-11"
+  },
+  "ZT": {
+   "rows": 154,
+   "days": 154,
+   "symbols": 3,
+   "first": "2024-06-04",
+   "last": "2026-10-16"
+  },
+  "ZN": {
+   "rows": 150,
+   "days": 144,
+   "symbols": 5,
+   "first": "2022-11-07",
+   "last": "2026-10-16"
+  },
+  "E2": {
+   "rows": 149,
+   "days": 149,
+   "symbols": 2,
+   "first": "2013-01-17",
+   "last": "2019-01-22"
+  },
+  "BC": {
+   "rows": 146,
+   "days": 146,
+   "symbols": 4,
+   "first": "2023-08-07",
+   "last": "2026-10-16"
+  },
+  "BF": {
+   "rows": 144,
+   "days": 144,
+   "symbols": 3,
+   "first": "2023-10-03",
+   "last": "2025-09-09"
+  },
+  "AX": {
+   "rows": 142,
+   "days": 142,
+   "symbols": 3,
+   "first": "2023-08-16",
+   "last": "2026-07-10"
+  },
+  "BV": {
+   "rows": 132,
+   "days": 132,
+   "symbols": 4,
+   "first": "2023-10-25",
+   "last": "2026-04-10"
+  },
+  "ZX": {
+   "rows": 131,
+   "days": 131,
+   "symbols": 3,
+   "first": "2023-04-21",
+   "last": "2025-12-11"
+  },
+  "BI": {
+   "rows": 128,
+   "days": 128,
+   "symbols": 3,
+   "first": "2023-10-30",
+   "last": "2025-09-04"
+  },
+  "ZS": {
+   "rows": 127,
+   "days": 127,
+   "symbols": 3,
+   "first": "2023-03-21",
+   "last": "2024-12-10"
+  },
+  "AJ": {
+   "rows": 126,
+   "days": 126,
+   "symbols": 4,
+   "first": "2023-07-24",
+   "last": "2026-03-05"
+  },
+  "ZY": {
+   "rows": 119,
+   "days": 119,
+   "symbols": 3,
+   "first": "2023-01-20",
+   "last": "2026-09-25"
+  },
+  "AB": {
+   "rows": 115,
+   "days": 115,
+   "symbols": 3,
+   "first": "2023-04-24",
+   "last": "2025-03-07"
+  },
+  "AG": {
+   "rows": 112,
+   "days": 112,
+   "symbols": 3,
+   "first": "2023-04-18",
+   "last": "2025-03-03"
+  },
+  "BO": {
+   "rows": 112,
+   "days": 112,
+   "symbols": 3,
+   "first": "2023-04-13",
+   "last": "2023-12-27"
+  },
+  "AR": {
+   "rows": 110,
+   "days": 110,
+   "symbols": 4,
+   "first": "2023-08-03",
+   "last": "2025-07-11"
+  },
+  "ZW": {
+   "rows": 99,
+   "days": 99,
+   "symbols": 3,
+   "first": "2023-02-22",
+   "last": "2025-10-17"
+  },
+  "AZ": {
+   "rows": 98,
+   "days": 98,
+   "symbols": 3,
+   "first": "2023-08-08",
+   "last": "2026-09-24"
+  },
+  "AI": {
+   "rows": 91,
+   "days": 91,
+   "symbols": 3,
+   "first": "2023-05-24",
+   "last": "2026-03-05"
+  },
+  "ZL": {
+   "rows": 90,
+   "days": 85,
+   "symbols": 4,
+   "first": "2022-11-11",
+   "last": "2026-10-12"
+  },
+  "BS": {
+   "rows": 83,
+   "days": 83,
+   "symbols": 3,
+   "first": "2024-05-02",
+   "last": "2026-09-11"
+  },
+  "ZU": {
+   "rows": 82,
+   "days": 82,
+   "symbols": 3,
+   "first": "2023-03-17",
+   "last": "2025-12-12"
+  },
+  "AY": {
+   "rows": 81,
+   "days": 81,
+   "symbols": 3,
+   "first": "2023-09-05",
+   "last": "2026-06-16"
+  },
+  "AC": {
+   "rows": 74,
+   "days": 74,
+   "symbols": 3,
+   "first": "2023-03-31",
+   "last": "2025-02-14"
+  },
+  "AH": {
+   "rows": 69,
+   "days": 69,
+   "symbols": 3,
+   "first": "2023-08-22",
+   "last": "2026-02-10"
+  },
+  "AL": {
+   "rows": 60,
+   "days": 60,
+   "symbols": 3,
+   "first": "2023-08-22",
+   "last": "2026-10-05"
+  },
+  "ZM": {
+   "rows": 57,
+   "days": 57,
+   "symbols": 2,
+   "first": "2024-07-11",
+   "last": "2026-09-09"
+  },
+  "AK": {
+   "rows": 56,
+   "days": 56,
+   "symbols": 1,
+   "first": "2025-03-24",
+   "last": "2026-09-30"
+  },
+  "Z0": {
+   "rows": 44,
+   "days": 44,
+   "symbols": 2,
+   "first": "2024-04-12",
+   "last": "2026-07-24"
+  },
+  "AV": {
+   "rows": 42,
+   "days": 42,
+   "symbols": 3,
+   "first": "2023-08-09",
+   "last": "2026-01-23"
+  },
+  "Q2": {
+   "rows": 36,
+   "days": 36,
+   "symbols": 1,
+   "first": "2016-11-18",
+   "last": "2018-02-06"
+  },
+  "HC": {
+   "rows": 20,
+   "days": 20,
+   "symbols": 1,
+   "first": "2016-03-28",
+   "last": "2017-03-30"
+  },
+  "X2": {
+   "rows": 11,
+   "days": 11,
+   "symbols": 1,
+   "first": "2018-10-12",
+   "last": "2018-10-29"
+  },
+  "AO": {
+   "rows": 9,
+   "days": 9,
+   "symbols": 2,
+   "first": "2024-07-29",
+   "last": "2025-07-08"
+  },
+  "ZQ": {
+   "rows": 9,
+   "days": 9,
+   "symbols": 1,
+   "first": "2025-01-21",
+   "last": "2025-10-23"
+  },
+  "AW": {
+   "rows": 8,
+   "days": 8,
+   "symbols": 2,
+   "first": "2023-09-27",
+   "last": "2024-12-19"
+  },
+  "HB": {
+   "rows": 8,
+   "days": 8,
+   "symbols": 2,
+   "first": "2014-02-07",
+   "last": "2017-03-30"
+  },
+  "BJ": {
+   "rows": 7,
+   "days": 7,
+   "symbols": 1,
+   "first": "2023-10-03",
+   "last": "2023-10-26"
+  },
+  "H6": {
+   "rows": 7,
+   "days": 7,
+   "symbols": 1,
+   "first": "2016-02-29",
+   "last": "2016-03-23"
+  },
+  "SF": {
+   "rows": 7,
+   "days": 7,
+   "symbols": 3,
+   "first": "2025-10-30",
+   "last": "2026-10-06"
+  },
+  "BX": {
+   "rows": 7,
+   "days": 7,
+   "symbols": 3,
+   "first": "2024-07-04",
+   "last": "2026-07-14"
+  },
+  "BG": {
+   "rows": 5,
+   "days": 5,
+   "symbols": 1,
+   "first": "2023-09-29",
+   "last": "2023-10-23"
+  },
+  "ZZ": {
+   "rows": 4,
+   "days": 4,
+   "symbols": 1,
+   "first": "2023-03-24",
+   "last": "2023-12-06"
+  },
+  "ID": {
+   "rows": 3,
+   "days": 3,
+   "symbols": 1,
+   "first": "2021-04-06",
+   "last": "2021-04-08"
+  },
+  "BT": {
+   "rows": 3,
+   "days": 3,
+   "symbols": 3,
+   "first": "2014-06-02",
+   "last": "2016-08-22"
+  },
+  "BM": {
+   "rows": 2,
+   "days": 2,
+   "symbols": 1,
+   "first": "2023-10-03",
+   "last": "2023-10-23"
+  },
+  "HA": {
+   "rows": 1,
+   "days": 1,
+   "symbols": 1,
+   "first": "2016-12-29",
+   "last": "2016-12-29"
+  },
+  "H5": {
+   "rows": 1,
+   "days": 1,
+   "symbols": 1,
+   "first": "2014-03-06",
+   "last": "2014-03-06"
+  },
+  "AA": {
+   "rows": 1,
+   "days": 1,
+   "symbols": 1,
+   "first": "2023-04-10",
+   "last": "2023-04-10"
+  },
+  "HE": {
+   "rows": 1,
+   "days": 1,
+   "symbols": 1,
+   "first": "2017-03-31",
+   "last": "2017-03-31"
+  },
+  "M1": {
+   "rows": 1,
+   "days": 1,
+   "symbols": 1,
+   "first": "2013-11-06",
+   "last": "2013-11-06"
+  },
+  "SO": {
+   "rows": 1,
+   "days": 1,
+   "symbols": 1,
+   "first": "2023-01-10",
+   "last": "2023-01-10"
+  },
+  "ZO": {
+   "rows": 1,
+   "days": 1,
+   "symbols": 1,
+   "first": "2026-03-23",
+   "last": "2026-03-23"
+  }
+ },
+ "b2": {
+  "isins_ever_BE_or_BZ": 2617,
+  "direction": {
+   "both": 1738,
+   "BE/BZ only (never EQ here)": 565,
+   "BE/BZ->EQ": 185,
+   "EQ->BE/BZ": 129
+  },
+  "isins_ever_BZ": 348,
+  "isins_ever_BE": 2557,
+  "multi_symbol_isins": 224
+ },
+ "b3_n": 20,
+ "lake_vs_archive_eq_rowcount_mismatch_days": 1,
+ "lake_vs_archive_eq_mismatch_examples": [
+  [
+   "2020-07-13",
+   1384,
+   1392
+  ]
+ ],
+ "b4": {
+  "isins_with_EQ_and_BEBZ": 2052,
+  "isins_internal_gap": 1713,
+  "internal_gap_sessions": 426645,
+  "isins_trailing": 605,
+  "trailing_sessions": 112828,
+  "isins_leading": 546,
+  "leading_sessions": 40389,
+  "isins_any": 1867,
+  "sessions_any_ex_leading": 539473
+ },
+ "b5": {
+  "price_band_column_in_files": false,
+  "columns_parsed": [
+   "close",
+   "date",
+   "high",
+   "isin",
+   "key",
+   "low",
+   "open",
+   "prev",
+   "series",
+   "symbol",
+   "trades",
+   "volume"
+  ],
+  "BE": {
+   "rows": 517788,
+   "median_volume": 16015.0,
+   "p10_volume": 525.0,
+   "p90_volume": 329048.4999999996,
+   "median_traded_value_inr": 441895.5,
+   "p10_traded_value_inr": 6735.0,
+   "p90_traded_value_inr": 10610036.924999995,
+   "median_trades": 78.0,
+   "zero_volume_rows": 0,
+   "abs_close_ret_pct_p50": 2.1505376344086113,
+   "p90": 4.975530179445342,
+   "p99": 14.285714285714302,
+   "max": 4015.714285714286,
+   "share_abs_ret_ge_4.9pct": 0.1422416123973518,
+   "share_abs_ret_ge_9.9pct": 0.01744150115491282,
+   "share_abs_ret_ge_19.9pct": 0.007481826539046868,
+   "median_hl_range_pct_of_prev": 4.527416894794631,
+   "per_isin_max_abs_ret_bucket": {
+    "<=5.2": 1580,
+    "5.2-10.2": 186,
+    "10.2-20.2": 151,
+    ">20.2": 640
+   }
+  },
+  "BZ": {
+   "rows": 68190,
+   "median_volume": 26698.5,
+   "p10_volume": 1177.0,
+   "p90_volume": 471452.0999999998,
+   "median_traded_value_inr": 89995.5,
+   "p10_traded_value_inr": 3110.7180000000017,
+   "p90_traded_value_inr": 1628312.429999999,
+   "median_trades": 49.0,
+   "zero_volume_rows": 0,
+   "abs_close_ret_pct_p50": 2.985074626865669,
+   "p90": 5.021866312333509,
+   "p99": 19.999999999999996,
+   "max": 230.27522935779814,
+   "share_abs_ret_ge_4.9pct": 0.16399765361489954,
+   "share_abs_ret_ge_9.9pct": 0.037234198562839126,
+   "share_abs_ret_ge_19.9pct": 0.014562252529696437,
+   "median_hl_range_pct_of_prev": 4.95319528009813,
+   "per_isin_max_abs_ret_bucket": {
+    "<=5.2": 221,
+    "5.2-10.2": 60,
+    "10.2-20.2": 31,
+    ">20.2": 36
+   }
+  }
+ }
+}
