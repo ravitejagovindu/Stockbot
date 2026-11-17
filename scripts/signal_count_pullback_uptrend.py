@@ -345,7 +345,8 @@ def main(argv=None) -> int:
     after = fingerprint(lp, with_hash=not args.no_hash)
     part["finsight_db"] = dict(before=before, after=after, unchanged=(before == after))
     Path(args.part_out).write_text(json.dumps(part, default=str), encoding="utf-8")
-    return 0 if before == after else 1
+    from stockbot.data.guard.runcheck import verdict
+    return verdict(before, after, "signal count")
 
 
 if __name__ == "__main__":

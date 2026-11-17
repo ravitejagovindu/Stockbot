@@ -29,7 +29,10 @@ def _get_engine():
         @event.listens_for(engine, "connect")
         def set_sqlite_pragmas(dbapi_connection, connection_record):
             cursor = dbapi_connection.cursor()
-            cursor.execute("PRAGMA journal_mode=WAL")
+            # WAL only for a database file this connection is creating (no pages yet). Switching the journal mode of an existing file rewrites its header bytes, so a plain read through
+            # this engine could change the file the guard and the run manifests treat as frozen (db-guard, requirement a).
+            if cursor.execute("PRAGMA page_count").fetchone()[0] == 0:
+                cursor.execute("PRAGMA journal_mode=WAL")
             cursor.execute("PRAGMA foreign_keys=ON")
             cursor.close()
 

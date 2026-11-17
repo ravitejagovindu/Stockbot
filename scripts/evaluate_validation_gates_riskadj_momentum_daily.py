@@ -241,5 +241,9 @@ def main(argv=None) -> int:
     return 0
 
 
+from stockbot.data.guard.runcheck import short_step  # noqa: E402
+main = short_step("gates (short step)")(main)      # database check before and after (db-guard D3)
+
+
 if __name__ == "__main__":
     sys.exit(main())

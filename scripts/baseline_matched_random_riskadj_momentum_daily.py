@@ -331,7 +331,8 @@ def main(argv=None) -> int:
     meta["finsight_db"] = {"before": before, "after": after, "unchanged": before == after}
     (Path(args.out_dir) / "baseline_meta.json").write_text(json.dumps(meta, indent=1, default=str), encoding="utf-8")
     print(json.dumps({k: meta[k] for k in ("usable_trades", "pairs_kept", "dropped_pairs", "share_dropped", "flag", "draws_total", "end_of_window_trades", "end_of_window_draws")}, indent=1))
-    return 0 if before == after else 1
+    from stockbot.data.guard.runcheck import verdict
+    return verdict(before, after, "baseline (long step)")
 
 
 if __name__ == "__main__":

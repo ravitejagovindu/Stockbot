@@ -170,7 +170,8 @@ def main() -> None:
     start, end = date.fromisoformat(args.start), date.fromisoformat(args.end)
 
     con = sqlite3.connect(args.db, timeout=60)
-    con.execute("PRAGMA journal_mode=WAL")
+    if con.execute("PRAGMA page_count").fetchone()[0] == 0:           # only a file this call creates; never switch the journal mode of an existing database (db-guard)
+        con.execute("PRAGMA journal_mode=WAL")
     con.executescript(DDL)
     done = {r[0] for r in con.execute(
         "select trade_date from bhavcopy_fetch_log where status in ('OK','HOLIDAY_OR_MISSING')"
