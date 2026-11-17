@@ -1,0 +1,59 @@
+{
+ "draws_per_trade": 20,
+ "min_filled": 10,
+ "seed": 20261111,
+ "policy": "rmd_trailing_atr3_floor8",
+ "stop_rule": "close - max(3 x ATR14, 0.08 x close) on the draw's own symbol",
+ "usable_trades": 1044,
+ "pairs_kept": 1043,
+ "dropped_pairs": 1,
+ "share_dropped": 0.0009578544061302681,
+ "flag": null,
+ "draws_total": 20479,
+ "end_of_window_trades": 11,
+ "end_of_window_draws": 176,
+ "draws_closed_before_window_end": 20303,
+ "stale_exit_draws": 57,
+ "unfilled": {
+  "GAP_UP_TOO_LARGE": 270,
+  "CORP_ACTION_ON_EXEC_DATE": 106,
+  "NO_STOP": 5,
+  "NO_BAR_OR_ALREADY_HELD": 7,
+  "SIZE_ZERO": 12,
+  "GAP_THROUGH_STOP": 1
+ },
+ "pool_exclusions": {
+  "checked": 350996,
+  "kept": 332592,
+  "held": 8649,
+  "cooldown": 9755,
+  "own_symbol_per_entry": 1044,
+  "cooldown_days": 21,
+  "rule": "pool minus the strategy's held symbols and its own cooldown symbols (stored trades), minus the trade's own symbol; draws never block each other"
+ },
+ "excluded_ca": 4,
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "spec_config_hash": "5b06f092df061bff1532093d21ea21c88c3f2db64ddd66e0cbe81bd5c0446e19",
+ "asof_view": "memory",
+ "end_of_window_rule": "open at the window end: closed at the last close with normal costs and slippage and counted as filled / usable",
+ "finsight_db": {
+  "before": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "after": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3432767488,
+   "mtime_ns": 1794121682892612300,
+   "mtime_iso": "2026-11-08T12:38:02.892612",
+   "sha256": "dcade46506518a25d35f220e7e3b5b35d53c349362308ee42888cd9615ceb752"
+  },
+  "unchanged": true
+ }
+}
