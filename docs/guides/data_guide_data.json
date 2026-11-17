@@ -6,7 +6,7 @@
   "banner": "The lake (finsight.db) is read-only for the engine.",
   "example_note": "Everything labelled EXAMPLE is made up. Numbers without that label are measured or quoted from a named report, with their date.",
   "built_at": "2026-11-17",
-  "built_from_commit": "74afad9"
+  "built_from_commit": "0f4d91d"
  },
  "views": [
   {
