@@ -43,7 +43,7 @@ RUNS = [
          rule="Same as Momentum, but any day is a buy day. 21-day wait after a stop-out.",
          dir=f"{S}/riskadj_momentum_daily/results_run1", gates="gates.json", bench="benchmark.json",
          validate=f"{S}/family_batch4/results_run1/validate_family.json",
-         note="Variant chosen after the monthly result was seen."),
+         note="Variant chosen after the monthly result was seen. 18 positions whose stock left the normal trading category were closed at the last price we have; they made Rs 7.0 lakh of the Rs 36.3 lakh profit. If each had sold at half that price, the expectancy and profit-factor gates would fail."),
 ]
 
 # Descriptive study, not a registered trial (docs/shared/market-switch/DECISION.md).
