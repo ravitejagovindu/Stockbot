@@ -55,6 +55,11 @@ def run_manifest(*, shared_config, strategies: Sequence, window: tuple, initial_
         "window": [window[0].isoformat(), window[1].isoformat()],
         "initial_equity": initial_equity,
     }
+    from stockbot.data import non_eq
+    if non_eq.switch_on():                        # non-eq-series: written ONLY when the switch is on, so manifests of runs with the switch off are unchanged
+        from stockbot.engine.stepping import NON_EQ_SLIPPAGE_MULT, NON_EQ_VOLUME_CAP
+        out["non_eq_view"] = {"switch": "STOCKBOT_NON_EQ=held", "table": non_eq.TABLE, "bar_series": list(non_eq.BAR_SERIES),
+                              "sell_model": {"volume_cap_per_session": NON_EQ_VOLUME_CAP, "exit_slippage_multiplier": NON_EQ_SLIPPAGE_MULT, "assumption": "fixed assumption, not evidence"}}
     if db_check is not None:
         out["db_check"] = dict(db_check)          # db-guard R1/R4: file sha256 before/after (long step), correction counter, sealed dates and table digests before/after
     links = _symbol_links_block()

@@ -189,7 +189,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
 <main id="main" tabindex="-1"><noscript>This guide needs JavaScript. The text version is docs/guides/DATA_GUIDE.md.</noscript></main>
 <aside id="panel" role="dialog" aria-modal="false" aria-labelledby="ptitle" tabindex="-1"><button class="x" type="button" id="pclose" aria-label="Close panel">&times;</button><div id="pbody"></div></aside>
 <div id="tip" role="tooltip"></div>
-<footer><span id="foot">Built 2026-11-17 from commit 0f4d91d. Numbers measured 2026-11-17 15:06 from the database file modified 2026-11-17 14:44:50. Example data is made up.</span> Text version: <code>docs/guides/DATA_GUIDE.md</code>.</footer>
+<footer><span id="foot">Built 2026-11-17 from commit 0f4d91d. Numbers measured 2026-11-18 08:45 from the database file modified 2026-11-18 06:27:14. Example data is made up.</span> Text version: <code>docs/guides/DATA_GUIDE.md</code>.</footer>
 <script type="application/json" id="guide-data">{
  "meta": {
   "title": "StockBot data picture guide",
@@ -783,6 +783,53 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
    ],
    "status": "unused",
    "source": "docs/guides/DATA_GUIDE.md::C.8",
+   "scripts": []
+  },
+  {
+   "id": "market_data_non_eq",
+   "group": "price",
+   "engine": false,
+   "oneline": "Daily raw rows of the BE, BZ and BL series (not EQ), read only for stocks a position holds.",
+   "purpose": "Buy only on EQ, but a held position may be sold, so its BE/BZ days need a bar. Read only with STOCKBOT_NON_EQ=held (default off); entries, eligibility, ADTV and ranking never read it.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Symbol as the file names it that day (a renamed stock appears under its old name; join by isin).",
+    "trade_date": "Session date.",
+    "series": "NSE series: BE, BZ or BL.",
+    "isin": "ISIN (empty for the 2020-07-13 file kept as the full-file format, which has no ISIN column).",
+    "open_raw": "Raw open.",
+    "high_raw": "Raw high.",
+    "low_raw": "Raw low.",
+    "close_raw": "Raw close.",
+    "prev_close": "Previous close as the file states it.",
+    "volume_raw": "Shares traded.",
+    "trades": "Number of trades.",
+    "traded_value": "Traded value in rupees.",
+    "source_file": "Archived original file the row came from.",
+    "created_at": "When the row was loaded."
+   },
+   "written_by": [
+    {
+     "path": "scripts/backfill_non_eq.py",
+     "what": "one-off backfill from the archived original Bhavcopy files"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/asof.py",
+     "what": "held_raw_bars, held_adjusted_bars, series_on (switch on only)"
+    },
+    {
+     "path": "stockbot/data/asof_memory.py",
+     "what": "the same reads from memory"
+    }
+   ],
+   "issues": [
+    "BL rows share a symbol and date with EQ or BE rows, so the key includes series; BL never forms a bar.",
+    "Not yet extended by the daily job; ends 2026-10-16."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.28",
    "scripts": []
   },
   {
@@ -4125,6 +4172,48 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
    "table": "trade_analytics_log",
    "plain": "While a correction window is open, logs an UPDATE (before and after) on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
    "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_non_eq_bd",
+   "table": "market_data_non_eq",
+   "plain": "Refuses a DELETE on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_bi",
+   "table": "market_data_non_eq",
+   "plain": "Refuses an INSERT that would change or replace history on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_bu",
+   "table": "market_data_non_eq",
+   "plain": "Refuses an UPDATE on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_lc",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_ld",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs a DELETE on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_li",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs an INSERT on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_lu",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
   }
  ],
  "views_note": {
@@ -4133,11 +4222,11 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
  },
  "measured": {
   "meta": {
-   "measured_at": "2026-11-17 15:06",
-   "measured_date": "2026-11-17",
+   "measured_at": "2026-11-18 08:45",
+   "measured_date": "2026-11-18",
    "db_file": "finsight.db",
-   "db_size_bytes": 3433537536,
-   "db_modified": "2026-11-17 14:44:50",
+   "db_size_bytes": 3581857792,
+   "db_modified": "2026-11-18 06:27:14",
    "generator": "py scripts/gen_data_catalogue.py --json"
   },
   "objects": [
@@ -4170,6 +4259,16 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
     "type": "index",
     "name": "idx_mdls_isin",
     "table": "market_data_lake_staging"
+   },
+   {
+    "type": "index",
+    "name": "idx_non_eq_date",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "index",
+    "name": "idx_non_eq_isin",
+    "table": "market_data_non_eq"
    },
    {
     "type": "index",
@@ -4295,6 +4394,11 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
     "type": "index",
     "name": "sqlite_autoindex_market_data_lake_yahoo_archive_1",
     "table": "market_data_lake_yahoo_archive"
+   },
+   {
+    "type": "index",
+    "name": "sqlite_autoindex_market_data_non_eq_1",
+    "table": "market_data_non_eq"
    },
    {
     "type": "index",
@@ -4445,6 +4549,11 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
     "type": "table",
     "name": "market_data_lake_yahoo_archive",
     "table": "market_data_lake_yahoo_archive"
+   },
+   {
+    "type": "table",
+    "name": "market_data_non_eq",
+    "table": "market_data_non_eq"
    },
    {
     "type": "table",
@@ -5003,6 +5112,41 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
    },
    {
     "type": "trigger",
+    "name": "g_market_data_non_eq_bd",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "trigger",
+    "name": "g_market_data_non_eq_bi",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "trigger",
+    "name": "g_market_data_non_eq_bu",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "trigger",
+    "name": "g_market_data_non_eq_lc",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "trigger",
+    "name": "g_market_data_non_eq_ld",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "trigger",
+    "name": "g_market_data_non_eq_li",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "trigger",
+    "name": "g_market_data_non_eq_lu",
+    "table": "market_data_non_eq"
+   },
+   {
+    "type": "trigger",
     "name": "g_securities_master_bd",
     "table": "securities_master"
    },
@@ -5259,7 +5403,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
     ]
    },
    "_guard_day_checksum": {
-    "rows": 3457,
+    "rows": 6873,
     "date_column": null,
     "first": null,
     "last": null,
@@ -5273,7 +5417,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": true,
       "default": null,
       "pk": 1,
-      "nonnull_rows": 3457,
+      "nonnull_rows": 6873,
       "example": "asm_gsm_daily_snapshot"
      },
      {
@@ -5282,7 +5426,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": true,
       "default": null,
       "pk": 2,
-      "nonnull_rows": 3457,
+      "nonnull_rows": 6873,
       "example": "2026-11-08"
      },
      {
@@ -5291,7 +5435,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": true,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 3457,
+      "nonnull_rows": 6873,
       "example": 253
      },
      {
@@ -5300,7 +5444,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": true,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 3457,
+      "nonnull_rows": 6873,
       "example": "62e5826bd2120f8cdf8543cec832609855eedff1d4a2f880901fb35703b3e9d0"
      },
      {
@@ -5309,7 +5453,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": false,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 3457,
+      "nonnull_rows": 6873,
       "example": "2026-11-17T09:06:58.018"
      }
     ],
@@ -5339,16 +5483,16 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "2026-11-17T09:06:58.050"
      ],
      [
-      "shares_outstanding",
-      "2020-01-01",
-      2217,
-      "03af207970af431f1a4fa8c4104d4475c21108652432c86a97b8449abc77aa84",
-      "2026-11-17T09:14:50.201"
+      "market_data_non_eq",
+      "2026-10-16",
+      258,
+      "7a0e509264ef573aefca152b01739c268eca2b944f5ebdd0af9a7be4666adce3",
+      "2026-11-18T00:57:14.191"
      ]
     ]
    },
    "_guard_registry": {
-    "rows": 25,
+    "rows": 26,
     "date_column": null,
     "first": null,
     "last": null,
@@ -5362,7 +5506,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": false,
       "default": null,
       "pk": 1,
-      "nonnull_rows": 25,
+      "nonnull_rows": 26,
       "example": "account_ledger"
      },
      {
@@ -5371,7 +5515,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": true,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 25,
+      "nonnull_rows": 26,
       "example": "INSERT_ONLY"
      },
      {
@@ -5380,8 +5524,8 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": false,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 5,
-      "example": "snapshot_date"
+      "nonnull_rows": 6,
+      "example": "trade_date"
      },
      {
       "name": "key_cols",
@@ -5389,7 +5533,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": false,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 25,
+      "nonnull_rows": 26,
       "example": "id"
      },
      {
@@ -5398,7 +5542,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": false,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 25,
+      "nonnull_rows": 26,
       "example": "created_at"
      },
      {
@@ -5438,17 +5582,17 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "live-system working table (positions are updated daily)"
      ],
      [
-      "trade_analytics_log",
-      "INSERT_ONLY",
-      null,
-      "id",
-      "closed_at",
+      "market_data_non_eq",
+      "DATED_APPEND_ONLY",
+      "trade_date",
+      "symbol,trade_date,series",
+      "id,created_at",
       null
      ]
     ]
    },
    "_guard_seal": {
-    "rows": 5,
+    "rows": 6,
     "date_column": null,
     "first": null,
     "last": null,
@@ -5462,7 +5606,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": false,
       "default": null,
       "pk": 1,
-      "nonnull_rows": 5,
+      "nonnull_rows": 6,
       "example": "asm_gsm_daily_snapshot"
      },
      {
@@ -5471,7 +5615,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": true,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 5,
+      "nonnull_rows": 6,
       "example": "2026-11-08"
      },
      {
@@ -5480,7 +5624,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "notnull": false,
       "default": null,
       "pk": 0,
-      "nonnull_rows": 5,
+      "nonnull_rows": 6,
       "example": "2026-11-17T09:06:58.018"
      }
     ],
@@ -5505,9 +5649,9 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "2026-11-17T09:06:58.050"
      ],
      [
-      "shares_outstanding",
-      "2020-01-01",
-      "2026-11-17T09:14:50.201"
+      "market_data_non_eq",
+      "2026-10-16",
+      "2026-11-18T00:57:14.191"
      ]
     ]
    },
@@ -8459,6 +8603,231 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
       "NSE",
       "2026-10-02 06:01:16",
       "2026-11-07T16:32:25"
+     ]
+    ]
+   },
+   "market_data_non_eq": {
+    "rows": 589172,
+    "date_column": "trade_date",
+    "first": "2013-01-01",
+    "last": "2026-10-16",
+    "distinct_dates": 3416,
+    "symbols": 2821,
+    "large_table": false,
+    "columns": [
+     {
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": false,
+      "default": null,
+      "pk": 1,
+      "nonnull_rows": 589172,
+      "example": 1
+     },
+     {
+      "name": "symbol",
+      "type": "TEXT",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": "3IINFOTECH"
+     },
+     {
+      "name": "trade_date",
+      "type": "TEXT",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": "2013-01-01"
+     },
+     {
+      "name": "series",
+      "type": "TEXT",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": "BE"
+     },
+     {
+      "name": "isin",
+      "type": "TEXT",
+      "notnull": false,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": "INE748C01020"
+     },
+     {
+      "name": "open_raw",
+      "type": "REAL",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 9.0
+     },
+     {
+      "name": "high_raw",
+      "type": "REAL",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 9.0
+     },
+     {
+      "name": "low_raw",
+      "type": "REAL",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 8.8
+     },
+     {
+      "name": "close_raw",
+      "type": "REAL",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 8.8
+     },
+     {
+      "name": "prev_close",
+      "type": "REAL",
+      "notnull": false,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 8.8
+     },
+     {
+      "name": "volume_raw",
+      "type": "INTEGER",
+      "notnull": true,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 494098
+     },
+     {
+      "name": "trades",
+      "type": "INTEGER",
+      "notnull": false,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 600
+     },
+     {
+      "name": "traded_value",
+      "type": "REAL",
+      "notnull": false,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": 4382132.1
+     },
+     {
+      "name": "source_file",
+      "type": "TEXT",
+      "notnull": false,
+      "default": null,
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": "cm01JAN2013bhav.csv.zip"
+     },
+     {
+      "name": "created_at",
+      "type": "TEXT",
+      "notnull": false,
+      "default": "strftime('%Y-%m-%dT%H:%M:%f','now')",
+      "pk": 0,
+      "nonnull_rows": 589172,
+      "example": "2026-11-18T00:55:11.619"
+     }
+    ],
+    "indexes": [
+     {
+      "name": "idx_non_eq_isin",
+      "unique": false,
+      "columns": [
+       "isin",
+       "trade_date"
+      ]
+     },
+     {
+      "name": "idx_non_eq_date",
+      "unique": false,
+      "columns": [
+       "trade_date"
+      ]
+     },
+     {
+      "name": "sqlite_autoindex_market_data_non_eq_1",
+      "unique": true,
+      "columns": [
+       "symbol",
+       "trade_date",
+       "series"
+      ]
+     }
+    ],
+    "sample": [
+     [
+      1,
+      "3IINFOTECH",
+      "2013-01-01",
+      "BE",
+      "INE748C01020",
+      9.0,
+      9.0,
+      8.8,
+      8.8,
+      8.8,
+      494098,
+      600,
+      4382132.1,
+      "cm01JAN2013bhav.csv.zip",
+      "2026-11-18T00:55:11.619"
+     ],
+     [
+      2,
+      "AARTIDRUGS",
+      "2013-01-01",
+      "BE",
+      "INE767A01016",
+      210.0,
+      212.9,
+      210.0,
+      212.35,
+      208.45,
+      1417,
+      25,
+      299466.05,
+      "cm01JAN2013bhav.csv.zip",
+      "2026-11-18T00:55:11.619"
+     ],
+     [
+      589172,
+      "WELINV",
+      "2026-10-16",
+      "BE",
+      "INE389K01018",
+      1822.7,
+      1822.7,
+      1822.7,
+      1822.7,
+      1918.6,
+      10451,
+      33,
+      19049037.7,
+      "BhavCopy_NSE_CM_0_0_0_20261016_F_0000.csv.zip",
+      "2026-11-18T00:57:01.620"
      ]
     ]
    },

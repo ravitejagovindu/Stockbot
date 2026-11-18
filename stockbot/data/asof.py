@@ -26,6 +26,7 @@ from typing import Optional
 import pandas as pd
 
 from stockbot.config.paths import repo_root
+from stockbot.data import non_eq as _ne
 from stockbot.data import symbol_links as _links
 from stockbot.data.adjustments import compute_adtv, get_adjusted_series
 
@@ -53,6 +54,14 @@ def _fund_symbols() -> frozenset:
         return frozenset()
     with open(p, newline="", encoding="utf-8") as f:
         return frozenset(r["symbol"].strip().upper() for r in csv.DictReader(f) if r.get("symbol"))
+
+
+def _non_eq_frame(rows) -> pd.DataFrame:
+    """Frame of ``market_data_non_eq`` rows (trade_date, series, open, high, low, close, volume), given newest first, returned oldest first."""
+    if not rows:
+        return pd.DataFrame(columns=["open_raw", "high_raw", "low_raw", "close_raw", "volume_raw", "series"])
+    return pd.DataFrame([{"trade_date": date.fromisoformat(str(r[0])[:10]), "series": str(r[1]), "open_raw": float(r[2]), "high_raw": float(r[3]), "low_raw": float(r[4]),
+                          "close_raw": float(r[5]), "volume_raw": int(r[6])} for r in reversed(rows)]).set_index("trade_date")[["open_raw", "high_raw", "low_raw", "close_raw", "volume_raw", "series"]]
 
 
 def _d(v) -> date:
@@ -142,6 +151,74 @@ class AsOfView:
         df = pd.DataFrame([{"trade_date": date.fromisoformat(str(r[0])[:10]), "open_raw": float(r[1]), "high_raw": float(r[2]), "low_raw": float(r[3]),
                             "close_raw": float(r[4]), "volume_raw": int(r[5])} for r in reversed(rows)]).set_index("trade_date")
         return df
+
+    # ------------------------------------------------------------------ held bars (non-eq-series)
+    # Bars of a HELD position: EQ rows plus the BE/BZ rows of the same stock (table ``market_data_non_eq``), one bar per day (EQ first, then BE, then BZ). ONLY the engine's handling of open positions
+    # calls these (marks, stops, exits, the exit policies' ATR, the no-bars test, the series gate). ``raw_bars`` / ``adjusted_bars`` / ``symbols_trading`` / ``adtv`` / ``symbol_info`` - the universe,
+    # eligibility, ranking and entries - stay EQ-only and never read the non-EQ table. With STOCKBOT_NON_EQ unset (the default) the held methods ARE the EQ methods.
+    _RAW_COLS = ["open_raw", "high_raw", "low_raw", "close_raw", "volume_raw"]
+
+    def _non_eq_bars_physical(self, symbol: str, lookback: Optional[int] = DEFAULT_LOOKBACK, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
+        """BE/BZ bars of ONE physical symbol (the SQL primitive): raw OHLCV plus ``series``, index datetime.date ascending; empty frame when the table is absent."""
+        self._check(end, "end")
+        self._check(start, "start")
+        if not self._has_table(_ne.TABLE):
+            return pd.DataFrame(columns=self._RAW_COLS + ["series"])
+        hi = _d(end) if end is not None else self._as_of
+        sql = (f"select trade_date, series, open_raw, high_raw, low_raw, close_raw, volume_raw from {_ne.TABLE} where symbol=? and series in ({','.join('?' * len(_ne.BAR_SERIES))}) and trade_date<=?")
+        args: list = [symbol, *_ne.BAR_SERIES, hi.isoformat()]
+        if start is not None:
+            sql += " and trade_date>=?"
+            args.append(_d(start).isoformat())
+        sql += " order by trade_date desc, series"
+        if lookback:
+            sql += " limit ?"
+            args.append(int(lookback))
+        rows = self._conn.execute(sql, args).fetchall()
+        return _non_eq_frame(rows)
+
+    def _held_frame(self, symbol: str, lookback: Optional[int] = DEFAULT_LOOKBACK, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
+        """EQ + BE/BZ bars of the stock (all names of a linked chain), one row per day (EQ first), with a ``series`` column; the last ``lookback`` rows."""
+        names = self._chain(symbol) or (symbol,)
+        parts = []
+        for n in names:
+            eq = self._raw_bars_physical(n, lookback, start, end)
+            if not eq.empty:
+                parts.append(eq.assign(series="EQ"))
+            ne = self._non_eq_bars_physical(n, lookback, start, end)
+            if not ne.empty:
+                parts.append(ne)
+        if not parts:
+            return pd.DataFrame(columns=self._RAW_COLS + ["series"])
+        df = pd.concat(parts)
+        df = df.assign(_r=df["series"].map(_ne.BAR_PRIORITY)).sort_values("_r", kind="stable")
+        df = df[~df.index.duplicated(keep="first")].sort_index().drop(columns="_r")
+        return df.iloc[-int(lookback):] if lookback else df
+
+    def held_raw_bars(self, symbol: str, lookback: Optional[int] = DEFAULT_LOOKBACK, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
+        """Raw OHLCV of a HELD stock: EQ and BE/BZ bars merged by date (switch on), else exactly ``raw_bars``."""
+        if not _ne.switch_on():
+            return self.raw_bars(symbol, lookback, start, end)
+        self._check(end, "end")
+        self._check(start, "start")
+        return self._held_frame(symbol, lookback, start, end)[self._RAW_COLS]
+
+    def held_adjusted_bars(self, symbol: str, lookback: Optional[int] = DEFAULT_LOOKBACK, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
+        """Split/bonus-adjusted prices of ``held_raw_bars`` (same adjustment code and price basis as ``adjusted_bars``); exactly ``adjusted_bars`` when the switch is off."""
+        if not _ne.switch_on():
+            return self.adjusted_bars(symbol, lookback, start, end)
+        raw = self.held_raw_bars(symbol, lookback, start, end)
+        if raw.empty:
+            return pd.DataFrame(columns=["open_adj", "high_adj", "low_adj", "close_adj"])
+        return get_adjusted_series(raw, self.corporate_actions(symbol), as_of_date=self._as_of)
+
+    def series_on(self, symbol: str) -> Optional[str]:
+        """The series of the stock's bar on the as-of date: "EQ", "BE" or "BZ"; None when it has no bar that day. With the switch off only EQ bars are visible."""
+        if not _ne.switch_on():
+            names = self._chain(symbol) or (symbol,)
+            return "EQ" if any(not self._raw_bars_physical(n, 1, self._as_of, self._as_of).empty for n in names) else None
+        f = self._held_frame(symbol, 1, self._as_of, self._as_of)
+        return str(f["series"].iloc[-1]) if len(f) else None
 
     def adjusted_bars(self, symbol: str, lookback: Optional[int] = DEFAULT_LOOKBACK, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
         """Split/bonus-adjusted prices (open_adj..close_adj) in the price basis in force on as_of; volume is never adjusted (use raw_bars)."""

@@ -22,7 +22,7 @@ def no_bars_for(view, symbol: str, n: int) -> bool:
     ses = view.sessions(lookback=n)
     if len(ses) < n:
         return False
-    b = view.raw_bars(symbol, lookback=1)
+    b = getattr(view, "held_raw_bars", view.raw_bars)(symbol, lookback=1)       # held bars: a BE/BZ bar counts as a bar (switch STOCKBOT_NON_EQ=held); with the switch off this IS raw_bars
     return b.empty or b.index[-1] < ses[0]
 
 

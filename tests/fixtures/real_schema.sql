@@ -270,3 +270,25 @@ CREATE TRIGGER trg_tal_no_delete BEFORE DELETE ON trade_analytics_log
 
 CREATE TRIGGER trg_tal_no_update BEFORE UPDATE ON trade_analytics_log
             BEGIN SELECT RAISE(ABORT, 'trade_analytics_log is append-only'); END;
+
+-- non-eq-series: BE/BZ/BL rows (added by scripts/backfill_non_eq.py)
+CREATE TABLE IF NOT EXISTS market_data_non_eq (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    symbol        TEXT NOT NULL,
+    trade_date    TEXT NOT NULL,
+    series        TEXT NOT NULL,
+    isin          TEXT,
+    open_raw      REAL NOT NULL,
+    high_raw      REAL NOT NULL,
+    low_raw       REAL NOT NULL,
+    close_raw     REAL NOT NULL,
+    prev_close    REAL,
+    volume_raw    INTEGER NOT NULL,
+    trades        INTEGER,
+    traded_value  REAL,
+    source_file   TEXT,
+    created_at    TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M:%f','now')),
+    UNIQUE(symbol, trade_date, series)
+);
+CREATE INDEX IF NOT EXISTS idx_non_eq_date ON market_data_non_eq(trade_date);
+CREATE INDEX IF NOT EXISTS idx_non_eq_isin ON market_data_non_eq(isin, trade_date);
