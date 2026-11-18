@@ -14,7 +14,7 @@ from typing import Any, Mapping, Optional, Sequence
 from stockbot.backtest.manifest import run_manifest
 from stockbot.backtest.no_network import network_forbidden
 from stockbot.data.asof import AsOfView, active_view_name
-from stockbot.data.guard import runcheck
+from stockbot.data.guard import runcheck, runlock
 from stockbot.data.lake import open_lake
 from stockbot.engine.decide import EventData, decide
 from stockbot.engine.exit_policies.registry import policies_for
@@ -33,7 +33,25 @@ class BacktestResult:
     manifest: Mapping = None        # run manifest: config hash, strategy hashes, git SHA, data snapshot id, seed (stockbot.backtest.manifest)
 
 
-def run_backtest(lake, start: date, end: date, initial_equity: float, strategies: Sequence, policies: Optional[Mapping[str, Any]], shared_config, event_data: EventData, *,
+def _database_file(lake) -> Optional[str]:
+    """The file a lake argument (path or open connection) refers to; None for an in-memory database."""
+    if not hasattr(lake, "execute"):
+        return str(lake)
+    row = next((r for r in lake.execute("PRAGMA database_list") if r[1] == "main"), None)
+    return row[2] if row and row[2] else None
+
+
+def run_backtest(lake, *args, **kwargs) -> "BacktestResult":
+    """One backtest run. Takes the run lock of the database file first (``stockbot.data.guard.runlock``): while the daily data job is writing that file the run is refused (exit code 4), and the daily job
+    does not write while this run holds its lock. The lock is released when the run ends, however it ends."""
+    db = _database_file(lake)
+    if db is None:
+        return _run_backtest(lake, *args, **kwargs)
+    with runlock.run_lock(db, "backtest"):
+        return _run_backtest(lake, *args, **kwargs)
+
+
+def _run_backtest(lake, start: date, end: date, initial_equity: float, strategies: Sequence, policies: Optional[Mapping[str, Any]], shared_config, event_data: EventData, *,
                  overlays: Optional[Mapping[str, Any]] = None, state: Optional[State] = None, seed: Optional[int] = None,
                  default_overlays: Optional[Sequence[str]] = None) -> BacktestResult:
     """``lake`` is a path (opened read-only here) or an already-open read-only connection from ``open_lake``. ``policies=None`` builds the mapping from the strategies' specs (library ids)."""

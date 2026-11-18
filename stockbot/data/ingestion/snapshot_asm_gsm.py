@@ -92,22 +92,23 @@ def rows_from(endpoint: str, payload: object, snapshot_date: str, fetched_at: st
     return out
 
 
-def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--db", default=str(ROOT / "finsight.db"))
-    args = ap.parse_args(argv)
-    snapshot_date = date.today().isoformat()
+def run(db: str, snapshot_date: str | None = None, *, session=None, fetcher=None) -> int:
+    """Store today's ASM and GSM lists in ``db`` (0 = both stored or already stored, 1 = something failed). The database is opened through ``guard.connect_writer`` (the guard triggers are active:
+    a sealed ``snapshot_date`` cannot be written) and the raw body and the parsed rows of an endpoint land in ONE transaction. ``session`` and ``fetcher`` exist so a test can supply the source."""
+    from stockbot.data.guard.core import connect_writer, tx
+    snapshot_date = snapshot_date or date.today().isoformat()
     run_at = datetime.now().isoformat(timespec="seconds")
-    con = sqlite3.connect(args.db, timeout=120)
+    con = connect_writer(db, timeout=120)
     con.executescript(DDL)
     failed = False
-    session = _new_session()
+    fetcher = fetcher or fetch
+    session = session or _new_session()
     for endpoint in ENDPOINTS:
         if con.execute("select 1 from asm_gsm_snapshot_raw where snapshot_date=? and endpoint=?", (snapshot_date, endpoint)).fetchone():
             con.execute("insert into asm_gsm_snapshot_log values (?,?,?,?,?)", (run_at, snapshot_date, endpoint, "ALREADY_STORED", None))
             print(f"{endpoint}: already stored for {snapshot_date}")
             continue
-        status, payload, body = fetch(endpoint, session)
+        status, payload, body = fetcher(endpoint, session)
         fetched_at = datetime.now().isoformat(timespec="seconds")
         rows = rows_from(endpoint, payload, snapshot_date, fetched_at) if status == 200 and payload is not None else []
         if status != 200 or not rows:
@@ -116,19 +117,24 @@ def main(argv: list[str] | None = None) -> int:
             con.execute("insert into asm_gsm_snapshot_log values (?,?,?,?,?)", (run_at, snapshot_date, endpoint, "FAILED", detail))
             print(f"{endpoint}: FAILED ({detail})", file=sys.stderr)
             if status in (403, 429):
-                con.commit()
                 break                                         # blocked: stop, do not hammer
             continue
-        with con:                                             # raw + parsed rows land together or not at all
+        with tx(con):                                         # raw + parsed rows land together or not at all
             con.execute("insert or ignore into asm_gsm_snapshot_raw values (?,?,?,?,?,?)",
                         (snapshot_date, endpoint, fetched_at, status, len(rows), body))
             con.executemany("insert or ignore into asm_gsm_daily_snapshot values (?,?,?,?,?,?,?,?,?,?,?)", rows)
             con.execute("insert into asm_gsm_snapshot_log values (?,?,?,?,?)", (run_at, snapshot_date, endpoint, "OK", f"{len(rows)} rows"))
         print(f"{endpoint}: stored {len(rows)} rows for {snapshot_date}")
         time.sleep(1.0)
-    con.commit()
     con.close()
     return 1 if failed else 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--db", default=str(ROOT / "finsight.db"))
+    args = ap.parse_args(argv)
+    return run(args.db)
 
 
 if __name__ == "__main__":

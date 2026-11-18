@@ -66,3 +66,18 @@ def split_new(fetch: Callable, table: str, rows: Iterable[dict], key_cols: Seque
             seen.add(k)
             new.append(row)
     return new, same, diff
+
+
+def writer_session(path):
+    """A SQLAlchemy ``Session`` whose connection comes from ``guard.connect_writer`` (the one way a writer opens the database) and whose transactions are REAL: ``BEGIN IMMEDIATE`` is issued when the
+    session begins, so the delete and the insert of ``store_day`` / ``store_day_non_eq`` commit or roll back together (``connect_writer`` returns an autocommit connection, which on its own would
+    make every statement its own transaction). Close the session and dispose of ``session.get_bind()`` when finished."""
+    from sqlalchemy import create_engine, event
+    from sqlalchemy.orm import Session
+    from stockbot.data.guard.core import connect_writer
+    eng = create_engine("sqlite://", creator=lambda: connect_writer(path))
+
+    @event.listens_for(eng, "begin")
+    def _begin(conn):
+        conn.exec_driver_sql("BEGIN IMMEDIATE")
+    return Session(eng, autoflush=False)

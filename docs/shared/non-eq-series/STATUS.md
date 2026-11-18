@@ -7,3 +7,4 @@
 - Owner rule: buy only on EQ; held positions may be held or sold. The sell model is a fixed assumption, not evidence.
 - No strategy folder, pre-registration, ledger row or stored result touched; no backtest run on the real lake.
 - Reports: Claude_Docs/NON_EQ_SERIES_STAGE1_REPORT.md; stage 2 report to follow. Design: docs/shared/non-eq-series/DESIGN.md.
+- UPDATE 2026-11-18: the real `finsight.db` holds the table (migrated) and the daily job (branch daily-data-update) now loads and seals BE/BZ/BL rows for each new session (2026-10-19 to 2026-11-18 loaded).
