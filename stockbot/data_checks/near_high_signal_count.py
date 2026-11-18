@@ -459,6 +459,8 @@ def fingerprint(path, *, with_hash: bool = True) -> dict:
     """The database fingerprint of one file, taken before and after the study (they must be identical): size, mtime_ns, -wal size, the sha256 of the file bytes when ``with_hash``, and the guard record
     of the tables a run reads (correction counter, sealed dates, digests of the insert-only tables). One shared implementation: stockbot.data.guard.runcheck.snapshot."""
     from stockbot.data.guard.runcheck import snapshot
+    from stockbot.data.guard.runlock import hold_for_process
+    hold_for_process(path, "baseline / signal count")      # run lock of the file until this process ends: the daily data job does not write meanwhile (and a run does not start while the job writes)
     return snapshot(path, full_hash=with_hash)
 
 

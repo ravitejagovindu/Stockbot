@@ -160,3 +160,9 @@ def populated_db(db_session, sample_ohlcv_data):
 
     db_session.flush()
     return db_session
+
+
+@pytest.fixture(autouse=True)
+def _isolated_run_locks(tmp_path_factory, monkeypatch):
+    """Run locks (stockbot.data.guard.runlock) go to a throw-away folder in every test, never to the real lock folder of the daily data job."""
+    monkeypatch.setenv("STOCKBOT_LOCK_DIR", str(tmp_path_factory.mktemp("locks")))

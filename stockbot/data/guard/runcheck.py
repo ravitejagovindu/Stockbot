@@ -173,9 +173,11 @@ def short_step(label: str, *, full_hash: bool = False) -> Callable:
             p = Path(_lake_arg(args) or lake_path())
             if not p.exists():
                 return main(argv)
-            before = snapshot(p, full_hash=full_hash)
-            rc = main(argv)
-            after = snapshot(p, full_hash=full_hash)
+            from stockbot.data.guard import runlock
+            with runlock.run_lock(p, label):                    # the daily data job does not write while this step runs (and the step does not start while the job writes)
+                before = snapshot(p, full_hash=full_hash)
+                rc = main(argv)
+                after = snapshot(p, full_hash=full_hash)
             v = verdict(before, after, label)
             return rc if v == 0 else v
         return wrapped

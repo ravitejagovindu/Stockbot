@@ -81,6 +81,27 @@ class BhavcopyIngestor:
             session.rollback()                  # a failed reload leaves the day exactly as it was
             raise
 
+    def store_day_non_eq(self, session: Session, rows, target_date: date) -> None:
+        """Replace the BE/BZ/BL rows of ``target_date`` in ``market_data_non_eq`` with ``rows`` (tuples in ``stockbot.data.non_eq.COLUMNS`` order) in ONE transaction: a failure leaves the day as it was.
+        Same pattern as ``store_day``: refused when the table is sealed through that date (checked BEFORE anything is deleted); on an unsealed day the day's rows are deleted and inserted together.
+        ``rows`` come from ``non_eq.parse_rows``, which raises on an unparsable price, so nothing is ever zero-filled here."""
+        from stockbot.data import non_eq as NE
+        refuse_if_sealed(session_fetch(session), NE.TABLE, target_date)
+        day = target_date.isoformat()
+        bad = [r for r in rows if r[1] != day]
+        if bad:
+            raise ValueError(f"{len(bad)} row(s) are not dated {day}: first {bad[0][:3]}")
+        try:
+            session.execute(text(f"DELETE FROM {NE.TABLE} WHERE trade_date = :td"), {"td": day})
+            cols = NE.COLUMNS
+            recs = [dict(zip(cols, r)) for r in rows]
+            if recs:
+                session.execute(text(f"INSERT INTO {NE.TABLE} ({', '.join(cols)}) VALUES ({', '.join(':' + c for c in cols)})"), recs)
+            session.commit()
+        except BaseException:
+            session.rollback()
+            raise
+
     def ingest(self, session: Session, target_date: date) -> int:
         """
         Downloads Bhavcopy for target_date and inserts EQ rows into DB.
