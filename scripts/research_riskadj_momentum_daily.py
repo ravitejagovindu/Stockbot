@@ -99,6 +99,12 @@ def main(argv=None) -> int:
     manifest = dict(res.manifest)
     manifest["end_of_window"] = {"rule": "closed at the last session close, normal costs and slippage, counted as usable trades", "trades": n_eow, "closed_trades_total": len(trades),
                                  "closed_before_window_end": len(trades) - n_eow, "label_in_trades_json": COUNTED_EOW, "engine_reason": ENGINE_EOW}
+    from stockbot.data import non_eq  # noqa: E402
+    if non_eq.switch_on():            # additive, ONLY with STOCKBOT_NON_EQ=held (a run with the switch off writes the manifest exactly as before): the events the BE/BZ sell model produced
+        capped = [(dec.as_of.isoformat(), f.symbol) for dec in res.decisions for f in dec.flags if f.code == "SELL_CAPPED_NON_EQ"]
+        manifest["non_eq_events"] = {"sell_capped_non_eq": len(capped), "sell_capped_non_eq_symbols": sorted({s for _, s in capped}),
+                                     "not_eq_series_blocked": sum(1 for dec in res.decisions for b in dec.blocked if str(b.reason).startswith("NOT_EQ_SERIES")),
+                                     "symbol_no_bars_exits": sum(1 for t in trades if t["exit_reason_engine"] == "SYMBOL_NO_BARS")}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1, default=str), encoding="utf-8")
     (out / "trades.json").write_text(json.dumps(trades, indent=1, default=str), encoding="utf-8")
     (out / "equity_curve.json").write_text(json.dumps({d.isoformat(): v for d, v in res.equity_curve.items()}, indent=1), encoding="utf-8")
