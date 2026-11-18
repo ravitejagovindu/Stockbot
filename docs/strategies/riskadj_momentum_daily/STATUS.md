@@ -19,3 +19,8 @@ None until the owner replies. No backtest on the real lake has been run; no retu
 
 ## 2026-11-18: re-run with BE/BZ data pre-registered as family_batch5, not yet registered
 A NEW trial of the same strategy (same spec hash, K = 1, family `family_batch5`) with `STOCKBOT_NON_EQ=held` and the BE/BZ sell model; window and everything else as batch 4. Final text `PREREGISTRATION_NONEQ.md` (FINAL TEXT, NOT REGISTERED), commands `RUN_COMMANDS_NONEQ.md`, output folder `results_run2_noneq/` (not created). Branch `rmd-noneq-run`. The family_batch4 run 1 result stands as recorded. Waiting for the owner to register the family on master; nothing has been run.
+
+## 2026-11-19: family_batch5 run done
+The BE/BZ re-run (registered as family_batch5, K = 1) ran once on the real lake: T1 adjusted p 0.4236 (2-month blocks) and 0.4270 (3-month blocks), max drawdown gate missed (45.6
+## 2026-11-19: family_batch5 run done
+The BE/BZ re-run (registered as family_batch5, K = 1) ran once on the real lake: T1 adjusted p 0.4236 (2-month blocks) and 0.4270 (3-month blocks), max drawdown gate missed (45.6 percent), verdict NOT DEMONSTRATED by the decision rule, db_check clean (file hash and guard counter unchanged). The family_batch4 run 1 result stands as recorded. Results in `results_run2_noneq/`; report `Claude_Docs/RMD_NONEQ_RUN_REPORT.md`. Open for the owner: write the `record_family_results` row on master (command in the report).
