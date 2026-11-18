@@ -45,3 +45,14 @@ Stage 1 reported 1,384 EQ rows in the file against 1,392 in the lake. **Cause: m
 - The lake and archive end on 2026-10-16 (Q6); the daily job does not yet load non-EQ rows or seal the new table, so any live use needs that job first.
 - `DROP TRIGGER` and similar changes are detectable only by the guard audit, not prevented.
 - The 2020-07-13 archive holds two files for that day; the backfill reads the legacy one.
+
+## Addendum (2026-11-18): G2 on the real file with the data tests switched on
+**Correction to the summary.** The "1,474 passed, 130 skipped" G2 on the real file above was run WITHOUT `STOCKBOT_DATA_TESTS=1` and `STOCKBOT_FINAL_CHECK=1`, so the env-gated tests were skipped. It was not comparable with the guard task's G2 (1,567 passed, 0 skipped) and should not have been reported as the real-file G2.
+
+**The 130 skips (exact reasons).** 129 skipped on "needs STOCKBOT_DATA_TESTS=1 and the real database" (or the same text for the guide checks): `data_integrity/test_asof_view_real_db.py` 57, `data_integrity/test_corporate_actions_real_db.py` 58, `data_integrity/test_calendar_integrity.py` 3, `data_integrity/test_golden_frozen.py` 2, `data_integrity/test_entry_bar_real_lake.py` 1, `unit/test_data_guide_html.py` 6, `unit/test_guides_consistent.py` 1, `unit/test_market_switch.py` 1 ("real-lake replay: STOCKBOT_DATA_TESTS=1"). 1 skipped on "the allowlists must be empty at STOP 5 (run with STOCKBOT_FINAL_CHECK=1)" (`unit/test_import_boundaries.py`).
+
+**Why the passed count looked lower.** The two runs have different totals, not different failures: guard task 1,567 tests (0 skipped); this task 1,604 = 1,567 + 37 new tests in `tests/unit/test_non_eq_series.py`. Passed fell from 1,567 to 1,474 only because 130 tests were skipped.
+
+**Re-run.** Full G2 on the real `F:\Projects\Ravi\StockBot\finsight.db` with `STOCKBOT_DATA_TESTS=1`, `STOCKBOT_FINAL_CHECK=1` (both printed at the start of the log; `STOCKBOT_VIEW` and `STOCKBOT_NON_EQ` unset): **1,604 passed, 0 skipped, 0 failed** (1 h 44 min). No code was changed.
+
+**After the run.** File sha256 `4538bf135364c39d5e6bf1f96915391187ef6f8a36ab5e010d979268c9d5fe8c`, unchanged (3,581,857,792 bytes, modified 2026-11-18 06:27, `-wal` empty). Guard audit ok (6,873 days, 6,226,029 rows checked, no problems), correction counter 0, no correction window open, no unregistered table, no missing trigger, change log 0 rows, `market_data_non_eq` registered DATED_APPEND_ONLY and sealed through 2026-10-16.
