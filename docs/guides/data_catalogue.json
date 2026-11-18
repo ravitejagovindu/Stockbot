@@ -1,10 +1,10 @@
 {
  "meta": {
-  "measured_at": "2026-11-17 15:06",
-  "measured_date": "2026-11-17",
+  "measured_at": "2026-11-18 08:45",
+  "measured_date": "2026-11-18",
   "db_file": "finsight.db",
-  "db_size_bytes": 3433537536,
-  "db_modified": "2026-11-17 14:44:50",
+  "db_size_bytes": 3581857792,
+  "db_modified": "2026-11-18 06:27:14",
   "generator": "py scripts/gen_data_catalogue.py --json"
  },
  "objects": [
@@ -37,6 +37,16 @@
    "type": "index",
    "name": "idx_mdls_isin",
    "table": "market_data_lake_staging"
+  },
+  {
+   "type": "index",
+   "name": "idx_non_eq_date",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "index",
+   "name": "idx_non_eq_isin",
+   "table": "market_data_non_eq"
   },
   {
    "type": "index",
@@ -162,6 +172,11 @@
    "type": "index",
    "name": "sqlite_autoindex_market_data_lake_yahoo_archive_1",
    "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "index",
+   "name": "sqlite_autoindex_market_data_non_eq_1",
+   "table": "market_data_non_eq"
   },
   {
    "type": "index",
@@ -312,6 +327,11 @@
    "type": "table",
    "name": "market_data_lake_yahoo_archive",
    "table": "market_data_lake_yahoo_archive"
+  },
+  {
+   "type": "table",
+   "name": "market_data_non_eq",
+   "table": "market_data_non_eq"
   },
   {
    "type": "table",
@@ -870,6 +890,41 @@
   },
   {
    "type": "trigger",
+   "name": "g_market_data_non_eq_bd",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_non_eq_bi",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_non_eq_bu",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_non_eq_lc",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_non_eq_ld",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_non_eq_li",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "trigger",
+   "name": "g_market_data_non_eq_lu",
+   "table": "market_data_non_eq"
+  },
+  {
+   "type": "trigger",
    "name": "g_securities_master_bd",
    "table": "securities_master"
   },
@@ -1126,7 +1181,7 @@
    ]
   },
   "_guard_day_checksum": {
-   "rows": 3457,
+   "rows": 6873,
    "date_column": null,
    "first": null,
    "last": null,
@@ -1140,7 +1195,7 @@
      "notnull": true,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 3457,
+     "nonnull_rows": 6873,
      "example": "asm_gsm_daily_snapshot"
     },
     {
@@ -1149,7 +1204,7 @@
      "notnull": true,
      "default": null,
      "pk": 2,
-     "nonnull_rows": 3457,
+     "nonnull_rows": 6873,
      "example": "2026-11-08"
     },
     {
@@ -1158,7 +1213,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 3457,
+     "nonnull_rows": 6873,
      "example": 253
     },
     {
@@ -1167,7 +1222,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 3457,
+     "nonnull_rows": 6873,
      "example": "62e5826bd2120f8cdf8543cec832609855eedff1d4a2f880901fb35703b3e9d0"
     },
     {
@@ -1176,7 +1231,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 3457,
+     "nonnull_rows": 6873,
      "example": "2026-11-17T09:06:58.018"
     }
    ],
@@ -1206,16 +1261,16 @@
      "2026-11-17T09:06:58.050"
     ],
     [
-     "shares_outstanding",
-     "2020-01-01",
-     2217,
-     "03af207970af431f1a4fa8c4104d4475c21108652432c86a97b8449abc77aa84",
-     "2026-11-17T09:14:50.201"
+     "market_data_non_eq",
+     "2026-10-16",
+     258,
+     "7a0e509264ef573aefca152b01739c268eca2b944f5ebdd0af9a7be4666adce3",
+     "2026-11-18T00:57:14.191"
     ]
    ]
   },
   "_guard_registry": {
-   "rows": 25,
+   "rows": 26,
    "date_column": null,
    "first": null,
    "last": null,
@@ -1229,7 +1284,7 @@
      "notnull": false,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 25,
+     "nonnull_rows": 26,
      "example": "account_ledger"
     },
     {
@@ -1238,7 +1293,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 25,
+     "nonnull_rows": 26,
      "example": "INSERT_ONLY"
     },
     {
@@ -1247,8 +1302,8 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 5,
-     "example": "snapshot_date"
+     "nonnull_rows": 6,
+     "example": "trade_date"
     },
     {
      "name": "key_cols",
@@ -1256,7 +1311,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 25,
+     "nonnull_rows": 26,
      "example": "id"
     },
     {
@@ -1265,7 +1320,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 25,
+     "nonnull_rows": 26,
      "example": "created_at"
     },
     {
@@ -1305,17 +1360,17 @@
      "live-system working table (positions are updated daily)"
     ],
     [
-     "trade_analytics_log",
-     "INSERT_ONLY",
-     null,
-     "id",
-     "closed_at",
+     "market_data_non_eq",
+     "DATED_APPEND_ONLY",
+     "trade_date",
+     "symbol,trade_date,series",
+     "id,created_at",
      null
     ]
    ]
   },
   "_guard_seal": {
-   "rows": 5,
+   "rows": 6,
    "date_column": null,
    "first": null,
    "last": null,
@@ -1329,7 +1384,7 @@
      "notnull": false,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 5,
+     "nonnull_rows": 6,
      "example": "asm_gsm_daily_snapshot"
     },
     {
@@ -1338,7 +1393,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 5,
+     "nonnull_rows": 6,
      "example": "2026-11-08"
     },
     {
@@ -1347,7 +1402,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 5,
+     "nonnull_rows": 6,
      "example": "2026-11-17T09:06:58.018"
     }
    ],
@@ -1372,9 +1427,9 @@
      "2026-11-17T09:06:58.050"
     ],
     [
-     "shares_outstanding",
-     "2020-01-01",
-     "2026-11-17T09:14:50.201"
+     "market_data_non_eq",
+     "2026-10-16",
+     "2026-11-18T00:57:14.191"
     ]
    ]
   },
@@ -4326,6 +4381,231 @@
      "NSE",
      "2026-10-02 06:01:16",
      "2026-11-07T16:32:25"
+    ]
+   ]
+  },
+  "market_data_non_eq": {
+   "rows": 589172,
+   "date_column": "trade_date",
+   "first": "2013-01-01",
+   "last": "2026-10-16",
+   "distinct_dates": 3416,
+   "symbols": 2821,
+   "large_table": false,
+   "columns": [
+    {
+     "name": "id",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 1,
+     "nonnull_rows": 589172,
+     "example": 1
+    },
+    {
+     "name": "symbol",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": "3IINFOTECH"
+    },
+    {
+     "name": "trade_date",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": "2013-01-01"
+    },
+    {
+     "name": "series",
+     "type": "TEXT",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": "BE"
+    },
+    {
+     "name": "isin",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": "INE748C01020"
+    },
+    {
+     "name": "open_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 9.0
+    },
+    {
+     "name": "high_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 9.0
+    },
+    {
+     "name": "low_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 8.8
+    },
+    {
+     "name": "close_raw",
+     "type": "REAL",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 8.8
+    },
+    {
+     "name": "prev_close",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 8.8
+    },
+    {
+     "name": "volume_raw",
+     "type": "INTEGER",
+     "notnull": true,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 494098
+    },
+    {
+     "name": "trades",
+     "type": "INTEGER",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 600
+    },
+    {
+     "name": "traded_value",
+     "type": "REAL",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": 4382132.1
+    },
+    {
+     "name": "source_file",
+     "type": "TEXT",
+     "notnull": false,
+     "default": null,
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": "cm01JAN2013bhav.csv.zip"
+    },
+    {
+     "name": "created_at",
+     "type": "TEXT",
+     "notnull": false,
+     "default": "strftime('%Y-%m-%dT%H:%M:%f','now')",
+     "pk": 0,
+     "nonnull_rows": 589172,
+     "example": "2026-11-18T00:55:11.619"
+    }
+   ],
+   "indexes": [
+    {
+     "name": "idx_non_eq_isin",
+     "unique": false,
+     "columns": [
+      "isin",
+      "trade_date"
+     ]
+    },
+    {
+     "name": "idx_non_eq_date",
+     "unique": false,
+     "columns": [
+      "trade_date"
+     ]
+    },
+    {
+     "name": "sqlite_autoindex_market_data_non_eq_1",
+     "unique": true,
+     "columns": [
+      "symbol",
+      "trade_date",
+      "series"
+     ]
+    }
+   ],
+   "sample": [
+    [
+     1,
+     "3IINFOTECH",
+     "2013-01-01",
+     "BE",
+     "INE748C01020",
+     9.0,
+     9.0,
+     8.8,
+     8.8,
+     8.8,
+     494098,
+     600,
+     4382132.1,
+     "cm01JAN2013bhav.csv.zip",
+     "2026-11-18T00:55:11.619"
+    ],
+    [
+     2,
+     "AARTIDRUGS",
+     "2013-01-01",
+     "BE",
+     "INE767A01016",
+     210.0,
+     212.9,
+     210.0,
+     212.35,
+     208.45,
+     1417,
+     25,
+     299466.05,
+     "cm01JAN2013bhav.csv.zip",
+     "2026-11-18T00:55:11.619"
+    ],
+    [
+     589172,
+     "WELINV",
+     "2026-10-16",
+     "BE",
+     "INE389K01018",
+     1822.7,
+     1822.7,
+     1822.7,
+     1822.7,
+     1918.6,
+     10451,
+     33,
+     19049037.7,
+     "BhavCopy_NSE_CM_0_0_0_20261016_F_0000.csv.zip",
+     "2026-11-18T00:57:01.620"
     ]
    ]
   },

@@ -45,8 +45,8 @@ def test_install_registers_every_real_table_and_seals_dated_tables_through_their
     assert st["tables"]["corporate_actions_log"]["class"] == INSERT_ONLY
     assert st["tables"]["regime_state"]["class"] == EXEMPT and st["tables"]["regime_state"]["reason"]
     real = {t: r for t, r in RULES.items() if t not in NOT_IN_THE_REAL_FILE}
-    assert {t for t in st["tables"]} == set(real)                                     # the 25 tables of the real file are exactly the registry (plus tables registered for a script that is not applied yet)
-    assert len(real) == 25 and sum(r.cls == DATED for r in real.values()) == 5 and sum(r.cls == INSERT_ONLY for r in real.values()) == 10 and sum(r.cls == EXEMPT for r in real.values()) == 10
+    assert {t for t in st["tables"]} == set(real)                                     # the 26 tables of the real file (25 + market_data_non_eq) are exactly the registry (plus tables registered for a script that is not applied yet)
+    assert len(real) == 26 and sum(r.cls == DATED for r in real.values()) == 6 and sum(r.cls == INSERT_ONLY for r in real.values()) == 10 and sum(r.cls == EXEMPT for r in real.values()) == 10
     assert guard.audit(con)["ok"]
 
 

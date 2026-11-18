@@ -76,7 +76,7 @@ def declared_date(name: str, content: bytes) -> date | None:
     for key in ("TRADDT", "TIMESTAMP", "DATE1"):
         if key in head:
             v = first[head.index(key)].strip()
-            for fmt in ("%Y-%m-%d", "%d-%b-%Y", "%d-%m-%Y"):
+            for fmt in ("%Y-%m-%d", "%d-%b-%Y", "%d-%m-%Y", "%d-%b-%y"):          # %d-%b-%y: the legacy file of 2020-07-13 writes "13-Jul-20"
                 try:
                     return datetime.strptime(v, fmt).date()
                 except ValueError:
@@ -154,6 +154,7 @@ def main(argv=None) -> int:
     ap.add_argument("--extra", default="", help="comma-separated extra session dates (e.g. special Saturday sessions)")
     ap.add_argument("--limit", type=int, default=0, help="stop after N dates (test)")
     ap.add_argument("--sleep", type=float, default=1.0)
+    ap.add_argument("--redo", default="", help="comma-separated dates to fetch again even though a file of ANOTHER pattern is already stored (the new file is added next to it, nothing is overwritten)")
     a = ap.parse_args(argv)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -169,6 +170,7 @@ def main(argv=None) -> int:
     sess = requests.Session()
     sess.headers.update(HEADERS)
     pacer = Pacer(a.sleep)
+    redo = {x for x in a.redo.split(",") if x}
     n_new = n_skip = n_miss = 0
     blocked_run = 0
     t0 = time.time()
@@ -184,7 +186,11 @@ def main(argv=None) -> int:
         prev = done.get(d.isoformat())
         # resume: a file already present and valid is skipped (and journalled once if the manifest lacks it)
         cands = candidates(d)
-        present = next((c for c in cands if (folder / c[1]).exists()), None)
+        if d.isoformat() in redo:
+            cands = [c for c in cands if not (folder / c[1]).exists()]
+            present = None
+        else:
+            present = next((c for c in cands if (folder / c[1]).exists()), None)
         if present and valid_file(folder / present[1], d):
             if not prev or prev["status"] != "OK" or prev["file_name"] != present[1]:
                 c = (folder / present[1]).read_bytes()

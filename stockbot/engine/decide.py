@@ -22,11 +22,14 @@ from dataclasses import dataclass, field, replace
 from datetime import date
 from typing import Any, Mapping, Optional, Sequence
 
+from stockbot.data.non_eq import switch_on
 from stockbot.engine.apply import apply_decisions
 from stockbot.engine import exit_history as XH
 from stockbot.engine.corporate import apply_actions, due_actions
 from stockbot.engine.exit_policy import Bar
 from stockbot.engine.fills import fill_ticket
+from stockbot.engine.held_view import exit_view
+from stockbot.engine.series_rule import REASON_FILL, REASON_PROPOSE, blocking_series
 from stockbot.engine.stale import no_bars_for, stale_detail, stale_sessions
 from stockbot.engine.stepping import close_no_bars, step_position
 from stockbot.engine.types import Blocked, ClosedTrade, CorporateActionApplied, Decisions, Flag, PositionUpdate, State, Ticket
@@ -58,6 +61,22 @@ def bar_of(view, symbol: str) -> Optional[Bar]:
         return None
     r = df.iloc[-1]
     return Bar(float(r["open_adj"]), float(r["high_adj"]), float(r["low_adj"]), float(r["close_adj"]))
+
+
+def held_bar_of(view, symbol: str) -> Optional[Bar]:
+    """The bar of a HELD position on the as-of session: with STOCKBOT_NON_EQ=held the EQ bar or, when the stock trades in BE/BZ that day, the BE/BZ bar (carrying its series and raw volume for the
+    sell model); with the switch off exactly ``bar_of``. Entries and fills of new tickets keep using ``bar_of`` (EQ only)."""
+    if not switch_on() or not hasattr(view, "held_adjusted_bars"):
+        return bar_of(view, symbol)
+    df = view.held_adjusted_bars(symbol, lookback=1)
+    if df.empty or df.index[-1] != view.as_of:
+        return None
+    r = df.iloc[-1]
+    s = view.series_on(symbol)
+    if s in (None, "EQ"):
+        return Bar(float(r["open_adj"]), float(r["high_adj"]), float(r["low_adj"]), float(r["close_adj"]))
+    vol = float(view.held_raw_bars(symbol, lookback=1)["volume_raw"].iloc[-1])
+    return Bar(float(r["open_adj"]), float(r["high_adj"]), float(r["low_adj"]), float(r["close_adj"]), volume=vol, series=str(s))
 
 
 def _equity(cash: float, positions) -> float:
@@ -175,6 +194,9 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
         if strat is None:
             blocked.append(Blocked(t.strategy_id, t.symbol, "STRATEGY_NOT_REGISTERED", "fill"))
             continue
+        if blocking_series(view, t.symbol):                   # never-buy rule: the stock moved to BE/BZ after the ticket was made; a restricted series is never bought
+            blocked.append(Blocked(t.strategy_id, t.symbol, REASON_FILL, "fill"))
+            continue
         policy = policies[strat.spec.exit_policy]
         plan = fill_ticket(
             t, bar_of(view, t.symbol), as_of, execution=ex, risk_pct=pr.max_loss_pct_per_trade, equity=eq_now, cash=cash, costs=costs, policy_id=policy.id,
@@ -196,7 +218,7 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
     stale_n = stale_sessions(shared_config)
     still_open: list = []
     for pos in list(state.positions) + new_positions:
-        bar = bar_of(view, pos.symbol)
+        bar = held_bar_of(view, pos.symbol)
         if bar is None and stale_n and no_bars_for(view, pos.symbol, stale_n):
             # no bar for stale_exit_sessions consecutive sessions: closed in the book at the last close (SYMBOL_NO_BARS), an explicit flag for the operator, never silent
             res = close_no_bars(pos, as_of, costs, ex.exit_slippage_pct)
@@ -226,7 +248,7 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
             applied_ca.extend(CorporateActionApplied(pos.position_id, k, f, c) for k, f, c in out.factors)
             if out.review:
                 flags.append(Flag("CORPORATE_ACTION_HOLD", ",".join(out.review), pos.strategy_id, pos.symbol))
-        res = guard("exit_policy_step", pos.strategy_id, lambda: step_position(pos, bar, as_of, view, policy, costs, ex.exit_slippage_pct, overlays_for(pos.strategy_id)), None)
+        res = guard("exit_policy_step", pos.strategy_id, lambda: step_position(pos, bar, as_of, exit_view(view), policy, costs, ex.exit_slippage_pct, overlays_for(pos.strategy_id)), None)
         if res is None:                                                # live isolation: keep the position as is, flag already recorded
             pos = replace(pos, last_close=bar.close)
             still_open.append(pos)
@@ -282,6 +304,9 @@ def decide(as_of: date, state: State, view, strategies: Sequence, shared_config,
         for p in props:
             if p.strategy_id != sid:
                 raise EngineInputError(f"strategy {sid} returned a proposal tagged {p.strategy_id}")
+            if blocking_series(view, p.symbol):                       # never-buy rule: a symbol the strategy proposes although it trades in BE/BZ today
+                blocked.append(Blocked(sid, p.symbol, REASON_PROPOSE, "propose"))
+                continue
             if p.symbol not in elig_set:
                 blocked.append(Blocked(sid, p.symbol, "NOT_ELIGIBLE", "propose"))
                 continue

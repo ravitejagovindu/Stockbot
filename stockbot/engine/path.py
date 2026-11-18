@@ -10,7 +10,9 @@ from datetime import date
 from typing import Callable, Optional, Sequence
 
 from stockbot.engine.corporate import apply_actions, due_actions
-from stockbot.engine.decide import bar_of
+from stockbot.engine.decide import bar_of, held_bar_of
+from stockbot.engine.held_view import exit_view
+from stockbot.engine.series_rule import REASON_FILL, blocking_series
 from stockbot.engine.fills import fill_ticket
 from stockbot.engine.stale import no_bars_for, stale_sessions
 from stockbot.engine.stepping import close_no_bars, step_position
@@ -29,6 +31,8 @@ def simulate_ticket(t: Ticket, sessions: Sequence[date], view_at: Callable[[date
         return None, (), "NO_SESSION"
     day = todo[0]
     view = view_at(day)
+    if blocking_series(view, t.symbol):                                              # never-buy rule (same gate as engine.decide): a restricted series is never bought
+        return None, (), REASON_FILL
     plan = fill_ticket(t, bar_of(view, t.symbol), day, execution=ex, risk_pct=pr.max_loss_pct_per_trade, equity=equity, cash=equity if cash is None else cash, costs=costs,
                        policy_id=policy.id, held=False, corporate_action_today=any(a["ex_date"] == day for a in view.corporate_actions(t.symbol)),
                        confirm=confirm, initial_exit_state=lambda p: dict(policy.initial_state(p, view)))
@@ -38,7 +42,7 @@ def simulate_ticket(t: Ticket, sessions: Sequence[date], view_at: Callable[[date
     stale_n = stale_sessions(shared_config)
     for d in todo:
         view = view_at(d)
-        bar = bar_of(view, pos.symbol)
+        bar = held_bar_of(view, pos.symbol)
         if bar is None:
             if stale_n and no_bars_for(view, pos.symbol, stale_n):                     # the same closure as engine.decide: a filled draw, reason SYMBOL_NO_BARS
                 res = close_no_bars(pos, d, costs, ex.exit_slippage_pct)
@@ -51,7 +55,7 @@ def simulate_ticket(t: Ticket, sessions: Sequence[date], view_at: Callable[[date
         due = due_actions(view.corporate_actions(pos.symbol), pos.entry_date, d, pos.ca_done)
         if due:
             pos = apply_actions(pos, due, bar.open, policy).position
-        res = step_position(pos, bar, d, view, policy, costs, ex.exit_slippage_pct)
+        res = step_position(pos, bar, d, exit_view(view), policy, costs, ex.exit_slippage_pct)
         exits.extend(res.exits)
         pos = res.position
         if res.closed:

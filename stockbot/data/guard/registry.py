@@ -47,6 +47,7 @@ RULES: dict = {r.table: r for r in (
     _d("asm_gsm_daily_snapshot", "snapshot_date", ("snapshot_date", "framework", "symbol"), ("fetched_at",)),
     _d("asm_gsm_snapshot_raw", "snapshot_date", ("snapshot_date", "endpoint"), ("fetched_at",)),
     _d("index_gap_fill", "trade_date", ("symbol", "trade_date")),
+    _d("market_data_non_eq", "trade_date", ("symbol", "trade_date", "series"), ("id", "created_at")),      # BE/BZ/BL rows (non-eq-series): a held position is marked on them; never read by eligibility or entries
     _d("shares_outstanding_pit", "effective_date", ("symbol", "effective_date"), ("id", "derived_at")),      # not in the file yet: created by scripts/provenance/f2b_build_pit_shares.py when it is run for real
     # INSERT_ONLY: facts that can arrive late, reference tables, archives, ledgers
     _i("corporate_actions_log", ("symbol", "ex_date", "action_type"), ("id", "created_at", "loaded_at")),
@@ -77,6 +78,14 @@ NOT_IN_THE_REAL_FILE = ("shares_outstanding_pit",)
 
 # the tables a backtest-type run reads (AsOfView / MemoryAsOfView / the engine / the earnings events); their guard state goes into every run manifest (R4)
 BACKTEST_READS = ("market_data_lake", "corporate_actions_log", "earnings_symbol_map", "earnings_api_raw", "earnings_board_meeting")
+
+NON_EQ_READS = ("market_data_non_eq",)      # added to the run record when STOCKBOT_NON_EQ=held (the run then reads this table)
+
+
+def backtest_reads() -> tuple:
+    """BACKTEST_READS, plus the non-EQ table when the switch STOCKBOT_NON_EQ=held is on (with the switch off no run reads it, so manifests are unchanged)."""
+    from stockbot.data.non_eq import switch_on
+    return BACKTEST_READS + NON_EQ_READS if switch_on() else BACKTEST_READS
 
 
 def is_guard_object(name: str) -> bool:

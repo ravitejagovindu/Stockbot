@@ -28,7 +28,7 @@ Other generated files: `docs/guides/data_catalogue.md` (this guide's measured co
 
 ## B. Inventory of `finsight.db`
 
-Produced from `sqlite_master` on 2026-11-09 (see `docs/guides/data_catalogue.md`, section 1). **Views: none.** **Triggers: 2** (`trg_tal_no_update`, `trg_tal_no_delete`, both on `trade_analytics_log`, both raise "append-only"). **Tables: 25** plus SQLite's own `sqlite_sequence` (it stores the next id for tables with autoincrement ids). **Named indexes: 12**; the `sqlite_autoindex_*_1` entries are the indexes SQLite creates for each UNIQUE or composite primary key.
+Produced from `sqlite_master` on 2026-11-09 (see `docs/guides/data_catalogue.md`, section 1). **Views: none.** **Triggers: 2** (`trg_tal_no_update`, `trg_tal_no_delete`, both on `trade_analytics_log`, both raise "append-only"). **Tables: 26 (25 plus `market_data_non_eq`, added 2026-11-18)** plus SQLite's own `sqlite_sequence` (it stores the next id for tables with autoincrement ids). **Named indexes: 12**; the `sqlite_autoindex_*_1` entries are the indexes SQLite creates for each UNIQUE or composite primary key.
 
 Named indexes: `idx_corp_symbol_date`, `idx_earnings_symbol`, `idx_mdl_symbol_date`, `idx_mdl_trade_date`, `idx_mdls_date`, `idx_mdls_isin`, `idx_positions_state`, `idx_positions_symbol`, `idx_securities_listing_date`, `idx_shares_symbol`, `ix_ebm_isin`, `ix_erf_isin`.
 
@@ -474,6 +474,14 @@ g_trade_analytics_log_ld
 g_trade_analytics_log_li
 g_trade_analytics_log_lu
 ```
+
+### C.28 `market_data_non_eq` (added by non-eq-series stage 2)
+
+Raw daily rows of the NSE series **BE, BZ and BL** from the archived original Bhavcopy files (589,172 rows, 2013-01-01 to 2026-10-16: BE 517,788, BZ 68,190, BL 3,194), loaded by `scripts/backfill_non_eq.py` through the guard and sealed through 2026-10-16. Owner rule: buy only on EQ; a held position may be held or sold. The table exists so a held position can be marked, stopped and sold on days its stock trades in BE/BZ. It is read only when `STOCKBOT_NON_EQ=held` (default off; with it off no engine code reads it); universe, eligibility, ADTV, ranking and entries never read it.
+
+Columns: `id`, `symbol`, `trade_date`, `series` (BE, BZ or BL), `isin`, `open_raw`, `high_raw`, `low_raw`, `close_raw`, `prev_close`, `volume_raw`, `trades`, `traded_value`, `source_file`, `created_at`. Key: UNIQUE (`symbol`, `trade_date`, `series`), because BL (block-deal window) rows coexist with EQ or BE rows of the same symbol and day; BL never forms a bar. Named indexes: `idx_non_eq_date` (`trade_date`), `idx_non_eq_isin` (`isin`, `trade_date`); plus `sqlite_autoindex_market_data_non_eq_1`. Join to the lake by `isin`, not by symbol: the lake stores the latest name of a renamed stock, the archive the name of the day. Guard class DATED_APPEND_ONLY on `trade_date`; its seven triggers: `g_market_data_non_eq_bd`, `g_market_data_non_eq_bi`, `g_market_data_non_eq_bu`, `g_market_data_non_eq_lc`, `g_market_data_non_eq_ld`, `g_market_data_non_eq_li`, `g_market_data_non_eq_lu`.
+
+Known limits: the 2020-07-13 file is the original legacy file (the full-file format lacks 8 EQ rows and an ISIN column); the daily job does not yet load or seal new days; the sell model for BE/BZ is a fixed assumption (see `docs/shared/non-eq-series/DESIGN.md`).
 
 ## D. What a reader must know about the lake
 

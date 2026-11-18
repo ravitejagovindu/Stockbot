@@ -18,7 +18,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-from stockbot.data.asof import NIFTY, VIX, AsOfView, _d
+from stockbot.data import non_eq as _ne
+from stockbot.data.asof import NIFTY, VIX, AsOfView, _d, _non_eq_frame
 
 _CHUNK = 500_000
 _RAW_COLS = ["open_raw", "high_raw", "low_raw", "close_raw", "volume_raw"]
@@ -108,6 +109,21 @@ class _Tables:
         return self._actions
 
     @property
+    def non_eq(self) -> dict:
+        """BE/BZ bars per symbol (``market_data_non_eq``), each a frame sorted by (date, series); loaded on first use, only when the switch STOCKBOT_NON_EQ=held is on. {} when the table is absent."""
+        if getattr(self, "_non_eq", None) is None:
+            got: dict = {}
+            if self._conn.execute("select 1 from sqlite_master where type='table' and name=?", (_ne.TABLE,)).fetchone() is not None:
+                marks = ",".join("?" * len(_ne.BAR_SERIES))
+                rows_of: dict = {}
+                for r in self._conn.execute(f"select symbol, trade_date, series, open_raw, high_raw, low_raw, close_raw, volume_raw from {_ne.TABLE} where series in ({marks}) order by symbol, trade_date, series", _ne.BAR_SERIES):
+                    rows_of.setdefault(r[0], []).append(r[1:])
+                for sym, rows in rows_of.items():
+                    got[sym] = _non_eq_frame(list(reversed(rows)))        # the frame builder takes newest first
+            self._non_eq = got
+        return self._non_eq
+
+    @property
     def feed_actions(self) -> dict:
         """Rows whose note starts ``feed_symbol=NAME;``: NAME -> [(filed_symbol, ex_date text, ex_date, type, num, den)] (only used for linked stocks; loaded on first use)."""
         if getattr(self, "_feed", None) is None:
@@ -170,6 +186,20 @@ class MemoryAsOfView(AsOfView):
         px, vol = self._t.px[a + i:a + j], self._t.vol[a + i:a + j]
         idx = pd.Index(self._t.dates[days[i:j] - self._t.date_base], dtype=object, name="trade_date")
         return pd.DataFrame({"open_raw": px[:, 0].copy(), "high_raw": px[:, 1].copy(), "low_raw": px[:, 2].copy(), "close_raw": px[:, 3].copy(), "volume_raw": vol.copy()}, index=idx)
+
+    def _non_eq_bars_physical(self, symbol: str, lookback: Optional[int] = 400, start: Optional[date] = None, end: Optional[date] = None) -> pd.DataFrame:
+        """Same contract as ``AsOfView._non_eq_bars_physical``, from the arrays loaded once."""
+        self._check(end, "end")
+        self._check(start, "start")
+        df = self._t.non_eq.get(symbol)
+        if df is None:
+            return pd.DataFrame(columns=_RAW_COLS + ["series"])
+        hi = _d(end) if end is not None else self._as_of
+        keep = df.index <= hi
+        if start is not None:
+            keep = keep & (df.index >= _d(start))
+        df = df[keep]
+        return df.iloc[-int(lookback):] if lookback else df
 
     # ----------------------------------------------------- actions, calendar
     def _feed_actions_physical(self, names) -> list[dict]:

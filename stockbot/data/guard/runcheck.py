@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Callable, Iterable, Optional, Sequence
 
 from stockbot.data.guard import core
-from stockbot.data.guard.registry import BACKTEST_READS, DATED, INSERT_ONLY, RULES
+from stockbot.data.guard.registry import BACKTEST_READS, DATED, INSERT_ONLY, RULES, backtest_reads
 
 EXIT_INVALID = 3
 
@@ -64,8 +64,9 @@ def table_digest(con, table: str) -> dict:
     return {"row_count": n, "max_id": mx, "sha256": h.hexdigest()}
 
 
-def guard_record(con, tables: Iterable[str] = BACKTEST_READS) -> dict:
+def guard_record(con, tables: Optional[Iterable[str]] = None) -> dict:
     """The guard state of the tables a run reads (a table missing from this database is left out)."""
+    tables = backtest_reads() if tables is None else tables
     have = set(core.tables_in(con))
     out: dict = {"installed": core.installed(con)}
     if out["installed"]:
@@ -94,7 +95,7 @@ def _ro(path) -> sqlite3.Connection:
     return con
 
 
-def snapshot(path, *, full_hash: bool, tables: Iterable[str] = BACKTEST_READS) -> dict:
+def snapshot(path, *, full_hash: bool, tables: Optional[Iterable[str]] = None) -> dict:
     """File and guard fingerprint of the database at ``path`` (read-only; never writes)."""
     p = Path(path)
     st = p.stat()

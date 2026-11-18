@@ -103,6 +103,7 @@ Extra rules in the same test: no strategy imports another strategy (`base`, `reg
 | `lake.py` | `open_lake`: opens `finsight.db` read-only (SQLite `mode=ro` plus `query_only`), so a write raises an error. |
 | `asof.py` | `AsOfView`: the point-in-time window onto the lake. The only way code above `data` reads market data. |
 | `asof_memory.py` | `MemoryAsOfView`: the same view answered from tables loaded once into memory (selected by `STOCKBOT_VIEW=memory`); only the data fetches differ, all rules are `AsOfView`'s. |
+| `non_eq.py` | Non-EQ series (BE, BZ, BL): the table `market_data_non_eq` DDL, the switch `STOCKBOT_NON_EQ=held` (default off), and parsing of an archived original Bhavcopy file. Only held positions ever read the table. |
 | `symbol_links.py` | `Links`, `active()`: the renamed-stock link table (`data/reference/symbol_links.csv`) and its switch `data.symbol_links_enabled`; the as-of views apply it on read, so a linked stock is one symbol under its latest name. |
 | `adjustments.py` | Pure functions that adjust raw prices for splits and bonuses, and compute ADTV. Never touches the database. |
 | `indicators.py` | Pure indicator functions: `sma`, `rma`, `atr`, `donchian_low`, `donchian_high`. |
@@ -223,6 +224,8 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 | `path.py` | `simulate_ticket`: one position's path under the same fill and stepping rules (used by the matched-random baseline). |
 | `exit_history.py` | Engine-owned exit history for strategies that opt in (class attribute `exit_history_sessions`): `[canonical symbol, exit session, reason]` of the strategy's own closed positions under the reserved state key `_exits`, written by `decide` (and by `apply_effect` for reported exits) before proposals; a strategy that does not opt in is unchanged. |
 | `stale.py` | The no-bars rule (`engine.stale_exit_sessions`): `no_bars_for` and the flag text; a held position whose symbol has no bar for that many sessions is closed at its last close (reason `SYMBOL_NO_BARS`) by `decide` and by `simulate_ticket`. |
+| `series_rule.py` | The never-buy rule: `blocking_series`, `is_buyable`; reasons `NOT_EQ_SERIES` (proposal) and `NOT_EQ_SERIES_AT_FILL` (fill). A restricted series is never bought; entries use EQ rows only. |
+| `held_view.py` | `exit_view`: a proxy so the strategy-owned exit policies read held bars (ATR etc.) when `STOCKBOT_NON_EQ=held`; strategy files are not edited. |
 
 - **Reads:** the `AsOfView` it is handed, the shared config, the `State`. **Writes:** nothing outside its return value. **Called by:** `stockbot/backtest/runner.py`, `stockbot/live/adapter.py`, `stockbot/validation/random_baseline.py`, tests.
 - **Imports:** config, data, universe, risk, `strategies.base`/registry; no network, no `sqlite3`.
@@ -385,6 +388,9 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/stale_symbols_inventory.py` | Inventory of symbols that stop having bars (counts and lists; read-only). | one-off | `stockbot.data.adjustments` |
 | `scripts/stale_symbols_tables.py` | Second step of that inventory: directed rename pairs, leads, gap tables. | one-off | `stockbot.data.adjustments` |
 | `scripts/stale_positions_proofs.py` | Proofs and effect numbers for symbol links and the no-bars rule (read-only). | one-off | `stockbot.data.asof`, `stockbot.data.asof_memory` |
+| `scripts/archive_raw_bhavcopy.py` | Downloads and keeps the ORIGINAL NSE daily Bhavcopy files unmodified, with a sha256 manifest. | one-off | network only |
+| `scripts/backfill_non_eq.py` | Loads the BE, BZ, BL rows of the archive into `market_data_non_eq` through the guard, with sha256 and per-day count checks, then seals it. | one-off | `stockbot.data.guard`, `stockbot.data.non_eq` |
+| `scripts/non_eq_series_inventory.py` | Stage-1 inventory of series counts and BE/BZ histories from the archive (read-only). | one-off | `stockbot.data.non_eq` |
 | `scripts/addendum_riskadj_momentum_run1.py` | Descriptive addendum for the registered riskadj_momentum run 1, computed from its stored files (concentration, stale-bar removal, drawdown episodes, lake facts); no engine run. | one-off | `stockbot.data.asof`, `stockbot.data.adjustments` |
 | `scripts/addendum_lowvol_uptrend_run1.py` | Descriptive addendum for the registered lowvol_uptrend run 1 (concentration, deepest drawdown episodes and their overlap with riskadj_momentum run 1, positions held through bar-less stretches), computed from stored files; no engine run. | one-off | `stockbot.data.symbol_links` |
 | `scripts/addendum_riskadj_momentum_daily_run1.py` | Derived facts and descriptive addendum for the registered riskadj_momentum_daily run 1 (hold times, blocked reasons, cooldown counts, concentration, drawdown episodes, side by side with riskadj_momentum run 1, re-entries), computed from stored files; no engine run, no lake access. | one-off | `stockbot.data.symbol_links` |

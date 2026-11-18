@@ -12,11 +12,14 @@ from typing import Any, Mapping, Optional, Protocol, runtime_checkable
 
 @dataclass(frozen=True)
 class Bar:
-    """Split-adjusted OHLC of one session in the as-of price basis."""
+    """Split-adjusted OHLC of one session in the as-of price basis. ``series`` / ``volume`` are filled only for a HELD stock's bar on a non-EQ day (STOCKBOT_NON_EQ=held): raw shares traded and the
+    series code; the sell model in ``engine.stepping`` reads them. An EQ bar keeps the defaults."""
     open: float
     high: float
     low: float
     close: float
+    volume: float = 0.0
+    series: str = "EQ"
 
 
 @dataclass(frozen=True)

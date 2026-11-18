@@ -594,6 +594,53 @@
    "scripts": []
   },
   {
+   "id": "market_data_non_eq",
+   "group": "price",
+   "engine": false,
+   "oneline": "Daily raw rows of the BE, BZ and BL series (not EQ), read only for stocks a position holds.",
+   "purpose": "Buy only on EQ, but a held position may be sold, so its BE/BZ days need a bar. Read only with STOCKBOT_NON_EQ=held (default off); entries, eligibility, ADTV and ranking never read it.",
+   "columns": {
+    "id": "Row id.",
+    "symbol": "Symbol as the file names it that day (a renamed stock appears under its old name; join by isin).",
+    "trade_date": "Session date.",
+    "series": "NSE series: BE, BZ or BL.",
+    "isin": "ISIN (empty for the 2020-07-13 file kept as the full-file format, which has no ISIN column).",
+    "open_raw": "Raw open.",
+    "high_raw": "Raw high.",
+    "low_raw": "Raw low.",
+    "close_raw": "Raw close.",
+    "prev_close": "Previous close as the file states it.",
+    "volume_raw": "Shares traded.",
+    "trades": "Number of trades.",
+    "traded_value": "Traded value in rupees.",
+    "source_file": "Archived original file the row came from.",
+    "created_at": "When the row was loaded."
+   },
+   "written_by": [
+    {
+     "path": "scripts/backfill_non_eq.py",
+     "what": "one-off backfill from the archived original Bhavcopy files"
+    }
+   ],
+   "read_by": [
+    {
+     "path": "stockbot/data/asof.py",
+     "what": "held_raw_bars, held_adjusted_bars, series_on (switch on only)"
+    },
+    {
+     "path": "stockbot/data/asof_memory.py",
+     "what": "the same reads from memory"
+    }
+   ],
+   "issues": [
+    "BL rows share a symbol and date with EQ or BE rows, so the key includes series; BL never forms a bar.",
+    "Not yet extended by the daily job; ends 2026-10-16."
+   ],
+   "status": "",
+   "source": "docs/guides/DATA_GUIDE.md::C.28",
+   "scripts": []
+  },
+  {
    "id": "securities_master",
    "group": "shares",
    "engine": false,
@@ -3933,6 +3980,48 @@
    "table": "trade_analytics_log",
    "plain": "While a correction window is open, logs an UPDATE (before and after) on trade_analytics_log (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
    "source": "docs/guides/DATA_GUIDE.md::C.27"
+  },
+  {
+   "name": "g_market_data_non_eq_bd",
+   "table": "market_data_non_eq",
+   "plain": "Refuses a DELETE on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_bi",
+   "table": "market_data_non_eq",
+   "plain": "Refuses an INSERT that would change or replace history on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_bu",
+   "table": "market_data_non_eq",
+   "plain": "Refuses an UPDATE on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_lc",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs the row an INSERT OR REPLACE would replace on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_ld",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs a DELETE on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_li",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs an INSERT on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
+  },
+  {
+   "name": "g_market_data_non_eq_lu",
+   "table": "market_data_non_eq",
+   "plain": "While a correction window is open, logs an UPDATE (before and after) on market_data_non_eq (sealed rows of a dated table, or any row of an insert-only table; see C.27).",
+   "source": "docs/guides/DATA_GUIDE.md::C.28"
   }
  ],
  "views_note": {
