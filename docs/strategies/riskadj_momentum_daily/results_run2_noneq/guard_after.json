@@ -1,0 +1,132 @@
+{
+ "installed": true,
+ "correction_counter": 0,
+ "window_open": false,
+ "window_reason": null,
+ "window_expires_at": null,
+ "tables": {
+  "account_ledger": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "active_positions": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "live-system working table (positions are updated daily)"
+  },
+  "asm_gsm_daily_snapshot": {
+   "registered": true,
+   "class": "DATED_APPEND_ONLY",
+   "sealed_through": "2026-11-18"
+  },
+  "asm_gsm_list": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "legacy refresher table, empty, no reader"
+  },
+  "asm_gsm_snapshot_log": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "fetch log: one row per fetch attempt, read by no result"
+  },
+  "asm_gsm_snapshot_raw": {
+   "registered": true,
+   "class": "DATED_APPEND_ONLY",
+   "sealed_through": "2026-11-18"
+  },
+  "bhavcopy_fetch_log": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "fetch log: rewritten on retry, read by no result"
+  },
+  "corporate_actions_log": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "daily_watchlist": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "live-system working table (execution status is updated)"
+  },
+  "earnings_api_raw": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "earnings_board_meeting": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "earnings_calendar": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "legacy, empty, no reader"
+  },
+  "earnings_collect_log": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "fetch log: one row per fetch attempt, read by no result"
+  },
+  "earnings_results_filing": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "earnings_symbol_map": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "index_gap_fill": {
+   "registered": true,
+   "class": "DATED_APPEND_ONLY",
+   "sealed_through": "2026-09-30"
+  },
+  "isin_symbol_map": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "market_data_lake": {
+   "registered": true,
+   "class": "DATED_APPEND_ONLY",
+   "sealed_through": "2026-11-18"
+  },
+  "market_data_lake_staging": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "staging: raw bhavcopy is deleted and re-inserted per date by design (F2 provenance input)"
+  },
+  "market_data_lake_yahoo_archive": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "market_data_non_eq": {
+   "registered": true,
+   "class": "DATED_APPEND_ONLY",
+   "sealed_through": "2026-11-18"
+  },
+  "pipeline_run_log": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "live-system working table (RUNNING to COMPLETE per day)"
+  },
+  "regime_state": {
+   "registered": true,
+   "class": "EXEMPT",
+   "reason": "legacy kill-switch state, derived from the lake and upserted per date"
+  },
+  "securities_master": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  },
+  "shares_outstanding": {
+   "registered": true,
+   "class": "DATED_APPEND_ONLY",
+   "sealed_through": "2020-01-01"
+  },
+  "trade_analytics_log": {
+   "registered": true,
+   "class": "INSERT_ONLY"
+  }
+ },
+ "unregistered": [],
+ "missing_triggers": [],
+ "change_log_rows": 0
+}
