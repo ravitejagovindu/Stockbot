@@ -812,6 +812,10 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
     {
      "path": "scripts/backfill_non_eq.py",
      "what": "one-off backfill from the archived original Bhavcopy files"
+    },
+    {
+     "path": "stockbot/data/ingestion/daily_update.py",
+     "what": "daily job: BE/BZ/BL rows of each new session through store_day_non_eq, sealed per day"
     }
    ],
    "read_by": [
@@ -826,7 +830,7 @@ footer{max-width:1180px;margin:0 auto;padding:10px 16px 24px;color:var(--muted);
    ],
    "issues": [
     "BL rows share a symbol and date with EQ or BE rows, so the key includes series; BL never forms a bar.",
-    "Not yet extended by the daily job; ends 2026-10-16."
+    "Extended day by day by the daily job from 2026-10-19 (sealed per day); a day without a file is simply absent."
    ],
    "status": "",
    "source": "docs/guides/DATA_GUIDE.md::C.28",

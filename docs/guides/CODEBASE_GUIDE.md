@@ -116,7 +116,8 @@ Subpackage `stockbot.data.guard` (the database guard, design in `docs/shared/db-
 | `registry.py` | The class of every table (DATED_APPEND_ONLY, INSERT_ONLY, EXEMPT with a reason), the columns that identify a row, and the tables a backtest reads. Adding a table = one `Rule` here. |
 | `core.py` | `install`, `ensure`, `seal_table`, `correct`, `open_window` / `close_window`, `audit`, `status`, `uninstall`: the guard state tables (`_guard_*`) and the triggers that refuse UPDATE, DELETE and back-dated INSERT on sealed rows. |
 | `runcheck.py` | `snapshot`, `differences`, `verdict`, `short_step`: the file and guard fingerprint a backtest-type run takes before and after (INVALID, exit code 3, when anything changed). |
-| `writers.py` | `refuse_if_sealed`, `split_new`: what an ingestion writer uses so it never tries to change a sealed or insert-only row. |
+| `runlock.py` | Run locks: a backtest / validation step and the daily data job never overlap on one database file (`daily_update.lock`, `run_<pid>_<time>.lock` in `F:\Projects\Ravi\StockBotData\locks`; stale = older than 12 h and no live process: reported, exit 5, never deleted). |
+| `writers.py` | `writer_session` (a SQLAlchemy session on `connect_writer` with a real transaction), `refuse_if_sealed`, `split_new`: what an ingestion writer uses so it never tries to change a sealed or insert-only row. |
 
 Subpackage `stockbot.data.db` (the older, ORM layer used by the dashboard side; writes to `finsight.db`):
 
@@ -150,6 +151,7 @@ Subpackage `stockbot.data.ingestion` (the only code that writes market data into
 | `collect_earnings_history.py` | Collects results-announcement history from two NSE APIs into the `earnings_*` tables. |
 | `earnings_calendar_ingestor.py` | `EarningsCalendarIngestor`: older earnings calendar from the NSE corporate-actions API into `earnings_calendar`. No script calls it today. |
 | `asm_gsm_refresher.py` | `ASMGSMRefresher`: older ASM/GSM list refresher (replaces the whole table each time) into `asm_gsm_list`. No script calls it today. |
+| `daily_update.py` | The daily data job: original Bhavcopy archive, EQ / BE-BZ-BL / Nifty / VIX loads through the guard writers, per-day checks, atomic seal, NO_FILE calendar, then the ASM/GSM and corporate-action steps (design: `docs/shared/daily-update/`). |
 | `snapshot_asm_gsm.py` | Forward daily snapshot of NSE's ASM and GSM lists into `asm_gsm_daily_snapshot`, `asm_gsm_snapshot_raw`, `asm_gsm_snapshot_log`. |
 | `merge_asm_gsm_snapshots.py` | Merges the stand-alone snapshot database into `finsight.db`. |
 | `local_csv_ingestor.py` | `ingest_all()`: loads local csv files (older set-up tool). |
@@ -357,6 +359,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 |---|---|---|---|
 | `scripts/run_eod.py` | The end-of-day decision step for one date: mode gate, freshness check, decide, state store, ticket file. | daily | `stockbot.live.eod_cli` |
 | `scripts/daily_health_check.py` | Read-only health check of the live side; exit 1 if something looks wrong. | daily | `stockbot.live.health_check` |
+| `scripts/daily_data_update.py` | The daily data job for finsight.db: one NSE session date at a time, oldest first, each day sealed only after its checks (task commands in `docs/shared/daily-update/SCHEDULER.md`). | daily | `stockbot.data.ingestion.daily_update`, `stockbot.data.guard.runlock` |
 | `scripts/snapshot_asm_gsm.py` | Stores NSE's current ASM and GSM lists in `finsight.db` (point-in-time only from the first day it runs). | daily (intended) | `stockbot.data.ingestion.snapshot_asm_gsm` |
 | `scripts/ingest_raw_bhavcopy_range.py` | Downloads Bhavcopy for a date range into the staging table. | manual | `stockbot.data.ingestion.ingest_raw_bhavcopy_range` |
 | `scripts/check_all.py` | All golden checks. | manual | `stockbot.data_checks.check_all` |
