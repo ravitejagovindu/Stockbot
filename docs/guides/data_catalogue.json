@@ -1,10 +1,10 @@
 {
  "meta": {
-  "measured_at": "2026-11-18 08:45",
+  "measured_at": "2026-11-18 18:56",
   "measured_date": "2026-11-18",
   "db_file": "finsight.db",
-  "db_size_bytes": 3581857792,
-  "db_modified": "2026-11-18 06:27:14",
+  "db_size_bytes": 3594948608,
+  "db_modified": "2026-11-18 17:13:22",
   "generator": "py scripts/gen_data_catalogue.py --json"
  },
  "objects": [
@@ -1181,7 +1181,7 @@
    ]
   },
   "_guard_day_checksum": {
-   "rows": 6873,
+   "rows": 6919,
    "date_column": null,
    "first": null,
    "last": null,
@@ -1195,7 +1195,7 @@
      "notnull": true,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 6873,
+     "nonnull_rows": 6919,
      "example": "asm_gsm_daily_snapshot"
     },
     {
@@ -1204,7 +1204,7 @@
      "notnull": true,
      "default": null,
      "pk": 2,
-     "nonnull_rows": 6873,
+     "nonnull_rows": 6919,
      "example": "2026-11-08"
     },
     {
@@ -1213,7 +1213,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 6873,
+     "nonnull_rows": 6919,
      "example": 253
     },
     {
@@ -1222,7 +1222,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 6873,
+     "nonnull_rows": 6919,
      "example": "62e5826bd2120f8cdf8543cec832609855eedff1d4a2f880901fb35703b3e9d0"
     },
     {
@@ -1231,7 +1231,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 6873,
+     "nonnull_rows": 6919,
      "example": "2026-11-17T09:06:58.018"
     }
    ],
@@ -1261,11 +1261,11 @@
      "2026-11-17T09:06:58.050"
     ],
     [
-     "market_data_non_eq",
-     "2026-10-16",
-     258,
-     "7a0e509264ef573aefca152b01739c268eca2b944f5ebdd0af9a7be4666adce3",
-     "2026-11-18T00:57:14.191"
+     "asm_gsm_daily_snapshot",
+     "2026-11-18",
+     254,
+     "18fb5824ac95fe07dab080af576a02f57e002b26dc712976ebc4f63e25d3e8b6",
+     "2026-11-18T11:43:19.891"
     ]
    ]
   },
@@ -1394,7 +1394,7 @@
      "default": null,
      "pk": 0,
      "nonnull_rows": 6,
-     "example": "2026-11-08"
+     "example": "2026-11-18"
     },
     {
      "name": "sealed_at",
@@ -1403,7 +1403,7 @@
      "default": null,
      "pk": 0,
      "nonnull_rows": 6,
-     "example": "2026-11-17T09:06:58.018"
+     "example": "2026-11-18T11:43:19.891"
     }
    ],
    "indexes": [
@@ -1418,18 +1418,18 @@
    "sample": [
     [
      "asm_gsm_daily_snapshot",
-     "2026-11-08",
-     "2026-11-17T09:06:58.018"
+     "2026-11-18",
+     "2026-11-18T11:43:19.891"
     ],
     [
      "asm_gsm_snapshot_raw",
-     "2026-11-08",
-     "2026-11-17T09:06:58.050"
+     "2026-11-18",
+     "2026-11-18T11:43:19.891"
     ],
     [
      "market_data_non_eq",
-     "2026-10-16",
-     "2026-11-18T00:57:14.191"
+     "2026-11-18",
+     "2026-11-18T11:43:14.050"
     ]
    ]
   },
@@ -1909,12 +1909,12 @@
    "sample": []
   },
   "asm_gsm_daily_snapshot": {
-   "rows": 253,
+   "rows": 507,
    "date_column": "snapshot_date",
    "first": "2026-11-08",
-   "last": "2026-11-08",
-   "distinct_dates": 1,
-   "symbols": 253,
+   "last": "2026-11-18",
+   "distinct_dates": 2,
+   "symbols": 298,
    "large_table": false,
    "columns": [
     {
@@ -1923,7 +1923,7 @@
      "notnull": true,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "2026-11-08"
     },
     {
@@ -1932,7 +1932,7 @@
      "notnull": true,
      "default": null,
      "pk": 2,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "ASM_LT"
     },
     {
@@ -1941,7 +1941,7 @@
      "notnull": true,
      "default": null,
      "pk": 3,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "A2ZINFRA"
     },
     {
@@ -1950,7 +1950,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "INE619I01012"
     },
     {
@@ -1959,7 +1959,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "A2Z Infra Engineering Limited"
     },
     {
@@ -1968,7 +1968,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "Stage I"
     },
     {
@@ -1977,7 +1977,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "LTASM - I (13)"
     },
     {
@@ -1986,7 +1986,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "Long Term Additional Surveillance Measure (LTASM) - Stage I"
     },
     {
@@ -1995,7 +1995,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "08-Nov-2026"
     },
     {
@@ -2004,7 +2004,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": 1
     },
     {
@@ -2013,7 +2013,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 253,
+     "nonnull_rows": 507,
      "example": "2026-11-08T10:58:10"
     }
    ],
@@ -2056,7 +2056,7 @@
      "2026-11-08T10:58:10"
     ],
     [
-     "2026-11-08",
+     "2026-11-18",
      "GSM",
      "WINNY",
      "INE0S9101013",
@@ -2064,9 +2064,9 @@
      "0",
      "GSM - 0 (99)",
      "Shortlisted under Graded Surveillance Measure",
-     "08-Nov-2026 08:07:02",
+     "18-Nov-2026 08:07:02",
      76,
-     "2026-11-08T10:58:11"
+     "2026-11-18T17:13:18"
     ]
    ]
   },
@@ -2147,11 +2147,11 @@
    "sample": []
   },
   "asm_gsm_snapshot_log": {
-   "rows": 2,
+   "rows": 4,
    "date_column": "snapshot_date",
    "first": "2026-11-08",
-   "last": "2026-11-08",
-   "distinct_dates": 1,
+   "last": "2026-11-18",
+   "distinct_dates": 2,
    "symbols": null,
    "large_table": false,
    "columns": [
@@ -2161,7 +2161,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "2026-11-08T10:58:09"
     },
     {
@@ -2170,7 +2170,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "2026-11-08"
     },
     {
@@ -2179,7 +2179,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "reportASM"
     },
     {
@@ -2188,7 +2188,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "OK"
     },
     {
@@ -2197,7 +2197,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "179 rows"
     }
    ],
@@ -2216,15 +2216,22 @@
      "reportGSM",
      "OK",
      "76 rows"
+    ],
+    [
+     "2026-11-18T17:13:15",
+     "2026-11-18",
+     "reportGSM",
+     "OK",
+     "76 rows"
     ]
    ]
   },
   "asm_gsm_snapshot_raw": {
-   "rows": 2,
+   "rows": 4,
    "date_column": "snapshot_date",
    "first": "2026-11-08",
-   "last": "2026-11-08",
-   "distinct_dates": 1,
+   "last": "2026-11-18",
+   "distinct_dates": 2,
    "symbols": null,
    "large_table": false,
    "columns": [
@@ -2234,7 +2241,7 @@
      "notnull": true,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "2026-11-08"
     },
     {
@@ -2243,7 +2250,7 @@
      "notnull": true,
      "default": null,
      "pk": 2,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "reportASM"
     },
     {
@@ -2252,7 +2259,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": "2026-11-08T10:58:10"
     },
     {
@@ -2261,7 +2268,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": 200
     },
     {
@@ -2270,7 +2277,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 2,
+     "nonnull_rows": 4,
      "example": 179
     },
     {
@@ -2306,6 +2313,14 @@
      "2026-11-08",
      "reportGSM",
      "2026-11-08T10:58:11",
+     200,
+     76,
+     "[{\"companyName\":\"AGS Transact Technologies Limited\",\"gsmStage\":\"LXII\",\"gsmTim..."
+    ],
+    [
+     "2026-11-18",
+     "reportGSM",
+     "2026-11-18T17:13:18",
      200,
      76,
      "[{\"companyName\":\"AGS Transact Technologies Limited\",\"gsmStage\":\"LXII\",\"gsmTim..."
@@ -2413,12 +2428,12 @@
    ]
   },
   "corporate_actions_log": {
-   "rows": 22997,
+   "rows": 23116,
    "date_column": "ex_date",
    "first": "2010-01-04",
-   "last": "2026-11-06",
-   "distinct_dates": 3343,
-   "symbols": 2342,
+   "last": "2026-11-27",
+   "distinct_dates": 3355,
+   "symbols": 2369,
    "large_table": false,
    "columns": [
     {
@@ -2427,7 +2442,7 @@
      "notnull": false,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": 1
     },
     {
@@ -2436,7 +2451,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": "20MICRONS"
     },
     {
@@ -2445,7 +2460,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": "2010-08-12"
     },
     {
@@ -2454,7 +2469,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": "DIVIDEND"
     },
     {
@@ -2463,8 +2478,8 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 1256,
-     "example": 1.0
+     "nonnull_rows": 1267,
+     "example": 2.0
     },
     {
      "name": "ratio_denominator",
@@ -2472,8 +2487,8 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 1256,
-     "example": 10.0
+     "nonnull_rows": 1267,
+     "example": 5.0
     },
     {
      "name": "notes",
@@ -2481,7 +2496,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": "feed_symbol=20MICRONS; Annual General Meeting And Dividend Re.1/- Per Share"
     },
     {
@@ -2490,7 +2505,7 @@
      "notnull": false,
      "default": "CURRENT_TIMESTAMP",
      "pk": 0,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": "2026-11-07 17:11:53"
     },
     {
@@ -2499,7 +2514,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": "NSE corporates-corporateActions API (F2 Step 7)"
     },
     {
@@ -2508,7 +2523,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 22997,
+     "nonnull_rows": 23116,
      "example": "2026-11-07T22:41:12"
     },
     {
@@ -2527,7 +2542,7 @@
      "default": null,
      "pk": 0,
      "nonnull_rows": 1174,
-     "example": "yahoo factor 0.1000 vs logged 0.1000 (within 3%); basis: across the gap: last..."
+     "example": "raw close ratio 0.5262 vs logged 0.5000 (within 25%; logged factor is the clo..."
     }
    ],
    "indexes": [
@@ -2579,18 +2594,18 @@
      null
     ],
     [
-     22997,
-     "DOLPHIN",
-     "2024-01-25",
+     23116,
+     "VGL",
+     "2026-11-27",
      "SPLIT",
-     1.0,
-     10.0,
-     "feed_symbol=DOLPHIN; Face Value Split (Sub-Division) - From Rs 10/- Per Share...",
-     "2026-11-07 18:12:50",
-     "NSE corporates-corporateActions API (F2 Step 7)",
-     "2026-11-07T23:42:14",
-     "STRONG",
-     "yahoo factor 0.1000 vs logged 0.1000 (within 3%); basis: across the gap: last..."
+     2.0,
+     5.0,
+     "Face Value Split (Sub-Division) - From Rs 5/- Per Share To Rs 2/- Per Share",
+     "2026-11-18 11:43:22",
+     "NSE corporates-corporateActions API (daily job)",
+     "2026-11-18T17:13:21",
+     null,
+     null
     ]
    ]
   },
@@ -3848,12 +3863,12 @@
    ]
   },
   "market_data_lake": {
-   "rows": 5634334,
+   "rows": 5694397,
    "date_column": "trade_date",
    "first": "2013-01-01",
-   "last": "2026-10-16",
-   "distinct_dates": 3416,
-   "symbols": 3627,
+   "last": "2026-11-18",
+   "distinct_dates": 3438,
+   "symbols": 3674,
    "large_table": true,
    "columns": [
     {
@@ -3953,7 +3968,7 @@
      "default": null,
      "pk": 0,
      "nonnull_rows": null,
-     "example": "yahoo:^INDIAVIX"
+     "example": "https://archives.nseindia.com/content/indices/ind_close_all_18112026.csv"
     },
     {
      "name": "loaded_at",
@@ -3962,7 +3977,7 @@
      "default": null,
      "pk": 0,
      "nonnull_rows": null,
-     "example": "2026-11-07T16:32:25"
+     "example": null
     },
     {
      "name": "source_symbol",
@@ -4031,18 +4046,18 @@
      null
     ],
     [
-     8464249,
+     8524312,
      "INDIA_VIX",
-     "2016-06-20",
-     17.35,
-     18.45,
-     16.29,
-     17.52,
+     "2026-11-18",
+     15.52,
+     16.025,
+     14.5875,
+     15.57,
      0,
      "NSE",
-     "2026-11-07T16:32:25",
-     "yahoo:^INDIAVIX",
-     "2026-11-07T16:32:25",
+     "2026-11-18 11:43:13",
+     "https://archives.nseindia.com/content/indices/ind_close_all_18112026.csv",
+     null,
      null
     ]
    ]
@@ -4385,12 +4400,12 @@
    ]
   },
   "market_data_non_eq": {
-   "rows": 589172,
+   "rows": 594507,
    "date_column": "trade_date",
    "first": "2013-01-01",
-   "last": "2026-10-16",
-   "distinct_dates": 3416,
-   "symbols": 2821,
+   "last": "2026-11-18",
+   "distinct_dates": 3438,
+   "symbols": 2846,
    "large_table": false,
    "columns": [
     {
@@ -4399,7 +4414,7 @@
      "notnull": false,
      "default": null,
      "pk": 1,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 1
     },
     {
@@ -4408,7 +4423,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": "3IINFOTECH"
     },
     {
@@ -4417,7 +4432,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": "2013-01-01"
     },
     {
@@ -4426,7 +4441,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": "BE"
     },
     {
@@ -4435,7 +4450,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": "INE748C01020"
     },
     {
@@ -4444,7 +4459,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 9.0
     },
     {
@@ -4453,7 +4468,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 9.0
     },
     {
@@ -4462,7 +4477,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 8.8
     },
     {
@@ -4471,7 +4486,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 8.8
     },
     {
@@ -4480,7 +4495,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 8.8
     },
     {
@@ -4489,7 +4504,7 @@
      "notnull": true,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 494098
     },
     {
@@ -4498,7 +4513,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 600
     },
     {
@@ -4507,7 +4522,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": 4382132.1
     },
     {
@@ -4516,7 +4531,7 @@
      "notnull": false,
      "default": null,
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": "cm01JAN2013bhav.csv.zip"
     },
     {
@@ -4525,7 +4540,7 @@
      "notnull": false,
      "default": "strftime('%Y-%m-%dT%H:%M:%f','now')",
      "pk": 0,
-     "nonnull_rows": 589172,
+     "nonnull_rows": 594507,
      "example": "2026-11-18T00:55:11.619"
     }
    ],
@@ -4591,21 +4606,21 @@
      "2026-11-18T00:55:11.619"
     ],
     [
-     589172,
-     "WELINV",
-     "2026-10-16",
+     594507,
+     "ZEEMEDIA",
+     "2026-11-18",
      "BE",
-     "INE389K01018",
-     1822.7,
-     1822.7,
-     1822.7,
-     1822.7,
-     1918.6,
-     10451,
-     33,
-     19049037.7,
-     "BhavCopy_NSE_CM_0_0_0_20261016_F_0000.csv.zip",
-     "2026-11-18T00:57:01.620"
+     "INE966H01019",
+     7.19,
+     7.31,
+     7.06,
+     7.07,
+     7.22,
+     278888,
+     596,
+     1980615.46,
+     "BhavCopy_NSE_CM_0_0_0_20261118_F_0000.csv.zip",
+     "2026-11-18T11:43:13.607"
     ]
    ]
   },
@@ -5466,80 +5481,80 @@
    },
    {
     "year": "2026",
-    "rows": 485590,
-    "sessions": 196,
-    "equity_symbols": 2931
+    "rows": 545653,
+    "sessions": 218,
+    "equity_symbols": 2978
    }
   ],
   "index_rows": [
    {
     "symbol": "INDIA_VIX",
-    "rows": 3077,
+    "rows": 3099,
     "first": "2014-05-14",
-    "last": "2026-10-16"
+    "last": "2026-11-18"
    },
    {
     "symbol": "NIFTY50_INDEX",
-    "rows": 2710,
+    "rows": 2732,
     "first": "2015-11-09",
-    "last": "2026-10-16"
+    "last": "2026-11-18"
    }
   ],
   "equity_rows": {
-   "rows": 5628547,
-   "symbols": 3625,
+   "rows": 5688566,
+   "symbols": 3672,
    "first": "2013-01-01",
-   "last": "2026-10-16"
+   "last": "2026-11-18"
   },
   "symbol_class": [
    {
     "class": "last bar before the last session of the lake",
-    "symbols": 934,
+    "symbols": 916,
     "earliest_first_bar": "2013-01-01",
-    "latest_last_bar": "2026-10-15"
+    "latest_last_bar": "2026-11-17"
    },
    {
     "class": "trades on the last session",
-    "symbols": 2691,
+    "symbols": 2756,
     "earliest_first_bar": "2013-01-01",
-    "latest_last_bar": "2026-10-16"
+    "latest_last_bar": "2026-11-18"
    }
   ],
   "actions_by_type": [
    {
     "action_type": "DIVIDEND",
-    "rows": 20912,
-    "symbols": 2124,
+    "rows": 21014,
+    "symbols": 2150,
     "first_ex_date": "2010-01-04",
-    "last_ex_date": "2026-11-06"
+    "last_ex_date": "2026-11-23"
    },
    {
     "action_type": "OTHER",
-    "rows": 630,
-    "symbols": 423,
+    "rows": 636,
+    "symbols": 425,
     "first_ex_date": "2010-01-04",
-    "last_ex_date": "2026-11-06"
+    "last_ex_date": "2026-11-25"
    },
    {
     "action_type": "BONUS",
-    "rows": 463,
-    "symbols": 350,
+    "rows": 465,
+    "symbols": 352,
     "first_ex_date": "2013-01-23",
-    "last_ex_date": "2026-09-28"
+    "last_ex_date": "2026-11-13"
    },
    {
     "action_type": "SPLIT",
-    "rows": 452,
-    "symbols": 421,
+    "rows": 458,
+    "symbols": 425,
     "first_ex_date": "2013-01-28",
-    "last_ex_date": "2026-09-22"
+    "last_ex_date": "2026-11-27"
    },
    {
     "action_type": "RIGHTS",
-    "rows": 341,
-    "symbols": 271,
+    "rows": 344,
+    "symbols": 272,
     "first_ex_date": "2010-01-15",
-    "last_ex_date": "2026-11-04"
+    "last_ex_date": "2026-11-20"
    },
    {
     "action_type": "DEMERGER",
@@ -5573,6 +5588,11 @@
     "rows": 45
    },
    {
+    "action_type": "BONUS",
+    "evidence_tier": "(null)",
+    "rows": 2
+   },
+   {
     "action_type": "DEMERGER",
     "evidence_tier": "NOT_PRICE_MOVING",
     "rows": 108
@@ -5581,6 +5601,11 @@
     "action_type": "DIVIDEND",
     "evidence_tier": "NOT_PRICE_MOVING",
     "rows": 20912
+   },
+   {
+    "action_type": "DIVIDEND",
+    "evidence_tier": "(null)",
+    "rows": 102
    },
    {
     "action_type": "MERGER",
@@ -5598,9 +5623,19 @@
     "rows": 259
    },
    {
+    "action_type": "OTHER",
+    "evidence_tier": "(null)",
+    "rows": 6
+   },
+   {
     "action_type": "RIGHTS",
     "evidence_tier": "NOT_PRICE_MOVING",
     "rows": 341
+   },
+   {
+    "action_type": "RIGHTS",
+    "evidence_tier": "(null)",
+    "rows": 3
    },
    {
     "action_type": "SPLIT",
@@ -5616,9 +5651,14 @@
     "action_type": "SPLIT",
     "evidence_tier": "WEAK_DIRECTIONAL",
     "rows": 17
+   },
+   {
+    "action_type": "SPLIT",
+    "evidence_tier": "(null)",
+    "rows": 6
    }
   ],
-  "actions_after_last_session": 90,
+  "actions_after_last_session": 16,
   "fetch_log": [
    {
     "status": "OK",
@@ -5730,10 +5770,25 @@
     "snapshot_date": "2026-11-08",
     "framework": "GSM",
     "rows": 76
+   },
+   {
+    "snapshot_date": "2026-11-18",
+    "framework": "ASM_LT",
+    "rows": 130
+   },
+   {
+    "snapshot_date": "2026-11-18",
+    "framework": "ASM_ST",
+    "rows": 48
+   },
+   {
+    "snapshot_date": "2026-11-18",
+    "framework": "GSM",
+    "rows": 76
    }
   ],
   "lake_first_date": "2013-01-01",
-  "lake_last_date": "2026-10-16",
+  "lake_last_date": "2026-11-18",
   "nifty_first_date": "2015-11-09"
  },
  "reference_files": [
