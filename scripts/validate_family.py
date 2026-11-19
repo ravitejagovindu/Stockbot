@@ -134,12 +134,21 @@ def member_conclusion(found: bool, gate_res) -> str:
     return V.registered_conclusion(found, bool(gate_res["all_met"]))
 
 
+def member_risk_override(run_dir):
+    """The max_loss_pct_per_trade override recorded in a member's run manifest (``risk_override`` block), or None when the run used the shared.yaml value."""
+    m = json.loads((Path(run_dir) / "manifest.json").read_text(encoding="utf-8"))
+    return (m.get("risk_override") or {}).get("max_loss_pct_per_trade")
+
+
 def validate_family(members: dict, *, boot: int = B_MAIN, placebo_reps: int = PLACEBO_REPS, placebo_boot: int = PLACEBO_B, seed: int = SEED, nifty: pd.Series | None = None,
                     gates: dict | None = None, blocks=BLOCKS, alpha: float = ALPHA) -> dict:
     """Everything the module computes, from already loaded members ({label: load_member(...)}). ``nifty`` and ``gates`` switch the gate evaluation on."""
     windows = {(v["start"], v["end"]) for v in members.values()}
     if len(windows) != 1:
         raise ValueError(f"all members must share one window, got {sorted(map(str, windows))}")
+    overrides = {k: member_risk_override(v["run_dir"]) for k, v in members.items()}
+    if len(set(overrides.values())) != 1:                      # family_batch6: the members must have been run with the same risk override (None = the shared.yaml value)
+        raise ValueError(f"members were run with different risk overrides {overrides}: a mixed family is refused")
     start, end = next(iter(windows))
     months = V._months(start, end)
     labels = sorted(members)

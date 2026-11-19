@@ -37,6 +37,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from stockbot.config.shared import load_shared_config  # noqa: E402
+from stockbot.config import risk_override as RO  # noqa: E402
 from stockbot.data.adjustments import action_factor  # noqa: E402
 from stockbot.data.asof import DEFAULT_LOOKBACK, AsOfView, active_view_name  # noqa: E402
 from stockbot.data.lake import open_lake  # noqa: E402
@@ -252,13 +253,17 @@ def forward_returns_bounded(conn, sessions, symbol: str, entry_date: date, entry
 
 
 def run_baseline(lake, run_dir, out_dir, *, draws: int = DRAWS, min_filled: int = MIN_FILLED, seed: int = SEED, shared_config=None) -> dict:
-    cfg = shared_config or load_shared_config()
+    base_cfg = shared_config or load_shared_config()
+    cfg = shared_config or RO.apply(base_cfg)      # the draws are sized with the same override as the run (default OFF)
     run_dir, out_dir = Path(run_dir), Path(out_dir)
     if out_dir.exists() and any(out_dir.iterdir()):
         raise FileExistsError(f"refusing to write into a non-empty directory: {out_dir}")
     out_dir.mkdir(parents=True, exist_ok=True)
     trades = json.loads((run_dir / "trades.json").read_text(encoding="utf-8"))
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+    ro_run = (manifest.get("risk_override") or {}).get("max_loss_pct_per_trade")
+    if shared_config is None and ro_run != RO.override_value():
+        raise RO.RiskOverrideError(f"the run was made with risk override {ro_run} but this baseline sees {RO.override_value()}: set {RO.ENV} to the same value as the run")
     last_day = date.fromisoformat(manifest["window"][1])
     use = [t for t in trades if not t.get("excluded_ca", False)]
     conn = open_lake(lake)
@@ -305,6 +310,8 @@ def run_baseline(lake, run_dir, out_dir, *, draws: int = DRAWS, min_filled: int 
             "pool_exclusions": {**excl.counts, "own_symbol_per_entry": len(use), "cooldown_days": int(SPEC.params["reentry_cooldown_sessions"]), "rule": "pool minus the strategy's held symbols and its own cooldown symbols (stored trades), minus the trade's own symbol; draws never block each other"},
             "excluded_ca": sum(1 for t in trades if t.get("excluded_ca", False)), "window": manifest["window"], "spec_config_hash": SPEC.config_hash(), "asof_view": active_view_name(),
             "end_of_window_rule": "open at the window end: closed at the last close with normal costs and slippage and counted as filled / usable"}
+    if shared_config is None and RO.block(base_cfg) is not None:
+        meta["risk_override"] = RO.block(base_cfg)
     for name, frame in (("actual_trades.csv", a), ("baseline_draws.csv", d)):
         frame.to_csv(out_dir / name, index=False)
     (out_dir / "baseline_meta.json").write_text(json.dumps(meta, indent=1, default=str), encoding="utf-8")

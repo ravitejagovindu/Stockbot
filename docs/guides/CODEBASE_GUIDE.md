@@ -85,6 +85,7 @@ Extra rules in the same test: no strategy imports another strategy (`base`, `reg
 | module | purpose |
 |---|---|
 | `shared.py` | Typed, validated shared configuration (dataclasses per section). `load_shared_config()` reads `shared.yaml`. |
+| `risk_override.py` | Per-run override `STOCKBOT_RISK_PCT` (0.1 to 1.0, default off) of `max_loss_pct_per_trade` for registered backtest trials (family_batch6); recorded in the run manifest; paper and live refuse it; `shared.yaml` is never edited. |
 | `shared.yaml` | The one configuration file: runtime mode, execution assumptions, costs, portfolio risk, universe rules, validation gates, reporting rates, paper criteria. |
 | `paths.py` | The only place that knows where files live: the lake, the state database, the ticket folder. |
 | `mode.py` | `current_mode(config)`: resolves PAPER or LIVE from a config dictionary. |
@@ -392,6 +393,7 @@ Every file in `scripts/` is a thin wrapper that calls one function inside `stock
 | `scripts/stale_symbols_tables.py` | Second step of that inventory: directed rename pairs, leads, gap tables. | one-off | `stockbot.data.adjustments` |
 | `scripts/stale_positions_proofs.py` | Proofs and effect numbers for symbol links and the no-bars rule (read-only). | one-off | `stockbot.data.asof`, `stockbot.data.asof_memory` |
 | `scripts/archive_raw_bhavcopy.py` | Downloads and keeps the ORIGINAL NSE daily Bhavcopy files unmodified, with a sha256 manifest. | one-off | network only |
+| `scripts/family_batch6_comparison.py` | Descriptive side-by-side of the family_batch6 members against their earlier registered runs, from stored files and the ledger only (read-only, recomputes nothing). | one-off | none (files only) |
 | `scripts/backfill_non_eq.py` | Loads the BE, BZ, BL rows of the archive into `market_data_non_eq` through the guard, with sha256 and per-day count checks, then seals it. | one-off | `stockbot.data.guard`, `stockbot.data.non_eq` |
 | `scripts/non_eq_series_inventory.py` | Stage-1 inventory of series counts and BE/BZ histories from the archive (read-only). | one-off | `stockbot.data.non_eq` |
 | `scripts/addendum_riskadj_momentum_run1.py` | Descriptive addendum for the registered riskadj_momentum run 1, computed from its stored files (concentration, stale-bar removal, drawdown episodes, lake facts); no engine run. | one-off | `stockbot.data.asof`, `stockbot.data.adjustments` |
