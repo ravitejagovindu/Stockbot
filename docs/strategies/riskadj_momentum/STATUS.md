@@ -19,3 +19,6 @@ None until the owner replies. No backtest on the real lake has been run; no retu
 
 ## 2026-11-19: pre-registered in family_batch6, not yet registered
 This strategy is a member of family_batch6 (K = 2, with its sibling riskadj_momentum or riskadj_momentum_daily): a re-run of its own separate backtest at 0.5 percent risk per trade (per-run override STOCKBOT_RISK_PCT, shared.yaml unchanged) with STOCKBOT_NON_EQ=held. Final text `docs/strategies/family_batch6/PREREGISTRATION.md` (FINAL TEXT, NOT REGISTERED), commands `docs/strategies/family_batch6/RUN_COMMANDS.md`, branch `half-risk-run`. Earlier results of this strategy stand as recorded. Waiting for the owner to register the family on master; nothing has been run.
+
+## 2026-11-19: family_batch6 run done
+Ran once at 0.5 percent risk per trade with STOCKBOT_NON_EQ=held (family_batch6, K = 2): T1 not significant at either block for either member and the 20 percent drawdown gate missed (monthly 23.7, any-day 24.9); verdict NOT DEMONSTRATED for both by the decision rule; db_check clean (file hash and guard counter unchanged). Earlier results of this strategy stand as recorded. Results in `docs/strategies/family_batch6/results/`, report `Claude_Docs/FAMILY_BATCH6_RUN_REPORT.md`. Open for the owner: the `record_family_results` row on master (command in the report).

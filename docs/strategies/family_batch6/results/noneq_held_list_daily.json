@@ -1,0 +1,475 @@
+{
+ "old": {
+  "folder": "docs\\strategies\\riskadj_momentum_daily\\results_run2_noneq",
+  "trades": 1061,
+  "symbol_no_bars_exits": 2,
+  "exit_reasons": {
+   "STOP_HIT": 1049,
+   "SYMBOL_NO_BARS": 2,
+   "END_OF_WINDOW": 10
+  },
+  "exits_on_a_non_eq_bar": 16,
+  "trades_held_through_a_non_eq_spell": 16,
+  "net_profit": 2190428.147269229,
+  "expectancy_r": 0.15806970347560448,
+  "profit_factor": 1.3201810354341001,
+  "max_drawdown_pct": 45.612574256550644,
+  "cash_credited_alpha_pct": 3.0158262545173073,
+  "t1_adjusted_p_by_block": {
+   "2": {
+    "riskadj_momentum_daily": 0.4236
+   },
+   "3": {
+    "riskadj_momentum_daily": 0.427
+   }
+  },
+  "conclusion": {
+   "riskadj_momentum_daily": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)"
+  },
+  "non_eq_view": {
+   "switch": "STOCKBOT_NON_EQ=held",
+   "table": "market_data_non_eq",
+   "bar_series": [
+    "BE",
+    "BZ"
+   ],
+   "sell_model": {
+    "volume_cap_per_session": 0.1,
+    "exit_slippage_multiplier": 2.0,
+    "assumption": "fixed assumption, not evidence"
+   }
+  },
+  "non_eq_events": {
+   "sell_capped_non_eq": 0,
+   "sell_capped_non_eq_symbols": [],
+   "not_eq_series_blocked": 2,
+   "symbol_no_bars_exits": 2
+  },
+  "held_list": [
+   {
+    "symbol": "IIFL",
+    "entry_date": "2017-09-26",
+    "exit_date": "2017-10-30",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 9,
+    "first_non_eq": "2017-10-17",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -12193.432729978074
+   },
+   {
+    "symbol": "BOMDYEING",
+    "entry_date": "2018-06-20",
+    "exit_date": "2018-07-06",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 3,
+    "first_non_eq": "2018-07-04",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -216.56289810481468
+   },
+   {
+    "symbol": "ADANIGREEN",
+    "entry_date": "2021-05-06",
+    "exit_date": "2021-06-10",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 2,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 15540.691724920416
+   },
+   {
+    "symbol": "NEULANDLAB",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-06-18",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 8,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -5342.106363222596
+   },
+   {
+    "symbol": "MAGMA",
+    "entry_date": "2021-03-25",
+    "exit_date": "2021-06-21",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 9,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 19050.206701576142
+   },
+   {
+    "symbol": "CGPOWER",
+    "entry_date": "2021-06-02",
+    "exit_date": "2021-07-12",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 24,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -15447.232825159801
+   },
+   {
+    "symbol": "TRIDENT",
+    "entry_date": "2022-01-19",
+    "exit_date": "2022-02-11",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 15,
+    "first_non_eq": "2022-01-21",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -24003.742064984326
+   },
+   {
+    "symbol": "PCJEWELLER",
+    "entry_date": "2022-08-30",
+    "exit_date": "2022-09-28",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 12,
+    "first_non_eq": "2022-09-13",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 14919.557329664818
+   },
+   {
+    "symbol": "JBMA",
+    "entry_date": "2023-08-14",
+    "exit_date": "2023-09-25",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 17,
+    "first_non_eq": "2023-08-31",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 20971.85489466598
+   },
+   {
+    "symbol": "PRAKASH",
+    "entry_date": "2023-10-17",
+    "exit_date": "2023-10-25",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 3,
+    "first_non_eq": "2023-10-20",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -24936.372352916136
+   },
+   {
+    "symbol": "NEWGEN",
+    "entry_date": "2023-10-26",
+    "exit_date": "2024-01-20",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 56,
+    "first_non_eq": "2023-11-02",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 52659.677556336625
+   },
+   {
+    "symbol": "SHAILY",
+    "entry_date": "2024-12-16",
+    "exit_date": "2025-01-27",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 20,
+    "first_non_eq": "2024-12-31",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -12020.654863006215
+   },
+   {
+    "symbol": "E2E",
+    "entry_date": "2026-02-01",
+    "exit_date": "2026-02-24",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 1,
+    "first_non_eq": "2026-02-24",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 20506.90322314855
+   },
+   {
+    "symbol": "BLISSGVS",
+    "entry_date": "2026-06-29",
+    "exit_date": "2026-07-20",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 12,
+    "first_non_eq": "2026-07-03",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -10420.166954983259
+   },
+   {
+    "symbol": "DIACABS",
+    "entry_date": "2026-03-17",
+    "exit_date": "2026-09-03",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 23,
+    "first_non_eq": "2026-08-04",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 169688.066005503
+   },
+   {
+    "symbol": "HFCL",
+    "entry_date": "2026-08-03",
+    "exit_date": "2026-09-03",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 1,
+    "first_non_eq": "2026-09-03",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 19570.270983298895
+   }
+  ]
+ },
+ "new": {
+  "folder": "docs\\strategies\\family_batch6\\results\\riskadj_momentum_daily",
+  "trades": 1077,
+  "symbol_no_bars_exits": 1,
+  "exit_reasons": {
+   "STOP_HIT": 1066,
+   "SYMBOL_NO_BARS": 1,
+   "END_OF_WINDOW": 10
+  },
+  "exits_on_a_non_eq_bar": 16,
+  "trades_held_through_a_non_eq_spell": 16,
+  "net_profit": 1040143.119825172,
+  "expectancy_r": 0.15428569786293309,
+  "profit_factor": 1.3562394474618802,
+  "max_drawdown_pct": 24.872352654430102,
+  "cash_credited_alpha_pct": 3.3118857509051747,
+  "t1_adjusted_p_by_block": {},
+  "conclusion": null,
+  "non_eq_view": {
+   "switch": "STOCKBOT_NON_EQ=held",
+   "table": "market_data_non_eq",
+   "bar_series": [
+    "BE",
+    "BZ"
+   ],
+   "sell_model": {
+    "volume_cap_per_session": 0.1,
+    "exit_slippage_multiplier": 2.0,
+    "assumption": "fixed assumption, not evidence"
+   }
+  },
+  "non_eq_events": {
+   "sell_capped_non_eq": 0,
+   "sell_capped_non_eq_symbols": [],
+   "not_eq_series_blocked": 1,
+   "symbol_no_bars_exits": 1
+  },
+  "held_list": [
+   {
+    "symbol": "IIFL",
+    "entry_date": "2017-09-26",
+    "exit_date": "2017-10-30",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 9,
+    "first_non_eq": "2017-10-17",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -5593.692153731892
+   },
+   {
+    "symbol": "BOMDYEING",
+    "entry_date": "2018-06-29",
+    "exit_date": "2018-07-06",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 3,
+    "first_non_eq": "2018-07-04",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -5375.00333112276
+   },
+   {
+    "symbol": "CGPOWER",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-06-10",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 2,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -4460.726581151854
+   },
+   {
+    "symbol": "ATGL",
+    "entry_date": "2021-05-17",
+    "exit_date": "2021-06-16",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 6,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 5188.574286739463
+   },
+   {
+    "symbol": "TANLA",
+    "entry_date": "2021-06-07",
+    "exit_date": "2021-06-17",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 7,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -7684.782375496811
+   },
+   {
+    "symbol": "MAGMA",
+    "entry_date": "2021-03-25",
+    "exit_date": "2021-06-21",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 9,
+    "first_non_eq": "2021-06-09",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 7348.076606460487
+   },
+   {
+    "symbol": "GPIL",
+    "entry_date": "2021-06-02",
+    "exit_date": "2021-08-04",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 33,
+    "first_non_eq": "2021-06-18",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 21993.349776921295
+   },
+   {
+    "symbol": "TRIDENT",
+    "entry_date": "2022-01-19",
+    "exit_date": "2022-02-11",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 15,
+    "first_non_eq": "2022-01-21",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -8283.612890831737
+   },
+   {
+    "symbol": "ZENTEC",
+    "entry_date": "2023-08-14",
+    "exit_date": "2023-09-12",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 18,
+    "first_non_eq": "2023-08-18",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -1764.5589097125628
+   },
+   {
+    "symbol": "JBMA",
+    "entry_date": "2023-08-08",
+    "exit_date": "2023-09-25",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 17,
+    "first_non_eq": "2023-08-31",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 688.2552007664208
+   },
+   {
+    "symbol": "NEWGEN",
+    "entry_date": "2023-10-26",
+    "exit_date": "2024-01-20",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 56,
+    "first_non_eq": "2023-11-02",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 22012.394614468045
+   },
+   {
+    "symbol": "SHAILY",
+    "entry_date": "2024-12-16",
+    "exit_date": "2025-01-27",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 20,
+    "first_non_eq": "2024-12-31",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": -4212.319992758271
+   },
+   {
+    "symbol": "E2E",
+    "entry_date": "2026-02-02",
+    "exit_date": "2026-02-24",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 1,
+    "first_non_eq": "2026-02-24",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 1871.558002545692
+   },
+   {
+    "symbol": "QPOWER",
+    "entry_date": "2026-05-18",
+    "exit_date": "2026-07-03",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 32,
+    "first_non_eq": "2026-05-19",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 969.3696273028892
+   },
+   {
+    "symbol": "DIACABS",
+    "entry_date": "2026-03-17",
+    "exit_date": "2026-09-03",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 23,
+    "first_non_eq": "2026-08-04",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 66105.30273724344
+   },
+   {
+    "symbol": "HFCL",
+    "entry_date": "2026-07-27",
+    "exit_date": "2026-09-03",
+    "exit_reason": "STOP_HIT",
+    "non_eq_sessions": 1,
+    "first_non_eq": "2026-09-03",
+    "series": [
+     "BE"
+    ],
+    "net_pnl": 5672.705462620925
+   }
+  ]
+ }
+}
