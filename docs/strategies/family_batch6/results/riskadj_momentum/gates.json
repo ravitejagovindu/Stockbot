@@ -1,0 +1,221 @@
+{
+ "gates": [
+  {
+   "gate": "min_trades",
+   "gate_value": 40,
+   "comparison": ">=",
+   "observed": 767,
+   "interval": null,
+   "met": true,
+   "note": "a floor only; 40 trades have almost no power"
+  },
+  {
+   "gate": "min_expectancy_r",
+   "gate_value": 0.15,
+   "comparison": ">=",
+   "observed": 0.1770764791339615,
+   "interval": [
+    0.018993154067036982,
+    0.35355528170035655
+   ],
+   "met": true,
+   "note": "the strategy's own absolute net R per usable trade, point estimate"
+  },
+  {
+   "gate": "min_profit_factor",
+   "gate_value": 1.3,
+   "comparison": ">=",
+   "observed": 1.402435322733422,
+   "interval": [
+    0.9864912659854093,
+    1.9773846882507178
+   ],
+   "met": true,
+   "note": "net P&L of usable trades, point estimate"
+  },
+  {
+   "gate": "max_drawdown_pct",
+   "gate_value": 20.0,
+   "comparison": "<=",
+   "observed": 23.684440131373023,
+   "interval": null,
+   "met": false,
+   "note": "one path, no interval"
+  },
+  {
+   "gate": "min_alpha_pct",
+   "gate_value": 0.0,
+   "comparison": ">=",
+   "observed": 2.7115455468063487,
+   "interval": [
+    -2.3564956461250004,
+    8.316486714002384
+   ],
+   "met": true,
+   "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+  }
+ ],
+ "counts": {
+  "closed": 770,
+  "usable": 767,
+  "end_of_window": 9,
+  "usable_closed_before_window_end": 758,
+  "end_of_window_counted_as_usable": 9,
+  "excluded_ca": 3,
+  "entries_per_month": 5.9,
+  "invested_share_mean": 0.3188380631174478,
+  "invested_share_p5": 0.0,
+  "invested_share_p95": 0.5647084289186912,
+  "open_positions_mean": 7.635003739715781,
+  "open_positions_max": 12,
+  "baseline_end_of_window_draws": 165,
+  "baseline_draws_total": 15073
+ },
+ "all_met": false,
+ "alpha": {
+  "raw": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 5.447734195627585,
+   "benchmark_cagr_pct": 7.426353941918551,
+   "alpha_pct": -1.978619746290966
+  },
+  "cash_credited": {
+   "years": 10.789869952087612,
+   "strategy_cagr_pct": 10.1378994887249,
+   "benchmark_cagr_pct": 7.426353941918551,
+   "alpha_pct": 2.7115455468063487
+  },
+  "gate_alpha_pct": 2.7115455468063487,
+  "after_tax_label": "illustrative, not tax advice: tax charged on the end gain of the cash-credited strategy and of its benchmark; never a gate input",
+  "note": "Cash credit is applied after the fact on the recorded equity and cash (idle cash at the previous close earns risk_free_pct/100/252 per day); it does not feed back into sizing or any engine decision. The gate uses the cash-credited, pre-tax alpha.",
+  "risk_free_pct": 6.5,
+  "after_tax_illustrative": {
+   "0.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 10.1378994887249,
+    "benchmark_cagr_pct": 7.426353941918551,
+    "alpha_pct": 2.7115455468063487
+   },
+   "20.0": {
+    "years": 10.789869952087612,
+    "strategy_cagr_pct": 8.731956870055878,
+    "benchmark_cagr_pct": 6.298127213021232,
+    "alpha_pct": 2.4338296570346465
+   }
+  }
+ },
+ "implied_annual_return": {
+  "non_gating": true,
+  "trades_per_year": 71.08519411316924,
+  "expectancy_r": 0.1770764791339615,
+  "max_loss_pct_per_trade": 0.5,
+  "implied_annual_return_pct": 6.293757946057108,
+  "matched_benchmark_cagr_pct": 7.426353941918551,
+  "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"
+ },
+ "descriptive": {
+  "2016-2019": {
+   "descriptive": true,
+   "period": "2016-01-01 to 2019-12-31",
+   "trades": 226,
+   "expectancy_r": 0.22568010372484196,
+   "profit_factor": 1.5356399548230786,
+   "max_drawdown_pct": 7.73588609478328,
+   "invested_share_mean": 0.29900578342577067,
+   "alpha_pct": 1.2683666599712105
+  },
+  "2020-2026": {
+   "descriptive": true,
+   "period": "2020-01-01 to 2026-10-16",
+   "trades": 541,
+   "expectancy_r": 0.15677256202205947,
+   "profit_factor": 1.358826533958927,
+   "max_drawdown_pct": 18.189869814409708,
+   "invested_share_mean": 0.3304225582454062,
+   "alpha_pct": 3.516641718542469
+  }
+ },
+ "seed": 20261111,
+ "boot": 10000,
+ "block_months": 3,
+ "gate_alpha_is_pre_tax": true,
+ "risk_free_pct": 6.5,
+ "stale_exit": {
+  "trades": 1,
+  "net_pnl_total": 3325.658435901526,
+  "list": [
+   {
+    "position_id": "riskadj_momentum:DHANI:2018-06-04",
+    "symbol": "DHANI",
+    "entry_date": "2018-06-04",
+    "exit_date": "2018-07-12",
+    "net_pnl": 3325.658435901526
+   }
+  ],
+  "usable": "these trades count like any other (gates, T1, T2, equity curve)",
+  "stress": {
+   "label": "stress, not a gate",
+   "factor": 0.5,
+   "gates": [
+    {
+     "gate": "min_trades",
+     "gate_value": 40,
+     "comparison": ">=",
+     "observed": 767,
+     "interval": null,
+     "met": true,
+     "note": "a floor only; 40 trades have almost no power"
+    },
+    {
+     "gate": "min_expectancy_r",
+     "gate_value": 0.15,
+     "comparison": ">=",
+     "observed": 0.17325980752002493,
+     "interval": [
+      0.01424873447582413,
+      0.3492187423066242
+     ],
+     "met": true,
+     "note": "the strategy's own absolute net R per usable trade, point estimate"
+    },
+    {
+     "gate": "min_profit_factor",
+     "gate_value": 1.3,
+     "comparison": ">=",
+     "observed": 1.3901275951457666,
+     "interval": [
+      0.9763522939366636,
+      1.9663664676107702
+     ],
+     "met": true,
+     "note": "net P&L of usable trades, point estimate"
+    },
+    {
+     "gate": "max_drawdown_pct",
+     "gate_value": 20.0,
+     "comparison": "<=",
+     "observed": 23.91512064409843,
+     "interval": null,
+     "met": false,
+     "note": "one path, no interval"
+    },
+    {
+     "gate": "min_alpha_pct",
+     "gate_value": 0.0,
+     "comparison": ">=",
+     "observed": 2.5788525905854565,
+     "interval": [
+      -2.5691922912303,
+      8.279261049298867
+     ],
+     "met": true,
+     "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+    }
+   ],
+   "all_met": false,
+   "alpha_cash_credited_pct": 2.5788525905854565,
+   "net_pnl_total_stressed": -15313.241167172646
+  }
+ },
+ "asof_view": "memory"
+}

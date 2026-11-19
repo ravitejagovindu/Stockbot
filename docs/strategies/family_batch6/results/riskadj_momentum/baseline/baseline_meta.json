@@ -1,0 +1,135 @@
+{
+ "draws_per_trade": 20,
+ "min_filled": 10,
+ "seed": 20261111,
+ "policy": "trailing_atr3_floor8",
+ "stop_rule": "close - max(3 x ATR14, 0.08 x close) on the draw's own symbol",
+ "usable_trades": 767,
+ "pairs_kept": 767,
+ "dropped_pairs": 0,
+ "share_dropped": 0.0,
+ "flag": null,
+ "draws_total": 15073,
+ "end_of_window_trades": 9,
+ "end_of_window_draws": 165,
+ "draws_closed_before_window_end": 14908,
+ "stale_exit_draws": 14,
+ "unfilled": {
+  "SIZE_ZERO": 55,
+  "GAP_UP_TOO_LARGE": 141,
+  "CORP_ACTION_ON_EXEC_DATE": 65,
+  "NO_STOP": 2,
+  "NO_BAR_OR_ALREADY_HELD": 4
+ },
+ "excluded_ca": 3,
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "spec_config_hash": "72dbec2c3da600cfe6de049a64efd530171ef2f539075f53e57a05e972ef27dc",
+ "asof_view": "memory",
+ "end_of_window_rule": "open at the window end: closed at the last close with normal costs and slippage and counted as filled / usable",
+ "risk_override": {
+  "env": "STOCKBOT_RISK_PCT",
+  "max_loss_pct_per_trade": 0.5,
+  "base_max_loss_pct_per_trade": 1.0,
+  "note": "per-run override for the registered trial; shared.yaml unchanged; paper and live refuse it"
+ },
+ "finsight_db": {
+  "before": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3594948608,
+   "mtime_ns": 1795057210410485300,
+   "mtime_iso": "2026-11-19T08:30:10.410485",
+   "wal_bytes": 0,
+   "sha256": "81e90beff580f962628596031978c918b06e8876cd9ac5bfeb39b3b2377e50d0",
+   "guard": {
+    "installed": true,
+    "correction_counter": 0,
+    "window_open": false,
+    "tables": {
+     "market_data_lake": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     },
+     "corporate_actions_log": {
+      "class": "INSERT_ONLY",
+      "row_count": 23117,
+      "max_id": 23117,
+      "sha256": "aeaa6d38b509fb79b384b86cc95fa656b828743dbbc1152e1c71528cf46a813f"
+     },
+     "earnings_symbol_map": {
+      "class": "INSERT_ONLY",
+      "row_count": 3258,
+      "max_id": 3258,
+      "sha256": "93da9c5275d14155aa224b538ea648a771a82496825732049d899fb24a06b5d0"
+     },
+     "earnings_api_raw": {
+      "class": "INSERT_ONLY",
+      "row_count": 6476,
+      "max_id": 6476,
+      "sha256": "59e94b5a4698c249f1281f109c34fce64168713c2e8dd61f43c169e3e90e8c1f"
+     },
+     "earnings_board_meeting": {
+      "class": "INSERT_ONLY",
+      "row_count": 164819,
+      "max_id": 164871,
+      "sha256": "6c4f16f39517437d0c9fb7235bcf9292c0e4502037dcc4d926745a383fe1f22e"
+     },
+     "market_data_non_eq": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     }
+    }
+   }
+  },
+  "after": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3594948608,
+   "mtime_ns": 1795057210410485300,
+   "mtime_iso": "2026-11-19T08:30:10.410485",
+   "wal_bytes": 0,
+   "sha256": "81e90beff580f962628596031978c918b06e8876cd9ac5bfeb39b3b2377e50d0",
+   "guard": {
+    "installed": true,
+    "correction_counter": 0,
+    "window_open": false,
+    "tables": {
+     "market_data_lake": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     },
+     "corporate_actions_log": {
+      "class": "INSERT_ONLY",
+      "row_count": 23117,
+      "max_id": 23117,
+      "sha256": "aeaa6d38b509fb79b384b86cc95fa656b828743dbbc1152e1c71528cf46a813f"
+     },
+     "earnings_symbol_map": {
+      "class": "INSERT_ONLY",
+      "row_count": 3258,
+      "max_id": 3258,
+      "sha256": "93da9c5275d14155aa224b538ea648a771a82496825732049d899fb24a06b5d0"
+     },
+     "earnings_api_raw": {
+      "class": "INSERT_ONLY",
+      "row_count": 6476,
+      "max_id": 6476,
+      "sha256": "59e94b5a4698c249f1281f109c34fce64168713c2e8dd61f43c169e3e90e8c1f"
+     },
+     "earnings_board_meeting": {
+      "class": "INSERT_ONLY",
+      "row_count": 164819,
+      "max_id": 164871,
+      "sha256": "6c4f16f39517437d0c9fb7235bcf9292c0e4502037dcc4d926745a383fe1f22e"
+     },
+     "market_data_non_eq": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     }
+    }
+   }
+  },
+  "unchanged": true
+ }
+}
