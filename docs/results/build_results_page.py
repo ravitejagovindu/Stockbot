@@ -44,6 +44,11 @@ RUNS = [
          dir=f"{S}/riskadj_momentum_daily/results_run1", gates="gates.json", bench="benchmark.json",
          validate=f"{S}/family_batch4/results_run1/validate_family.json",
          note="Variant chosen after the monthly result was seen. 18 positions whose stock left the normal trading category were closed at the last price we have; they made Rs 7.0 lakh of the Rs 36.3 lakh profit. If each had sold at half that price, the expectancy and profit-factor gates would fail."),
+    dict(id="riskadj_momentum_daily_noneq", name="Momentum (any day), with restricted-series prices", slot=7, family="family_batch5 (K=1)",
+         rule="Same rule as Momentum (any day). Stocks that moved to the restricted trading category keep their prices, stops and exits; they are never bought there.",
+         dir=f"{S}/riskadj_momentum_daily/results_run2_noneq", gates="gates.json", bench="benchmark.json",
+         validate=f"{S}/riskadj_momentum_daily/results_run2_noneq/family_results.json",
+         note="New registered trial on the same 2016-2026 data. Stale exits fell from 18 to 2. The test against random picks was not significant (adjusted p 0.42) and drawdown reached 45.6%. The earlier any-day result stands as recorded."),
 ]
 
 # Descriptive study, not a registered trial (docs/shared/market-switch/DECISION.md).
