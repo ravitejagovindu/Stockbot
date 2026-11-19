@@ -1,0 +1,108 @@
+{
+ "columns": [
+  {
+   "label": "family_batch2: riskadj_momentum (1.0% risk, EQ only)",
+   "summary": {
+    "folder": "F:\\Projects\\Ravi\\StockBot_wt_momentum_calm\\docs\\strategies\\riskadj_momentum\\results_run1",
+    "trades": 650,
+    "expectancy_r": 0.21094166682448642,
+    "profit_factor": 1.450443534587045,
+    "max_drawdown_pct": 34.32225292385747,
+    "cash_credited_alpha_pct": 5.453832148241,
+    "t1_adjusted_p_by_block": {
+     "2": 0.0082,
+     "3": 0.0096
+    },
+    "net_profit": 2101955.7400915213,
+    "mean_invested_share": 0.6043889509244885,
+    "risk_per_trade_pct": 1.0,
+    "non_eq_switch": false,
+    "conclusion": null,
+    "worst_fall": {
+     "depth_pct": 34.32225292385747,
+     "peak": "2024-02-08",
+     "trough": "2025-10-14",
+     "recovery": null
+    }
+   }
+  },
+  {
+   "label": "family_batch6: riskadj_momentum (0.5% risk, BE/BZ)",
+   "summary": {
+    "folder": "F:\\Projects\\Ravi\\StockBot_wt_momentum_calm\\docs\\strategies\\family_batch6\\results\\riskadj_momentum",
+    "trades": 770,
+    "expectancy_r": 0.1770764791339615,
+    "profit_factor": 1.402435322733422,
+    "max_drawdown_pct": 23.684440131373023,
+    "cash_credited_alpha_pct": 2.7115455468063487,
+    "t1_adjusted_p_by_block": {
+     "2": 0.0861,
+     "3": 0.0943
+    },
+    "net_profit": 770798.6541856,
+    "mean_invested_share": 0.3188380631174478,
+    "risk_per_trade_pct": 0.5,
+    "non_eq_switch": true,
+    "conclusion": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)",
+    "worst_fall": {
+     "depth_pct": 23.684440131373023,
+     "peak": "2024-02-08",
+     "trough": "2025-11-06",
+     "recovery": null
+    }
+   }
+  },
+  {
+   "label": "family_batch3: lowvol_uptrend (1.0% risk, EQ only)",
+   "summary": {
+    "folder": "F:\\Projects\\Ravi\\StockBot_wt_momentum_calm\\docs\\strategies\\lowvol_uptrend\\results_run1",
+    "trades": 413,
+    "expectancy_r": 0.14131576729534087,
+    "profit_factor": 1.3068659479754194,
+    "max_drawdown_pct": 25.972427892406824,
+    "cash_credited_alpha_pct": -2.433568429893973,
+    "t1_adjusted_p_by_block": {
+     "2": 0.192,
+     "3": 0.188
+    },
+    "net_profit": 894580.997686466,
+    "mean_invested_share": 0.734283477072988,
+    "risk_per_trade_pct": 1.0,
+    "non_eq_switch": false,
+    "conclusion": null,
+    "worst_fall": {
+     "depth_pct": 25.972427892406824,
+     "peak": "2021-10-18",
+     "trough": "2022-06-20",
+     "recovery": "2023-11-30"
+    }
+   }
+  },
+  {
+   "label": "family_batch7: momentum_calm (1.0% risk, BE/BZ)",
+   "summary": {
+    "folder": "docs\\strategies\\momentum_calm\\results_run1",
+    "trades": 585,
+    "expectancy_r": 0.17060496810221276,
+    "profit_factor": 1.4950184766166204,
+    "max_drawdown_pct": 24.94446606676129,
+    "cash_credited_alpha_pct": 3.8066579062362216,
+    "t1_adjusted_p_by_block": {
+     "2": 0.028,
+     "3": 0.0306
+    },
+    "net_profit": 1874407.2783315664,
+    "mean_invested_share": 0.6654100767192168,
+    "risk_per_trade_pct": 1.0,
+    "non_eq_switch": true,
+    "conclusion": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)",
+    "worst_fall": {
+     "depth_pct": 24.944466066761287,
+     "peak": "2021-10-14",
+     "trough": "2022-06-22",
+     "recovery": "2023-09-05"
+    }
+   }
+  }
+ ]
+}
