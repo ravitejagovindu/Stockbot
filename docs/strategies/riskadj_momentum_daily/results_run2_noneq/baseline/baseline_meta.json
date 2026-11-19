@@ -1,0 +1,139 @@
+{
+ "draws_per_trade": 20,
+ "min_filled": 10,
+ "seed": 20261111,
+ "policy": "rmd_trailing_atr3_floor8",
+ "stop_rule": "close - max(3 x ATR14, 0.08 x close) on the draw's own symbol",
+ "usable_trades": 1059,
+ "pairs_kept": 1057,
+ "dropped_pairs": 2,
+ "share_dropped": 0.0018885741265344666,
+ "flag": null,
+ "draws_total": 20736,
+ "end_of_window_trades": 10,
+ "end_of_window_draws": 165,
+ "draws_closed_before_window_end": 20571,
+ "stale_exit_draws": 18,
+ "unfilled": {
+  "GAP_UP_TOO_LARGE": 309,
+  "CORP_ACTION_ON_EXEC_DATE": 110,
+  "NO_STOP": 4,
+  "SIZE_ZERO": 10,
+  "NO_BAR_OR_ALREADY_HELD": 7,
+  "GAP_THROUGH_STOP": 4
+ },
+ "pool_exclusions": {
+  "checked": 355918,
+  "kept": 337271,
+  "held": 8701,
+  "cooldown": 9946,
+  "own_symbol_per_entry": 1059,
+  "cooldown_days": 21,
+  "rule": "pool minus the strategy's held symbols and its own cooldown symbols (stored trades), minus the trade's own symbol; draws never block each other"
+ },
+ "excluded_ca": 2,
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "spec_config_hash": "5b06f092df061bff1532093d21ea21c88c3f2db64ddd66e0cbe81bd5c0446e19",
+ "asof_view": "memory",
+ "end_of_window_rule": "open at the window end: closed at the last close with normal costs and slippage and counted as filled / usable",
+ "finsight_db": {
+  "before": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3594948608,
+   "mtime_ns": 1795002202483459800,
+   "mtime_iso": "2026-11-18T17:13:22.483460",
+   "wal_bytes": 0,
+   "sha256": "72885644a16599a42253afa3110ab900d9c32b378a8d736b9b4498427912465e",
+   "guard": {
+    "installed": true,
+    "correction_counter": 0,
+    "window_open": false,
+    "tables": {
+     "market_data_lake": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     },
+     "corporate_actions_log": {
+      "class": "INSERT_ONLY",
+      "row_count": 23116,
+      "max_id": 23116,
+      "sha256": "9d8cb2ad16e8206644ee86efb524b7c9347abc6ece7b9696ca52b567680da33c"
+     },
+     "earnings_symbol_map": {
+      "class": "INSERT_ONLY",
+      "row_count": 3258,
+      "max_id": 3258,
+      "sha256": "93da9c5275d14155aa224b538ea648a771a82496825732049d899fb24a06b5d0"
+     },
+     "earnings_api_raw": {
+      "class": "INSERT_ONLY",
+      "row_count": 6476,
+      "max_id": 6476,
+      "sha256": "59e94b5a4698c249f1281f109c34fce64168713c2e8dd61f43c169e3e90e8c1f"
+     },
+     "earnings_board_meeting": {
+      "class": "INSERT_ONLY",
+      "row_count": 164819,
+      "max_id": 164871,
+      "sha256": "6c4f16f39517437d0c9fb7235bcf9292c0e4502037dcc4d926745a383fe1f22e"
+     },
+     "market_data_non_eq": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     }
+    }
+   }
+  },
+  "after": {
+   "path": "F:\\Projects\\Ravi\\StockBot\\finsight.db",
+   "size": 3594948608,
+   "mtime_ns": 1795002202483459800,
+   "mtime_iso": "2026-11-18T17:13:22.483460",
+   "wal_bytes": 0,
+   "sha256": "72885644a16599a42253afa3110ab900d9c32b378a8d736b9b4498427912465e",
+   "guard": {
+    "installed": true,
+    "correction_counter": 0,
+    "window_open": false,
+    "tables": {
+     "market_data_lake": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     },
+     "corporate_actions_log": {
+      "class": "INSERT_ONLY",
+      "row_count": 23116,
+      "max_id": 23116,
+      "sha256": "9d8cb2ad16e8206644ee86efb524b7c9347abc6ece7b9696ca52b567680da33c"
+     },
+     "earnings_symbol_map": {
+      "class": "INSERT_ONLY",
+      "row_count": 3258,
+      "max_id": 3258,
+      "sha256": "93da9c5275d14155aa224b538ea648a771a82496825732049d899fb24a06b5d0"
+     },
+     "earnings_api_raw": {
+      "class": "INSERT_ONLY",
+      "row_count": 6476,
+      "max_id": 6476,
+      "sha256": "59e94b5a4698c249f1281f109c34fce64168713c2e8dd61f43c169e3e90e8c1f"
+     },
+     "earnings_board_meeting": {
+      "class": "INSERT_ONLY",
+      "row_count": 164819,
+      "max_id": 164871,
+      "sha256": "6c4f16f39517437d0c9fb7235bcf9292c0e4502037dcc4d926745a383fe1f22e"
+     },
+     "market_data_non_eq": {
+      "class": "DATED_APPEND_ONLY",
+      "sealed_through": "2026-11-18"
+     }
+    }
+   }
+  },
+  "unchanged": true
+ }
+}
