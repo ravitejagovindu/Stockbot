@@ -49,6 +49,16 @@ RUNS = [
          dir=f"{S}/riskadj_momentum_daily/results_run2_noneq", gates="gates.json", bench="benchmark.json",
          validate=f"{S}/riskadj_momentum_daily/results_run2_noneq/family_results.json",
          note="New registered trial on the same 2016-2026 data. Stale exits fell from 18 to 2. The test against random picks was not significant (adjusted p 0.42) and drawdown reached 45.6%. The earlier any-day result stands as recorded."),
+    dict(id="riskadj_momentum_halfrisk", name="Momentum (monthly), half risk", slot=8, t1_id="riskadj_momentum", family="family_batch6 (K=2)",
+         rule="Same rule as Momentum (monthly), but each trade risks 0.5% of the account instead of 1%. Restricted-category stocks keep their prices.",
+         dir=f"{S}/family_batch6/results/riskadj_momentum", gates="gates.json", bench="benchmark.json",
+         validate=f"{S}/family_batch6/results/family_results.json",
+         note="New registered trial. Half the risk cut the drawdown from 34% to 24%, still above the 20% gate. The test against random picks dropped to p 0.086 (it was 0.008 under the earlier rules, with a different data treatment and K=1)."),
+    dict(id="riskadj_momentum_daily_halfrisk", name="Momentum (any day), half risk", slot=9, t1_id="riskadj_momentum_daily", family="family_batch6 (K=2)",
+         rule="Same rule as Momentum (any day), at 0.5% risk per trade, with restricted-category prices.",
+         dir=f"{S}/family_batch6/results/riskadj_momentum_daily", gates="gates.json", bench="benchmark.json",
+         validate=f"{S}/family_batch6/results/family_results.json",
+         note="New registered trial. Drawdown fell from 45.6% to 24.9%, still above the gate. The test against random picks did not change (p 0.42): size does not change which stocks are picked."),
 ]
 
 # Descriptive study, not a registered trial (docs/shared/market-switch/DECISION.md).
