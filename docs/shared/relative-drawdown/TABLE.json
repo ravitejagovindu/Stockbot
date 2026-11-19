@@ -1,0 +1,552 @@
+{
+ "label": "DESCRIPTIVE, NOT A GATE, NO VERDICT CHANGES",
+ "rows": [
+  {
+   "id": "near_52w_high",
+   "name": "52-week high",
+   "family": "near_52w_high (K=1)",
+   "dir": "docs/strategies/near_52w_high/results_4B",
+   "alpha_check": {
+    "b2_benchmark_json_raw_alpha": {
+     "stored": -4.791256360582041,
+     "recomputed": -4.791256360582041,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.7378883972644918,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 30.047946154697215,
+    "depth_pct_recomputed_check": 30.047946154697215,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2018-08-28",
+    "trough_date": "2020-05-18",
+    "recovery_date": "2021-06-02"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 18.121181169334864,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-04-03",
+    "recovery_date": "2020-08-18"
+   },
+   "matched_account_end_value": 2.9131463131783892,
+   "ratios": {
+    "strategy_over_matched": 1.658167084910841,
+    "strategy_over_full_nifty": 0.7816873436660069
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": false,
+    "C_vs_full_nifty": true
+   }
+  },
+  {
+   "id": "short_term_reversal",
+   "name": "Short-term reversal",
+   "family": "family_batch1 (K=2)",
+   "dir": "docs/strategies/short_term_reversal/results_run1",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": -35.64716839459702,
+     "recomputed": -35.64716839459702,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": -35.64716839459702,
+     "recomputed": -35.64716839459702,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.7547468398180042,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 97.17443444557932,
+    "depth_pct_recomputed_check": 97.17443444557932,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2016-01-01",
+    "trough_date": "2026-10-08",
+    "recovery_date": "not recovered"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 26.652023968186793,
+    "peak_date": "2020-01-24",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-10-08"
+   },
+   "matched_account_end_value": 2.469649503958487,
+   "ratios": {
+    "strategy_over_matched": 3.6460433384560833,
+    "strategy_over_full_nifty": 2.527960651385055
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": false,
+    "C_vs_full_nifty": false
+   }
+  },
+  {
+   "id": "pullback_uptrend",
+   "name": "Pullback in uptrend",
+   "family": "family_batch1 (K=2)",
+   "dir": "docs/strategies/pullback_uptrend/results_run1",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": -14.250217155712065,
+     "recomputed": -14.250217155712065,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": -14.250217155712065,
+     "recomputed": -14.250217155712065,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.7018094485374047,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 69.37706297241257,
+    "depth_pct_recomputed_check": 69.37706297241257,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2017-10-30",
+    "trough_date": "2026-03-09",
+    "recovery_date": "not recovered"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 32.707338965928344,
+    "peak_date": "2020-01-24",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2021-05-31"
+   },
+   "matched_account_end_value": 2.1561957903235007,
+   "ratios": {
+    "strategy_over_matched": 2.1211466651164606,
+    "strategy_over_full_nifty": 1.8048212608959577
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": false,
+    "C_vs_full_nifty": false
+   }
+  },
+  {
+   "id": "riskadj_momentum",
+   "name": "Momentum (monthly)",
+   "family": "family_batch2 (K=1)",
+   "dir": "docs/strategies/riskadj_momentum/results_run1",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": 5.453832148241,
+     "recomputed": 5.453832148241,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": 5.453832148241,
+     "recomputed": 5.453832148241,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.6043889509244885,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 34.32225292385747,
+    "depth_pct_recomputed_check": 34.32225292385747,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2024-02-08",
+    "trough_date": "2025-10-14",
+    "recovery_date": "not recovered"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 16.976477177826947,
+    "peak_date": "2020-02-12",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-08-18"
+   },
+   "matched_account_end_value": 2.4034797549532674,
+   "ratios": {
+    "strategy_over_matched": 2.021753545469723,
+    "strategy_over_full_nifty": 0.8928820152484507
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": false,
+    "C_vs_full_nifty": true
+   }
+  },
+  {
+   "id": "lowvol_uptrend",
+   "name": "Low volatility",
+   "family": "family_batch3 (K=1)",
+   "dir": "docs/strategies/lowvol_uptrend/results_run1",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": -2.433568429893973,
+     "recomputed": -2.433568429893973,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": -2.433568429893973,
+     "recomputed": -2.433568429893973,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.734283477072988,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 25.972427892406824,
+    "depth_pct_recomputed_check": 25.972427892406824,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2021-10-18",
+    "trough_date": "2022-06-20",
+    "recovery_date": "2023-11-30"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 21.035096491920484,
+    "peak_date": "2021-10-18",
+    "trough_date": "2022-06-17",
+    "recovery_date": "2023-09-13"
+   },
+   "matched_account_end_value": 2.8994236467114223,
+   "ratios": {
+    "strategy_over_matched": 1.2347187426681285,
+    "strategy_over_full_nifty": 0.6756640890944441
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": true,
+    "C_vs_full_nifty": true
+   }
+  },
+  {
+   "id": "riskadj_momentum_daily",
+   "name": "Momentum (any day)",
+   "family": "family_batch4 (K=1)",
+   "dir": "docs/strategies/riskadj_momentum_daily/results_run1",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": 7.061097222846666,
+     "recomputed": 7.061097222846666,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": 7.061097222846666,
+     "recomputed": 7.061097222846666,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.8029808419318638,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 36.148238795277685,
+    "depth_pct_recomputed_check": 36.148238795277685,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2018-01-09",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-09-15"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 31.405877366893638,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-11"
+   },
+   "matched_account_end_value": 2.680565328597724,
+   "ratios": {
+    "strategy_over_matched": 1.151002354526901,
+    "strategy_over_full_nifty": 0.9403844314886035
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": true,
+    "C_vs_full_nifty": true
+   }
+  },
+  {
+   "id": "riskadj_momentum_daily_noneq",
+   "name": "Momentum (any day), with restricted-series prices",
+   "family": "family_batch5 (K=1)",
+   "dir": "docs/strategies/riskadj_momentum_daily/results_run2_noneq",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": 3.0158262545173073,
+     "recomputed": 3.0158262545173073,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": 3.0158262545173073,
+     "recomputed": 3.0158262545173073,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.7975246842124959,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 45.612574256550644,
+    "depth_pct_recomputed_check": 45.612574256550644,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2018-01-09",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2021-03-23"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 30.69532809640112,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-10"
+   },
+   "matched_account_end_value": 2.7432567408372313,
+   "ratios": {
+    "strategy_over_matched": 1.4859777394560085,
+    "strategy_over_full_nifty": 1.186595976470687
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": false,
+    "C_vs_full_nifty": false
+   }
+  },
+  {
+   "id": "riskadj_momentum_halfrisk",
+   "name": "Momentum (monthly), half risk",
+   "family": "family_batch6 (K=2)",
+   "dir": "docs/strategies/family_batch6/results/riskadj_momentum",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": 2.7115455468063487,
+     "recomputed": 2.7115455468063487,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": 2.7115455468063487,
+     "recomputed": 2.7115455468063487,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.3188380631174478,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 23.684440131373023,
+    "depth_pct_recomputed_check": 23.684440131373023,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2024-02-08",
+    "trough_date": "2025-11-06",
+    "recovery_date": "not recovered"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 7.468002442299106,
+    "peak_date": "2020-02-12",
+    "trough_date": "2020-03-12",
+    "recovery_date": "2020-07-07"
+   },
+   "matched_account_end_value": 2.166116819063076,
+   "ratios": {
+    "strategy_over_matched": 3.171455863113177,
+    "strategy_over_full_nifty": 0.6161428470749372
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": false,
+    "C_vs_full_nifty": true
+   }
+  },
+  {
+   "id": "riskadj_momentum_daily_halfrisk",
+   "name": "Momentum (any day), half risk",
+   "family": "family_batch6 (K=2)",
+   "dir": "docs/strategies/family_batch6/results/riskadj_momentum_daily",
+   "alpha_check": {
+    "gates_json_cash_credited_alpha": {
+     "stored": 3.3118857509051747,
+     "recomputed": 3.3118857509051747,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    },
+    "benchmark_json_gate_alpha": {
+     "stored": 3.3118857509051747,
+     "recomputed": 3.3118857509051747,
+     "abs_diff": 0.0,
+     "equal_to_4_decimals": true
+    }
+   },
+   "alpha_check_ok": true,
+   "risk_free_pct_used": 6.5,
+   "invested_share_mean": 0.4457289314560009,
+   "window": [
+    "2016-01-01",
+    "2026-10-16"
+   ],
+   "strategy_dd": {
+    "depth_pct_stored": 24.872352654430102,
+    "depth_pct_recomputed_check": 24.872352654430102,
+    "depth_equal_to_4_decimals": true,
+    "peak_date": "2018-01-09",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2021-05-06"
+   },
+   "full_nifty_dd": {
+    "depth_pct": 38.4398524527421,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2020-11-09"
+   },
+   "matched_dd": {
+    "depth_pct": 21.961288640131365,
+    "peak_date": "2020-01-14",
+    "trough_date": "2020-03-23",
+    "recovery_date": "2021-01-04"
+   },
+   "matched_account_end_value": 2.1559541967606437,
+   "ratios": {
+    "strategy_over_matched": 1.132554335130369,
+    "strategy_over_full_nifty": 0.6470459969899244
+   },
+   "tests": {
+    "A_k1.0_vs_matched": false,
+    "B_k1.25_vs_matched": true,
+    "C_vs_full_nifty": true
+   }
+  }
+ ],
+ "monthly_momentum_overlap": {
+  "Momentum (monthly) (family_batch2 (K=1))": {
+   "overlap_days": 0,
+   "strategy_fall_days": 614,
+   "matched_fall_days": 40,
+   "overlap_share_of_strategy_fall": 0.0,
+   "overlap_share_of_matched_fall": 0.0,
+   "strategy_trough_inside_matched_fall": false,
+   "matched_trough_inside_strategy_fall": false,
+   "matched_account_change_pct_during_strategy_worst_fall": 3.5032158188915474,
+   "strategy_change_pct_during_matched_worst_fall": -12.056328288734363,
+   "strategy_peak_to_trough": [
+    "2024-02-08",
+    "2025-10-14"
+   ],
+   "matched_peak_to_trough": [
+    "2020-02-12",
+    "2020-03-23"
+   ]
+  },
+  "Momentum (monthly), half risk (family_batch6 (K=2))": {
+   "overlap_days": 0,
+   "strategy_fall_days": 637,
+   "matched_fall_days": 29,
+   "overlap_share_of_strategy_fall": 0.0,
+   "overlap_share_of_matched_fall": 0.0,
+   "strategy_trough_inside_matched_fall": false,
+   "matched_trough_inside_strategy_fall": false,
+   "matched_account_change_pct_during_strategy_worst_fall": 7.156198791902835,
+   "strategy_change_pct_during_matched_worst_fall": -7.269031517713032,
+   "strategy_peak_to_trough": [
+    "2024-02-08",
+    "2025-11-06"
+   ],
+   "matched_peak_to_trough": [
+    "2020-02-12",
+    "2020-03-12"
+   ]
+  }
+ }
+}
