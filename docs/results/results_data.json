@@ -3737,7 +3737,7 @@
    ]
   },
   {
-   "id": "riskadj_momentum_daily",
+   "id": "riskadj_momentum_daily_noneq",
    "name": "Momentum (any day), with restricted-series prices",
    "slot": 7,
    "family": "family_batch5 (K=1)",

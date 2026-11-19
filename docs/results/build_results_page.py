@@ -44,7 +44,7 @@ RUNS = [
          dir=f"{S}/riskadj_momentum_daily/results_run1", gates="gates.json", bench="benchmark.json",
          validate=f"{S}/family_batch4/results_run1/validate_family.json",
          note="Variant chosen after the monthly result was seen. 18 positions whose stock left the normal trading category were closed at the last price we have; they made Rs 7.0 lakh of the Rs 36.3 lakh profit. If each had sold at half that price, the expectancy and profit-factor gates would fail."),
-    dict(id="riskadj_momentum_daily_noneq", name="Momentum (any day), with restricted-series prices", slot=7, family="family_batch5 (K=1)",
+    dict(id="riskadj_momentum_daily_noneq", name="Momentum (any day), with restricted-series prices", slot=7, t1_id="riskadj_momentum_daily", family="family_batch5 (K=1)",
          rule="Same rule as Momentum (any day). Stocks that moved to the restricted trading category keep their prices, stops and exits; they are never bought there.",
          dir=f"{S}/riskadj_momentum_daily/results_run2_noneq", gates="gates.json", bench="benchmark.json",
          validate=f"{S}/riskadj_momentum_daily/results_run2_noneq/family_results.json",
@@ -114,7 +114,7 @@ def build_data():
             runs.append(dict(base, status="running"))
             continue
         bench = _load(f"{cfg['dir']}/{cfg['bench']}") or {}
-        t1 = _t1(_load(cfg["validate"]), cfg["id"])
+        t1 = _t1(_load(cfg["validate"]), cfg.get("t1_id", cfg["id"]))
         glist = [dict(key=g["gate"], label=GATE_LABEL.get(g["gate"], g["gate"]), need=g["gate_value"], cmp=g["comparison"],
                       observed=g["observed"], interval=g.get("interval"), met=bool(g["met"])) for g in gates["gates"]]
         alpha = gates.get("alpha", {}).get("cash_credited")
