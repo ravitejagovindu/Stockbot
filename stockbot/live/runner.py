@@ -128,6 +128,11 @@ class RunResult:
 def run_eod(*, cfg, book: Book, as_of: Optional[date] = None, store: Optional[StateStore] = None, lake: Optional[Path] = None, out_dir: Optional[Path] = None,
             reports: Sequence = (), mode: Optional[str] = None, today: Optional[date] = None) -> RunResult:
     refuse_memory_view()
+    try:
+        from stockbot.config.risk_override import RiskOverrideError, refuse_in_paper_live
+        refuse_in_paper_live()                     # STOCKBOT_RISK_PCT is for registered backtest trials only
+    except RiskOverrideError as exc:
+        raise ModeError(str(exc)) from None
     mode = str(mode or cfg.runtime.mode).upper()
     strategies = strategies_for_mode(book, mode)
     as_of = as_of or expected_session(today or date.today())

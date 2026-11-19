@@ -30,6 +30,7 @@ import benchmark_nifty_matched_riskadj_momentum as B2  # noqa: E402
 import evaluate_validation_gates_near_52w_high as S  # noqa: E402  (shared stale-exit report)
 from stockbot.validation import benchmark_alpha as BA  # noqa: E402
 from stockbot.config.shared import load_shared_config  # noqa: E402
+from stockbot.config import risk_override as RO  # noqa: E402
 from stockbot.data.asof import active_view_name  # noqa: E402
 from stockbot.data.lake import open_lake  # noqa: E402,F401  (module-level name: tests replace it to trace the SQL)
 from stockbot.risk.r_metrics import compute_trade_r  # noqa: E402
@@ -105,7 +106,7 @@ def _ci(values: np.ndarray) -> list:
 
 def _reporting_inputs(max_loss_pct, after_tax_rates_pct) -> tuple:
     if max_loss_pct is None or after_tax_rates_pct is None:
-        cfg = load_shared_config()
+        cfg = RO.apply(load_shared_config())
         max_loss_pct = cfg.portfolio_risk.max_loss_pct_per_trade if max_loss_pct is None else max_loss_pct
         after_tax_rates_pct = cfg.reporting.after_tax_rates_pct if after_tax_rates_pct is None else after_tax_rates_pct
     return float(max_loss_pct), tuple(after_tax_rates_pct)

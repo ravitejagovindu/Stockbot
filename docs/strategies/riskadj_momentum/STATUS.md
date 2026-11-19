@@ -16,3 +16,6 @@ Register `family_batch2` (K = 1) on master at the commit carrying the pre-regist
 
 ## Next step
 None until the owner replies. No backtest on the real lake has been run; no return of this strategy has been looked at.
+
+## 2026-11-19: pre-registered in family_batch6, not yet registered
+This strategy is a member of family_batch6 (K = 2, with its sibling riskadj_momentum or riskadj_momentum_daily): a re-run of its own separate backtest at 0.5 percent risk per trade (per-run override STOCKBOT_RISK_PCT, shared.yaml unchanged) with STOCKBOT_NON_EQ=held. Final text `docs/strategies/family_batch6/PREREGISTRATION.md` (FINAL TEXT, NOT REGISTERED), commands `docs/strategies/family_batch6/RUN_COMMANDS.md`, branch `half-risk-run`. Earlier results of this strategy stand as recorded. Waiting for the owner to register the family on master; nothing has been run.

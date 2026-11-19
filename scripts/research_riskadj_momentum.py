@@ -30,6 +30,7 @@ from stockbot.backtest.manifest import shared_config_hash  # noqa: E402
 from stockbot.backtest.runner import run_backtest  # noqa: E402
 from stockbot.config.paths import lake_path  # noqa: E402
 from stockbot.config.shared import load_shared_config  # noqa: E402
+from stockbot.config import risk_override as RO  # noqa: E402
 from stockbot.data.asof import active_view_name  # noqa: E402
 from stockbot.data.sector_map import SectorLookup  # noqa: E402
 from stockbot.engine.decide import EventData  # noqa: E402
@@ -71,7 +72,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
-    cfg = load_shared_config()
+    base_cfg = load_shared_config()
+    cfg = RO.apply(base_cfg)                      # default OFF (STOCKBOT_RISK_PCT unset): the same object, nothing changes
     registry = StrategyRegistry()
     register(registry)
     strategy = RiskAdjMomentumStrategy(registry.get("riskadj_momentum"))
@@ -97,8 +99,16 @@ def main(argv=None) -> int:
     trades = trade_records(res.trades, res.decisions)
     n_eow = sum(1 for t in trades if t["end_of_window"])
     manifest = dict(res.manifest)
+    if RO.block(base_cfg) is not None:             # only with the override on, so manifests of runs without it are unchanged
+        manifest["risk_override"] = RO.block(base_cfg)
     manifest["end_of_window"] = {"rule": "closed at the last session close, normal costs and slippage, counted as usable trades", "trades": n_eow, "closed_trades_total": len(trades),
                                  "closed_before_window_end": len(trades) - n_eow, "label_in_trades_json": COUNTED_EOW, "engine_reason": ENGINE_EOW}
+    from stockbot.data import non_eq  # noqa: E402
+    if non_eq.switch_on():            # additive, ONLY with STOCKBOT_NON_EQ=held (a run with the switch off writes the manifest exactly as before): the events the BE/BZ sell model produced
+        capped = [(dec.as_of.isoformat(), f.symbol) for dec in res.decisions for f in dec.flags if f.code == "SELL_CAPPED_NON_EQ"]
+        manifest["non_eq_events"] = {"sell_capped_non_eq": len(capped), "sell_capped_non_eq_symbols": sorted({s for _, s in capped}),
+                                     "not_eq_series_blocked": sum(1 for dec in res.decisions for b in dec.blocked if str(b.reason).startswith("NOT_EQ_SERIES")),
+                                     "symbol_no_bars_exits": sum(1 for t in trades if t["exit_reason_engine"] == "SYMBOL_NO_BARS")}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1, default=str), encoding="utf-8")
     (out / "trades.json").write_text(json.dumps(trades, indent=1, default=str), encoding="utf-8")
     (out / "equity_curve.json").write_text(json.dumps({d.isoformat(): v for d, v in res.equity_curve.items()}, indent=1), encoding="utf-8")
