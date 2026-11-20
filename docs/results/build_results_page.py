@@ -64,6 +64,11 @@ RUNS = [
          dir=f"{S}/momentum_calm/results_run1", gates="gates.json", bench="benchmark.json",
          validate=f"{S}/momentum_calm/results_run1/family_results.json",
          note="First run since the original momentum to beat random picks at both block sizes (adjusted p 0.028 / 0.031). Four of five gates met; drawdown 24.9% is above the 20% gate, so the verdict stays not demonstrated."),
+    dict(id="momentum_calm_daily", name="Momentum among calm stocks (any day)", slot=11, t1_id="momentum_calm_daily", family="family_batch8 (K=1)",
+         rule="Any-day momentum, but only among the calmest half of stocks (lowest 252-day volatility). Same stop, same exits, restricted-category prices.",
+         dir=f"{S}/momentum_calm_daily/results_run1", gates="gates.json", bench="benchmark.json",
+         validate=f"{S}/momentum_calm_daily/results_run1/family_results.json",
+         note="The calm filter did not rescue the any-day rule: adjusted p 0.139 / 0.122 (not significant), drawdown 35.8%. Four of five gates met on point estimates; verdict stays not demonstrated."),
 ]
 
 # Descriptive study, not a registered trial (docs/shared/market-switch/DECISION.md).
