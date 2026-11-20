@@ -1,0 +1,562 @@
+{
+ "K": 1,
+ "members": [
+  "momentum_calm_daily"
+ ],
+ "window": [
+  "2016-01-01",
+  "2026-10-16"
+ ],
+ "counts": {
+  "momentum_calm_daily": {
+   "usable_trades": 821,
+   "pairs": 818,
+   "dropped_pairs": 3,
+   "draws": 16031
+  }
+ },
+ "T1": {
+  "K": 1,
+  "members_order": [
+   "momentum_calm_daily"
+  ],
+  "months": 130,
+  "alpha": 0.05,
+  "B": 10000,
+  "seed": 20261111,
+  "blocks": {
+   "2": {
+    "momentum_calm_daily": {
+     "observed_mean": 0.29556129529598496,
+     "standard_error": 0.2975481906694306,
+     "observed_t": 0.9933224417564916,
+     "unadjusted_p_value": 0.1391,
+     "adjusted_p_value": 0.1391,
+     "fwer_significant": false,
+     "ci99_lower": -0.3835945805614158,
+     "ci99_upper": 1.0487095448754895
+    }
+   },
+   "3": {
+    "momentum_calm_daily": {
+     "observed_mean": 0.29556129529598496,
+     "standard_error": 0.2975481906694306,
+     "observed_t": 0.9933224417564916,
+     "unadjusted_p_value": 0.1216,
+     "adjusted_p_value": 0.1216,
+     "fwer_significant": false,
+     "ci99_lower": -0.350383679321437,
+     "ci99_upper": 1.0313564203816512
+    }
+   }
+  },
+  "one_sided": "mean paired difference > 0",
+  "correction": "Westfall-Young step-down Max-T, joint across members",
+  "members": {
+   "momentum_calm_daily": {
+    "dual_significant": false
+   }
+  },
+  "found": [],
+  "family_rejects": false
+ },
+ "T2": {
+  "momentum_calm_daily": {
+   "seed": 20261111,
+   "paired_trades": 806,
+   "windows": {
+    "2016-2019": {
+     "n_trades": 231,
+     "n_entry_dates": 169,
+     "horizons": [
+      {
+       "horizon": 1,
+       "actual_mean": 4.784064387678315,
+       "random_mean": 0.5863994384081817,
+       "paired_diff": 4.197664949270134,
+       "trade_t": 1.0983088543575819,
+       "clustered_t": 1.1947719175548366,
+       "perm_p": 0.2752,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 5,
+       "actual_mean": 5.730847497163656,
+       "random_mean": 1.2767748457143249,
+       "paired_diff": 4.45407265144933,
+       "trade_t": 1.1468067270788818,
+       "clustered_t": 1.2165880498583328,
+       "perm_p": 0.228,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 10,
+       "actual_mean": 5.54863541218383,
+       "random_mean": 1.0859287186113413,
+       "paired_diff": 4.46270669357249,
+       "trade_t": 1.1171211413047042,
+       "clustered_t": 1.2006571400765318,
+       "perm_p": 0.2908,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 20,
+       "actual_mean": 6.423067924647632,
+       "random_mean": 1.8072052792517677,
+       "paired_diff": 4.6158626453958655,
+       "trade_t": 1.0973212102540608,
+       "clustered_t": 1.2089810429653312,
+       "perm_p": 0.3142,
+       "status": "Not Sig"
+      }
+     ],
+     "expectancy": {
+      "actual": {
+       "gross": 0.17026269251055945,
+       "net": 0.1352306618297012,
+       "net_median": -0.286726406379415,
+       "net_trimmed": -0.014471745509632927
+      },
+      "random_trade_averaged": {
+       "gross": 0.0951876602772093,
+       "net": 0.07334602471448436,
+       "net_median": 0.014098496723265007,
+       "net_trimmed": 0.041531543170691416
+      },
+      "paired_diff_net": {
+       "mean": 0.0618846371152168,
+       "median": -0.22636302147789922,
+       "trimmed": -0.04858180367654096,
+       "trade_t": 0.8175874545092887,
+       "clustered_t": 0.7448032197160047,
+       "skill_p_one_sided": 0.219
+      },
+      "random_raw_draws": {
+       "n": 4545,
+       "gross": 0.09400250102409918,
+       "net": 0.07215166927214804,
+       "net_median": -0.2713618432788335,
+       "net_trimmed": -0.06414104035447626
+      }
+     },
+     "holding_days": {
+      "actual_mean": 36.40692640692641,
+      "actual_median": 24.0,
+      "actual_max": 268.0,
+      "random_averaged_mean": 33.162934370983905,
+      "random_raw_mean": 33.13751375137514
+     }
+    },
+    "2020-2026": {
+     "n_trades": 575,
+     "n_entry_dates": 383,
+     "horizons": [
+      {
+       "horizon": 1,
+       "actual_mean": 1.0408497287447402,
+       "random_mean": 0.9619664847679429,
+       "paired_diff": 0.07888324397679733,
+       "trade_t": 0.10777195306974441,
+       "clustered_t": 0.10610968724437066,
+       "perm_p": 0.988,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 5,
+       "actual_mean": 1.4150437449847735,
+       "random_mean": 1.3005835186384485,
+       "paired_diff": 0.11446022634632537,
+       "trade_t": 0.14791917568678678,
+       "clustered_t": 0.13933160440853376,
+       "perm_p": 0.9718,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 10,
+       "actual_mean": 1.8828059611914811,
+       "random_mean": 1.517680673881809,
+       "paired_diff": 0.3651252873096723,
+       "trade_t": 0.40856049895461244,
+       "clustered_t": 0.40098203117303566,
+       "perm_p": 0.869,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 20,
+       "actual_mean": 2.8727905144314816,
+       "random_mean": 2.512153338341809,
+       "paired_diff": 0.3606371760896726,
+       "trade_t": 0.34745080007548385,
+       "clustered_t": 0.34765868067427796,
+       "perm_p": 0.8882,
+       "status": "Not Sig"
+      }
+     ],
+     "expectancy": {
+      "actual": {
+       "gross": 0.20816161402558736,
+       "net": 0.18313696012321137,
+       "net_median": -0.2601334441544963,
+       "net_trimmed": -0.015694467938232804
+      },
+      "random_trade_averaged": {
+       "gross": 0.1668999285716125,
+       "net": 0.14542407902450608,
+       "net_median": -0.01128579544444729,
+       "net_trimmed": 0.10717738061414059
+      },
+      "paired_diff_net": {
+       "mean": 0.03771288109870532,
+       "median": -0.1667633544376214,
+       "trimmed": -0.08990434985936842,
+       "trade_t": 0.6396291784802066,
+       "clustered_t": 0.6598299116135006,
+       "skill_p_one_sided": 0.258
+      },
+      "random_raw_draws": {
+       "n": 11229,
+       "gross": 0.16274802615834807,
+       "net": 0.1412473072270285,
+       "net_median": -0.2972928415515899,
+       "net_trimmed": -0.0554965098961615
+      }
+     },
+     "holding_days": {
+      "actual_mean": 31.63826086956522,
+      "actual_median": 23.0,
+      "actual_max": 330.0,
+      "random_averaged_mean": 30.138750833998714,
+      "random_raw_mean": 30.0166533083979
+     }
+    },
+    "Pooled": {
+     "n_trades": 806,
+     "n_entry_dates": 552,
+     "horizons": [
+      {
+       "horizon": 1,
+       "actual_mean": 2.113656907669872,
+       "random_mean": 0.8543287828956043,
+       "paired_diff": 1.2593281247742671,
+       "trade_t": 1.0376335671664338,
+       "clustered_t": 1.072611559175014,
+       "perm_p": 0.4226,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 5,
+       "actual_mean": 2.651955242197331,
+       "random_mean": 1.2937599411626761,
+       "paired_diff": 1.3581953010346555,
+       "trade_t": 1.0928393742706994,
+       "clustered_t": 1.14414754118782,
+       "perm_p": 0.3798,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 10,
+       "actual_mean": 2.933434501116088,
+       "random_mean": 1.3939403492323321,
+       "paired_diff": 1.5394941518837555,
+       "trade_t": 1.1747664688909063,
+       "clustered_t": 1.2507869254518735,
+       "perm_p": 0.3316,
+       "status": "Not Sig"
+      },
+      {
+       "horizon": 20,
+       "actual_mean": 3.890301782123703,
+       "random_mean": 2.3101148747564495,
+       "paired_diff": 1.5801869073672539,
+       "trade_t": 1.1169263465808608,
+       "clustered_t": 1.159652599651597,
+       "perm_p": 0.3572,
+       "status": "Not Sig"
+      }
+     ],
+     "expectancy": {
+      "actual": {
+       "gross": 0.1972997643109826,
+       "net": 0.16940699125745348,
+       "net_median": -0.27056081544862914,
+       "net_trimmed": -0.01791961186508652
+      },
+      "random_trade_averaged": {
+       "gross": 0.14634715688922148,
+       "net": 0.12476647288850728,
+       "net_median": 0.0004457581816779813,
+       "net_trimmed": 0.0861399015937631
+      },
+      "paired_diff_net": {
+       "mean": 0.044640518368946204,
+       "median": -0.1928888837625975,
+       "trimmed": -0.07770711226474687,
+       "trade_t": 0.9436968708246521,
+       "clustered_t": 0.9153291868670715,
+       "skill_p_one_sided": 0.181
+      },
+      "random_raw_draws": {
+       "n": 15774,
+       "gross": 0.1429402150936111,
+       "net": 0.1213386173256128,
+       "net_median": -0.2915303289508985,
+       "net_trimmed": -0.05827425881768
+      }
+     },
+     "holding_days": {
+      "actual_mean": 33.00496277915633,
+      "actual_median": 23.0,
+      "actual_max": 330.0,
+      "random_averaged_mean": 31.005483336534173,
+      "random_raw_mean": 30.915874223405606
+     }
+    }
+   }
+  }
+ },
+ "T2_note": "secondary, reported only; trades with a blanked forward return are left out of T2",
+ "T3": {
+  "size": 0.049,
+  "se": 0.006826346021115542,
+  "rejections": 49,
+  "reps": 1000,
+  "B": 1000,
+  "seed": 20261111,
+  "low": 0.025,
+  "high": 0.075,
+  "verdict": "size ok",
+  "per_member_rejection_rate": {
+   "momentum_calm_daily": 0.049
+  },
+  "definition": "family-wise: at least one member found at both block lengths"
+ },
+ "gates": {
+  "momentum_calm_daily": {
+   "gates": [
+    {
+     "gate": "min_trades",
+     "gate_value": 40,
+     "comparison": ">=",
+     "observed": 821,
+     "interval": null,
+     "met": true,
+     "note": "a floor only; 40 trades have almost no power"
+    },
+    {
+     "gate": "min_expectancy_r",
+     "gate_value": 0.15,
+     "comparison": ">=",
+     "observed": 0.16639814655938198,
+     "interval": [
+      0.019993328868671844,
+      0.3354009221626294
+     ],
+     "met": true,
+     "note": "the strategy's own absolute net R per usable trade, point estimate"
+    },
+    {
+     "gate": "min_profit_factor",
+     "gate_value": 1.3,
+     "comparison": ">=",
+     "observed": 1.3455234710000796,
+     "interval": [
+      0.9717660288060954,
+      1.8745570495477817
+     ],
+     "met": true,
+     "note": "net P&L of usable trades, point estimate"
+    },
+    {
+     "gate": "max_drawdown_pct",
+     "gate_value": 20.0,
+     "comparison": "<=",
+     "observed": 35.79848148763381,
+     "interval": null,
+     "met": false,
+     "note": "one path, no interval"
+    },
+    {
+     "gate": "min_alpha_pct",
+     "gate_value": 0.0,
+     "comparison": ">=",
+     "observed": 2.0255458292742112,
+     "interval": [
+      -4.745774613919441,
+      9.566890276738436
+     ],
+     "met": true,
+     "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+    }
+   ],
+   "counts": {
+    "closed": 828,
+    "usable": 821,
+    "end_of_window": 0,
+    "excluded_ca": 7,
+    "entries_per_month": 6.315384615384615,
+    "invested_share_mean": 0.8569591016047533,
+    "invested_share_p5": 0.0,
+    "invested_share_p95": 1.0,
+    "open_positions_mean": 10.231488406881077,
+    "open_positions_max": 12
+   },
+   "all_met": false,
+   "alpha": {
+    "raw": {
+     "years": 10.789869952087612,
+     "strategy_cagr_pct": 9.986568120260975,
+     "benchmark_cagr_pct": 8.970674085430597,
+     "alpha_pct": 1.015894034830378
+    },
+    "cash_credited": {
+     "years": 10.789869952087612,
+     "strategy_cagr_pct": 10.996219914704808,
+     "benchmark_cagr_pct": 8.970674085430597,
+     "alpha_pct": 2.0255458292742112
+    },
+    "gate_alpha_pct": 2.0255458292742112,
+    "after_tax_label": "illustrative, not tax advice: tax charged on the end gain of the cash-credited strategy and of its benchmark; never a gate input",
+    "note": "Cash credit is applied after the fact on the recorded equity and cash (idle cash at the previous close earns risk_free_pct/100/252 per day); it does not feed back into sizing or any engine decision. The gate uses the cash-credited, pre-tax alpha.",
+    "risk_free_pct": 6.5,
+    "after_tax_illustrative": {
+     "0.0": {
+      "years": 10.789869952087612,
+      "strategy_cagr_pct": 10.996219914704808,
+      "benchmark_cagr_pct": 8.970674085430597,
+      "alpha_pct": 2.0255458292742112
+     },
+     "20.0": {
+      "years": 10.789869952087612,
+      "strategy_cagr_pct": 9.512989072833689,
+      "benchmark_cagr_pct": 7.677640167901467,
+      "alpha_pct": 1.8353489049322214
+     }
+    }
+   },
+   "implied_annual_return": {
+    "non_gating": true,
+    "trades_per_year": 76.08988835320984,
+    "expectancy_r": 0.16639814655938198,
+    "max_loss_pct_per_trade": 1.0,
+    "implied_annual_return_pct": 12.661216393884423,
+    "matched_benchmark_cagr_pct": 8.970674085430597,
+    "formula": "trades per year x expectancy_r x max_loss_pct_per_trade"
+   },
+   "descriptive": {
+    "2016-2019": {
+     "descriptive": true,
+     "period": "2016-01-01 to 2019-12-31",
+     "trades": 233,
+     "expectancy_r": 0.1285783483655575,
+     "profit_factor": 1.2425187214475841,
+     "max_drawdown_pct": 19.643184448491187,
+     "invested_share_mean": 0.7342308770609521,
+     "alpha_pct": -5.900806294714168
+    },
+    "2020-2026": {
+     "descriptive": true,
+     "period": "2020-01-01 to 2026-10-16",
+     "trades": 588,
+     "expectancy_r": 0.18138456319060842,
+     "profit_factor": 1.369588238049369,
+     "max_drawdown_pct": 28.902558492951226,
+     "invested_share_mean": 0.9286475076475186,
+     "alpha_pct": 6.732655963870493
+    }
+   },
+   "seed": 20261111,
+   "boot": 10000,
+   "block_months": 3,
+   "gate_alpha_is_pre_tax": true,
+   "risk_free_pct": 6.5,
+   "stale_exit": {
+    "trades": 2,
+    "net_pnl_total": 24447.73302983684,
+    "list": [
+     {
+      "position_id": "momentum_calm_daily:GSKCONS:2020-03-19",
+      "symbol": "GSKCONS",
+      "entry_date": "2020-03-19",
+      "exit_date": "2020-05-14",
+      "net_pnl": 14850.48321609887
+     },
+     {
+      "position_id": "momentum_calm_daily:JBCHEPHARM:2026-04-13",
+      "symbol": "JBCHEPHARM",
+      "entry_date": "2026-04-13",
+      "exit_date": "2026-08-13",
+      "net_pnl": 9597.249813737968
+     }
+    ],
+    "usable": "these trades count like any other (gates, T1, T2, equity curve)",
+    "stress": {
+     "label": "stress, not a gate",
+     "factor": 0.5,
+     "gates": [
+      {
+       "gate": "min_trades",
+       "gate_value": 40,
+       "comparison": ">=",
+       "observed": 821,
+       "interval": null,
+       "met": true,
+       "note": "a floor only; 40 trades have almost no power"
+      },
+      {
+       "gate": "min_expectancy_r",
+       "gate_value": 0.15,
+       "comparison": ">=",
+       "observed": 0.1532521343682962,
+       "interval": [
+        0.005751098871367666,
+        0.32460245442316005
+       ],
+       "met": true,
+       "note": "the strategy's own absolute net R per usable trade, point estimate"
+      },
+      {
+       "gate": "min_profit_factor",
+       "gate_value": 1.3,
+       "comparison": ">=",
+       "observed": 1.3293911055891776,
+       "interval": [
+        0.9586918050933384,
+        1.855944336072957
+       ],
+       "met": true,
+       "note": "net P&L of usable trades, point estimate"
+      },
+      {
+       "gate": "max_drawdown_pct",
+       "gate_value": 20.0,
+       "comparison": "<=",
+       "observed": 35.79848148763381,
+       "interval": null,
+       "met": false,
+       "note": "one path, no interval"
+      },
+      {
+       "gate": "min_alpha_pct",
+       "gate_value": 0.0,
+       "comparison": ">=",
+       "observed": 1.6532228571379814,
+       "interval": [
+        -5.277061283730951,
+        9.349836858577698
+       ],
+       "met": true,
+       "note": "annualised, PRE-TAX, strategy idle cash credited at risk_free_pct, against the B2 benchmark (daily share)"
+      }
+     ],
+     "all_met": false,
+     "alpha_cash_credited_pct": 1.6532228571379814,
+     "net_pnl_total_stressed": -36471.466231274055
+    }
+   }
+  }
+ },
+ "conclusion": {
+  "momentum_calm_daily": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)"
+ },
+ "found_by_t1": []
+}
