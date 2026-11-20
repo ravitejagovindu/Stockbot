@@ -1,0 +1,15 @@
+signal_date,strategy,symbol,reason,stage
+2026-09-01,momentum_calm,GRANULES,BLOCKED_BY_RISK(sector_HEALTHCARE:24.2%>15.0%),risk
+2026-09-01,momentum_calm,SONACOMS,BLOCKED_BY_RISK(sector_AUTO:24.5%>15.0%),risk
+2026-09-01,momentum_calm,SHRIRAMFIN,BLOCKED_BY_RISK(sector_FINANCIALS:23.5%>15.0%),risk
+2026-09-01,momentum_calm,ANANDRATHI,BLOCKED_BY_RISK(sector_FINANCIALS:24.5%>15.0%),risk
+2026-09-01,momentum_calm,MOTHERSON,BLOCKED_BY_RISK(sector_AUTO:24.7%>15.0%),risk
+2026-09-01,momentum_calm,AUROPHARMA,BLOCKED_BY_RISK(sector_HEALTHCARE:23.9%>15.0%),risk
+2026-09-01,momentum_calm,TORNTPHARM,BLOCKED_BY_RISK(sector_HEALTHCARE:24.5%>15.0%),risk
+2026-09-01,momentum_calm,NESTLEIND,BLOCKED_BY_RISK(sector_CONSUMER:21.9%>15.0%),risk
+2026-09-01,momentum_calm,DIVISLAB,BLOCKED_BY_RISK(sector_HEALTHCARE:21.3%>15.0%),risk
+2026-09-01,momentum_calm,RADICO,BLOCKED_BY_RISK(sector_CONSUMER:20.9%>15.0%),risk
+2026-09-01,momentum_calm,TITAN,BLOCKED_BY_RISK(sector_CONSUMER:19.8%>15.0%),risk
+2026-09-01,momentum_calm,KARURVYSYA,BLOCKED_BY_RISK(sector_FINANCIALS:24.7%>15.0%),risk
+2026-09-01,momentum_calm,RBLBANK,BLOCKED_BY_RISK(sector_FINANCIALS:24.8%>15.0%),risk
+2026-09-01,momentum_calm,BAJAJ-AUTO,BLOCKED_BY_RISK(sector_AUTO:24.7%>15.0%),risk

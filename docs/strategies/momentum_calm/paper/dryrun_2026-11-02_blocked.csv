@@ -1,0 +1,16 @@
+signal_date,strategy,symbol,reason,stage
+2026-11-02,momentum_calm,AUROPHARMA,BLOCKED_BY_RISK(sector_HEALTHCARE:22.4%>15.0%),risk
+2026-11-02,momentum_calm,SAILIFE,BLOCKED_BY_RISK(sector_HEALTHCARE:20.6%>15.0%),risk
+2026-11-02,momentum_calm,AJANTPHARM,BLOCKED_BY_RISK(sector_HEALTHCARE:19.1%>15.0%),risk
+2026-11-02,momentum_calm,DIVISLAB,BLOCKED_BY_RISK(sector_HEALTHCARE:20.5%>15.0%),risk
+2026-11-02,momentum_calm,IPCALAB,BLOCKED_BY_RISK(sector_HEALTHCARE:20.3%>15.0%),risk
+2026-11-02,momentum_calm,GRANULES,BLOCKED_BY_RISK(sector_HEALTHCARE:20.0%>15.0%),risk
+2026-11-02,momentum_calm,BHARATFORG,BLOCKED_BY_RISK(sector_AUTO:21.8%>15.0%),risk
+2026-11-02,momentum_calm,CRAFTSMAN,BLOCKED_BY_RISK(sector_AUTO:15.7%>15.0%),risk
+2026-11-02,momentum_calm,BELRISE,BLOCKED_BY_RISK(sector_AUTO:18.5%>15.0%),risk
+2026-11-02,momentum_calm,MOTHERSON,BLOCKED_BY_RISK(sector_AUTO:22.3%>15.0%),risk
+2026-11-02,momentum_calm,FEDERALBNK,BLOCKED_BY_RISK(sector_FINANCIALS:23.5%>15.0%),risk
+2026-11-02,momentum_calm,TORNTPHARM,BLOCKED_BY_RISK(sector_HEALTHCARE:22.1%>15.0%),risk
+2026-11-02,momentum_calm,GLAND,BLOCKED_BY_RISK(sector_HEALTHCARE:19.8%>15.0%),risk
+2026-11-02,momentum_calm,SAIL,BLOCKED_BY_RISK(sector_METALS:20.9%>15.0%),risk
+2026-11-02,momentum_calm,SOLARINDS,BLOCKED_BY_RISK(sector_CHEMICALS:18.1%>15.0%),risk

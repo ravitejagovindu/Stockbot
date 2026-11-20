@@ -1,0 +1,15 @@
+signal_date,strategy,symbol,reason,stage
+2026-08-03,momentum_calm,GRANULES,BLOCKED_BY_RISK(sector_HEALTHCARE:21.9%>15.0%),risk
+2026-08-03,momentum_calm,FEDERALBNK,BLOCKED_BY_RISK(sector_FINANCIALS:24.8%>15.0%),risk
+2026-08-03,momentum_calm,SHRIRAMFIN,BLOCKED_BY_RISK(sector_FINANCIALS:23.8%>15.0%),risk
+2026-08-03,momentum_calm,TORNTPHARM,BLOCKED_BY_RISK(sector_HEALTHCARE:21.9%>15.0%),risk
+2026-08-03,momentum_calm,AUROPHARMA,BLOCKED_BY_RISK(sector_HEALTHCARE:24.2%>15.0%),risk
+2026-08-03,momentum_calm,LTF,BLOCKED_BY_RISK(sector_FINANCIALS:23.6%>15.0%),risk
+2026-08-03,momentum_calm,MAHABANK,BLOCKED_BY_RISK(sector_FINANCIALS:24.1%>15.0%),risk
+2026-08-03,momentum_calm,SAILIFE,BLOCKED_BY_RISK(sector_HEALTHCARE:23.8%>15.0%),risk
+2026-08-03,momentum_calm,STARHEALTH,BLOCKED_BY_RISK(sector_FINANCIALS:23.0%>15.0%),risk
+2026-08-03,momentum_calm,AUBANK,BLOCKED_BY_RISK(sector_FINANCIALS:24.5%>15.0%),risk
+2026-08-03,momentum_calm,AIAENG,BLOCKED_BY_RISK(sector_INDUSTRIALS:20.5%>15.0%),risk
+2026-08-03,momentum_calm,ABCAPITAL,BLOCKED_BY_RISK(sector_FINANCIALS:24.0%>15.0%),risk
+2026-08-03,momentum_calm,GESHIP,BLOCKED_BY_RISK(sector_SERVICES:21.5%>15.0%),risk
+2026-08-03,momentum_calm,LUPIN,BLOCKED_BY_RISK(sector_HEALTHCARE:23.7%>15.0%),risk

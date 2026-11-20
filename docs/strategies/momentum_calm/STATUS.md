@@ -19,3 +19,6 @@ None until the owner replies. No backtest on the real lake has been run.
 
 ## 2026-11-20: family_batch7 run done
 Ran once, every registered step once, `STOCKBOT_VIEW=memory`, `STOCKBOT_NON_EQ=held`, standard 1.0 percent risk: T1 significant at both blocks (adjusted p 0.028 and 0.0306), four of the five gates met, the 20 percent drawdown gate missed (24.9); verdict NOT DEMONSTRATED by the decision rule. db_check clean (file hash and guard counter unchanged). Results in `results_run1/`, report `Claude_Docs/MOMENTUM_CALM_RUN_REPORT.md`. Open for the owner: the `record_family_results` row on master (command in the report).
+
+## 2026-11-20: paper set-up (branch paper-setup)
+Paper spec `PAPER_SPEC` (status `paper`, config hash `dec2618e221884515f8f15bc0a5370275251be3ff12bf97d0047510362bdf8be`) = the registered spec with only `status` changed; registered `SPEC` and hash `d215b84c...cbad55` unchanged. Paper account 200,000 INR, no deposits; daily path `scripts/daily_job.py` -> `scripts/paper_run.py`; dry runs in `paper/`. Task Scheduler replacement commands (not run) in `docs/shared/daily-update/SCHEDULER.md`. Report: `Claude_Docs/PAPER_SETUP_REPORT.md`. The verdict stays "not demonstrated".

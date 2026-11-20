@@ -509,6 +509,20 @@ def default_ca_fetch(from_date: date, to_date: date):
     return None
 
 
+def split_known_prefix_differences(diff: list) -> tuple:
+    """(still_different, n_prefix_only). A stored row whose ONLY difference from the fetched row is the ``feed_symbol=<SYM>; `` prefix that f2_load_corporate_actions.py writes in front of ``notes``
+    (ratios equal, notes equal after removing that prefix) is the same event: neither a difference nor a warning (the 85 known rows, Claude_Docs/CA_DIFFERENCES_REPORT.md). Stored rows are never changed."""
+    rest, n = [], 0
+    for key, stored, offered in diff:
+        prefix = f"feed_symbol={key[0]}; "
+        s_notes, o_notes = stored[2], offered[2]
+        if stored[:2] == offered[:2] and isinstance(s_notes, str) and s_notes.startswith(prefix) and s_notes[len(prefix):] == (o_notes or ""):
+            n += 1
+        else:
+            rest.append((key, stored, offered))
+    return rest, n
+
+
 def load_corporate_actions(ctx: Ctx, raw: list) -> dict:
     """NSE rows -> corporate_actions_log (INSERT_ONLY): new events are added, identical ones skipped, a stored event with other values is reported and NOT changed (guard correct)."""
     from stockbot.data.guard.core import connect_writer, tx
@@ -528,6 +542,8 @@ def load_corporate_actions(ctx: Ctx, raw: list) -> dict:
     con = connect_writer(ctx.db)
     try:
         new, same, diff = split_new(sqlite_fetch(con), "corporate_actions_log", recs, ("symbol", "ex_date", "action_type"), ("ratio_numerator", "ratio_denominator", "notes"))
+        diff, prefix_only = split_known_prefix_differences(diff)
+        same += prefix_only
         with tx(con):
             con.executemany("INSERT OR IGNORE INTO corporate_actions_log (symbol, ex_date, action_type, ratio_numerator, ratio_denominator, notes, source, loaded_at) VALUES (?,?,?,?,?,?,?,?)",
                             [tuple(r[c] for c in names) for r in new])
