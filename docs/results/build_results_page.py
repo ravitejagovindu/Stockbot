@@ -59,6 +59,11 @@ RUNS = [
          dir=f"{S}/family_batch6/results/riskadj_momentum_daily", gates="gates.json", bench="benchmark.json",
          validate=f"{S}/family_batch6/results/family_results.json",
          note="New registered trial. Drawdown fell from 45.6% to 24.9%, still above the gate. The test against random picks did not change (p 0.42): size does not change which stocks are picked."),
+    dict(id="momentum_calm", name="Momentum among calm stocks", slot=10, t1_id="momentum_calm", family="family_batch7 (K=1)",
+         rule="Monthly momentum, but only among the calmest half of stocks (lowest 252-day volatility). Same stop, same exits.",
+         dir=f"{S}/momentum_calm/results_run1", gates="gates.json", bench="benchmark.json",
+         validate=f"{S}/momentum_calm/results_run1/family_results.json",
+         note="First run since the original momentum to beat random picks at both block sizes (adjusted p 0.028 / 0.031). Four of five gates met; drawdown 24.9% is above the 20% gate, so the verdict stays not demonstrated."),
 ]
 
 # Descriptive study, not a registered trial (docs/shared/market-switch/DECISION.md).
