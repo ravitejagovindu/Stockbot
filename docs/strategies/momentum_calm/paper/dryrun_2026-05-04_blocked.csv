@@ -1,0 +1,16 @@
+signal_date,strategy,symbol,reason,stage
+2026-05-04,momentum_calm,GLENMARK,BLOCKED_BY_RISK(sector_HEALTHCARE:21.3%>15.0%),risk
+2026-05-04,momentum_calm,KARURVYSYA,BLOCKED_BY_RISK(sector_FINANCIALS:20.0%>15.0%),risk
+2026-05-04,momentum_calm,RBLBANK,BLOCKED_BY_RISK(sector_FINANCIALS:20.2%>15.0%),risk
+2026-05-04,momentum_calm,INDIANB,BLOCKED_BY_RISK(sector_FINANCIALS:18.7%>15.0%),risk
+2026-05-04,momentum_calm,ABCAPITAL,BLOCKED_BY_RISK(sector_FINANCIALS:20.2%>15.0%),risk
+2026-05-04,momentum_calm,TORNTPHARM,BLOCKED_BY_RISK(sector_HEALTHCARE:21.1%>15.0%),risk
+2026-05-04,momentum_calm,TATASTEEL,BLOCKED_BY_RISK(sector_METALS:24.4%>15.0%),risk
+2026-05-04,momentum_calm,FEDERALBNK,BLOCKED_BY_RISK(sector_FINANCIALS:22.7%>15.0%),risk
+2026-05-04,momentum_calm,BEL,BLOCKED_BY_RISK(sector_INDUSTRIALS:22.9%>15.0%),risk
+2026-05-04,momentum_calm,LTF,BLOCKED_BY_RISK(sector_FINANCIALS:21.0%>15.0%),risk
+2026-05-04,momentum_calm,GRANULES,BLOCKED_BY_RISK(sector_HEALTHCARE:20.3%>15.0%),risk
+2026-05-04,momentum_calm,ASHOKLEY,BLOCKED_BY_RISK(sector_INDUSTRIALS:19.2%>15.0%),risk
+2026-05-04,momentum_calm,KEI,BLOCKED_BY_RISK(sector_INDUSTRIALS:18.2%>15.0%),risk
+2026-05-04,momentum_calm,DELHIVERY,BLOCKED_BY_RISK(sector_SERVICES:19.0%>15.0%),risk
+2026-05-04,momentum_calm,NAVINFLUOR,BLOCKED_BY_RISK(sector_CHEMICALS:17.6%>15.0%),risk

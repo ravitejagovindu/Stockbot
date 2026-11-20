@@ -1,0 +1,17 @@
+signal_date,strategy,symbol,reason,stage
+2026-07-01,momentum_calm,GRANULES,BLOCKED_BY_RISK(sector_HEALTHCARE:22.5%>15.0%),risk
+2026-07-01,momentum_calm,TORNTPHARM,BLOCKED_BY_RISK(sector_HEALTHCARE:23.5%>15.0%),risk
+2026-07-01,momentum_calm,POLYCAB,BLOCKED_BY_RISK(sector_INDUSTRIALS:21.0%>15.0%),risk
+2026-07-01,momentum_calm,SAIL,BLOCKED_BY_RISK(sector_METALS:20.0%>15.0%),risk
+2026-07-01,momentum_calm,USHAMART,BLOCKED_BY_RISK(sector_INDUSTRIALS:21.4%>15.0%),risk
+2026-07-01,momentum_calm,BHEL,BLOCKED_BY_RISK(sector_INDUSTRIALS:21.5%>15.0%),risk
+2026-07-01,momentum_calm,WELCORP,BLOCKED_BY_RISK(sector_INDUSTRIALS:20.9%>15.0%),risk
+2026-07-01,momentum_calm,FEDERALBNK,BLOCKED_BY_RISK(sector_FINANCIALS:23.2%>15.0%),risk
+2026-07-01,momentum_calm,SAILIFE,BLOCKED_BY_RISK(sector_HEALTHCARE:21.9%>15.0%),risk
+2026-07-01,momentum_calm,RRKABEL,BLOCKED_BY_RISK(sector_INDUSTRIALS:18.5%>15.0%),risk
+2026-07-01,momentum_calm,RBLBANK,BLOCKED_BY_RISK(sector_FINANCIALS:22.6%>15.0%),risk
+2026-07-01,momentum_calm,TATASTEEL,BLOCKED_BY_RISK(sector_METALS:23.3%>15.0%),risk
+2026-07-01,momentum_calm,MAHABANK,BLOCKED_BY_RISK(sector_FINANCIALS:21.8%>15.0%),risk
+2026-07-01,momentum_calm,THERMAX,BLOCKED_BY_RISK(sector_INDUSTRIALS:19.0%>15.0%),risk
+2026-07-01,momentum_calm,JSWSTEEL,BLOCKED_BY_RISK(sector_METALS:23.0%>15.0%),risk
+2026-07-01,momentum_calm,AIAENG,BLOCKED_BY_RISK(sector_INDUSTRIALS:18.8%>15.0%),risk

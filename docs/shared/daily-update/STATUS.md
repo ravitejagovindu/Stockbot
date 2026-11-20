@@ -7,3 +7,4 @@
 - Locks: `F:\Projects\Ravi\StockBotData\locks\daily_update.lock` and `run_<pid>_<time>.lock`; stale = older than 12 h and no live process (reported, exit 5, never deleted).
 - Exit codes: 0 done, 1 failed day, 3 today's file not published yet, 4 locked, 5 stale lock.
 - Not done: no task registered, no paper trading, no backtest run, no strategy folder / pre-registration / ledger row / stored result touched.
+- 2026-11-20 (branch paper-setup): the 85 known `corporate_actions_log` differences (stored notes carry the `feed_symbol=<SYM>; ` prefix) no longer count as differences (`split_known_prefix_differences`; ratios or other wording still do). Replacement task action `scripts/daily_job.py` (data step, then the momentum_calm paper step) documented in `SCHEDULER.md`; the task is NOT changed by the build.

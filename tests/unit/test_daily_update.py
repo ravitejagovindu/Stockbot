@@ -495,3 +495,17 @@ def test_the_baseline_fingerprint_holds_a_run_lock_until_the_process_ends(env, m
     assert len(runlock.locks_for(env.db)) == 1
     runlock.release(info.path)
     runlock._HELD.clear()
+
+
+def test_a_stored_row_that_differs_only_by_the_feed_symbol_prefix_is_not_a_difference(env):
+    ev = {"symbol": "AAA", "exDate": "20-Oct-2026", "subject": "Interim Dividend - Rs 3 Per Share"}
+    assert DU.load_corporate_actions(env.ctx, [ev])["inserted"] == 1
+    key = ("AAA", "2026-10-20", "DIVIDEND")
+    rest, n = DU.split_known_prefix_differences([(key, (None, None, "feed_symbol=AAA; Interim Dividend"), (None, None, "Interim Dividend"))])
+    assert rest == [] and n == 1
+    other = (key, (None, None, "feed_symbol=AAA; Interim Dividend"), (None, None, "Final Dividend"))
+    assert DU.split_known_prefix_differences([other]) == ([other], 0)                                    # other wording still differs
+    ratio = (("AAA", "2026-10-20", "BONUS"), (1.0, 1.0, "feed_symbol=AAA; Bonus 1:1"), (2.0, 1.0, "Bonus 1:1"))
+    assert DU.split_known_prefix_differences([ratio]) == ([ratio], 0)                                     # a ratio change is never hidden
+    wrong_sym = (("AAA", "2026-10-20", "DIVIDEND"), (None, None, "feed_symbol=BBB; X"), (None, None, "X"))
+    assert DU.split_known_prefix_differences([wrong_sym]) == ([wrong_sym], 0)
