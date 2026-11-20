@@ -16,3 +16,6 @@ Last updated: 2026-11-19 (stage 1 done; waiting for the owner to register family
 
 ## Next step
 None until the owner replies. No backtest on the real lake has been run.
+
+## 2026-11-20: family_batch7 run done
+Ran once, every registered step once, `STOCKBOT_VIEW=memory`, `STOCKBOT_NON_EQ=held`, standard 1.0 percent risk: T1 significant at both blocks (adjusted p 0.028 and 0.0306), four of the five gates met, the 20 percent drawdown gate missed (24.9); verdict NOT DEMONSTRATED by the decision rule. db_check clean (file hash and guard counter unchanged). Results in `results_run1/`, report `Claude_Docs/MOMENTUM_CALM_RUN_REPORT.md`. Open for the owner: the `record_family_results` row on master (command in the report).
