@@ -79,6 +79,51 @@ def test_the_paper_step_does_nothing_while_a_lock_is_held(paper, capsys):
     assert "LOCKED" in capsys.readouterr().out and not (tmp / "state" / "live_state.db").exists()
 
 
+def _lock(tmp, name, db, pid=999999, alive_text=None):
+    import json
+    (tmp / "locks").mkdir(exist_ok=True)
+    (tmp / "locks" / name).write_text(alive_text if alive_text is not None else json.dumps(
+        {"kind": "run", "pid": pid, "host": "other-host", "started_at": "2026-11-20T11:00:00+00:00", "db": str(db).lower(), "label": "baseline / signal count", "argv": []}), encoding="utf-8")
+
+
+def test_an_empty_lock_directory_does_not_block(paper):
+    mod, tmp = paper
+    (tmp / "locks").mkdir()
+    assert mod.locks_held() == []
+
+
+def test_a_lock_for_another_database_does_not_block(paper, monkeypatch):
+    mod, tmp = paper
+    _lock(tmp, "run_4580_x.lock", tmp / "pytest" / "ram0" / "lake.db")
+    assert mod.locks_held() == []
+    monkeypatch.setattr(mod, "seal_of", lambda con, table: DS[298].isoformat())
+    assert mod.main(["--date", DS[298].isoformat()]) == 0                     # the paper step runs
+
+
+def test_a_lock_on_the_same_database_blocks(paper, capsys):
+    from stockbot.data.guard.runlock import db_key
+    mod, tmp = paper
+    _lock(tmp, "run_4580_y.lock", db_key(tmp / "lake.db"))
+    assert mod.locks_held() == ["run_4580_y.lock"]
+    assert mod.main(["--date", DS[298].isoformat()]) == 4 and not (tmp / "state" / "live_state.db").exists()
+    assert "LOCKED" in capsys.readouterr().out
+
+
+def test_an_unreadable_lock_blocks_whatever_database_it_is_for(paper):
+    mod, tmp = paper
+    _lock(tmp, "garbage.lock", "", alive_text="not json")
+    assert mod.locks_held() == ["garbage.lock"]
+    assert mod.main(["--date", DS[298].isoformat()]) == 4
+
+
+def test_a_lock_for_another_database_and_one_on_this_one_together_block_and_name_only_this_one(paper):
+    from stockbot.data.guard.runlock import db_key
+    mod, tmp = paper
+    _lock(tmp, "run_1_other.lock", tmp / "elsewhere" / "lake.db")
+    _lock(tmp, "run_2_same.lock", db_key(tmp / "lake.db"))
+    assert mod.locks_held() == ["run_2_same.lock"]
+
+
 def test_the_account_starts_at_200000_and_a_second_run_changes_nothing(paper, monkeypatch):
     mod, tmp = paper
     monkeypatch.setattr(mod, "seal_of", lambda con, table: DS[298].isoformat())
