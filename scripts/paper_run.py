@@ -4,8 +4,9 @@ a ticket made at the close of T is filled by the engine at the open of T+1 (shar
 
   py -3 scripts/paper_run.py [--date YYYY-MM-DD]
 
-Refuses (exit 2) when the lake is not sealed through the date, when a lock is held, when STOCKBOT_RISK_PCT is set or STOCKBOT_VIEW=memory. STOCKBOT_NON_EQ defaults to ``held`` here.
-Exit codes: 0 processed (or already processed), 2 refused, 4 a daily-update or run lock is held (try again later), 1 other error."""
+Refuses (exit 2) when the lake is not sealed through the date, when STOCKBOT_RISK_PCT is set or when STOCKBOT_VIEW=memory; refuses with exit 4 when a lock on the SAME database file is held (an
+unreadable lock file counts; a lock for another database, for example a test run on a temporary lake, does not). STOCKBOT_NON_EQ defaults to ``held`` here.
+Exit codes: 0 processed (or already processed), 2 refused, 4 a daily-update or run lock on this database is held (try again later), 1 other error."""
 from __future__ import annotations
 
 import argparse
@@ -32,10 +33,11 @@ def paper_book() -> Book:
     return Book.from_strategies([paper_strategy()], extra_policies=paper_policy_extras())
 
 
-def locks_held() -> list:
-    from stockbot.data.guard.runlock import lock_dir
-    d = lock_dir()
-    return sorted(p.name for p in d.glob("*.lock")) if d.exists() else []
+def locks_held(db=None) -> list:
+    """The locks that concern the database file this run reads (the same rule as the data job: ``runlock.locks_for``). A lock for ANOTHER database (for example a test run on a temporary lake) does not
+    block; a lock on the same database, or an unreadable lock file (it concerns every database), does."""
+    from stockbot.data.guard.runlock import locks_for
+    return [i.path.name for i in locks_for(db if db is not None else lake_path())]
 
 
 def main(argv=None) -> int:
@@ -44,7 +46,7 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     held = locks_held()
     if held:
-        print(f"LOCKED: {held}: the data job or a run is active; nothing done")
+        print(f"LOCKED: {held}: a data job or a run holds a lock on this database; nothing done")
         return 4
     as_of = date.fromisoformat(a.date) if a.date else expected_session(date.today())
     try:
