@@ -1,0 +1,139 @@
+{
+ "columns": [
+  {
+   "label": "family_batch4: any-day (1.0% risk, EQ only)",
+   "summary": {
+    "folder": "F:\\Projects\\Ravi\\StockBot_wt_mc_daily\\docs\\strategies\\riskadj_momentum_daily\\results_run1",
+    "trades": 1048,
+    "expectancy_r": 0.20789281253070335,
+    "profit_factor": 1.4331333398512345,
+    "max_drawdown_pct": 36.148238795277685,
+    "cash_credited_alpha_pct": 7.061097222846666,
+    "t1_adjusted_p_by_block": {
+     "2": 0.0461,
+     "3": 0.0499
+    },
+    "net_profit": 3582674.9525733697,
+    "mean_invested_share": 0.8029808419318638,
+    "risk_per_trade_pct": 1.0,
+    "non_eq_switch": false,
+    "conclusion": null,
+    "worst_fall": {
+     "depth_pct": 36.148238795277685,
+     "peak": "2018-01-09",
+     "trough": "2020-03-23",
+     "recovery": "2020-09-15"
+    },
+    "fees": 402652.61916597263
+   }
+  },
+  {
+   "label": "family_batch5: any-day (1.0% risk, BE/BZ)",
+   "summary": {
+    "folder": "F:\\Projects\\Ravi\\StockBot_wt_mc_daily\\docs\\strategies\\riskadj_momentum_daily\\results_run2_noneq",
+    "trades": 1061,
+    "expectancy_r": 0.15806970347560448,
+    "profit_factor": 1.3201810354341001,
+    "max_drawdown_pct": 45.612574256550644,
+    "cash_credited_alpha_pct": 3.0158262545173073,
+    "t1_adjusted_p_by_block": {
+     "2": 0.4236,
+     "3": 0.427
+    },
+    "net_profit": 2190428.147269229,
+    "mean_invested_share": 0.7975246842124959,
+    "risk_per_trade_pct": 1.0,
+    "non_eq_switch": true,
+    "conclusion": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)",
+    "worst_fall": {
+     "depth_pct": 45.61257425655065,
+     "peak": "2018-01-09",
+     "trough": "2020-03-23",
+     "recovery": "2021-03-23"
+    },
+    "fees": 331120.6809387612
+   }
+  },
+  {
+   "label": "family_batch6: any-day (0.5% risk, BE/BZ)",
+   "summary": {
+    "folder": "F:\\Projects\\Ravi\\StockBot_wt_mc_daily\\docs\\strategies\\family_batch6\\results\\riskadj_momentum_daily",
+    "trades": 1077,
+    "expectancy_r": 0.15428569786293309,
+    "profit_factor": 1.3562394474618802,
+    "max_drawdown_pct": 24.872352654430102,
+    "cash_credited_alpha_pct": 3.3118857509051747,
+    "t1_adjusted_p_by_block": {
+     "2": 0.4243,
+     "3": 0.4304
+    },
+    "net_profit": 1040143.119825172,
+    "mean_invested_share": 0.4457289314560009,
+    "risk_per_trade_pct": 0.5,
+    "non_eq_switch": true,
+    "conclusion": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)",
+    "worst_fall": {
+     "depth_pct": 24.872352654430102,
+     "peak": "2018-01-09",
+     "trough": "2020-03-23",
+     "recovery": "2021-05-06"
+    },
+    "fees": 155190.22236407394
+   }
+  },
+  {
+   "label": "family_batch7: momentum_calm monthly (1.0% risk, BE/BZ)",
+   "summary": {
+    "folder": "F:\\Projects\\Ravi\\StockBot_wt_mc_daily\\docs\\strategies\\momentum_calm\\results_run1",
+    "trades": 585,
+    "expectancy_r": 0.17060496810221276,
+    "profit_factor": 1.4950184766166204,
+    "max_drawdown_pct": 24.94446606676129,
+    "cash_credited_alpha_pct": 3.8066579062362216,
+    "t1_adjusted_p_by_block": {
+     "2": 0.028,
+     "3": 0.0306
+    },
+    "net_profit": 1874407.2783315664,
+    "mean_invested_share": 0.6654100767192168,
+    "risk_per_trade_pct": 1.0,
+    "non_eq_switch": true,
+    "conclusion": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)",
+    "worst_fall": {
+     "depth_pct": 24.944466066761287,
+     "peak": "2021-10-14",
+     "trough": "2022-06-22",
+     "recovery": "2023-09-05"
+    },
+    "fees": 219043.38893326296
+   }
+  },
+  {
+   "label": "family_batch8: momentum_calm_daily (1.0% risk, BE/BZ)",
+   "summary": {
+    "folder": "docs\\strategies\\momentum_calm_daily\\results_run1",
+    "trades": 828,
+    "expectancy_r": 0.16639814655938198,
+    "profit_factor": 1.3455234710000796,
+    "max_drawdown_pct": 35.79848148763381,
+    "cash_credited_alpha_pct": 2.0255458292742112,
+    "t1_adjusted_p_by_block": {
+     "2": 0.1391,
+     "3": 0.1216
+    },
+    "net_profit": 1787769.241609237,
+    "mean_invested_share": 0.8569591016047533,
+    "risk_per_trade_pct": 1.0,
+    "non_eq_switch": true,
+    "conclusion": "NOT DEMONSTRATED (registered rule not met; this is not evidence of no edge)",
+    "worst_fall": {
+     "depth_pct": 35.79848148763381,
+     "peak": "2018-08-29",
+     "trough": "2020-03-23",
+     "recovery": "2021-01-11"
+    },
+    "fees": 279238.9534350897
+   }
+  }
+ ]
+}

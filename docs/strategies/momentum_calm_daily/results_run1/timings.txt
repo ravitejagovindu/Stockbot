@@ -1,0 +1,6 @@
+research rc=0 seconds=4954
+baseline rc=0 seconds=2820
+benchmark rc=0 seconds=27
+gates rc=0 seconds=29
+validate_family rc=0 seconds=62
+comparison rc=0 seconds=1
