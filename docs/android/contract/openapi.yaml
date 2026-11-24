@@ -328,6 +328,10 @@ components:
                 type: object
                 required: [symbol, shares, entryDate, entryPricePaise, stopPaise, lastClosePaise, unrealisedPnlPaise]
                 properties:
+                  corporateActionFlag:
+                    type: boolean
+                    default: false
+                    description: True for a position held by hand (the engine could not rescale it for a corporate action); its figures may be off. Absent means false.
                   symbol: { type: string }
                   shares: { type: integer, minimum: 1 }
                   entryDate: { $ref: "#/components/schemas/Date" }
@@ -349,6 +353,10 @@ components:
                 type: object
                 required: [symbol, entryDate, exitDate, exitReason, netPnlPaise, netR]
                 properties:
+                  corporateActionFlag:
+                    type: boolean
+                    default: false
+                    description: True when the engine flagged the trade for a corporate action it could not rescale (excluded_ca). The trade is listed and counted in closedTrades, but left out of the win rate and profit factor. Absent means false.
                   symbol: { type: string }
                   entryDate: { $ref: "#/components/schemas/Date" }
                   exitDate: { $ref: "#/components/schemas/Date" }
@@ -359,14 +367,19 @@ components:
               type: object
               required: [tradeCount, wins, losses, winRatePct, profitFactor]
               properties:
-                tradeCount: { type: integer, minimum: 0 }
-                wins: { type: integer, minimum: 0, description: Trades with net P&L above zero. }
-                losses: { type: integer, minimum: 0, description: Trades with net P&L below zero. }
+                tradeCount: { type: integer, minimum: 0, description: All closed trades listed, flagged ones included. }
+                wins: { type: integer, minimum: 0, description: Unflagged trades with net P&L above zero. }
+                losses: { type: integer, minimum: 0, description: Unflagged trades with net P&L below zero. }
+                excludedFromStats:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                  description: How many flagged trades (corporateActionFlag true) are left out of winRatePct and profitFactor. Absent means 0.
                 winRatePct:
                   type: number
                   nullable: true
-                  description: wins / tradeCount in percent; null when there are no trades.
+                  description: wins / (tradeCount - excludedFromStats) in percent; null when no unflagged trade exists.
                 profitFactor:
                   type: number
                   nullable: true
-                  description: Gross profit / gross loss; null when there is no losing trade.
+                  description: Gross profit / gross loss over unflagged trades; null when there is no losing unflagged trade.

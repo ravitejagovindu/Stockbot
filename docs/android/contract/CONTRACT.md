@@ -127,6 +127,7 @@ PendingFill: `symbol`, `side` (BUY or SELL), `shares` (int), `note` (short reaso
 | `positions[].stopPaise` | int64 | paise per share; the stop in force now | no | card |
 | `positions[].lastClosePaise` | int64 | paise per share | no | card |
 | `positions[].unrealisedPnlPaise` | int64 | paise; (last close - entry) x shares | no | card |
+| `positions[].corporateActionFlag` | boolean | true for a position held by hand (engine `hold`); default false | no (absent = false) | card note "Corporate action: figures may be off" |
 
 ### `GET /v1/trades` (Trades)
 
@@ -139,11 +140,13 @@ PendingFill: `symbol`, `side` (BUY or SELL), `shares` (int), `note` (short reaso
 | `trades[].exitReason` | ExitReason | | no | card |
 | `trades[].netPnlPaise` | int64 | paise after costs | no | card |
 | `trades[].netR` | number | net P&L / paise risked at entry | no | card |
-| `stats.tradeCount` | int | count | no | footer "5 of 12" |
-| `stats.wins` | int | net P&L above zero | no | footer |
-| `stats.losses` | int | net P&L below zero | no | none yet |
-| `stats.winRatePct` | number | percent = wins / tradeCount | yes (no trades) | footer "42%" |
-| `stats.profitFactor` | number | gross profit / gross loss | yes (no losing trade) | footer "1.40" |
+| `trades[].corporateActionFlag` | boolean | true when the engine flagged the trade (`excluded_ca`); default false | no (absent = false) | card note "Corporate action: figures may be off" |
+| `stats.tradeCount` | int | all closed trades listed, flagged ones included | no | none (equals `summary.closedTrades`) |
+| `stats.wins` | int | unflagged trades with net P&L above zero | no | footer "5 of 11" |
+| `stats.losses` | int | unflagged trades with net P&L below zero | no | none yet |
+| `stats.excludedFromStats` | int | flagged trades left out of the two figures below; default 0 | no (absent = 0) | footer "1 trade excluded: corporate action" (only when above 0) |
+| `stats.winRatePct` | number | percent = wins / (tradeCount - excludedFromStats) | yes (no unflagged trade) | footer "45%" |
+| `stats.profitFactor` | number | gross profit / gross loss over unflagged trades | yes (no losing unflagged trade) | footer "1.62" |
 
 ## Enums
 
@@ -192,6 +195,10 @@ Read from `stockbot/engine`, `stockbot/risk`, `stockbot/live`, `stockbot/overlay
 | `STRATEGY_NOT_REGISTERED`, `CORP_ACTION_ON_EXEC_DATE`, `GAP_THROUGH_STOP` (entry gap below the stop), `GAP_UP_TOO_LARGE`, any `confirm_fill` verdict string, `CONFIRM_FILL_ERROR` | fill | `OTHER` |
 
 **Side:** the engine has no side field. A ticket (`State.pending`) is a `BUY` at the next open; a position with `pending_exit > 0` is a `SELL` at the next open.
+
+## Corporate-action flag (additive change, stage 3, still apiVersion 1)
+
+Owner decision: every closed trade is listed and counted in `closedTrades` and toward the 30-trade mark, including trades the engine flagged `excluded_ca`. A flagged trade carries `corporateActionFlag: true`; the win rate and profit factor leave flagged trades out, and `stats.excludedFromStats` says how many. A position held by hand (`hold = true`) is listed with `corporateActionFlag: true`. The new fields default to `false` and `0` when absent, so a v1 client that ignores them keeps working. The app shows "Corporate action: figures may be off" on a flagged card, and "1 trade excluded: corporate action" in the Trades footer when `excludedFromStats` is above zero.
 
 ## Changes from the stage 1 draft
 

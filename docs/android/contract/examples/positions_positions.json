@@ -12,7 +12,8 @@
       "entryPricePaise": 152000,
       "stopPaise": 146800,
       "lastClosePaise": 157540,
-      "unrealisedPnlPaise": 138500
+      "unrealisedPnlPaise": 138500,
+      "corporateActionFlag": false
     },
     {
       "symbol": "SBIN",
@@ -21,7 +22,8 @@
       "entryPricePaise": 81200,
       "stopPaise": 77600,
       "lastClosePaise": 79620,
-      "unrealisedPnlPaise": -86900
+      "unrealisedPnlPaise": -86900,
+      "corporateActionFlag": true
     },
     {
       "symbol": "LT",
@@ -30,7 +32,8 @@
       "entryPricePaise": 372000,
       "stopPaise": 359000,
       "lastClosePaise": 380100,
-      "unrealisedPnlPaise": 89100
+      "unrealisedPnlPaise": 89100,
+      "corporateActionFlag": false
     },
     {
       "symbol": "MARUTI",
@@ -39,7 +42,8 @@
       "entryPricePaise": 1248000,
       "stopPaise": 1205000,
       "lastClosePaise": 1221000,
-      "unrealisedPnlPaise": -81000
+      "unrealisedPnlPaise": -81000,
+      "corporateActionFlag": false
     }
   ]
 }

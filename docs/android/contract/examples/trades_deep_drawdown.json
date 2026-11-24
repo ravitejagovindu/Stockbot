@@ -10,7 +10,8 @@
       "exitDate": "2027-09-06",
       "exitReason": "OTHER",
       "netPnlPaise": 390000,
-      "netR": 1.95
+      "netR": 1.95,
+      "corporateActionFlag": false
     },
     {
       "symbol": "COALINDIA",
@@ -18,7 +19,8 @@
       "exitDate": "2027-08-25",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -860000,
-      "netR": -4.3
+      "netR": -4.3,
+      "corporateActionFlag": false
     },
     {
       "symbol": "SUNPHARMA",
@@ -26,7 +28,8 @@
       "exitDate": "2027-08-13",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -860000,
-      "netR": -4.3
+      "netR": -4.3,
+      "corporateActionFlag": false
     },
     {
       "symbol": "KOTAKBANK",
@@ -34,7 +37,8 @@
       "exitDate": "2027-08-03",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -920000,
-      "netR": -4.6
+      "netR": -4.6,
+      "corporateActionFlag": false
     },
     {
       "symbol": "ICICIBANK",
@@ -42,7 +46,8 @@
       "exitDate": "2027-07-22",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -690000,
-      "netR": -3.45
+      "netR": -3.45,
+      "corporateActionFlag": false
     },
     {
       "symbol": "HCLTECH",
@@ -50,7 +55,8 @@
       "exitDate": "2027-07-12",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -1100000,
-      "netR": -5.5
+      "netR": -5.5,
+      "corporateActionFlag": false
     },
     {
       "symbol": "M&M",
@@ -58,7 +64,8 @@
       "exitDate": "2027-06-30",
       "exitReason": "OTHER",
       "netPnlPaise": 240000,
-      "netR": 1.2
+      "netR": 1.2,
+      "corporateActionFlag": false
     },
     {
       "symbol": "BAJFINANCE",
@@ -66,7 +73,8 @@
       "exitDate": "2027-06-18",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -830000,
-      "netR": -4.15
+      "netR": -4.15,
+      "corporateActionFlag": false
     },
     {
       "symbol": "ASIANPAINT",
@@ -74,7 +82,8 @@
       "exitDate": "2027-06-08",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -580000,
-      "netR": -2.9
+      "netR": -2.9,
+      "corporateActionFlag": false
     },
     {
       "symbol": "TATASTEEL",
@@ -82,7 +91,8 @@
       "exitDate": "2027-05-27",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -950000,
-      "netR": -4.75
+      "netR": -4.75,
+      "corporateActionFlag": false
     },
     {
       "symbol": "HINDALCO",
@@ -90,7 +100,8 @@
       "exitDate": "2027-05-17",
       "exitReason": "OTHER",
       "netPnlPaise": 180000,
-      "netR": 0.9
+      "netR": 0.9,
+      "corporateActionFlag": false
     },
     {
       "symbol": "WIPRO",
@@ -98,7 +109,8 @@
       "exitDate": "2027-05-05",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -410000,
-      "netR": -2.05
+      "netR": -2.05,
+      "corporateActionFlag": false
     },
     {
       "symbol": "AXISBANK",
@@ -106,7 +118,8 @@
       "exitDate": "2027-04-23",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -720000,
-      "netR": -3.6
+      "netR": -3.6,
+      "corporateActionFlag": false
     },
     {
       "symbol": "CIPLA",
@@ -114,7 +127,8 @@
       "exitDate": "2027-04-13",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -300000,
-      "netR": -1.5
+      "netR": -1.5,
+      "corporateActionFlag": false
     },
     {
       "symbol": "ONGC",
@@ -122,7 +136,8 @@
       "exitDate": "2027-04-01",
       "exitReason": "GAP_THROUGH_STOP",
       "netPnlPaise": -650000,
-      "netR": -3.25
+      "netR": -3.25,
+      "corporateActionFlag": false
     },
     {
       "symbol": "NTPC",
@@ -130,7 +145,8 @@
       "exitDate": "2027-03-22",
       "exitReason": "OTHER",
       "netPnlPaise": 1300000,
-      "netR": 6.5
+      "netR": 6.5,
+      "corporateActionFlag": false
     },
     {
       "symbol": "TITAN",
@@ -138,7 +154,8 @@
       "exitDate": "2027-03-10",
       "exitReason": "STOP_HIT",
       "netPnlPaise": -220000,
-      "netR": -1.1
+      "netR": -1.1,
+      "corporateActionFlag": false
     },
     {
       "symbol": "MARUTI",
@@ -146,7 +163,8 @@
       "exitDate": "2027-02-26",
       "exitReason": "OTHER",
       "netPnlPaise": 1250000,
-      "netR": 6.25
+      "netR": 6.25,
+      "corporateActionFlag": false
     },
     {
       "symbol": "SBIN",
@@ -154,7 +172,8 @@
       "exitDate": "2027-02-16",
       "exitReason": "STOP_HIT",
       "netPnlPaise": -190000,
-      "netR": -0.95
+      "netR": -0.95,
+      "corporateActionFlag": false
     },
     {
       "symbol": "LT",
@@ -162,7 +181,8 @@
       "exitDate": "2027-02-04",
       "exitReason": "OTHER",
       "netPnlPaise": 820000,
-      "netR": 4.1
+      "netR": 4.1,
+      "corporateActionFlag": false
     },
     {
       "symbol": "INFY",
@@ -170,7 +190,8 @@
       "exitDate": "2027-01-25",
       "exitReason": "STOP_HIT",
       "netPnlPaise": -210000,
-      "netR": -1.05
+      "netR": -1.05,
+      "corporateActionFlag": false
     },
     {
       "symbol": "HDFCBANK",
@@ -178,7 +199,8 @@
       "exitDate": "2027-01-13",
       "exitReason": "OTHER",
       "netPnlPaise": 1100000,
-      "netR": 5.5
+      "netR": 5.5,
+      "corporateActionFlag": false
     },
     {
       "symbol": "ITC",
@@ -186,7 +208,8 @@
       "exitDate": "2027-01-01",
       "exitReason": "STOP_HIT",
       "netPnlPaise": -200000,
-      "netR": -1.0
+      "netR": -1.0,
+      "corporateActionFlag": false
     },
     {
       "symbol": "TCS",
@@ -194,7 +217,8 @@
       "exitDate": "2026-12-22",
       "exitReason": "OTHER",
       "netPnlPaise": 950000,
-      "netR": 4.75
+      "netR": 4.75,
+      "corporateActionFlag": false
     },
     {
       "symbol": "RELIANCE",
@@ -202,7 +226,8 @@
       "exitDate": "2026-12-10",
       "exitReason": "OTHER",
       "netPnlPaise": 1400000,
-      "netR": 7.0
+      "netR": 7.0,
+      "corporateActionFlag": false
     }
   ],
   "stats": {
@@ -210,6 +235,7 @@
     "wins": 9,
     "losses": 16,
     "winRatePct": 36.0,
-    "profitFactor": 0.79
+    "profitFactor": 0.79,
+    "excludedFromStats": 0
   }
 }

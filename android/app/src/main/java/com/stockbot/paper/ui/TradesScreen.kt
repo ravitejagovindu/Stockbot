@@ -4,11 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.stockbot.paper.data.ClosedTrade
 import com.stockbot.paper.data.TradeStats
 import com.stockbot.paper.data.TradesState
@@ -47,6 +49,7 @@ private fun TradeCard(tr: ClosedTrade) {
                 Text("After costs", style = type.label)
             }
         }
+        if (tr.corporateActionFlag) CorporateActionNote()
     }
 }
 
@@ -54,8 +57,12 @@ private fun TradeCard(tr: ClosedTrade) {
 private fun StatsFooter(stats: TradeStats) {
     PaperCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Stat("Win rate", stats.winRatePct?.let { "${RupeeFormat.wholePercent(it)} (${stats.wins} of ${stats.tradeCount})" } ?: "n/a")
+            Stat("Win rate", stats.winRatePct?.let { "${RupeeFormat.wholePercent(it)} (${stats.wins} of ${stats.tradeCount - stats.excludedFromStats})" } ?: "n/a")
             Stat("Profit factor", stats.profitFactor?.let { String.format(Locale.US, "%.2f", it) } ?: "n/a")
+        }
+        if (stats.excludedFromStats > 0) {
+            val n = stats.excludedFromStats
+            Text(if (n == 1) "1 trade excluded: corporate action" else "$n trades excluded: corporate action", style = StockBotTheme.type.label, modifier = Modifier.padding(top = 8.dp))
         }
     }
 }

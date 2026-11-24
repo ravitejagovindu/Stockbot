@@ -85,14 +85,15 @@ class ScenarioStateTest {
         assertEquals(Side.SELL, pending[0].side)
     }
 
-    @Test fun tradesHaveTwelveClosedFiveWinsProfitFactorOnePointFour() = runBlocking {
+    @Test fun tradesHaveTwelveClosedOneFlaggedFiveWins() = runBlocking {
         val l = loader(Scenario.TRADES)
         val state = l.trades()
         assertTrue(state is ScreenState.Content)
         val t: TradesState = data(state)
         assertEquals(12, t.trades.size)
         assertEquals(5, t.stats.wins)
-        assertEquals(1.4, t.stats.profitFactor!!, 1e-9)
+        assertEquals(1, t.stats.excludedFromStats)
+        assertEquals(1.62, t.stats.profitFactor!!, 1e-9)
         assertEquals(12, data(l.account()).summary.closedTrades)
     }
 

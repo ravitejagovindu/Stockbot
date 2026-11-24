@@ -135,15 +135,18 @@ class ContractExamplesTest {
         for (s in scenarios) {
             val t = trades(s)
             val st = t.stats
+            // Flagged trades are listed and counted, but left out of the footer figures.
+            val used = t.trades.filter { !it.corporateActionFlag }
             assertEquals("$s count", t.trades.size, st.tradeCount)
-            assertEquals("$s wins", t.trades.count { it.netPnlPaise > 0 }, st.wins)
-            assertEquals("$s losses", t.trades.count { it.netPnlPaise < 0 }, st.losses)
-            if (t.trades.isEmpty()) {
+            assertEquals("$s excluded", t.trades.size - used.size, st.excludedFromStats)
+            assertEquals("$s wins", used.count { it.netPnlPaise > 0 }, st.wins)
+            assertEquals("$s losses", used.count { it.netPnlPaise < 0 }, st.losses)
+            if (used.isEmpty()) {
                 assertNull(st.winRatePct); assertNull(st.profitFactor)
             } else {
-                assertEquals("$s win rate", st.wins * 100.0 / st.tradeCount, st.winRatePct!!, 0.006)
-                val gw = t.trades.filter { it.netPnlPaise > 0 }.sumOf { it.netPnlPaise }.toDouble()
-                val gl = -t.trades.filter { it.netPnlPaise < 0 }.sumOf { it.netPnlPaise }.toDouble()
+                assertEquals("$s win rate", st.wins * 100.0 / used.size, st.winRatePct!!, 0.006)
+                val gw = used.filter { it.netPnlPaise > 0 }.sumOf { it.netPnlPaise }.toDouble()
+                val gl = -used.filter { it.netPnlPaise < 0 }.sumOf { it.netPnlPaise }.toDouble()
                 assertEquals("$s profit factor", gw / gl, st.profitFactor!!, 0.006)
             }
             assertEquals("$s closed trades on the Account screen", st.tradeCount, account(s).summary.closedTrades)
@@ -193,10 +196,21 @@ class ContractExamplesTest {
         }
     }
 
-    @Test fun tradesScenarioHasFiveWinsAndProfitFactorOnePointFour() {
-        val s = trades(Scenario.TRADES).stats
-        assertEquals(12, s.tradeCount); assertEquals(5, s.wins); assertEquals(7, s.losses)
-        assertEquals(1.4, s.profitFactor!!, 0.0001)
+    @Test fun tradesScenarioHasOneFlaggedTradeLeftOutOfTheFooter() {
+        val t = trades(Scenario.TRADES)
+        val s = t.stats
+        assertEquals(12, s.tradeCount); assertEquals(1, s.excludedFromStats)
+        assertEquals(5, s.wins); assertEquals(6, s.losses)
+        assertEquals(1.62, s.profitFactor!!, 0.0001)
+        assertEquals(12, account(Scenario.TRADES).summary.closedTrades)   // the flagged trade still counts toward the 30-trade mark
+        assertEquals(listOf("ASIANPAINT"), t.trades.filter { it.corporateActionFlag }.map { it.symbol })
+    }
+
+    @Test fun exactlyOneTradeAndOnePositionAreFlaggedInTheExamples() {
+        val flaggedTrades = scenarios.flatMap { s -> trades(s).trades.filter { it.corporateActionFlag }.map { "$s:${it.symbol}" } }
+        val flaggedPositions = scenarios.flatMap { s -> positions(s).positions.filter { it.corporateActionFlag }.map { "$s:${it.symbol}" } }
+        assertEquals(listOf("TRADES:ASIANPAINT"), flaggedTrades)
+        assertEquals(listOf("POSITIONS:SBIN"), flaggedPositions)
     }
 
     @Test fun deepDrawdownHasItsOwnConsistentTrades() {

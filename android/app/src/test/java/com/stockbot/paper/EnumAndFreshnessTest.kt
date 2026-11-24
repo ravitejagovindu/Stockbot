@@ -29,6 +29,16 @@ class EnumAndFreshnessTest {
         assertEquals(ExitReason.GAP_THROUGH_STOP, t[2].exitReason)
     }
 
+    @Test fun corporateActionFieldsDefaultToFalseAndZeroWhenAbsent() {
+        val old = """{$head,"trades":[{"symbol":"AAA","entryDate":"2026-11-02","exitDate":"2026-11-20","exitReason":"STOP_HIT","netPnlPaise":-100,"netR":-0.5}],
+            "stats":{"tradeCount":1,"wins":0,"losses":1,"winRatePct":0.0,"profitFactor":0.0}}"""
+        val t = Contract.trades(old)
+        assertEquals(false, t.trades[0].corporateActionFlag)
+        assertEquals(0, t.stats.excludedFromStats)
+        val pos = Contract.positions("""{$head,"cashPaise":1,"positions":[{"symbol":"AAA","shares":1,"entryDate":"2026-11-02","entryPricePaise":100,"stopPaise":90,"lastClosePaise":110,"unrealisedPnlPaise":10}]}""")
+        assertEquals(false, pos.positions[0].corporateActionFlag)
+    }
+
     @Test fun unknownBlockReasonAndSideBecomeOther() {
         val body = """{$head,"isSignalDay":true,"riskPerTradePct":1.0,"tickets":[],
             "blocked":[{"symbol":"AAA","sector":null,"reason":"MARKET_SWITCH"},{"symbol":"BBB","sector":"IT","reason":"CASH"},

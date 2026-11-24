@@ -1,0 +1,5 @@
+# The paper account's review marks and the registered verdict, shown on the Account screen.
+# Owner decisions for the momentum_calm paper phase (docs/strategies/momentum_calm/paper/README.md). This file is the only source the BFF reads for them.
+drawdown_review_pct: 35.0      # the account is reviewed when it is this far below its equity peak
+closed_trades_target: 30       # closed trades needed before a first verdict
+verdict: NOT_DEMONSTRATED      # the registered verdict; shown as "not demonstrated"
