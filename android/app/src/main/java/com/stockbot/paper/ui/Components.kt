@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.stockbot.paper.data.Envelope
 import com.stockbot.paper.data.Freshness
+import com.stockbot.paper.format.RupeeFormat
 import com.stockbot.paper.theme.StockBotTheme
 
 /** A card. The only container the screens use. */
@@ -135,16 +138,52 @@ fun EmptyBlock(title: String, body: String) {
 }
 
 /**
- * Renders a screen from its state: loading, error with Retry, or a scrolling list.
- * The list is built by [content], which receives the data and whether it is the empty case.
+ * Renders a screen from its state: loading, error with Retry, or a scrolling list that can be pulled down to refresh.
+ * The list is built by [content], which receives the data and whether it is the empty case. When the data is the kept copy from the phone,
+ * a calm line says so, with Retry.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> StateHost(state: ScreenState<T>, onRetry: () -> Unit, content: LazyListScope.(data: T, isEmpty: Boolean) -> Unit) {
+fun <T> StateHost(
+    state: ScreenState<T>,
+    onRetry: () -> Unit,
+    refreshing: Boolean = false,
+    onRefresh: (() -> Unit)? = null,
+    content: LazyListScope.(data: T, isEmpty: Boolean) -> Unit,
+) {
     when (state) {
         ScreenState.Loading -> LoadingBlock()
         is ScreenState.Error -> ErrorBlock(state.message, onRetry)
-        is ScreenState.Empty -> ScreenList { content(state.data, true) }
-        is ScreenState.Content -> ScreenList { content(state.data, false) }
+        is ScreenState.Empty -> Refreshable(refreshing, onRefresh) { ScreenList { offlineItem(state.offlineAt, onRetry); content(state.data, true) } }
+        is ScreenState.Content -> Refreshable(refreshing, onRefresh) { ScreenList { offlineItem(state.offlineAt, onRetry); content(state.data, false) } }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun Refreshable(refreshing: Boolean, onRefresh: (() -> Unit)?, body: @Composable () -> Unit) {
+    if (onRefresh == null) {
+        body()
+    } else {
+        PullToRefreshBox(isRefreshing = refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) { body() }
+    }
+}
+
+private fun LazyListScope.offlineItem(offlineAt: String?, onRetry: () -> Unit) {
+    if (offlineAt != null) item { OfflineLine(offlineAt, onRetry) }
+}
+
+/** "Can't reach your laptop. Showing data from 24 Nov, 19:48." with Retry. */
+@Composable
+fun OfflineLine(generatedAt: String, onRetry: () -> Unit) {
+    val t = StockBotTheme.tokens
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(
+            "Can't reach your laptop. Showing data from ${RupeeFormat.dateTime(generatedAt)}.",
+            style = StockBotTheme.type.label.copy(color = t.warning),
+            modifier = Modifier.weight(1f),
+        )
+        TextButton(onClick = onRetry) { Text("Retry", style = StockBotTheme.type.bodyStrong.copy(color = t.accent)) }
     }
 }
 

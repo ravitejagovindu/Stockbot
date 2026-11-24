@@ -1,5 +1,6 @@
 package com.stockbot.paper.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.stockbot.paper.BuildConfig
 import com.stockbot.paper.data.Scenario
@@ -46,29 +49,44 @@ class TabRequest(val tab: Tab)
 fun AppRoot(vm: PaperViewModel, tabRequest: TabRequest?) {
     val t = StockBotTheme.tokens
     var tab by rememberSaveable { mutableStateOf(Tab.TODAY) }
+    var showConnection by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(tabRequest) { if (tabRequest != null) tab = tabRequest.tab }
 
     val themeMode by vm.themeMode.collectAsStateWithLifecycle()
     val scenario by vm.scenario.collectAsStateWithLifecycle()
+    val isSample by vm.isSample.collectAsStateWithLifecycle()
+    val refreshing by vm.refreshing.collectAsStateWithLifecycle()
     var debugOpen by remember { mutableStateOf(false) }
+
+    // The refresh rule: ask again when the app opens (the view model's first load) and every time it comes back to the front.
+    var started by remember { mutableStateOf(false) }
+    LifecycleEventEffect(Lifecycle.Event.ON_START) {
+        if (started) vm.refreshAll() else started = true
+    }
+    BackHandler(enabled = showConnection) { showConnection = false }
 
     Column(Modifier.fillMaxSize().background(t.background)) {
         TopBar(
-            title = tab.title,
-            showSampleTag = vm.isSample,
+            title = if (showConnection) "Connection" else tab.title,
+            showSampleTag = isSample,
             themeMode = themeMode,
             onTheme = vm::setThemeMode,
+            onConnection = if (showConnection) null else ({ showConnection = true }),
             onTitleLongPress = { if (BuildConfig.DEBUG) debugOpen = true },
         )
         Box(Modifier.weight(1f).fillMaxWidth()) {
-            when (tab) {
-                Tab.TODAY -> TodayScreen(vm.today.collectAsStateWithLifecycle().value) { vm.reload(Tab.TODAY) }
-                Tab.ACCOUNT -> AccountScreen(vm.account.collectAsStateWithLifecycle().value) { vm.reload(Tab.ACCOUNT) }
-                Tab.POSITIONS -> PositionsScreen(vm.positions.collectAsStateWithLifecycle().value) { vm.reload(Tab.POSITIONS) }
-                Tab.TRADES -> TradesScreen(vm.trades.collectAsStateWithLifecycle().value) { vm.reload(Tab.TRADES) }
+            if (showConnection) {
+                ConnectionScreen(vm) { showConnection = false }
+            } else {
+                when (tab) {
+                    Tab.TODAY -> TodayScreen(vm.today.collectAsStateWithLifecycle().value, { vm.refresh(Tab.TODAY) }, Tab.TODAY in refreshing) { vm.refresh(Tab.TODAY) }
+                    Tab.ACCOUNT -> AccountScreen(vm.account.collectAsStateWithLifecycle().value, { vm.refresh(Tab.ACCOUNT) }, Tab.ACCOUNT in refreshing) { vm.refresh(Tab.ACCOUNT) }
+                    Tab.POSITIONS -> PositionsScreen(vm.positions.collectAsStateWithLifecycle().value, { vm.refresh(Tab.POSITIONS) }, Tab.POSITIONS in refreshing) { vm.refresh(Tab.POSITIONS) }
+                    Tab.TRADES -> TradesScreen(vm.trades.collectAsStateWithLifecycle().value, { vm.refresh(Tab.TRADES) }, Tab.TRADES in refreshing) { vm.refresh(Tab.TRADES) }
+                }
             }
         }
-        BottomBar(selected = tab, onSelect = { tab = it })
+        BottomBar(selected = tab, onSelect = { tab = it; showConnection = false })
     }
 
     if (debugOpen && BuildConfig.DEBUG) {
@@ -83,6 +101,7 @@ private fun TopBar(
     showSampleTag: Boolean,
     themeMode: ThemeMode,
     onTheme: (ThemeMode) -> Unit,
+    onConnection: (() -> Unit)?,
     onTitleLongPress: () -> Unit,
 ) {
     val t = StockBotTheme.tokens
@@ -97,7 +116,12 @@ private fun TopBar(
                 Text(title, style = type.title, modifier = Modifier.combinedClickable(onClick = {}, onLongClick = onTitleLongPress))
                 if (showSampleTag) SampleTag()
             }
-            ThemeMenu(themeMode, onTheme)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (onConnection != null) {
+                    Text("Connection", style = type.label, modifier = Modifier.clickable(onClick = onConnection).padding(vertical = 12.dp, horizontal = 4.dp))
+                }
+                ThemeMenu(themeMode, onTheme)
+            }
         }
         Box(Modifier.fillMaxWidth().height(1.dp).background(t.hairline))
     }

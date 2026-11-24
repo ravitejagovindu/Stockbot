@@ -26,9 +26,9 @@ A wrong or missing token gives `401` with `{"apiVersion":"1","error":{"code":"UN
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `STOCKBOT_BFF_HOST` | `127.0.0.1` | address to bind |
+| `STOCKBOT_BFF_HOST` | `127.0.0.1` | address to bind (`start_bff.ps1` sets the Tailscale address) |
 | `STOCKBOT_BFF_PORT` | `8765` | port (it must be free; `run.py` refuses to start otherwise) |
-| `STOCKBOT_BFF_ALLOWED_HOSTS` | `localhost,127.0.0.1` | accepted `Host` headers (a wrong one gets 400) |
+| `STOCKBOT_BFF_ALLOWED_HOSTS` | `localhost,127.0.0.1` | accepted `Host` headers (a wrong one gets 400); `start_bff.ps1` adds the Tailscale address and name |
 | `STOCKBOT_BFF_CORS` | none | allowed origins; unset = no CORS at all (the app is native) |
 | `STOCKBOT_BFF_TOKEN` | none | the access token (else the token file below) |
 | `STOCKBOT_DATA_ROOT` | `F:\Projects\Ravi\StockBotData` | where `daily\calendar.csv`, `logs\bff.log` and `bff\token.txt` live |
@@ -44,15 +44,27 @@ The review marks (35 percent drawdown, 30 closed trades, the verdict) are in `bf
   `py -3 -c "import secrets,pathlib; p=pathlib.Path(r'F:\Projects\Ravi\StockBotData\bff\token.txt'); p.parent.mkdir(parents=True, exist_ok=True); p.write_text(secrets.token_hex(32)+'\n')"`
   To rotate it, replace the file and restart the BFF. Copy it to the phone yourself when stage 4 needs it.
 
-## Start and stop (a PowerShell window, left open, exactly like the scheduler service)
+## Start and stop (the scripts)
 
 ```powershell
-cd F:\Projects\Ravi\StockBot
-py -3 bff\run.py
+powershell -ExecutionPolicy Bypass -File F:\Projects\Ravi\StockBot\bff\start_bff.ps1      # start
+powershell -ExecutionPolicy Bypass -File F:\Projects\Ravi\StockBot\bff\start_bff.ps1 -Status   # is it running?
+powershell -ExecutionPolicy Bypass -File F:\Projects\Ravi\StockBot\bff\stop_bff.ps1       # stop
 ```
-It prints one line with the address and the log path. **Stop:** Ctrl+C in that window, or close the window; killing it at any moment is safe. Exit codes: 2 no token, 3 port busy.
 
-To check a running instance: `py -3 bff\smoke.py` (calls every endpoint, prints the key figures, never prints the token).
+`start_bff.ps1` finds the laptop's Tailscale IPv4 address and MagicDNS name itself (`tailscale ip -4`, `tailscale status --json`), sets `STOCKBOT_BFF_HOST` to the Tailscale address (never all interfaces) and `STOCKBOT_BFF_ALLOWED_HOSTS` to `<tailscale ip>, <magicdns name>, localhost, 127.0.0.1`, port 8765, and starts `bff\run.py` in a **new, minimized, detached window** (Python 3.13 at `C:\Users\ravit\AppData\Local\Programs\Python\Python313\python.exe`, working directory the main folder), like the scheduler service. It refuses to start a second copy (exit 2) or when the port is in use (exit 3), and prints the pid, the address and the log path (never the token). `stop_bff.ps1` stops only the python process whose command line is `bff\run.py`.
+
+The BFF does **not** survive a reboot or a Tailscale restart; start it again with the script. Because it binds only to the Tailscale address, `http://127.0.0.1:8765` is not served; test with the Tailscale address (`py -3 bff\smoke.py --base-url http://100.125.195.111:8765`).
+
+To run it by hand instead (for example for a different port): set the environment variables above, then `py -3 bff\run.py` in its own window; Ctrl+C stops it. Exit codes of `run.py`: 2 no token, 3 port busy. Never run it together with `stockbot\live\main.py`.
+
+### Firewall
+
+No new rule was needed: Tailscale's own inbound allow rules ("Tailscale-In", Domain and Private profiles, any port, local address = the Tailscale address) already cover TCP 8765 on the Tailscale interface. The equivalent single rule, if ever needed, is in `docs\android\CONNECTION.md`.
+
+### Rotating the token
+
+Stop the BFF, delete `F:\Projects\Ravi\StockBotData\bff\token.txt`, create a new one (command above, "The token"), start the BFF with the script, then paste the new token into the phone's Connection screen. The old token stops working at once.
 
 ## Logs
 

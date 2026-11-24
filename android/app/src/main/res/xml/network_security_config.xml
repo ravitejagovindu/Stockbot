@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Everything is https-only except the two names below, which are the laptop's Tailscale address and MagicDNS name (docs/android/CONNECTION.md).
+  Plain http is acceptable there because Tailscale already encrypts the link end to end (WireGuard) and the address is only reachable from inside the owner's tailnet.
+  Keep these two hosts in step with CleartextHosts in net/ConnectionStore.kt (a unit test checks it).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">100.125.195.111</domain>
+        <domain includeSubdomains="false">laptop.tail0118ce.ts.net</domain>
+    </domain-config>
+</network-security-config>

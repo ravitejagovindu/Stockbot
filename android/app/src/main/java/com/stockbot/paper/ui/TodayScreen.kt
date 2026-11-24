@@ -19,8 +19,8 @@ import com.stockbot.paper.format.RupeeFormat
 import com.stockbot.paper.theme.StockBotTheme
 
 @Composable
-fun TodayScreen(state: ScreenState<TodayState>, onRetry: () -> Unit) {
-    StateHost(state, onRetry) { data, _ ->
+fun TodayScreen(state: ScreenState<TodayState>, onRetry: () -> Unit, refreshing: Boolean = false, onRefresh: (() -> Unit)? = null) {
+    StateHost(state, onRetry, refreshing, onRefresh) { data, _ ->
         item { StaleLine(data) }
         if (data.isSignalDay && data.tickets.isNotEmpty()) {
             item { SignalHeader(data) }
