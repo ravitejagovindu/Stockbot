@@ -1,0 +1,98 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2026-12-01",
+  "expectedAsOf": "2026-12-01",
+  "generatedAt": "2026-12-01T19:48:30+05:30",
+  "isSignalDay": true,
+  "riskPerTradePct": 1.0,
+  "tickets": [
+    {
+      "symbol": "TCS",
+      "sector": "IT",
+      "shares": 11,
+      "entryReferencePaise": 398500,
+      "stopPaise": 381200,
+      "riskPaise": 190300
+    },
+    {
+      "symbol": "HDFCBANK",
+      "sector": "Financials",
+      "shares": 37,
+      "entryReferencePaise": 164230,
+      "stopPaise": 158900,
+      "riskPaise": 197210
+    },
+    {
+      "symbol": "ITC",
+      "sector": "FMCG",
+      "shares": 101,
+      "entryReferencePaise": 46840,
+      "stopPaise": 44860,
+      "riskPaise": 199980
+    }
+  ],
+  "blocked": [
+    {
+      "symbol": "ICICIBANK",
+      "sector": "Financials",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "AXISBANK",
+      "sector": "Financials",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "sector": "Financials",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "SBIN",
+      "sector": "Financials",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "sector": "Financials",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "INFY",
+      "sector": "IT",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "HCLTECH",
+      "sector": "IT",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "WIPRO",
+      "sector": "IT",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "TECHM",
+      "sector": "IT",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "HINDUNILVR",
+      "sector": "FMCG",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "NESTLEIND",
+      "sector": "FMCG",
+      "reason": "SECTOR_CAP"
+    },
+    {
+      "symbol": "BRITANNIA",
+      "sector": "FMCG",
+      "reason": "SECTOR_CAP"
+    }
+  ],
+  "pendingFills": [],
+  "nextSignalRule": "first trading day of next month"
+}

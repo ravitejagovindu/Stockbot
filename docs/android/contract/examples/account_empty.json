@@ -1,0 +1,54 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2026-11-23",
+  "expectedAsOf": "2026-11-23",
+  "generatedAt": "2026-11-23T19:48:30+05:30",
+  "summary": {
+    "startDate": "2026-11-16",
+    "startingCapitalPaise": 20000000,
+    "equityPaise": 20000000,
+    "cashPaise": 20000000,
+    "returnPct": 0.0,
+    "niftyReturnPct": 0.6,
+    "drawdownNowPct": 0.0,
+    "drawdownWorstPct": 0.0,
+    "closedTrades": 0
+  },
+  "curve": [
+    {
+      "date": "2026-11-16",
+      "accountPaise": 20000000,
+      "niftyPaise": 20000000
+    },
+    {
+      "date": "2026-11-17",
+      "accountPaise": 20000000,
+      "niftyPaise": 19917857
+    },
+    {
+      "date": "2026-11-18",
+      "accountPaise": 20000000,
+      "niftyPaise": 20027594
+    },
+    {
+      "date": "2026-11-19",
+      "accountPaise": 20000000,
+      "niftyPaise": 20212674
+    },
+    {
+      "date": "2026-11-20",
+      "accountPaise": 20000000,
+      "niftyPaise": 20215697
+    },
+    {
+      "date": "2026-11-23",
+      "accountPaise": 20000000,
+      "niftyPaise": 20120000
+    }
+  ],
+  "marks": {
+    "drawdownReviewPct": 35.0,
+    "closedTradesTarget": 30,
+    "verdict": "not demonstrated"
+  }
+}

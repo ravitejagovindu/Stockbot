@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.stockbot.paper.data.BlockReason
 import com.stockbot.paper.data.PendingFill
 import com.stockbot.paper.data.Side
 import com.stockbot.paper.data.Ticket
@@ -20,11 +21,12 @@ import com.stockbot.paper.theme.StockBotTheme
 @Composable
 fun TodayScreen(state: ScreenState<TodayState>, onRetry: () -> Unit) {
     StateHost(state, onRetry) { data, _ ->
-        item { StaleLine(data.asOf) }
+        item { StaleLine(data) }
         if (data.isSignalDay && data.tickets.isNotEmpty()) {
             item { SignalHeader(data) }
             items(data.tickets, key = { it.symbol }) { TicketCard(it) }
-            if (data.blocked.isNotEmpty()) item { BlockedLine(data.blocked.size) }
+            val sectorBlocked = data.blocked.count { it.reason == BlockReason.SECTOR_CAP }
+            if (sectorBlocked > 0) item { BlockedLine(sectorBlocked) }
         } else {
             item { NoSignalHeader(data) }
             items(data.pendingFills, key = { it.symbol }) { PendingFillCard(it) }
@@ -59,14 +61,14 @@ private fun TicketCard(t: Ticket) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
                 Text(t.symbol, style = type.title)
-                Text(t.sector, style = type.label)
+                t.sector?.let { Text(it, style = type.label) }
             }
-            Stat("Risk", RupeeFormat.format(t.riskRupees))
+            Stat("Risk", RupeeFormat.format(t.riskPaise))
         }
         Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Stat("Shares", t.shares.toString())
-            Stat("Entry ref", RupeeFormat.format(t.entryReference))
-            Stat("Stop", RupeeFormat.format(t.stop))
+            Stat("Entry ref", RupeeFormat.format(t.entryReferencePaise))
+            Stat("Stop", RupeeFormat.format(t.stopPaise))
         }
     }
 }
@@ -80,7 +82,11 @@ private fun BlockedLine(k: Int) {
 @Composable
 private fun PendingFillCard(p: PendingFill) {
     val type = StockBotTheme.type
-    val verb = if (p.side == Side.BUY) "Buy" else "Sell"
+    val verb = when (p.side) {
+        Side.BUY -> "Buy"
+        Side.SELL -> "Sell"
+        Side.OTHER -> "Order for"
+    }
     PaperCard {
         Text("Pending", style = type.label)
         Text("$verb ${p.shares} ${p.symbol} at tomorrow's open", style = type.bodyStrong)

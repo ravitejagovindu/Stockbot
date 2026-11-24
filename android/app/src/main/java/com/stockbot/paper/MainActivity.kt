@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.stockbot.paper.data.ExampleSource
 import com.stockbot.paper.data.MockPaperRepository
 import com.stockbot.paper.data.Scenario
 import com.stockbot.paper.theme.StockBotTheme
@@ -42,7 +43,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val vm: PaperViewModel = viewModel(
                 factory = viewModelFactory {
-                    initializer { PaperViewModel(MockPaperRepository(), ThemeModeStore(applicationContext.settingsDataStore)) }
+                    initializer {
+                        val assets = applicationContext.assets
+                        val source = ExampleSource { name -> assets.open("contract-examples/$name").bufferedReader().use { it.readText() } }
+                        PaperViewModel(MockPaperRepository(source), ThemeModeStore(applicationContext.settingsDataStore))
+                    }
                 },
             )
             viewModel = vm

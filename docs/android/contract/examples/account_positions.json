@@ -1,0 +1,159 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2026-12-22",
+  "expectedAsOf": "2026-12-22",
+  "generatedAt": "2026-12-22T19:48:30+05:30",
+  "summary": {
+    "startDate": "2026-11-16",
+    "startingCapitalPaise": 20000000,
+    "equityPaise": 20059700,
+    "cashPaise": 3898000,
+    "returnPct": 0.3,
+    "niftyReturnPct": 0.8,
+    "drawdownNowPct": 0.26,
+    "drawdownWorstPct": 0.26,
+    "closedTrades": 0
+  },
+  "curve": [
+    {
+      "date": "2026-11-16",
+      "accountPaise": 20000000,
+      "niftyPaise": 20000000
+    },
+    {
+      "date": "2026-11-17",
+      "accountPaise": 20000000,
+      "niftyPaise": 19982808
+    },
+    {
+      "date": "2026-11-18",
+      "accountPaise": 20000000,
+      "niftyPaise": 20158722
+    },
+    {
+      "date": "2026-11-19",
+      "accountPaise": 20000000,
+      "niftyPaise": 20057343
+    },
+    {
+      "date": "2026-11-20",
+      "accountPaise": 20000000,
+      "niftyPaise": 19837317
+    },
+    {
+      "date": "2026-11-23",
+      "accountPaise": 20000000,
+      "niftyPaise": 19864378
+    },
+    {
+      "date": "2026-11-24",
+      "accountPaise": 20000000,
+      "niftyPaise": 19937030
+    },
+    {
+      "date": "2026-11-25",
+      "accountPaise": 20000000,
+      "niftyPaise": 19981673
+    },
+    {
+      "date": "2026-11-26",
+      "accountPaise": 20000000,
+      "niftyPaise": 20043269
+    },
+    {
+      "date": "2026-11-27",
+      "accountPaise": 20000000,
+      "niftyPaise": 20030016
+    },
+    {
+      "date": "2026-11-30",
+      "accountPaise": 20000000,
+      "niftyPaise": 19960090
+    },
+    {
+      "date": "2026-12-01",
+      "accountPaise": 20000000,
+      "niftyPaise": 19871935
+    },
+    {
+      "date": "2026-12-02",
+      "accountPaise": 20000000,
+      "niftyPaise": 19848944
+    },
+    {
+      "date": "2026-12-03",
+      "accountPaise": 20056840,
+      "niftyPaise": 19807110
+    },
+    {
+      "date": "2026-12-04",
+      "accountPaise": 20076727,
+      "niftyPaise": 19922011
+    },
+    {
+      "date": "2026-12-07",
+      "accountPaise": 20086674,
+      "niftyPaise": 20000976
+    },
+    {
+      "date": "2026-12-08",
+      "accountPaise": 20073798,
+      "niftyPaise": 19854610
+    },
+    {
+      "date": "2026-12-09",
+      "accountPaise": 20060751,
+      "niftyPaise": 19943297
+    },
+    {
+      "date": "2026-12-10",
+      "accountPaise": 20075182,
+      "niftyPaise": 19945146
+    },
+    {
+      "date": "2026-12-11",
+      "accountPaise": 20094186,
+      "niftyPaise": 20085234
+    },
+    {
+      "date": "2026-12-14",
+      "accountPaise": 20080625,
+      "niftyPaise": 20273620
+    },
+    {
+      "date": "2026-12-15",
+      "accountPaise": 20084564,
+      "niftyPaise": 20347551
+    },
+    {
+      "date": "2026-12-16",
+      "accountPaise": 20076640,
+      "niftyPaise": 20135942
+    },
+    {
+      "date": "2026-12-17",
+      "accountPaise": 20112060,
+      "niftyPaise": 20221365
+    },
+    {
+      "date": "2026-12-18",
+      "accountPaise": 20082676,
+      "niftyPaise": 20037391
+    },
+    {
+      "date": "2026-12-21",
+      "accountPaise": 20077744,
+      "niftyPaise": 20234357
+    },
+    {
+      "date": "2026-12-22",
+      "accountPaise": 20059700,
+      "niftyPaise": 20160000
+    }
+  ],
+  "marks": {
+    "drawdownReviewPct": 35.0,
+    "closedTradesTarget": 30,
+    "verdict": "not demonstrated"
+  }
+}

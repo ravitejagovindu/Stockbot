@@ -1,0 +1,111 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2027-05-14",
+  "expectedAsOf": "2027-05-14",
+  "generatedAt": "2027-05-14T19:48:30+05:30",
+  "trades": [
+    {
+      "symbol": "WIPRO",
+      "entryDate": "2027-04-08",
+      "exitDate": "2027-05-10",
+      "exitReason": "OTHER",
+      "netPnlPaise": 390000,
+      "netR": 1.95
+    },
+    {
+      "symbol": "BAJFINANCE",
+      "entryDate": "2027-04-23",
+      "exitDate": "2027-05-03",
+      "exitReason": "STOP_HIT",
+      "netPnlPaise": -210000,
+      "netR": -1.05
+    },
+    {
+      "symbol": "TITAN",
+      "entryDate": "2027-03-12",
+      "exitDate": "2027-04-26",
+      "exitReason": "OTHER",
+      "netPnlPaise": 620000,
+      "netR": 3.1
+    },
+    {
+      "symbol": "ONGC",
+      "entryDate": "2027-04-07",
+      "exitDate": "2027-04-19",
+      "exitReason": "STOP_HIT",
+      "netPnlPaise": -200000,
+      "netR": -1.0
+    },
+    {
+      "symbol": "HCLTECH",
+      "entryDate": "2027-04-05",
+      "exitDate": "2027-04-12",
+      "exitReason": "GAP_THROUGH_STOP",
+      "netPnlPaise": -230000,
+      "netR": -1.15
+    },
+    {
+      "symbol": "CIPLA",
+      "entryDate": "2027-02-23",
+      "exitDate": "2027-04-01",
+      "exitReason": "OTHER",
+      "netPnlPaise": 280000,
+      "netR": 1.4
+    },
+    {
+      "symbol": "AXISBANK",
+      "entryDate": "2027-03-10",
+      "exitDate": "2027-03-24",
+      "exitReason": "STOP_HIT",
+      "netPnlPaise": -180000,
+      "netR": -0.9
+    },
+    {
+      "symbol": "NTPC",
+      "entryDate": "2027-02-02",
+      "exitDate": "2027-03-15",
+      "exitReason": "OTHER",
+      "netPnlPaise": 510000,
+      "netR": 2.55
+    },
+    {
+      "symbol": "TATASTEEL",
+      "entryDate": "2027-02-24",
+      "exitDate": "2027-03-05",
+      "exitReason": "STOP_HIT",
+      "netPnlPaise": -220000,
+      "netR": -1.1
+    },
+    {
+      "symbol": "ASIANPAINT",
+      "entryDate": "2027-02-08",
+      "exitDate": "2027-02-24",
+      "exitReason": "STOP_HIT",
+      "netPnlPaise": -190000,
+      "netR": -0.95
+    },
+    {
+      "symbol": "HINDALCO",
+      "entryDate": "2026-12-31",
+      "exitDate": "2027-02-16",
+      "exitReason": "OTHER",
+      "netPnlPaise": 160000,
+      "netR": 0.8
+    },
+    {
+      "symbol": "M&M",
+      "entryDate": "2027-01-25",
+      "exitDate": "2027-02-05",
+      "exitReason": "STOP_HIT",
+      "netPnlPaise": -170000,
+      "netR": -0.85
+    }
+  ],
+  "stats": {
+    "tradeCount": 12,
+    "wins": 5,
+    "losses": 7,
+    "winRatePct": 41.67,
+    "profitFactor": 1.4
+  }
+}
