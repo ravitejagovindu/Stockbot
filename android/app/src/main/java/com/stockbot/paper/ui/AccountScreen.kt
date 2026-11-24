@@ -40,8 +40,8 @@ fun drawdownColor(fraction: Float, t: ThemeTokens): Color = when {
 }
 
 @Composable
-fun AccountScreen(state: ScreenState<AccountSnapshot>, onRetry: () -> Unit) {
-    StateHost(state, onRetry) { data, _ ->
+fun AccountScreen(state: ScreenState<AccountSnapshot>, onRetry: () -> Unit, refreshing: Boolean = false, onRefresh: (() -> Unit)? = null) {
+    StateHost(state, onRetry, refreshing, onRefresh) { data, _ ->
         val s = data.summary
         item { StaleLine(data) }
         item { EquityCard(s) }

@@ -19,8 +19,8 @@ import com.stockbot.paper.theme.StockBotTheme
 import java.util.Locale
 
 @Composable
-fun TradesScreen(state: ScreenState<TradesState>, onRetry: () -> Unit) {
-    StateHost(state, onRetry) { data, isEmpty ->
+fun TradesScreen(state: ScreenState<TradesState>, onRetry: () -> Unit, refreshing: Boolean = false, onRefresh: (() -> Unit)? = null) {
+    StateHost(state, onRetry, refreshing, onRefresh) { data, isEmpty ->
         item { StaleLine(data) }
         if (isEmpty) {
             item { EmptyBlock("No closed trades yet", "Finished trades are listed here, newest first.") }

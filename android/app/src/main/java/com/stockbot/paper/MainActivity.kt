@@ -21,6 +21,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.stockbot.paper.data.ExampleSource
+import com.stockbot.paper.net.ConnectionStore
+import com.stockbot.paper.net.ConnectionTester
+import com.stockbot.paper.net.FileResponseCache
+import com.stockbot.paper.net.KeystoreSecretBox
+import com.stockbot.paper.net.NetworkPaperRepository
+import com.stockbot.paper.net.UrlConnectionTransport
+import java.io.File
 import com.stockbot.paper.data.MockPaperRepository
 import com.stockbot.paper.data.Scenario
 import com.stockbot.paper.theme.StockBotTheme
@@ -44,9 +51,16 @@ class MainActivity : ComponentActivity() {
             val vm: PaperViewModel = viewModel(
                 factory = viewModelFactory {
                     initializer {
-                        val assets = applicationContext.assets
-                        val source = ExampleSource { name -> assets.open("contract-examples/$name").bufferedReader().use { it.readText() } }
-                        PaperViewModel(MockPaperRepository(source), ThemeModeStore(applicationContext.settingsDataStore))
+                        val ctx = applicationContext
+                        val source = ExampleSource { name -> ctx.assets.open("contract-examples/$name").bufferedReader().use { it.readText() } }
+                        val cache = FileResponseCache(File(ctx.filesDir, "last_good"))
+                        PaperViewModel(
+                            MockPaperRepository(source),
+                            PaperViewModel.NetworkPaperRepositoryFactory { endpoint -> NetworkPaperRepository(endpoint, UrlConnectionTransport(), cache) },
+                            ThemeModeStore(ctx.settingsDataStore),
+                            ConnectionStore(ctx.settingsDataStore, KeystoreSecretBox()),
+                            ConnectionTester(UrlConnectionTransport()),
+                        )
                     }
                 },
             )
@@ -72,7 +86,8 @@ class MainActivity : ComponentActivity() {
 
     /**
      * Debug builds only: `adb shell am start -n com.stockbot.paper/.MainActivity --es scenario SIGNAL_DAY --es theme DARK --es tab ACCOUNT`.
-     * Used to take screenshots. Release builds ignore these extras.
+     * Used to take screenshots. With `--es server http://<address>:8765 --es token <token>` the connection is set up without typing (and the sample data is turned off);
+     * those two extras are read once and removed from the intent at once. Release builds ignore all of these extras.
      */
     private fun applyDebugExtras(intent: Intent?) {
         if (!BuildConfig.DEBUG || intent == null) return
@@ -82,6 +97,9 @@ class MainActivity : ComponentActivity() {
         }
         intent.getStringExtra("theme")?.let { vm?.setThemeMode(ThemeMode.parse(it)) }
         intent.getStringExtra("tab")?.let { s -> Tab.entries.firstOrNull { it.name == s }?.let { tabRequest = TabRequest(it) } }
-        intent.removeExtra("scenario"); intent.removeExtra("theme"); intent.removeExtra("tab")
+        val server = intent.getStringExtra("server")
+        val token = intent.getStringExtra("token")
+        if (server != null || token != null) vm?.applyDebugConnection(server, token)
+        intent.removeExtra("scenario"); intent.removeExtra("theme"); intent.removeExtra("tab"); intent.removeExtra("server"); intent.removeExtra("token")
     }
 }

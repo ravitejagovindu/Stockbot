@@ -66,6 +66,15 @@ object RupeeFormat {
     private val DATE = DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)
     private val DATE_YEAR = DateTimeFormatter.ofPattern("d MMM yyyy", Locale.ENGLISH)
 
+    private val DATE_TIME = DateTimeFormatter.ofPattern("d MMM, HH:mm", Locale.ENGLISH)
+
+    /** "24 Nov, 19:48" from an ISO 8601 timestamp with an offset (the offset of the timestamp is kept); the text itself when it cannot be read. */
+    fun dateTime(iso: String): String = try {
+        java.time.OffsetDateTime.parse(iso).format(DATE_TIME)
+    } catch (e: Exception) {
+        iso
+    }
+
     fun date(d: LocalDate): String = d.format(DATE)
     fun dateYear(d: LocalDate): String = d.format(DATE_YEAR)
 }

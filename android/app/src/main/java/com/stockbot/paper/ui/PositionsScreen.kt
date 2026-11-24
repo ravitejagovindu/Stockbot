@@ -17,8 +17,8 @@ import com.stockbot.paper.format.RupeeFormat
 import com.stockbot.paper.theme.StockBotTheme
 
 @Composable
-fun PositionsScreen(state: ScreenState<PositionsState>, onRetry: () -> Unit) {
-    StateHost(state, onRetry) { data, isEmpty ->
+fun PositionsScreen(state: ScreenState<PositionsState>, onRetry: () -> Unit, refreshing: Boolean = false, onRefresh: (() -> Unit)? = null) {
+    StateHost(state, onRetry, refreshing, onRefresh) { data, isEmpty ->
         item { StaleLine(data) }
         if (isEmpty) {
             item { EmptyBlock("Nothing open yet", "Positions appear here after a signal day fills.") }

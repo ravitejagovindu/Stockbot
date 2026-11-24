@@ -29,15 +29,15 @@ class MockPaperRepository(
 
     override val isSample: Boolean = true
 
-    override suspend fun getToday(): TodayState = load("today", Contract::today)
-    override suspend fun getAccount(): AccountSnapshot = load("account", Contract::account)
-    override suspend fun getPositions(): PositionsState = load("positions", Contract::positions)
-    override suspend fun getTrades(): TradesState = load("trades", Contract::trades)
+    override suspend fun getToday(): Loaded<TodayState> = load("today", Contract::today)
+    override suspend fun getAccount(): Loaded<AccountSnapshot> = load("account", Contract::account)
+    override suspend fun getPositions(): Loaded<PositionsState> = load("positions", Contract::positions)
+    override suspend fun getTrades(): Loaded<TradesState> = load("trades", Contract::trades)
 
-    private suspend fun <T> load(kind: String, parse: (String) -> T): T {
+    private suspend fun <T> load(kind: String, parse: (String) -> T): Loaded<T> {
         if (latencyMs > 0) delay(latencyMs)
         val scenario = _scenario.value
         if (scenario == Scenario.ERROR) throw Contract.error(source.read("error_${scenario.fileSuffix}.json"))
-        return parse(source.read("${kind}_${scenario.fileSuffix}.json"))
+        return Loaded(parse(source.read("${kind}_${scenario.fileSuffix}.json")))
     }
 }
