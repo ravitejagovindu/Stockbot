@@ -1,0 +1,154 @@
+package com.stockbot.paper.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.stockbot.paper.data.staleDays
+import com.stockbot.paper.theme.StockBotTheme
+import java.time.LocalDate
+
+/** A card. The only container the screens use. */
+@Composable
+fun PaperCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    val t = StockBotTheme.tokens
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(t.cardCorner))
+            .background(t.card)
+            .padding(t.cardPadding),
+    ) { content() }
+}
+
+/** A thin horizontal bar, filled to [fraction] (0 to 1), with an optional tick at [tick]. */
+@Composable
+fun PaperBar(fraction: Float, fill: Color, modifier: Modifier = Modifier, tick: Float? = null) {
+    val t = StockBotTheme.tokens
+    val shape = RoundedCornerShape(t.barHeight)
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(t.barHeight)
+            .clip(shape)
+            .background(t.hairline),
+    ) {
+        Box(
+            Modifier
+                .fillMaxWidth(fraction.coerceIn(0f, 1f))
+                .height(t.barHeight)
+                .clip(shape)
+                .background(fill),
+        )
+        if (tick != null) {
+            val before = tick.coerceIn(0.01f, 0.99f)
+            Row(Modifier.fillMaxSize()) {
+                Box(Modifier.weight(before).height(t.barHeight))
+                Box(Modifier.width(2.dp).height(t.barHeight).background(t.text.copy(alpha = 0.7f)))
+                Box(Modifier.weight(1f - before).height(t.barHeight))
+            }
+        }
+    }
+}
+
+/** A label above a value, used in rows of figures. */
+@Composable
+fun Stat(label: String, value: String, modifier: Modifier = Modifier, valueColor: Color = Color.Unspecified) {
+    val type = StockBotTheme.type
+    Column(modifier) {
+        Text(label, style = type.label)
+        Text(value, style = type.number.let { if (valueColor == Color.Unspecified) it else it.copy(color = valueColor) })
+    }
+}
+
+@Composable
+fun StaleLine(asOf: LocalDate, today: LocalDate = LocalDate.now()) {
+    val days = staleDays(asOf, today) ?: return
+    Text("Updated $days days ago", style = StockBotTheme.type.label.copy(color = StockBotTheme.tokens.warning))
+}
+
+@Composable
+fun LoadingBlock() {
+    val t = StockBotTheme.tokens
+    Column(Modifier.fillMaxWidth().padding(t.screenPadding), verticalArrangement = Arrangement.spacedBy(t.gap)) {
+        Text("Loading", style = StockBotTheme.type.label)
+        repeat(3) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .clip(RoundedCornerShape(t.cardCorner))
+                    .background(t.card),
+            )
+        }
+    }
+}
+
+@Composable
+fun ErrorBlock(message: String, onRetry: () -> Unit) {
+    val t = StockBotTheme.tokens
+    Column(
+        Modifier.fillMaxSize().padding(t.screenPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(message, style = StockBotTheme.type.body, textAlign = TextAlign.Center)
+        TextButton(onClick = onRetry) {
+            Text("Retry", style = StockBotTheme.type.bodyStrong.copy(color = t.accent))
+        }
+    }
+}
+
+/** An invitation shown when there is nothing to list yet. */
+@Composable
+fun EmptyBlock(title: String, body: String) {
+    val t = StockBotTheme.tokens
+    Column(Modifier.fillMaxWidth().padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(title, style = StockBotTheme.type.headline, textAlign = TextAlign.Center)
+        Text(body, style = StockBotTheme.type.body.copy(color = t.muted), textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
+    }
+}
+
+/**
+ * Renders a screen from its state: loading, error with Retry, or a scrolling list.
+ * The list is built by [content], which receives the data and whether it is the empty case.
+ */
+@Composable
+fun <T> StateHost(state: ScreenState<T>, onRetry: () -> Unit, content: LazyListScope.(data: T, isEmpty: Boolean) -> Unit) {
+    when (state) {
+        ScreenState.Loading -> LoadingBlock()
+        is ScreenState.Error -> ErrorBlock(state.message, onRetry)
+        is ScreenState.Empty -> ScreenList { content(state.data, true) }
+        is ScreenState.Content -> ScreenList { content(state.data, false) }
+    }
+}
+
+@Composable
+private fun ScreenList(build: LazyListScope.() -> Unit) {
+    val t = StockBotTheme.tokens
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = t.screenPadding, vertical = t.gap),
+        verticalArrangement = Arrangement.spacedBy(t.gap),
+        content = build,
+    )
+}

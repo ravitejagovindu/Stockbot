@@ -1,0 +1,8 @@
+<resources>
+    <!-- Window background only (shown before Compose draws). Same values as the light theme in Theme.kt. -->
+    <style name="Theme.StockBot" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#F6F4EF</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

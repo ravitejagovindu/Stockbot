@@ -1,0 +1,8 @@
+<resources>
+    <!-- Same values as the dark theme in Theme.kt. -->
+    <style name="Theme.StockBot" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#0E1116</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>
