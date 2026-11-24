@@ -39,6 +39,9 @@ def main() -> int:
 
     setup_access_log(settings.log_file)
     app = create_app(settings)
+    from datetime import date
+    from bff.builders import default_signal_fn
+    default_signal_fn((date(2026, 1, 1), date(2026, 1, 2)))          # loads the repository's own signal-day function now (about 9 s), so the first request is not slow
     print(f"StockBot paper BFF (read-only) listening on http://{settings.host}:{settings.port}  log: {settings.log_file}", flush=True)
     uvicorn.run(app, host=settings.host, port=settings.port, access_log=False, log_level="warning")
     return 0
