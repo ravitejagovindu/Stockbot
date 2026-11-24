@@ -208,6 +208,8 @@ data class Position(
     val lastClosePaise: Long,
     /** (lastClose - entryPrice) x shares, paise. */
     val unrealisedPnlPaise: Long,
+    /** True for a position held by hand (a corporate action the engine could not rescale): its figures may be off. Absent means false. */
+    val corporateActionFlag: Boolean = false,
 )
 
 @Serializable
@@ -232,18 +234,23 @@ data class ClosedTrade(
     val netPnlPaise: Long,
     /** Net P&L divided by the paise risked at entry. */
     val netR: Double,
+    /** True when the engine flagged the trade for a corporate action: it is listed and counted, but left out of the win rate and profit factor. Absent means false. */
+    val corporateActionFlag: Boolean = false,
 )
 
-/** Footer figures, computed by the server. */
+/** Footer figures, computed by the server. Wins, losses, win rate and profit factor leave out flagged trades. */
 @Serializable
 data class TradeStats(
+    /** All closed trades listed, flagged ones included. */
     val tradeCount: Int,
     val wins: Int,
     val losses: Int,
-    /** Wins divided by trades, percent; null when there are no trades. */
+    /** Wins divided by (tradeCount - excludedFromStats), percent; null when no unflagged trade exists. */
     val winRatePct: Double?,
-    /** Gross profit divided by gross loss; null when there are no losing trades. */
+    /** Gross profit divided by gross loss over unflagged trades; null when there is no losing unflagged trade. */
     val profitFactor: Double?,
+    /** Flagged trades left out of the two figures above. Absent means 0. */
+    val excludedFromStats: Int = 0,
 )
 
 @Serializable

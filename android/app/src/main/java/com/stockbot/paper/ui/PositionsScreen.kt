@@ -50,6 +50,7 @@ private fun PositionCard(p: Position) {
             Stat("Stop", RupeeFormat.format(p.stopPaise))
             Stat("Last close", RupeeFormat.format(p.lastClosePaise))
         }
+        if (p.corporateActionFlag) CorporateActionNote()
     }
 }
 

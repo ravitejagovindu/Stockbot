@@ -9,6 +9,7 @@
     "wins": 0,
     "losses": 0,
     "winRatePct": null,
-    "profitFactor": null
+    "profitFactor": null,
+    "excludedFromStats": 0
   }
 }

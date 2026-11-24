@@ -80,6 +80,12 @@ fun Stat(label: String, value: String, modifier: Modifier = Modifier, valueColor
     }
 }
 
+/** The one-line note on a card whose figures may be off because of a corporate action. */
+@Composable
+fun CorporateActionNote() {
+    Text("Corporate action: figures may be off", style = StockBotTheme.type.label.copy(color = StockBotTheme.tokens.warning), modifier = Modifier.padding(top = 6.dp))
+}
+
 @Composable
 fun StaleLine(response: Envelope) {
     val line = Freshness.line(response) ?: return
