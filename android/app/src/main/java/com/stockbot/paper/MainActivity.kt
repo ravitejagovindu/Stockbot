@@ -1,0 +1,82 @@
+package com.stockbot.paper
+
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.stockbot.paper.data.MockPaperRepository
+import com.stockbot.paper.data.Scenario
+import com.stockbot.paper.theme.StockBotTheme
+import com.stockbot.paper.theme.ThemeMode
+import com.stockbot.paper.theme.ThemeModeStore
+import com.stockbot.paper.theme.resolveDark
+import com.stockbot.paper.ui.AppRoot
+import com.stockbot.paper.ui.PaperViewModel
+import com.stockbot.paper.ui.Tab
+import com.stockbot.paper.ui.TabRequest
+
+private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
+class MainActivity : ComponentActivity() {
+    private var tabRequest by mutableStateOf<TabRequest?>(null)
+    private var viewModel: PaperViewModel? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val vm: PaperViewModel = viewModel(
+                factory = viewModelFactory {
+                    initializer { PaperViewModel(MockPaperRepository(), ThemeModeStore(applicationContext.settingsDataStore)) }
+                },
+            )
+            viewModel = vm
+            LaunchedEffect(Unit) { applyDebugExtras(intent) }
+            val mode by vm.themeMode.collectAsStateWithLifecycle()
+            val dark = mode.resolveDark()
+            val activity = this@MainActivity
+            DisposableEffect(dark) {
+                val style = if (dark) SystemBarStyle.dark(Color.TRANSPARENT) else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                activity.enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+                onDispose {}
+            }
+            StockBotTheme(mode) { AppRoot(vm, tabRequest) }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        applyDebugExtras(intent)
+    }
+
+    /**
+     * Debug builds only: `adb shell am start -n com.stockbot.paper/.MainActivity --es scenario SIGNAL_DAY --es theme DARK --es tab ACCOUNT`.
+     * Used to take screenshots. Release builds ignore these extras.
+     */
+    private fun applyDebugExtras(intent: Intent?) {
+        if (!BuildConfig.DEBUG || intent == null) return
+        val vm = viewModel
+        intent.getStringExtra("scenario")?.let { s ->
+            Scenario.entries.firstOrNull { it.name == s }?.let { vm?.selectScenario(it) }
+        }
+        intent.getStringExtra("theme")?.let { vm?.setThemeMode(ThemeMode.parse(it)) }
+        intent.getStringExtra("tab")?.let { s -> Tab.entries.firstOrNull { it.name == s }?.let { tabRequest = TabRequest(it) } }
+        intent.removeExtra("scenario"); intent.removeExtra("theme"); intent.removeExtra("tab")
+    }
+}
