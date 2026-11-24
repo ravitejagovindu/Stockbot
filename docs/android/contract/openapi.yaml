@@ -1,0 +1,372 @@
+openapi: 3.0.3
+info:
+  title: StockBot Paper API
+  version: "1"
+  description: |
+    Read-only API behind the StockBot Paper Android app. FROZEN: apiVersion 1.
+
+    * Every call needs the header `X-Paper-Token`. The token itself is never stored in the repository.
+    * JSON keys are camelCase. Dates are `yyyy-MM-dd`. Timestamps are ISO 8601 with the +05:30 offset.
+    * Money is integer PAISE (64-bit). Percent values are decimal numbers in percent units; drawdowns are positive numbers.
+    * Every response carries `apiVersion` ("1"). Every success response also carries `dataAsOf`, `expectedAsOf` and `generatedAt`.
+    * List-valued fields are never null (an empty list is `[]`). Fields marked `nullable: true` are always present and may be null.
+    * Every non-200 response has the error body below. Clients must treat an unknown enum value as OTHER and ignore unknown keys.
+    * A breaking change means apiVersion 2 and new paths under `/v2`; `/v1` keeps working.
+servers:
+  - url: https://paper.example.invalid
+    description: Placeholder. The real address is chosen in stage 4.
+security:
+  - PaperToken: []
+paths:
+  /v1/health:
+    get:
+      summary: Is the server up, and what is the latest sealed data date
+      operationId: getHealth
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+              examples:
+                ok: { externalValue: "examples/health_ok.json" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /v1/today:
+    get:
+      summary: The newest ticket list (Today screen)
+      operationId: getToday
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Today" }
+              examples:
+                empty: { externalValue: "examples/today_empty.json" }
+                signalDay: { externalValue: "examples/today_signal_day.json" }
+                positions: { externalValue: "examples/today_positions.json" }
+                trades: { externalValue: "examples/today_trades.json" }
+                deepDrawdown: { externalValue: "examples/today_deep_drawdown.json" }
+                stale: { externalValue: "examples/today_stale.json" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/NotReady" }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /v1/account:
+    get:
+      summary: Equity, returns, curve against Nifty, drawdown and review marks (Account screen)
+      operationId: getAccount
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Account" }
+              examples:
+                empty: { externalValue: "examples/account_empty.json" }
+                signalDay: { externalValue: "examples/account_signal_day.json" }
+                positions: { externalValue: "examples/account_positions.json" }
+                trades: { externalValue: "examples/account_trades.json" }
+                deepDrawdown: { externalValue: "examples/account_deep_drawdown.json" }
+                stale: { externalValue: "examples/account_stale.json" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/NotReady" }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /v1/positions:
+    get:
+      summary: Open positions and cash (Positions screen)
+      operationId: getPositions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Positions" }
+              examples:
+                empty: { externalValue: "examples/positions_empty.json" }
+                positions: { externalValue: "examples/positions_positions.json" }
+                stale: { externalValue: "examples/positions_stale.json" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/NotReady" }
+        "500": { $ref: "#/components/responses/ServerError" }
+  /v1/trades:
+    get:
+      summary: Closed trades, newest first, with footer figures (Trades screen)
+      operationId: getTrades
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Trades" }
+              examples:
+                empty: { externalValue: "examples/trades_empty.json" }
+                trades: { externalValue: "examples/trades_trades.json" }
+                deepDrawdown: { externalValue: "examples/trades_deep_drawdown.json" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/NotReady" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+components:
+  securitySchemes:
+    PaperToken:
+      type: apiKey
+      in: header
+      name: X-Paper-Token
+      description: A long random token. Its value is kept outside the repository.
+
+  responses:
+    Unauthorized:
+      description: The token is missing or not valid.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          examples:
+            unauthorized: { externalValue: "examples/error_unauthorized.json" }
+    NotReady:
+      description: No sealed data yet (HTTP 503).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          examples:
+            notReady: { externalValue: "examples/error_not_ready.json" }
+    ServerError:
+      description: Something went wrong on the server.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          examples:
+            serverError: { externalValue: "examples/error_server_error.json" }
+
+  schemas:
+    ApiVersion:
+      type: string
+      enum: ["1"]
+      description: The contract version. Always the string "1" in this document.
+    Date:
+      type: string
+      format: date
+      pattern: '^\d{4}-\d{2}-\d{2}$'
+      example: "2026-11-23"
+    Timestamp:
+      type: string
+      format: date-time
+      pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+05:30$'
+      description: ISO 8601 with the +05:30 offset.
+      example: "2026-11-23T19:48:30+05:30"
+    Paise:
+      type: integer
+      format: int64
+      description: Integer paise (100 paise = 1 rupee). Signed where a loss is possible.
+    Percent:
+      type: number
+      description: Decimal number in percent units (1.5 means 1.5%).
+
+    Envelope:
+      type: object
+      required: [apiVersion, dataAsOf, expectedAsOf, generatedAt]
+      properties:
+        apiVersion: { $ref: "#/components/schemas/ApiVersion" }
+        dataAsOf:
+          allOf: [{ $ref: "#/components/schemas/Date" }]
+          description: The date of the data (the last sealed trading day it covers).
+        expectedAsOf:
+          allOf: [{ $ref: "#/components/schemas/Date" }]
+          description: The last trading day on which data is expected. The app shows "Updated N days ago" only when dataAsOf is before this date.
+        generatedAt: { $ref: "#/components/schemas/Timestamp" }
+
+    Error:
+      type: object
+      required: [apiVersion, error]
+      properties:
+        apiVersion: { $ref: "#/components/schemas/ApiVersion" }
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [UNAUTHORIZED, NOT_READY, SERVER_ERROR]
+              description: UNAUTHORIZED is HTTP 401, NOT_READY is HTTP 503, SERVER_ERROR is HTTP 500.
+            message:
+              type: string
+              description: One short sentence, no exclamation mark.
+
+    Health:
+      type: object
+      required: [apiVersion, status, serverTime, latestSealedDate, dataAsOf, expectedAsOf, generatedAt]
+      properties:
+        apiVersion: { $ref: "#/components/schemas/ApiVersion" }
+        status:
+          type: string
+          enum: [ok, not_ready]
+          description: not_ready while no data has been sealed (the data calls then answer 503 NOT_READY).
+        serverTime: { $ref: "#/components/schemas/Timestamp" }
+        latestSealedDate:
+          allOf: [{ $ref: "#/components/schemas/Date" }]
+          nullable: true
+          description: The newest date the lake is sealed through; null before any data is sealed.
+        dataAsOf:
+          allOf: [{ $ref: "#/components/schemas/Date" }]
+          description: Same value as latestSealedDate.
+        expectedAsOf: { $ref: "#/components/schemas/Date" }
+        generatedAt:
+          allOf: [{ $ref: "#/components/schemas/Timestamp" }]
+          description: Same value as serverTime.
+
+    Today:
+      allOf:
+        - $ref: "#/components/schemas/Envelope"
+        - type: object
+          required: [isSignalDay, riskPerTradePct, tickets, blocked, pendingFills, nextSignalRule]
+          properties:
+            isSignalDay: { type: boolean }
+            riskPerTradePct: { $ref: "#/components/schemas/Percent" }
+            tickets:
+              type: array
+              items: { $ref: "#/components/schemas/Ticket" }
+            blocked:
+              type: array
+              items: { $ref: "#/components/schemas/BlockedItem" }
+            pendingFills:
+              type: array
+              items: { $ref: "#/components/schemas/PendingFill" }
+            nextSignalRule:
+              type: string
+              example: first trading day of next month
+    Ticket:
+      type: object
+      required: [symbol, sector, shares, entryReferencePaise, stopPaise, riskPaise]
+      properties:
+        symbol: { type: string }
+        sector: { type: string, nullable: true }
+        shares: { type: integer, minimum: 1 }
+        entryReferencePaise: { $ref: "#/components/schemas/Paise" }
+        stopPaise: { $ref: "#/components/schemas/Paise" }
+        riskPaise: { $ref: "#/components/schemas/Paise" }
+    BlockedItem:
+      type: object
+      required: [symbol, sector, reason]
+      properties:
+        symbol: { type: string }
+        sector: { type: string, nullable: true }
+        reason: { $ref: "#/components/schemas/BlockReason" }
+    PendingFill:
+      type: object
+      required: [symbol, side, shares, note]
+      properties:
+        symbol: { type: string }
+        side: { $ref: "#/components/schemas/Side" }
+        shares: { type: integer, minimum: 1 }
+        note: { type: string, description: Short reason in plain words. }
+    BlockReason:
+      type: string
+      enum: [SECTOR_CAP, CASH, RISK_CAP, OTHER]
+      description: Clients map any value they do not know to OTHER.
+    Side:
+      type: string
+      enum: [BUY, SELL]
+      description: Clients map any value they do not know to OTHER.
+    ExitReason:
+      type: string
+      enum: [STOP_HIT, GAP_THROUGH_STOP, OTHER]
+      description: Clients map any value they do not know to OTHER.
+
+    Account:
+      allOf:
+        - $ref: "#/components/schemas/Envelope"
+        - type: object
+          required: [summary, curve, marks]
+          properties:
+            summary:
+              type: object
+              required: [startDate, startingCapitalPaise, equityPaise, cashPaise, returnPct, niftyReturnPct, drawdownNowPct, drawdownWorstPct, closedTrades]
+              properties:
+                startDate: { $ref: "#/components/schemas/Date" }
+                startingCapitalPaise: { $ref: "#/components/schemas/Paise" }
+                equityPaise: { $ref: "#/components/schemas/Paise" }
+                cashPaise: { $ref: "#/components/schemas/Paise" }
+                returnPct: { $ref: "#/components/schemas/Percent" }
+                niftyReturnPct: { $ref: "#/components/schemas/Percent" }
+                drawdownNowPct:
+                  allOf: [{ $ref: "#/components/schemas/Percent" }]
+                  minimum: 0
+                drawdownWorstPct:
+                  allOf: [{ $ref: "#/components/schemas/Percent" }]
+                  minimum: 0
+                closedTrades: { type: integer, minimum: 0 }
+            curve:
+              type: array
+              description: One point per trading day from startDate to dataAsOf, oldest first, the same dates for both lines.
+              items:
+                type: object
+                required: [date, accountPaise, niftyPaise]
+                properties:
+                  date: { $ref: "#/components/schemas/Date" }
+                  accountPaise: { $ref: "#/components/schemas/Paise" }
+                  niftyPaise:
+                    allOf: [{ $ref: "#/components/schemas/Paise" }]
+                    description: Nifty rebased to startingCapitalPaise on startDate.
+            marks:
+              type: object
+              required: [drawdownReviewPct, closedTradesTarget, verdict]
+              properties:
+                drawdownReviewPct: { $ref: "#/components/schemas/Percent" }
+                closedTradesTarget: { type: integer }
+                verdict: { type: string, example: not demonstrated }
+
+    Positions:
+      allOf:
+        - $ref: "#/components/schemas/Envelope"
+        - type: object
+          required: [cashPaise, positions]
+          properties:
+            cashPaise: { $ref: "#/components/schemas/Paise" }
+            positions:
+              type: array
+              items:
+                type: object
+                required: [symbol, shares, entryDate, entryPricePaise, stopPaise, lastClosePaise, unrealisedPnlPaise]
+                properties:
+                  symbol: { type: string }
+                  shares: { type: integer, minimum: 1 }
+                  entryDate: { $ref: "#/components/schemas/Date" }
+                  entryPricePaise: { $ref: "#/components/schemas/Paise" }
+                  stopPaise: { $ref: "#/components/schemas/Paise" }
+                  lastClosePaise: { $ref: "#/components/schemas/Paise" }
+                  unrealisedPnlPaise: { $ref: "#/components/schemas/Paise" }
+
+    Trades:
+      allOf:
+        - $ref: "#/components/schemas/Envelope"
+        - type: object
+          required: [trades, stats]
+          properties:
+            trades:
+              type: array
+              description: Newest exit first.
+              items:
+                type: object
+                required: [symbol, entryDate, exitDate, exitReason, netPnlPaise, netR]
+                properties:
+                  symbol: { type: string }
+                  entryDate: { $ref: "#/components/schemas/Date" }
+                  exitDate: { $ref: "#/components/schemas/Date" }
+                  exitReason: { $ref: "#/components/schemas/ExitReason" }
+                  netPnlPaise: { $ref: "#/components/schemas/Paise" }
+                  netR: { type: number, description: Net P&L divided by the paise risked at entry. }
+            stats:
+              type: object
+              required: [tradeCount, wins, losses, winRatePct, profitFactor]
+              properties:
+                tradeCount: { type: integer, minimum: 0 }
+                wins: { type: integer, minimum: 0, description: Trades with net P&L above zero. }
+                losses: { type: integer, minimum: 0, description: Trades with net P&L below zero. }
+                winRatePct:
+                  type: number
+                  nullable: true
+                  description: wins / tradeCount in percent; null when there are no trades.
+                profitFactor:
+                  type: number
+                  nullable: true
+                  description: Gross profit / gross loss; null when there is no losing trade.

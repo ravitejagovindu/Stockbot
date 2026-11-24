@@ -1,0 +1,9 @@
+{
+  "apiVersion": "1",
+  "status": "ok",
+  "serverTime": "2026-11-23T19:48:31+05:30",
+  "latestSealedDate": "2026-11-23",
+  "dataAsOf": "2026-11-23",
+  "expectedAsOf": "2026-11-23",
+  "generatedAt": "2026-11-23T19:48:31+05:30"
+}

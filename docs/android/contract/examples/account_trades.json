@@ -1,0 +1,674 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2027-05-14",
+  "expectedAsOf": "2027-05-14",
+  "generatedAt": "2027-05-14T19:48:30+05:30",
+  "summary": {
+    "startDate": "2026-11-16",
+    "startingCapitalPaise": 20000000,
+    "equityPaise": 20560000,
+    "cashPaise": 20560000,
+    "returnPct": 2.8,
+    "niftyReturnPct": 3.4,
+    "drawdownNowPct": 0.0,
+    "drawdownWorstPct": 2.13,
+    "closedTrades": 12
+  },
+  "curve": [
+    {
+      "date": "2026-11-16",
+      "accountPaise": 20000000,
+      "niftyPaise": 20000000
+    },
+    {
+      "date": "2026-11-17",
+      "accountPaise": 20000000,
+      "niftyPaise": 20028507
+    },
+    {
+      "date": "2026-11-18",
+      "accountPaise": 20000000,
+      "niftyPaise": 20035086
+    },
+    {
+      "date": "2026-11-19",
+      "accountPaise": 20000000,
+      "niftyPaise": 20039456
+    },
+    {
+      "date": "2026-11-20",
+      "accountPaise": 20000000,
+      "niftyPaise": 19979869
+    },
+    {
+      "date": "2026-11-23",
+      "accountPaise": 20000000,
+      "niftyPaise": 20012473
+    },
+    {
+      "date": "2026-11-24",
+      "accountPaise": 20000000,
+      "niftyPaise": 20021131
+    },
+    {
+      "date": "2026-11-25",
+      "accountPaise": 20000000,
+      "niftyPaise": 20164240
+    },
+    {
+      "date": "2026-11-26",
+      "accountPaise": 20000000,
+      "niftyPaise": 20049521
+    },
+    {
+      "date": "2026-11-27",
+      "accountPaise": 20000000,
+      "niftyPaise": 20374284
+    },
+    {
+      "date": "2026-11-30",
+      "accountPaise": 20000000,
+      "niftyPaise": 19992625
+    },
+    {
+      "date": "2026-12-01",
+      "accountPaise": 20000000,
+      "niftyPaise": 20010214
+    },
+    {
+      "date": "2026-12-02",
+      "accountPaise": 20000000,
+      "niftyPaise": 20129963
+    },
+    {
+      "date": "2026-12-03",
+      "accountPaise": 20000000,
+      "niftyPaise": 20115134
+    },
+    {
+      "date": "2026-12-04",
+      "accountPaise": 20000000,
+      "niftyPaise": 20031331
+    },
+    {
+      "date": "2026-12-07",
+      "accountPaise": 20000000,
+      "niftyPaise": 20034661
+    },
+    {
+      "date": "2026-12-08",
+      "accountPaise": 20000000,
+      "niftyPaise": 20131770
+    },
+    {
+      "date": "2026-12-09",
+      "accountPaise": 20000000,
+      "niftyPaise": 20297351
+    },
+    {
+      "date": "2026-12-10",
+      "accountPaise": 20000000,
+      "niftyPaise": 20115552
+    },
+    {
+      "date": "2026-12-11",
+      "accountPaise": 20000000,
+      "niftyPaise": 20151489
+    },
+    {
+      "date": "2026-12-14",
+      "accountPaise": 20000000,
+      "niftyPaise": 20080088
+    },
+    {
+      "date": "2026-12-15",
+      "accountPaise": 20000000,
+      "niftyPaise": 20219569
+    },
+    {
+      "date": "2026-12-16",
+      "accountPaise": 20000000,
+      "niftyPaise": 20164262
+    },
+    {
+      "date": "2026-12-17",
+      "accountPaise": 20000000,
+      "niftyPaise": 20190482
+    },
+    {
+      "date": "2026-12-18",
+      "accountPaise": 20000000,
+      "niftyPaise": 20334311
+    },
+    {
+      "date": "2026-12-21",
+      "accountPaise": 20000000,
+      "niftyPaise": 20301718
+    },
+    {
+      "date": "2026-12-22",
+      "accountPaise": 20000000,
+      "niftyPaise": 20336290
+    },
+    {
+      "date": "2026-12-23",
+      "accountPaise": 20000000,
+      "niftyPaise": 20241360
+    },
+    {
+      "date": "2026-12-24",
+      "accountPaise": 20000000,
+      "niftyPaise": 20206705
+    },
+    {
+      "date": "2026-12-25",
+      "accountPaise": 20000000,
+      "niftyPaise": 19965388
+    },
+    {
+      "date": "2026-12-28",
+      "accountPaise": 20000000,
+      "niftyPaise": 19859110
+    },
+    {
+      "date": "2026-12-29",
+      "accountPaise": 20000000,
+      "niftyPaise": 19795600
+    },
+    {
+      "date": "2026-12-30",
+      "accountPaise": 20000000,
+      "niftyPaise": 19710310
+    },
+    {
+      "date": "2026-12-31",
+      "accountPaise": 20000000,
+      "niftyPaise": 19975296
+    },
+    {
+      "date": "2027-01-01",
+      "accountPaise": 20000000,
+      "niftyPaise": 19691930
+    },
+    {
+      "date": "2027-01-04",
+      "accountPaise": 20000000,
+      "niftyPaise": 19420153
+    },
+    {
+      "date": "2027-01-05",
+      "accountPaise": 20000000,
+      "niftyPaise": 19447586
+    },
+    {
+      "date": "2027-01-06",
+      "accountPaise": 20000000,
+      "niftyPaise": 19521705
+    },
+    {
+      "date": "2027-01-07",
+      "accountPaise": 20000000,
+      "niftyPaise": 19539580
+    },
+    {
+      "date": "2027-01-08",
+      "accountPaise": 20000000,
+      "niftyPaise": 19680253
+    },
+    {
+      "date": "2027-01-11",
+      "accountPaise": 20000000,
+      "niftyPaise": 19938201
+    },
+    {
+      "date": "2027-01-12",
+      "accountPaise": 20000000,
+      "niftyPaise": 19879168
+    },
+    {
+      "date": "2027-01-13",
+      "accountPaise": 20000000,
+      "niftyPaise": 19713413
+    },
+    {
+      "date": "2027-01-14",
+      "accountPaise": 20000000,
+      "niftyPaise": 19692293
+    },
+    {
+      "date": "2027-01-15",
+      "accountPaise": 20000000,
+      "niftyPaise": 19837685
+    },
+    {
+      "date": "2027-01-18",
+      "accountPaise": 20000000,
+      "niftyPaise": 19889639
+    },
+    {
+      "date": "2027-01-19",
+      "accountPaise": 20000000,
+      "niftyPaise": 19864477
+    },
+    {
+      "date": "2027-01-20",
+      "accountPaise": 20000000,
+      "niftyPaise": 19902669
+    },
+    {
+      "date": "2027-01-21",
+      "accountPaise": 20000000,
+      "niftyPaise": 19938026
+    },
+    {
+      "date": "2027-01-22",
+      "accountPaise": 20000000,
+      "niftyPaise": 19724907
+    },
+    {
+      "date": "2027-01-25",
+      "accountPaise": 20000000,
+      "niftyPaise": 19779749
+    },
+    {
+      "date": "2027-01-26",
+      "accountPaise": 20000000,
+      "niftyPaise": 19677312
+    },
+    {
+      "date": "2027-01-27",
+      "accountPaise": 20000000,
+      "niftyPaise": 19647201
+    },
+    {
+      "date": "2027-01-28",
+      "accountPaise": 20000000,
+      "niftyPaise": 19583587
+    },
+    {
+      "date": "2027-01-29",
+      "accountPaise": 20000000,
+      "niftyPaise": 19592964
+    },
+    {
+      "date": "2027-02-01",
+      "accountPaise": 20000000,
+      "niftyPaise": 19707709
+    },
+    {
+      "date": "2027-02-02",
+      "accountPaise": 20000000,
+      "niftyPaise": 19682742
+    },
+    {
+      "date": "2027-02-03",
+      "accountPaise": 20000000,
+      "niftyPaise": 19702565
+    },
+    {
+      "date": "2027-02-04",
+      "accountPaise": 20000000,
+      "niftyPaise": 19814923
+    },
+    {
+      "date": "2027-02-05",
+      "accountPaise": 19830000,
+      "niftyPaise": 19872666
+    },
+    {
+      "date": "2027-02-08",
+      "accountPaise": 19830000,
+      "niftyPaise": 19790302
+    },
+    {
+      "date": "2027-02-09",
+      "accountPaise": 19830000,
+      "niftyPaise": 19889820
+    },
+    {
+      "date": "2027-02-10",
+      "accountPaise": 19830000,
+      "niftyPaise": 19839543
+    },
+    {
+      "date": "2027-02-11",
+      "accountPaise": 19830000,
+      "niftyPaise": 19806408
+    },
+    {
+      "date": "2027-02-12",
+      "accountPaise": 19830000,
+      "niftyPaise": 19833630
+    },
+    {
+      "date": "2027-02-15",
+      "accountPaise": 19830000,
+      "niftyPaise": 20022350
+    },
+    {
+      "date": "2027-02-16",
+      "accountPaise": 19990000,
+      "niftyPaise": 19915533
+    },
+    {
+      "date": "2027-02-17",
+      "accountPaise": 19990000,
+      "niftyPaise": 19867681
+    },
+    {
+      "date": "2027-02-18",
+      "accountPaise": 19990000,
+      "niftyPaise": 19887608
+    },
+    {
+      "date": "2027-02-19",
+      "accountPaise": 19990000,
+      "niftyPaise": 19782588
+    },
+    {
+      "date": "2027-02-22",
+      "accountPaise": 19990000,
+      "niftyPaise": 19798472
+    },
+    {
+      "date": "2027-02-23",
+      "accountPaise": 19990000,
+      "niftyPaise": 19955545
+    },
+    {
+      "date": "2027-02-24",
+      "accountPaise": 19800000,
+      "niftyPaise": 19735402
+    },
+    {
+      "date": "2027-02-25",
+      "accountPaise": 19800000,
+      "niftyPaise": 19740370
+    },
+    {
+      "date": "2027-02-26",
+      "accountPaise": 19800000,
+      "niftyPaise": 19653660
+    },
+    {
+      "date": "2027-03-01",
+      "accountPaise": 19800000,
+      "niftyPaise": 19907053
+    },
+    {
+      "date": "2027-03-02",
+      "accountPaise": 19800000,
+      "niftyPaise": 19982742
+    },
+    {
+      "date": "2027-03-03",
+      "accountPaise": 19800000,
+      "niftyPaise": 20059598
+    },
+    {
+      "date": "2027-03-04",
+      "accountPaise": 19800000,
+      "niftyPaise": 20046033
+    },
+    {
+      "date": "2027-03-05",
+      "accountPaise": 19580000,
+      "niftyPaise": 19919263
+    },
+    {
+      "date": "2027-03-08",
+      "accountPaise": 19580000,
+      "niftyPaise": 19929835
+    },
+    {
+      "date": "2027-03-09",
+      "accountPaise": 19580000,
+      "niftyPaise": 19975485
+    },
+    {
+      "date": "2027-03-10",
+      "accountPaise": 19580000,
+      "niftyPaise": 19980775
+    },
+    {
+      "date": "2027-03-11",
+      "accountPaise": 19580000,
+      "niftyPaise": 20206428
+    },
+    {
+      "date": "2027-03-12",
+      "accountPaise": 19580000,
+      "niftyPaise": 20305647
+    },
+    {
+      "date": "2027-03-15",
+      "accountPaise": 20090000,
+      "niftyPaise": 20193716
+    },
+    {
+      "date": "2027-03-16",
+      "accountPaise": 20090000,
+      "niftyPaise": 20147276
+    },
+    {
+      "date": "2027-03-17",
+      "accountPaise": 20090000,
+      "niftyPaise": 20186070
+    },
+    {
+      "date": "2027-03-18",
+      "accountPaise": 20090000,
+      "niftyPaise": 20037257
+    },
+    {
+      "date": "2027-03-19",
+      "accountPaise": 20090000,
+      "niftyPaise": 20015145
+    },
+    {
+      "date": "2027-03-22",
+      "accountPaise": 20090000,
+      "niftyPaise": 19939540
+    },
+    {
+      "date": "2027-03-23",
+      "accountPaise": 20090000,
+      "niftyPaise": 19963865
+    },
+    {
+      "date": "2027-03-24",
+      "accountPaise": 19910000,
+      "niftyPaise": 19982562
+    },
+    {
+      "date": "2027-03-25",
+      "accountPaise": 19910000,
+      "niftyPaise": 19906773
+    },
+    {
+      "date": "2027-03-26",
+      "accountPaise": 19910000,
+      "niftyPaise": 20067621
+    },
+    {
+      "date": "2027-03-29",
+      "accountPaise": 19910000,
+      "niftyPaise": 19997348
+    },
+    {
+      "date": "2027-03-30",
+      "accountPaise": 19910000,
+      "niftyPaise": 20084064
+    },
+    {
+      "date": "2027-03-31",
+      "accountPaise": 19910000,
+      "niftyPaise": 19956600
+    },
+    {
+      "date": "2027-04-01",
+      "accountPaise": 20190000,
+      "niftyPaise": 19840595
+    },
+    {
+      "date": "2027-04-02",
+      "accountPaise": 20190000,
+      "niftyPaise": 19766258
+    },
+    {
+      "date": "2027-04-05",
+      "accountPaise": 20190000,
+      "niftyPaise": 19718877
+    },
+    {
+      "date": "2027-04-06",
+      "accountPaise": 20190000,
+      "niftyPaise": 19822125
+    },
+    {
+      "date": "2027-04-07",
+      "accountPaise": 20190000,
+      "niftyPaise": 19641135
+    },
+    {
+      "date": "2027-04-08",
+      "accountPaise": 20190000,
+      "niftyPaise": 19847822
+    },
+    {
+      "date": "2027-04-09",
+      "accountPaise": 20190000,
+      "niftyPaise": 19702775
+    },
+    {
+      "date": "2027-04-12",
+      "accountPaise": 19960000,
+      "niftyPaise": 19889090
+    },
+    {
+      "date": "2027-04-13",
+      "accountPaise": 19960000,
+      "niftyPaise": 19916345
+    },
+    {
+      "date": "2027-04-14",
+      "accountPaise": 19960000,
+      "niftyPaise": 19858435
+    },
+    {
+      "date": "2027-04-15",
+      "accountPaise": 19960000,
+      "niftyPaise": 19965623
+    },
+    {
+      "date": "2027-04-16",
+      "accountPaise": 19960000,
+      "niftyPaise": 19909888
+    },
+    {
+      "date": "2027-04-19",
+      "accountPaise": 19760000,
+      "niftyPaise": 19912838
+    },
+    {
+      "date": "2027-04-20",
+      "accountPaise": 19760000,
+      "niftyPaise": 19924591
+    },
+    {
+      "date": "2027-04-21",
+      "accountPaise": 19760000,
+      "niftyPaise": 20288448
+    },
+    {
+      "date": "2027-04-22",
+      "accountPaise": 19760000,
+      "niftyPaise": 20168422
+    },
+    {
+      "date": "2027-04-23",
+      "accountPaise": 19760000,
+      "niftyPaise": 20414072
+    },
+    {
+      "date": "2027-04-26",
+      "accountPaise": 20380000,
+      "niftyPaise": 20382203
+    },
+    {
+      "date": "2027-04-27",
+      "accountPaise": 20380000,
+      "niftyPaise": 20295700
+    },
+    {
+      "date": "2027-04-28",
+      "accountPaise": 20380000,
+      "niftyPaise": 20237059
+    },
+    {
+      "date": "2027-04-29",
+      "accountPaise": 20380000,
+      "niftyPaise": 20398661
+    },
+    {
+      "date": "2027-04-30",
+      "accountPaise": 20380000,
+      "niftyPaise": 20376342
+    },
+    {
+      "date": "2027-05-03",
+      "accountPaise": 20170000,
+      "niftyPaise": 20280869
+    },
+    {
+      "date": "2027-05-04",
+      "accountPaise": 20170000,
+      "niftyPaise": 20361449
+    },
+    {
+      "date": "2027-05-05",
+      "accountPaise": 20170000,
+      "niftyPaise": 20399463
+    },
+    {
+      "date": "2027-05-06",
+      "accountPaise": 20170000,
+      "niftyPaise": 20537380
+    },
+    {
+      "date": "2027-05-07",
+      "accountPaise": 20170000,
+      "niftyPaise": 20395844
+    },
+    {
+      "date": "2027-05-10",
+      "accountPaise": 20560000,
+      "niftyPaise": 20588131
+    },
+    {
+      "date": "2027-05-11",
+      "accountPaise": 20560000,
+      "niftyPaise": 20747132
+    },
+    {
+      "date": "2027-05-12",
+      "accountPaise": 20560000,
+      "niftyPaise": 20658390
+    },
+    {
+      "date": "2027-05-13",
+      "accountPaise": 20560000,
+      "niftyPaise": 20617973
+    },
+    {
+      "date": "2027-05-14",
+      "accountPaise": 20560000,
+      "niftyPaise": 20680000
+    }
+  ],
+  "marks": {
+    "drawdownReviewPct": 35.0,
+    "closedTradesTarget": 30,
+    "verdict": "not demonstrated"
+  }
+}

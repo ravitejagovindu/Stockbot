@@ -1,0 +1,12 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2027-09-17",
+  "expectedAsOf": "2027-09-17",
+  "generatedAt": "2027-09-17T19:48:30+05:30",
+  "isSignalDay": false,
+  "riskPerTradePct": 1.0,
+  "tickets": [],
+  "blocked": [],
+  "pendingFills": [],
+  "nextSignalRule": "first trading day of next month"
+}

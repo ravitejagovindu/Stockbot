@@ -23,9 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.stockbot.paper.data.staleDays
+import com.stockbot.paper.data.Envelope
+import com.stockbot.paper.data.Freshness
 import com.stockbot.paper.theme.StockBotTheme
-import java.time.LocalDate
 
 /** A card. The only container the screens use. */
 @Composable
@@ -81,9 +81,9 @@ fun Stat(label: String, value: String, modifier: Modifier = Modifier, valueColor
 }
 
 @Composable
-fun StaleLine(asOf: LocalDate, today: LocalDate = LocalDate.now()) {
-    val days = staleDays(asOf, today) ?: return
-    Text("Updated $days days ago", style = StockBotTheme.type.label.copy(color = StockBotTheme.tokens.warning))
+fun StaleLine(response: Envelope) {
+    val line = Freshness.line(response) ?: return
+    Text(line, style = StockBotTheme.type.label.copy(color = StockBotTheme.tokens.warning))
 }
 
 @Composable

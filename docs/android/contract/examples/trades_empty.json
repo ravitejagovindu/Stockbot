@@ -1,0 +1,14 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2026-11-23",
+  "expectedAsOf": "2026-11-23",
+  "generatedAt": "2026-11-23T19:48:30+05:30",
+  "trades": [],
+  "stats": {
+    "tradeCount": 0,
+    "wins": 0,
+    "losses": 0,
+    "winRatePct": null,
+    "profitFactor": null
+  }
+}

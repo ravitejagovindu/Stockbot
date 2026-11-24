@@ -5,64 +5,57 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.LocalDate
 
+/** Money comes in as paise: 1 rupee = 100 paise. */
 class RupeeFormatTest {
     private val minus = "−"
     private val rs = "₹"
 
+    private fun rupees(r: Long) = r * 100
+
     @Test fun smallValuesHaveNoSeparator() {
-        assertEquals("${rs}0", RupeeFormat.format(0.0))
-        assertEquals("${rs}7", RupeeFormat.format(7.0))
-        assertEquals("${rs}999", RupeeFormat.format(999.0))
+        assertEquals("${rs}0", RupeeFormat.format(0))
+        assertEquals("${rs}7", RupeeFormat.format(rupees(7)))
+        assertEquals("${rs}999", RupeeFormat.format(rupees(999)))
     }
 
     @Test fun indianGroupingUsesLastThreeThenPairs() {
-        assertEquals("${rs}1,000", RupeeFormat.format(1_000.0))
-        assertEquals("${rs}12,345", RupeeFormat.format(12_345.0))
-        assertEquals("${rs}1,00,000", RupeeFormat.format(100_000.0))
-        assertEquals("${rs}2,14,300", RupeeFormat.format(214_300.0))
-        assertEquals("${rs}2,00,000", RupeeFormat.format(200_000.0))
-        assertEquals("${rs}1,23,45,678", RupeeFormat.format(12_345_678.0))
+        assertEquals("${rs}1,000", RupeeFormat.format(rupees(1_000)))
+        assertEquals("${rs}12,345", RupeeFormat.format(rupees(12_345)))
+        assertEquals("${rs}1,00,000", RupeeFormat.format(rupees(100_000)))
+        assertEquals("${rs}2,14,300", RupeeFormat.format(21_430_000))
+        assertEquals("${rs}2,00,000", RupeeFormat.format(20_000_000))
+        assertEquals("${rs}1,23,45,678", RupeeFormat.format(rupees(12_345_678)))
     }
 
     @Test fun largeValues() {
-        assertEquals("${rs}10,00,00,000", RupeeFormat.format(100_000_000.0))
-        assertEquals("${rs}10,00,00,00,000", RupeeFormat.format(10_000_000_000.0))
-        assertEquals("${rs}99,99,99,99,999", RupeeFormat.format(99_99_99_99_999.0))
+        assertEquals("${rs}10,00,00,000", RupeeFormat.format(rupees(100_000_000)))
+        assertEquals("${rs}10,00,00,00,000", RupeeFormat.format(rupees(10_000_000_000)))
+        assertEquals("${rs}99,99,99,99,999", RupeeFormat.format(rupees(99_99_99_99_999)))
+        // Near the top of the 64-bit range: still exact, no overflow, no rounding through a double.
+        assertEquals("${rs}92,23,37,20,36,85,47,758.07", RupeeFormat.format(Long.MAX_VALUE))
+        assertEquals("${minus}${rs}92,23,37,20,36,85,47,758.08", RupeeFormat.format(Long.MIN_VALUE))
     }
 
     @Test fun negativesUseARealMinusBeforeTheSymbol() {
-        assertEquals("${minus}${rs}1,250", RupeeFormat.format(-1_250.0))
-        assertEquals("${minus}${rs}2,14,300", RupeeFormat.format(-214_300.0))
-        assertEquals('−', RupeeFormat.format(-5.0)[0])
+        assertEquals("${minus}${rs}1,250", RupeeFormat.format(-rupees(1_250)))
+        assertEquals("${minus}${rs}2,14,300", RupeeFormat.format(-21_430_000))
+        assertEquals('−', RupeeFormat.format(-500)[0])
     }
 
     @Test fun signedAddsPlusOnlyForGains() {
-        assertEquals("+${rs}1,250", RupeeFormat.format(1_250.0, signed = true))
-        assertEquals("${minus}${rs}1,250", RupeeFormat.format(-1_250.0, signed = true))
-        assertEquals("${rs}0", RupeeFormat.format(0.0, signed = true))
+        assertEquals("+${rs}1,250", RupeeFormat.format(rupees(1_250), signed = true))
+        assertEquals("${minus}${rs}1,250", RupeeFormat.format(-rupees(1_250), signed = true))
+        assertEquals("${rs}0", RupeeFormat.format(0, signed = true))
     }
 
     @Test fun paiseOnlyWhenNeeded() {
-        assertEquals("${rs}1,234.50", RupeeFormat.format(1_234.5))
-        assertEquals("${rs}1,642.30", RupeeFormat.format(1_642.30))
-        assertEquals("${rs}3,985", RupeeFormat.format(3_985.00))
-        assertEquals("${rs}0.05", RupeeFormat.format(0.05))
-        assertEquals("${minus}${rs}12.75", RupeeFormat.format(-12.75))
-    }
-
-    @Test fun valuesThatRoundToZeroHaveNoSign() {
-        assertEquals("${rs}0", RupeeFormat.format(-0.004))
-        assertEquals("${rs}0", RupeeFormat.format(0.004, signed = true))
-    }
-
-    @Test fun roundingIsHalfUpAtTwoDecimals() {
-        assertEquals("${rs}10.01", RupeeFormat.format(10.005))
-        assertEquals("${rs}1,000", RupeeFormat.format(999.999))
-    }
-
-    @Test fun priceKeepsTwoDecimals() {
-        assertEquals("1,642.30", RupeeFormat.price(1_642.3))
-        assertEquals("12,480.00", RupeeFormat.price(12_480.0))
+        assertEquals("${rs}1,234.50", RupeeFormat.format(123_450))
+        assertEquals("${rs}1,642.30", RupeeFormat.format(164_230))
+        assertEquals("${rs}3,985", RupeeFormat.format(398_500))
+        assertEquals("${rs}0.05", RupeeFormat.format(5))
+        assertEquals("${rs}0.50", RupeeFormat.format(50))
+        assertEquals("${minus}${rs}12.75", RupeeFormat.format(-1_275))
+        assertEquals("${rs}1,999.80", RupeeFormat.format(199_980))
     }
 
     @Test fun percentAndR() {

@@ -1,0 +1,45 @@
+{
+  "apiVersion": "1",
+  "dataAsOf": "2026-12-22",
+  "expectedAsOf": "2026-12-22",
+  "generatedAt": "2026-12-22T19:48:30+05:30",
+  "cashPaise": 3898000,
+  "positions": [
+    {
+      "symbol": "INFY",
+      "shares": 25,
+      "entryDate": "2026-12-02",
+      "entryPricePaise": 152000,
+      "stopPaise": 146800,
+      "lastClosePaise": 157540,
+      "unrealisedPnlPaise": 138500
+    },
+    {
+      "symbol": "SBIN",
+      "shares": 55,
+      "entryDate": "2026-12-02",
+      "entryPricePaise": 81200,
+      "stopPaise": 77600,
+      "lastClosePaise": 79620,
+      "unrealisedPnlPaise": -86900
+    },
+    {
+      "symbol": "LT",
+      "shares": 11,
+      "entryDate": "2026-12-02",
+      "entryPricePaise": 372000,
+      "stopPaise": 359000,
+      "lastClosePaise": 380100,
+      "unrealisedPnlPaise": 89100
+    },
+    {
+      "symbol": "MARUTI",
+      "shares": 3,
+      "entryDate": "2026-12-02",
+      "entryPricePaise": 1248000,
+      "stopPaise": 1205000,
+      "lastClosePaise": 1221000,
+      "unrealisedPnlPaise": -81000
+    }
+  ]
+}

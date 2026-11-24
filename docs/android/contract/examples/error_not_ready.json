@@ -1,0 +1,7 @@
+{
+  "apiVersion": "1",
+  "error": {
+    "code": "NOT_READY",
+    "message": "Today's data is not ready yet."
+  }
+}

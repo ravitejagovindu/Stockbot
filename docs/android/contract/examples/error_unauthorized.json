@@ -1,0 +1,7 @@
+{
+  "apiVersion": "1",
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "The access token is missing or not valid."
+  }
+}

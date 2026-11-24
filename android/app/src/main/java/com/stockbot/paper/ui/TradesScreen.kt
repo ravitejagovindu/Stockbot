@@ -19,12 +19,12 @@ import java.util.Locale
 @Composable
 fun TradesScreen(state: ScreenState<TradesState>, onRetry: () -> Unit) {
     StateHost(state, onRetry) { data, isEmpty ->
-        item { StaleLine(data.asOf) }
+        item { StaleLine(data) }
         if (isEmpty) {
             item { EmptyBlock("No closed trades yet", "Finished trades are listed here, newest first.") }
         } else {
             items(data.trades, key = { "${it.symbol}-${it.exitDate}" }) { TradeCard(it) }
-            item { StatsFooter(TradeStats.from(data.trades)) }
+            item { StatsFooter(data.stats) }
         }
     }
 }
@@ -33,7 +33,7 @@ fun TradesScreen(state: ScreenState<TradesState>, onRetry: () -> Unit) {
 private fun TradeCard(tr: ClosedTrade) {
     val t = StockBotTheme.tokens
     val type = StockBotTheme.type
-    val color = if (tr.netPnl >= 0) t.gain else t.loss
+    val color = if (tr.netPnlPaise >= 0) t.gain else t.loss
     PaperCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
             Column {
@@ -42,7 +42,7 @@ private fun TradeCard(tr: ClosedTrade) {
                 Text(tr.exitReason.label, style = type.label)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text(RupeeFormat.format(tr.netPnl, signed = true), style = type.numberStrong.copy(color = color))
+                Text(RupeeFormat.format(tr.netPnlPaise, signed = true), style = type.numberStrong.copy(color = color))
                 Text(RupeeFormat.r(tr.netR), style = type.numberSmall.copy(color = color))
                 Text("After costs", style = type.label)
             }
@@ -54,7 +54,7 @@ private fun TradeCard(tr: ClosedTrade) {
 private fun StatsFooter(stats: TradeStats) {
     PaperCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Stat("Win rate", "${RupeeFormat.wholePercent(stats.winRatePct)} (${stats.wins} of ${stats.count})")
+            Stat("Win rate", stats.winRatePct?.let { "${RupeeFormat.wholePercent(it)} (${stats.wins} of ${stats.tradeCount})" } ?: "n/a")
             Stat("Profit factor", stats.profitFactor?.let { String.format(Locale.US, "%.2f", it) } ?: "n/a")
         }
     }

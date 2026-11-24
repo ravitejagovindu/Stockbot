@@ -43,14 +43,14 @@ fun drawdownColor(fraction: Float, t: ThemeTokens): Color = when {
 fun AccountScreen(state: ScreenState<AccountSnapshot>, onRetry: () -> Unit) {
     StateHost(state, onRetry) { data, _ ->
         val s = data.summary
-        item { StaleLine(s.asOf) }
+        item { StaleLine(data) }
         item { EquityCard(s) }
         item { CurveCard(data) }
         item { DrawdownCard(s, data.marks) }
         item { ClosedTradesCard(s, data.marks) }
         item {
             Text(
-                "Verdict: ${data.marks.verdict.label}",
+                "Verdict: ${data.marks.verdict}",
                 style = StockBotTheme.type.label,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -74,7 +74,7 @@ private fun EquityCard(s: AccountSummary) {
     val type = StockBotTheme.type
     PaperCard {
         Text("Equity", style = type.label)
-        Text(RupeeFormat.format(s.equity), style = type.numberLarge)
+        Text(RupeeFormat.format(s.equityPaise), style = type.numberLarge)
         Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Stat("Account since ${RupeeFormat.date(s.startDate)}", RupeeFormat.percent(s.returnPct), valueColor = gainColor(s.returnPct))
             Stat("Nifty, same dates", RupeeFormat.percent(s.niftyReturnPct))
@@ -102,7 +102,7 @@ private fun CurveCard(data: AccountSnapshot) {
                 Text(RupeeFormat.date(curve.last().date), style = type.numberSmall)
             }
         }
-        if (data.summary.closedTrades == 0 && curve.map { it.account }.distinct().size <= 1) {
+        if (data.summary.closedTrades == 0 && curve.map { it.accountPaise }.distinct().size <= 1) {
             Text("The line moves after the first trade closes.", style = type.label, modifier = Modifier.padding(top = 8.dp))
         }
     }
@@ -113,7 +113,7 @@ private fun CurveCard(data: AccountSnapshot) {
 fun EquityChart(curve: List<EquityPoint>, accent: Color, muted: Color, grid: Color, modifier: Modifier = Modifier) {
     Canvas(modifier.semantics { contentDescription = "Equity curve of the account against Nifty" }) {
         if (curve.size < 2) return@Canvas
-        val all = curve.flatMap { listOf(it.account, it.nifty) }
+        val all = curve.flatMap { listOf(it.accountPaise.toDouble(), it.niftyPaise.toDouble()) }
         val lo = all.min()
         val hi = all.max()
         val pad = ((hi - lo).takeIf { it > 0 } ?: (hi * 0.01)).times(0.08)
@@ -127,14 +127,14 @@ fun EquityChart(curve: List<EquityPoint>, accent: Color, muted: Color, grid: Col
             val gy = size.height * k / 2f
             drawLine(grid, Offset(0f, gy), Offset(size.width, gy), strokeWidth = hair)
         }
-        fun path(pick: (EquityPoint) -> Double) = Path().apply {
-            curve.forEachIndexed { i, p -> if (i == 0) moveTo(x(i), y(pick(p))) else lineTo(x(i), y(pick(p))) }
+        fun path(pick: (EquityPoint) -> Long) = Path().apply {
+            curve.forEachIndexed { i, p -> if (i == 0) moveTo(x(i), y(pick(p).toDouble())) else lineTo(x(i), y(pick(p).toDouble())) }
         }
         drawPath(
-            path { it.nifty }, muted,
+            path { it.niftyPaise }, muted,
             style = Stroke(width = 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10.dp.toPx(), 6.dp.toPx()))),
         )
-        drawPath(path { it.account }, accent, style = Stroke(width = 2.dp.toPx()))
+        drawPath(path { it.accountPaise }, accent, style = Stroke(width = 2.dp.toPx()))
     }
 }
 

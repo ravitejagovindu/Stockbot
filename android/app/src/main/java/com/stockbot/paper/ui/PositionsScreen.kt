@@ -19,13 +19,13 @@ import com.stockbot.paper.theme.StockBotTheme
 @Composable
 fun PositionsScreen(state: ScreenState<PositionsState>, onRetry: () -> Unit) {
     StateHost(state, onRetry) { data, isEmpty ->
-        item { StaleLine(data.asOf) }
+        item { StaleLine(data) }
         if (isEmpty) {
             item { EmptyBlock("Nothing open yet", "Positions appear here after a signal day fills.") }
         } else {
             items(data.positions, key = { it.symbol }) { PositionCard(it) }
         }
-        item { CashFooter(data.cash) }
+        item { CashFooter(data.cashPaise) }
     }
 }
 
@@ -33,7 +33,7 @@ fun PositionsScreen(state: ScreenState<PositionsState>, onRetry: () -> Unit) {
 private fun PositionCard(p: Position) {
     val t = StockBotTheme.tokens
     val type = StockBotTheme.type
-    val pnlColor = if (p.unrealisedPnl >= 0) t.gain else t.loss
+    val pnlColor = if (p.unrealisedPnlPaise >= 0) t.gain else t.loss
     PaperCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
             Column {
@@ -41,20 +41,20 @@ private fun PositionCard(p: Position) {
                 Text("${p.shares} shares since ${RupeeFormat.date(p.entryDate)}", style = type.label)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text(RupeeFormat.format(p.unrealisedPnl, signed = true), style = type.numberStrong.copy(color = pnlColor))
+                Text(RupeeFormat.format(p.unrealisedPnlPaise, signed = true), style = type.numberStrong.copy(color = pnlColor))
                 Text("Unrealised", style = type.label)
             }
         }
         Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-            Stat("Entry", RupeeFormat.format(p.entryPrice))
-            Stat("Stop", RupeeFormat.format(p.stop))
-            Stat("Last close", RupeeFormat.format(p.lastClose))
+            Stat("Entry", RupeeFormat.format(p.entryPricePaise))
+            Stat("Stop", RupeeFormat.format(p.stopPaise))
+            Stat("Last close", RupeeFormat.format(p.lastClosePaise))
         }
     }
 }
 
 @Composable
-private fun CashFooter(cash: Double) {
+private fun CashFooter(cash: Long) {
     val type = StockBotTheme.type
     PaperCard {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
