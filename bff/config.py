@@ -51,6 +51,14 @@ class Settings:
         return self.data_root / "daily" / "calendar.csv"
 
     @property
+    def scheduler_log(self) -> Path:
+        return self.data_root / "logs" / "scheduler_service.log"
+
+    @property
+    def locks_dir(self) -> Path:
+        return self.data_root / "locks"
+
+    @property
     def log_file(self) -> Path:
         return self.data_root / "logs" / "bff.log"
 

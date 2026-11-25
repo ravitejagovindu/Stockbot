@@ -3,6 +3,8 @@ package com.stockbot.paper.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stockbot.paper.data.AccountSnapshot
+import com.stockbot.paper.data.JobScenario
+import com.stockbot.paper.data.JobStatus
 import com.stockbot.paper.data.Loaded
 import com.stockbot.paper.data.MockPaperRepository
 import com.stockbot.paper.data.PaperRepository
@@ -31,7 +33,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-enum class Tab(val title: String) { TODAY("Today"), ACCOUNT("Account"), POSITIONS("Positions"), TRADES("Trades") }
+enum class Tab(val title: String) { TODAY("Today"), ACCOUNT("Account"), POSITIONS("Positions"), TRADES("Trades"), JOB("Job") }
 
 /** Sends each call to the sample data or to the laptop, depending on the Connection screen's switch. */
 class AppRepository(private val mock: PaperRepository, private val network: PaperRepository) : PaperRepository {
@@ -43,6 +45,7 @@ class AppRepository(private val mock: PaperRepository, private val network: Pape
     override suspend fun getAccount(): Loaded<AccountSnapshot> = current.getAccount()
     override suspend fun getPositions(): Loaded<PositionsState> = current.getPositions()
     override suspend fun getTrades(): Loaded<TradesState> = current.getTrades()
+    override suspend fun getJob(): Loaded<JobStatus> = current.getJob()
 }
 
 /** Holds the four screen states, the theme override and the connection settings. The scenario switch is a debug feature of the mock repository. */
@@ -71,10 +74,13 @@ class PaperViewModel(
     private val _account = MutableStateFlow<ScreenState<AccountSnapshot>>(ScreenState.Loading)
     private val _positions = MutableStateFlow<ScreenState<PositionsState>>(ScreenState.Loading)
     private val _trades = MutableStateFlow<ScreenState<TradesState>>(ScreenState.Loading)
+    private val _job = MutableStateFlow<ScreenState<JobStatus>>(ScreenState.Loading)
     val today: StateFlow<ScreenState<TodayState>> = _today
     val account: StateFlow<ScreenState<AccountSnapshot>> = _account
     val positions: StateFlow<ScreenState<PositionsState>> = _positions
     val trades: StateFlow<ScreenState<TradesState>> = _trades
+    val job: StateFlow<ScreenState<JobStatus>> = _job
+    val jobScenario: StateFlow<JobScenario> = mock.jobScenario
 
     private val _refreshing = MutableStateFlow<Set<Tab>>(emptySet())
     /** The tabs whose pull-to-refresh spinner is showing. */
@@ -115,6 +121,7 @@ class PaperViewModel(
                     Tab.ACCOUNT -> { if (!silent) _account.value = ScreenState.Loading; _account.value = loader.account() }
                     Tab.POSITIONS -> { if (!silent) _positions.value = ScreenState.Loading; _positions.value = loader.positions() }
                     Tab.TRADES -> { if (!silent) _trades.value = ScreenState.Loading; _trades.value = loader.trades() }
+                    Tab.JOB -> { if (!silent) _job.value = ScreenState.Loading; _job.value = loader.job() }
                 }
             } finally {
                 _refreshing.value = _refreshing.value - tab
@@ -132,6 +139,15 @@ class PaperViewModel(
         viewModelScope.launch {
             connectionStore.setUseSample(true)           // a scenario only means something for the sample data
             Tab.entries.forEach { reload(it) }
+        }
+    }
+
+    /** Debug menu: which job status the sample data shows. */
+    fun selectJobScenario(s: JobScenario) {
+        mock.selectJob(s)
+        viewModelScope.launch {
+            connectionStore.setUseSample(true)
+            reload(Tab.JOB)
         }
     }
 

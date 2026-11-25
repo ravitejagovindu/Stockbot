@@ -24,6 +24,17 @@ Open it from the top bar (the word "Connection" next to the theme choice). It fo
 
 The address is kept in DataStore. The token is kept **encrypted** (AES-GCM, key in the Android Keystore); the settings file only holds the encrypted text. Neither is ever logged (the app has no log calls, and a test checks that).
 
+## The Job screen (stage 5)
+
+The fifth tab, "Job", answers one question: did tonight's job run? It reads `GET /v1/job` and is read-only: it has no button that starts, retries or stops anything (the only "Retry" is the one in the offline line, which just asks again).
+
+* **Top:** a big state chip (colour, icon and word together, never colour alone): Done, Running, Retrying, No file, Alert, Waiting, Weekend; one plain sentence under it; then Service (on since ..., or off), Next attempt, Data as of, Expected, and whether the data is up to date or behind.
+* **Below:** the last 10 days as a strip of small chips (weekday, state icon, day of the month; today on the right), then today's attempts (time, exit code, decision).
+* **Refresh and offline** work as on the other screens: pull to refresh, refresh on open and on return; when the laptop cannot be reached the kept copy is shown with "Can't reach your laptop. Showing data from ...".
+* **No file** usually means a market holiday: the NSE published nothing and the service stopped after its last attempt of the day. "Alert" is for the cases that need a look (for example a stale lock).
+* **Sample data:** the debug build's hidden menu (long-press the title) has a "Job screen" list (Done, Running, Retrying, No file, Alert, Service off) for the sample data; in adb: `--es tab JOB --es jobscenario RETRYING`.
+* The BFF must be restarted once after this change before the real Job screen works (see `docs\bff\README.md`); until then the screen shows its calm error with Retry.
+
 ## Refresh and offline
 
 * The app asks again when it opens, when it comes back to the front, and on **pull-to-refresh** on every screen.

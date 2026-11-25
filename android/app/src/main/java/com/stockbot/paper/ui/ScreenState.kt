@@ -1,6 +1,7 @@
 package com.stockbot.paper.ui
 
 import com.stockbot.paper.data.AccountSnapshot
+import com.stockbot.paper.data.JobStatus
 import com.stockbot.paper.data.Loaded
 import com.stockbot.paper.data.PaperRepository
 import com.stockbot.paper.data.PositionsState
@@ -32,6 +33,9 @@ class ScreenLoader(private val repo: PaperRepository) {
     suspend fun positions(): ScreenState<PositionsState> = load({ it.positions.isEmpty() }) { repo.getPositions() }
 
     suspend fun trades(): ScreenState<TradesState> = load({ it.trades.isEmpty() }) { repo.getTrades() }
+
+    /** The job status always has something to show, so it is never empty. */
+    suspend fun job(): ScreenState<JobStatus> = load({ false }) { repo.getJob() }
 
     private suspend fun <T> load(isEmpty: (T) -> Boolean, block: suspend () -> Loaded<T>): ScreenState<T> =
         try {

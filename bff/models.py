@@ -151,3 +151,51 @@ class TradeStats(Strict):
 class Trades(Envelope):
     trades: List[ClosedTrade]
     stats: TradeStats
+
+
+# ------------------------------------------------------------------------------------------------------------------------------ job (v1.1, additive)
+JobState = Literal["DONE", "RUNNING", "RETRYING", "NO_FILE", "ALERT", "WAITING", "WEEKEND"]
+JobDecision = Literal["done", "retry", "stopped", "alert", "catch-up"]
+
+
+class JobService(Strict):
+    running: bool
+    pid: Optional[int]
+    startedAt: Optional[str] = Field(pattern=TS_PATTERN)
+
+
+class JobToday(Strict):
+    date: date
+    state: JobState
+    attempts: int = Field(ge=0)
+    lastAttemptAt: Optional[str] = Field(pattern=TS_PATTERN)
+    lastExitCode: Optional[int]
+    message: str
+
+
+class JobData(Strict):
+    latestSealedDate: Optional[date]
+    expectedAsOf: date
+
+
+class JobDay(Strict):
+    date: date
+    state: JobState
+    attempts: int = Field(ge=0)
+    finishedAt: Optional[str] = Field(pattern=TS_PATTERN)
+    lastExitCode: Optional[int]
+
+
+class JobAttempt(Strict):
+    at: str = Field(pattern=TS_PATTERN)
+    exitCode: int
+    decision: JobDecision
+
+
+class Job(Envelope):
+    service: JobService
+    nextAttemptAt: Optional[str] = Field(pattern=TS_PATTERN)
+    today: JobToday
+    data: JobData
+    history: List[JobDay]
+    attempts: List[JobAttempt]

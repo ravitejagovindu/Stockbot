@@ -27,12 +27,25 @@ class MockPaperRepository(
         _scenario.value = scenario
     }
 
+    private val _jobScenario = MutableStateFlow(JobScenario.DONE)
+    val jobScenario: StateFlow<JobScenario> = _jobScenario
+
+    fun selectJob(s: JobScenario) {
+        _jobScenario.value = s
+    }
+
     override val isSample: Boolean = true
 
     override suspend fun getToday(): Loaded<TodayState> = load("today", Contract::today)
     override suspend fun getAccount(): Loaded<AccountSnapshot> = load("account", Contract::account)
     override suspend fun getPositions(): Loaded<PositionsState> = load("positions", Contract::positions)
     override suspend fun getTrades(): Loaded<TradesState> = load("trades", Contract::trades)
+
+    override suspend fun getJob(): Loaded<JobStatus> {
+        if (latencyMs > 0) delay(latencyMs)
+        if (_scenario.value == Scenario.ERROR) throw Contract.error(source.read("error_${Scenario.ERROR.fileSuffix}.json"))
+        return Loaded(Contract.job(source.read(_jobScenario.value.file)))
+    }
 
     private suspend fun <T> load(kind: String, parse: (String) -> T): Loaded<T> {
         if (latencyMs > 0) delay(latencyMs)

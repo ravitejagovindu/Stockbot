@@ -15,4 +15,7 @@ interface PaperRepository {
     suspend fun getAccount(): Loaded<AccountSnapshot>
     suspend fun getPositions(): Loaded<PositionsState>
     suspend fun getTrades(): Loaded<TradesState>
+
+    /** The daily job's status (GET /v1/job). Read-only. */
+    suspend fun getJob(): Loaded<JobStatus>
 }

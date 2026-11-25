@@ -19,6 +19,7 @@ object Contract {
     fun account(text: String): AccountSnapshot = decode(text) { json.decodeFromString(AccountSnapshot.serializer(), it) }
     fun positions(text: String): PositionsState = decode(text) { json.decodeFromString(PositionsState.serializer(), it) }
     fun trades(text: String): TradesState = decode(text) { json.decodeFromString(TradesState.serializer(), it) }
+    fun job(text: String): JobStatus = decode(text) { json.decodeFromString(JobStatus.serializer(), it) }
     fun health(text: String): HealthResponse = decode(text) { json.decodeFromString(HealthResponse.serializer(), it) }
 
     /** The error body of a non-200 response. */
