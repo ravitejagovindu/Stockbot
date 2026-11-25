@@ -5,6 +5,7 @@ import com.stockbot.paper.data.ApiException
 import com.stockbot.paper.data.Contract
 import com.stockbot.paper.data.Envelope
 import com.stockbot.paper.data.ErrorCode
+import com.stockbot.paper.data.JobStatus
 import com.stockbot.paper.data.Loaded
 import com.stockbot.paper.data.PaperRepository
 import com.stockbot.paper.data.PositionsState
@@ -63,6 +64,7 @@ class NetworkPaperRepository(
     override suspend fun getAccount(): Loaded<AccountSnapshot> = load("account", Contract::account)
     override suspend fun getPositions(): Loaded<PositionsState> = load("positions", Contract::positions)
     override suspend fun getTrades(): Loaded<TradesState> = load("trades", Contract::trades)
+    override suspend fun getJob(): Loaded<JobStatus> = load("job", Contract::job)
 
     private suspend fun <T : Envelope> load(name: String, parse: (String) -> T): Loaded<T> = withContext(Dispatchers.IO) {
         val ep = endpoint() ?: throw ApiException(ErrorCode.UNAUTHORIZED, "Set the server and the token on the Connection screen.")

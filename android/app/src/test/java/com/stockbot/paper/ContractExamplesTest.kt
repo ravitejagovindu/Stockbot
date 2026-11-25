@@ -41,7 +41,7 @@ class ContractExamplesTest {
 
     @Test fun everyExampleFileIsReadByTheMatchingParser() {
         val names = TestExamples.names()
-        assertTrue("expected at least 28 example files, found ${names.size}", names.size >= 28)
+        assertTrue("expected at least 34 example files, found ${names.size}", names.size >= 34)
         for (n in names) {
             val body = text(n)
             when {
@@ -55,6 +55,7 @@ class ContractExamplesTest {
                     assertEquals(h.generatedAt, h.serverTime)
                     assertEquals(h.latestSealedDate, h.dataAsOf)
                 }
+                n.startsWith("job") -> assertEnvelope(n, Contract.job(body))
                 n.startsWith("error_") -> {
                     val ex = Contract.error(body)
                     assertTrue(n, n.contains(ex.code.name.lowercase()))

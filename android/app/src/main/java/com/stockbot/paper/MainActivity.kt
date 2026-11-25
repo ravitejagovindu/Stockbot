@@ -97,9 +97,12 @@ class MainActivity : ComponentActivity() {
         }
         intent.getStringExtra("theme")?.let { vm?.setThemeMode(ThemeMode.parse(it)) }
         intent.getStringExtra("tab")?.let { s -> Tab.entries.firstOrNull { it.name == s }?.let { tabRequest = TabRequest(it) } }
+        intent.getStringExtra("jobscenario")?.let { s ->
+            com.stockbot.paper.data.JobScenario.entries.firstOrNull { it.name == s }?.let { vm?.selectJobScenario(it) }
+        }
         val server = intent.getStringExtra("server")
         val token = intent.getStringExtra("token")
         if (server != null || token != null) vm?.applyDebugConnection(server, token)
-        intent.removeExtra("scenario"); intent.removeExtra("theme"); intent.removeExtra("tab"); intent.removeExtra("server"); intent.removeExtra("token")
+        intent.removeExtra("jobscenario"); intent.removeExtra("scenario"); intent.removeExtra("theme"); intent.removeExtra("tab"); intent.removeExtra("server"); intent.removeExtra("token")
     }
 }

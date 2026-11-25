@@ -81,6 +81,17 @@ class NetworkRepositoryTest {
         assertTrue(seen.all { it.method == "GET" && it.token == token })
     }
 
+    @Test fun theJobStatusIsFetchedFromTheJobPathAndKeptForOffline() = runBlocking {
+        val cache = MemoryCache()
+        val base = serve { _, _ -> ok(example("job_retrying.json")) }
+        val loaded = repo(base, cache).getJob()
+        assertEquals("RETRYING", loaded.data.today.state.name)
+        assertEquals("/v1/job", seen.last().path)
+        assertEquals("GET", seen.last().method)
+        val offline = repo(closedPortUrl(), cache).getJob()
+        assertEquals(offline.data.generatedAt, offline.offlineGeneratedAt)
+    }
+
     @Test fun aGoodBodyIsKeptAsTheLastCopy() = runBlocking {
         val cache = MemoryCache()
         val base = serve { _, _ -> status(200, example("today_signal_day.json")) }

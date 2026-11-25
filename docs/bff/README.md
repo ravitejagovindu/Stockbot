@@ -5,7 +5,7 @@ A small, **read-only** FastAPI service in `bff\`. It reads the paper account tha
 ## What it is and is not
 
 * **Read-only.** Every SQLite connection to `finsight.db` and `state\live_state.db` is opened with a read-only URI (`file:...?mode=ro`) and `PRAGMA query_only=ON`, used for one read and closed (no connection is held between requests). A write through such a connection raises an error (a test proves it).
-* **No endpoint writes, places an order or touches a broker.** There are five GET endpoints and nothing else (other methods answer 405). No broker key exists anywhere.
+* **No endpoint writes, places an order or touches a broker.** There are six GET endpoints and nothing else (other methods answer 405). No broker key exists anywhere.
 * **No locks.** It never reads or writes the lock files and never takes a run lock. If a database is busy (the 19:30 job is writing) it waits 3 s, retries once, then answers `503 NOT_READY`: never a partial result.
 * **No background work.** No threads of its own, no scheduler, no timers. It only does something when a request arrives. It is safe to kill at any time.
 * **Not the old app.** Never start it together with `stockbot\live\main.py`: that app starts the old scheduler (`stockbot\live\scheduler.py`), and two schedulers must never run the paper step. The BFF imports neither.
@@ -19,6 +19,7 @@ A small, **read-only** FastAPI service in `bff\`. It reads the paper account tha
 | `GET /v1/account` | equity, returns against Nifty, daily curve, drawdowns, review marks |
 | `GET /v1/positions` | open positions and cash |
 | `GET /v1/trades` | closed trades, newest first, with the footer figures |
+| `GET /v1/job` | (v1.1) the daily job's status: the scheduler service on or off, today's state, the last 10 days, the last 20 attempts |
 
 A wrong or missing token gives `401` with `{"apiVersion":"1","error":{"code":"UNAUTHORIZED","message":"..."}}`; data not available gives `503 NOT_READY`; anything else `500 SERVER_ERROR`; an unknown route `404`. The contract (`docs\android\contract\CONTRACT.md`) is the reference for every field.
 
@@ -81,3 +82,13 @@ On a request it reads the journal of `live_state.db` (every processed session), 
 ## Roll-back
 
 Delete the folder `bff\` (and `tests\bff\`, `docs\bff\`). Nothing else depends on it: no existing file was changed except two added rows in `docs\guides\CODEBASE_GUIDE.md`, and the daily job, the scheduler service and the paper state are untouched. Stop the BFF first (Ctrl+C), and delete `F:\Projects\Ravi\StockBotData\bff\token.txt` if you no longer want the token.
+
+## `GET /v1/job` (v1.1, stage 5): the daily job's status
+
+Read-only, like everything else here. It shows what the scheduler service (`scripts\scheduler_service.py`, the 19:30 IST job and the 08:30 catch-up) did; there is no way to start, retry or stop anything through it.
+
+It reads, and never writes: `F:\Projects\Ravi\StockBotData\logs\scheduler_service.log` (and its rotated files `.1` to `.5`), the service's instance file `locks\scheduler_service.pid` (pid and start time), the **existence** (never the content) of `locks\daily_update.lock`, the lake's sealed date (the same read as `/v1/health`) and `daily\calendar.csv`. A missing or half-written log, an unknown line or garbage never gives a 500: unreadable lines are skipped, and a log with no usable line answers `503 NOT_READY`.
+
+State rules (first match wins): `DONE` an attempt ended with exit 0; `RUNNING` (today) an attempt began with no result yet, or the data job's lock file exists; `NO_FILE` the service stopped with its ALERT line and the last exit was 3 (the NSE never published a file, probably a holiday); `ALERT` the service stopped with its ALERT line for another reason (for example a stale lock, exit 5), or a past weekday with no final answer; `RETRYING` (today) the last decision was a retry, with the logged next attempt time; `WEEKEND` Saturday or Sunday without a DONE; `WAITING` a weekday before 19:30 with no attempt yet. The full table is in `docs\android\contract\CONTRACT.md`.
+
+**The BFF that is already running was started before this endpoint existed: it needs a restart to serve `/v1/job`** (`stop_bff.ps1`, then `start_bff.ps1`, once this change is merged; or `Stop-Process` on the BFF pid and start it again). The other five endpoints are unchanged.

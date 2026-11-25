@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -38,6 +40,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.stockbot.paper.BuildConfig
+import com.stockbot.paper.data.JobScenario
 import com.stockbot.paper.data.Scenario
 import com.stockbot.paper.theme.StockBotTheme
 import com.stockbot.paper.theme.ThemeMode
@@ -54,6 +57,7 @@ fun AppRoot(vm: PaperViewModel, tabRequest: TabRequest?) {
 
     val themeMode by vm.themeMode.collectAsStateWithLifecycle()
     val scenario by vm.scenario.collectAsStateWithLifecycle()
+    val jobScenario by vm.jobScenario.collectAsStateWithLifecycle()
     val isSample by vm.isSample.collectAsStateWithLifecycle()
     val refreshing by vm.refreshing.collectAsStateWithLifecycle()
     var debugOpen by remember { mutableStateOf(false) }
@@ -83,6 +87,7 @@ fun AppRoot(vm: PaperViewModel, tabRequest: TabRequest?) {
                     Tab.ACCOUNT -> AccountScreen(vm.account.collectAsStateWithLifecycle().value, { vm.refresh(Tab.ACCOUNT) }, Tab.ACCOUNT in refreshing) { vm.refresh(Tab.ACCOUNT) }
                     Tab.POSITIONS -> PositionsScreen(vm.positions.collectAsStateWithLifecycle().value, { vm.refresh(Tab.POSITIONS) }, Tab.POSITIONS in refreshing) { vm.refresh(Tab.POSITIONS) }
                     Tab.TRADES -> TradesScreen(vm.trades.collectAsStateWithLifecycle().value, { vm.refresh(Tab.TRADES) }, Tab.TRADES in refreshing) { vm.refresh(Tab.TRADES) }
+                    Tab.JOB -> JobScreen(vm.job.collectAsStateWithLifecycle().value, { vm.refresh(Tab.JOB) }, Tab.JOB in refreshing) { vm.refresh(Tab.JOB) }
                 }
             }
         }
@@ -90,7 +95,13 @@ fun AppRoot(vm: PaperViewModel, tabRequest: TabRequest?) {
     }
 
     if (debugOpen && BuildConfig.DEBUG) {
-        ScenarioDialog(current = scenario, onPick = { vm.selectScenario(it); debugOpen = false }, onDismiss = { debugOpen = false })
+        ScenarioDialog(
+            current = scenario,
+            currentJob = jobScenario,
+            onPick = { vm.selectScenario(it); debugOpen = false },
+            onPickJob = { vm.selectJobScenario(it); debugOpen = false },
+            onDismiss = { debugOpen = false },
+        )
     }
 }
 
@@ -188,13 +199,13 @@ private fun BottomBar(selected: Tab, onSelect: (Tab) -> Unit) {
 }
 
 @Composable
-private fun ScenarioDialog(current: Scenario, onPick: (Scenario) -> Unit, onDismiss: () -> Unit) {
+private fun ScenarioDialog(current: Scenario, currentJob: JobScenario, onPick: (Scenario) -> Unit, onPickJob: (JobScenario) -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = { TextButton(onClick = onDismiss) { Text("Close") } },
         title = { Text("Mock scenario") },
         text = {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 Scenario.entries.forEach { s ->
                     Row(
                         Modifier.fillMaxWidth().clickable { onPick(s) }.padding(vertical = 2.dp),
@@ -205,6 +216,16 @@ private fun ScenarioDialog(current: Scenario, onPick: (Scenario) -> Unit, onDism
                             Text(s.label)
                             Text(s.summary, style = StockBotTheme.type.label)
                         }
+                    }
+                }
+                Text("Job screen", style = StockBotTheme.type.label, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp))
+                JobScenario.entries.forEach { j ->
+                    Row(
+                        Modifier.fillMaxWidth().clickable { onPickJob(j) }.padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(selected = j == currentJob, onClick = { onPickJob(j) })
+                        Text(j.label)
                     }
                 }
             }
