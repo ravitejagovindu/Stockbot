@@ -118,3 +118,20 @@ Nothing below needs a change to the engine; each is something the backend (stage
 13. **Sector for a position.** Not needed by the app (Positions shows no sector). `Position.sector` exists in the snapshot if a later version wants it.
 14. **Pending-exit text.** `pending_reason` is an engine label (`TIME_EXIT`, `STOP_HIT`, `POLICY_EXIT`); the backend turns it into the plain-words `note` (for example "Exit queued at the close"). Note that a plain stop is tested on the next bar (`engine/stepping.py`), so it is not a pending exit and never appears in `pendingFills`.
 15. **Authentication and hosting.** The token check, the HTTP server and where it runs do not exist (stage 3 and 4). The token value stays out of the repository.
+
+## /v1/job (v1.1, stage 5)
+
+Sources, all read-only and never written: the scheduler service's log `F:\Projects\Ravi\StockBotData\logs\scheduler_service.log` (and its rotated files `.1` to `.5`), the instance file `locks\scheduler_service.pid` (JSON: `pid`, `host`, `started_at`; it is not a run lock), the existence (never the content) of `locks\daily_update.lock`, the lake's sealed-through date (the same read as `/v1/health`) and the data job's `daily\calendar.csv` (for `expectedAsOf`, as everywhere). The log's lines are written by `scripts/scheduler_service.py`:
+
+| Field | Source |
+|---|---|
+| `service.running` | the instance file's pid is a live process (Windows: OpenProcess and GetExitCodeProcess, never a signal) and the log's last service line is not "service stopped" |
+| `service.pid`, `service.startedAt` | the instance file (`started_at` is local IST time) |
+| `today.attempts`, `lastAttemptAt`, `lastExitCode` | the lines `attempt (WHY) exit N -> done|retry|stop` dated today (WHY is `19:30` or `retry HH:MM`) |
+| `today.state` | the rules in `CONTRACT.md`; RUNNING also from an `attempt (WHY): daily_job.py --scheduled` line with no result line after it; NO_FILE and ALERT from the `ERROR ALERT: ...` line that follows a `stop` result |
+| `nextAttemptAt` | `(next attempt HH:MM)` of the last retry line, today; 19:30 while waiting |
+| `data.latestSealedDate`, `data.expectedAsOf` | the lake seal and the freshness rule of stage 3 |
+| `history[]` | the same classification for each day from the first logged day (at most 10 days) to today |
+| `attempts[]` | every `attempt ... exit` line and every `catch-up (WHY) exit N` line, newest first, the last 20 |
+
+Gaps and limits: the log has no explicit "holiday" marker, so NO_FILE is inferred (an exit 3 that lasted until the 23:30 stop); a weekday before the service's first log line is not in the history; the service writes local naive timestamps, read here as IST (the laptop's zone); a log that rotated away its old days shortens the history.

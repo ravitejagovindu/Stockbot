@@ -20,6 +20,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from bff import builders as B
+from bff import jobstatus as J
 from bff import models as M
 from bff import sources as S
 from bff.config import Settings, load_settings
@@ -53,8 +54,10 @@ class Service:
     """Builds the responses. Responses are cached on (mtime and size of live_state.db, the lake's sealed-through date); a changed key rebuilds. The envelope's expectedAsOf and generatedAt are
     refreshed on every request (they depend on the clock, not on the data)."""
 
-    def __init__(self, settings: Settings, now_fn: Callable[[], datetime], signal_fn: Callable[[Sequence[date]], bool], sector_for: Callable[[str], str]):
+    def __init__(self, settings: Settings, now_fn: Callable[[], datetime], signal_fn: Callable[[Sequence[date]], bool], sector_for: Callable[[str], str],
+                 pid_alive_fn: Callable[[int], bool] = S.process_alive):
         self.s = settings
+        self.pid_alive_fn = pid_alive_fn
         self.now_fn = now_fn
         self.signal_fn = signal_fn
         self.sector_for = sector_for
@@ -99,6 +102,22 @@ class Service:
             self._cache[endpoint] = (key, model)
             return model
 
+    def job(self) -> M.Job:
+        """The daily-job status, built fresh on every call (small reads, nothing cached): the scheduler log, the instance file, the daily lock's existence and the sealed date."""
+        now = self.now_fn()
+        parsed = J.parse_log(S.read_scheduler_log(self.s.scheduler_log))
+        if parsed.recognised == 0:
+            raise S.SourceError("the scheduler log has no usable line")
+        info = S.read_instance_file(self.s.locks_dir)
+        pid = int(info["pid"]) if info and str(info.get("pid", "")).isdigit() else None
+        alive = bool(pid) and self.pid_alive_fn(pid)
+        try:
+            sealed = S.read_sealed(self.s.lake, self.s.busy_timeout_s)
+        except S.SourceError:
+            sealed = None
+        expected = B.expected_as_of(now, S.read_no_file_days(self.s.calendar_csv))
+        return J.build_job(parsed, now, info, alive, S.daily_lock_exists(self.s.locks_dir), sealed, expected)
+
     def health(self) -> M.Health:
         now = self.now_fn()
         expected = B.expected_as_of(now, S.read_no_file_days(self.s.calendar_csv))
@@ -118,7 +137,7 @@ class Service:
 
 
 def create_app(settings: Optional[Settings] = None, now_fn: Optional[Callable[[], datetime]] = None, signal_fn: Optional[Callable] = None,
-               sector_for: Optional[Callable[[str], str]] = None) -> FastAPI:
+               sector_for: Optional[Callable[[str], str]] = None, pid_alive_fn: Optional[Callable[[int], bool]] = None) -> FastAPI:
     """Build the app. With no ``settings`` they are read from the environment, and a missing token raises ``TokenMissing`` (the BFF refuses to start)."""
     settings = settings or load_settings()
     if not settings.token:
@@ -127,7 +146,7 @@ def create_app(settings: Optional[Settings] = None, now_fn: Optional[Callable[[]
     if sector_for is None:
         from stockbot.data.sector_map import sector_for as _sf
         sector_for = _sf
-    svc = Service(settings, now_fn or (lambda: datetime.now(timezone.utc)), signal_fn or B.default_signal_fn, sector_for)
+    svc = Service(settings, now_fn or (lambda: datetime.now(timezone.utc)), signal_fn or B.default_signal_fn, sector_for, pid_alive_fn or S.process_alive)
     token_bytes = settings.token.encode("utf-8")
 
     app = FastAPI(title="StockBot Paper API", version="1", docs_url=None, redoc_url=None, openapi_url=None)
@@ -186,6 +205,10 @@ def create_app(settings: Optional[Settings] = None, now_fn: Optional[Callable[[]
     @router.get("/trades")
     def trades():
         return respond(svc.get("trades"))
+
+    @router.get("/job")
+    def job():
+        return respond(svc.job())
 
     app.include_router(router)
 

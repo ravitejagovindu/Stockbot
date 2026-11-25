@@ -183,3 +183,66 @@ def read_last_session(path: Path, timeout: float = 3.0) -> Optional[date]:
         return _d(r[0]) if r and r[0] else None
 
     return read_once_retry(path, go, timeout)
+
+
+# ------------------------------------------------------------------------------------------------------------------------------ the scheduler service (for /v1/job)
+MAX_LOG_BYTES = 2_000_000
+
+
+def read_scheduler_log(log_file: Path) -> list:
+    """The lines of ``scheduler_service.log`` and its rotated files (``.5`` oldest ... ``.1``, then the live file), oldest first. A file that cannot be read is skipped; none readable = ``SourceError``.
+    Plain text reads only: nothing is written, locked or created."""
+    log_file = Path(log_file)
+    names = [log_file.with_name(f"{log_file.name}.{i}") for i in range(5, 0, -1)] + [log_file]
+    lines: list = []
+    readable = 0
+    for p in names:
+        try:
+            with open(p, "rb") as f:
+                data = f.read(MAX_LOG_BYTES + 1)
+        except OSError:
+            continue
+        readable += 1
+        lines.extend(data.decode("utf-8", errors="replace").splitlines())
+    if readable == 0:
+        raise SourceError("the scheduler log could not be read")
+    return lines
+
+
+def read_instance_file(locks_dir: Path) -> Optional[dict]:
+    """The instance file locks/scheduler_service.pid (JSON with the service's pid and start time); None when it is missing or unreadable. It is not a run lock."""
+    try:
+        d = json.loads((Path(locks_dir) / "scheduler_service.pid").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return d if isinstance(d, dict) else None
+
+
+def daily_lock_exists(locks_dir: Path) -> bool:
+    """Whether the daily data job's lock file is present (existence only: the file is never opened or read)."""
+    return (Path(locks_dir) / "daily_update.lock").exists()
+
+
+def process_alive(pid: int) -> bool:
+    """True when a process with this pid is running. Windows: OpenProcess + GetExitCodeProcess (never a signal, which would kill it)."""
+    if pid <= 0:
+        return False
+    import os
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        k = ctypes.WinDLL("kernel32", use_last_error=True)
+        k.OpenProcess.restype = wintypes.HANDLE
+        h = k.OpenProcess(0x1000, False, pid)          # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h:
+            return False
+        try:
+            code = wintypes.DWORD()
+            return bool(k.GetExitCodeProcess(h, ctypes.byref(code))) and code.value == 259     # STILL_ACTIVE
+        finally:
+            k.CloseHandle(h)
+    try:
+        os.kill(pid, 0)                                 # POSIX only: signal 0 checks existence and sends nothing
+    except OSError:
+        return False
+    return True

@@ -13,7 +13,7 @@ The Kotlin models in `android/app/src/main/java/com/stockbot/paper/data/Models.k
 
 ## Conventions
 
-- Calls: `GET /v1/health`, `/v1/today`, `/v1/account`, `/v1/positions`, `/v1/trades`. Header `X-Paper-Token` on every call. The token is never stored in the repository. Read-only: no other methods exist.
+- Calls: `GET /v1/health`, `/v1/today`, `/v1/account`, `/v1/positions`, `/v1/trades`, and (v1.1) `/v1/job`. Header `X-Paper-Token` on every call. The token is never stored in the repository. Read-only: no other methods exist.
 - JSON keys are camelCase. Dates are `yyyy-MM-dd`. Timestamps are ISO 8601 with the `+05:30` offset.
 - **Money is integer paise** (64-bit). 100 paise = 1 rupee. The app shows rupees. Percent values are decimal numbers in percent units (`1.5` means 1.5%). Drawdowns are positive numbers.
 - Every response has `apiVersion` (the string `"1"`). Every success response also has `dataAsOf`, `expectedAsOf` and `generatedAt`.
@@ -199,6 +199,48 @@ Read from `stockbot/engine`, `stockbot/risk`, `stockbot/live`, `stockbot/overlay
 ## Corporate-action flag (additive change, stage 3, still apiVersion 1)
 
 Owner decision: every closed trade is listed and counted in `closedTrades` and toward the 30-trade mark, including trades the engine flagged `excluded_ca`. A flagged trade carries `corporateActionFlag: true`; the win rate and profit factor leave flagged trades out, and `stats.excludedFromStats` says how many. A position held by hand (`hold = true`) is listed with `corporateActionFlag: true`. The new fields default to `false` and `0` when absent, so a v1 client that ignores them keeps working. The app shows "Corporate action: figures may be off" on a flagged card, and "1 trade excluded: corporate action" in the Trades footer when `excludedFromStats` is above zero.
+
+## v1.1 (additive, stage 5, apiVersion stays 1): `GET /v1/job`
+
+The daily job's status, for the Job screen. Read-only: it reports what the scheduler service did; nothing in the API starts, retries or stops a job. A v1 client that does not know the path is unaffected.
+
+| Field | Type | Unit | Null | Screen |
+|---|---|---|---|---|
+| envelope | `apiVersion`, `dataAsOf` (the sealed date, else `expectedAsOf`), `expectedAsOf`, `generatedAt` | | no | none |
+| `service.running` | boolean | the service process is alive and has not logged "service stopped" | no | Job: service on/off |
+| `service.pid` | int | | yes (no instance file) | none |
+| `service.startedAt` | timestamp | +05:30 | yes | Job: "since ..." |
+| `nextAttemptAt` | timestamp | +05:30; the logged retry time, or 19:30 today while waiting; null when the day is done or over, a job is running, or the service is off | yes | Job: next attempt |
+| `today.date` | date | | no | Job |
+| `today.state` | JobState | see below | no | Job: the big chip |
+| `today.attempts` | int | attempts of the daily job logged today (the 08:30 catch-up is not counted) | no | Job |
+| `today.lastAttemptAt` | timestamp | +05:30 | yes | Job |
+| `today.lastExitCode` | int | exit code of the last attempt today | yes | Job |
+| `today.message` | string | one plain sentence | no | Job |
+| `data.latestSealedDate` | date | the lake's sealed-through date (the same value `/v1/health` reports) | yes (unreadable) | Job: data as of |
+| `data.expectedAsOf` | date | as in the other responses | no | Job: data as of vs expected |
+| `history[]` | list of day | up to the last 10 days the log covers, oldest first, today last | never null | Job: the strip |
+| `history[].date`, `.state`, `.attempts` | date, JobState, int | | no | Job |
+| `history[].finishedAt` | timestamp | when the day's last attempt ended; null while running or waiting or with no attempt | yes | Job |
+| `history[].lastExitCode` | int | | yes | Job |
+| `attempts[]` | list of attempt | the last 20 attempts and catch-ups, newest first | never null | Job: the list |
+| `attempts[].at` | timestamp | when the result was logged | no | Job |
+| `attempts[].exitCode` | int | | no | Job |
+| `attempts[].decision` | enum | `done`, `retry`, `stopped`, `alert`, `catch-up` | no | Job |
+
+**JobState** (an unknown value is shown as `ALERT`, never a crash):
+
+| State | Meaning (rule, in this order) |
+|---|---|
+| `DONE` | an attempt that day ended with exit 0 (decision done) |
+| `RUNNING` | today only: an attempt has begun and no result is logged yet, or the data job's lock file exists |
+| `NO_FILE` | the service stopped with its ALERT line and the last exit was 3: the NSE never published a file, probably a market holiday |
+| `ALERT` | the service stopped with its ALERT line for any other reason (for example a stale lock, exit 5); or a past weekday with no attempt or no final answer; or today with no attempt after the 19:30 window while the service is off |
+| `RETRYING` | today only: the last logged decision was a retry (exit 3 with attempts left); `nextAttemptAt` is the retry time |
+| `WEEKEND` | Saturday or Sunday with no `DONE` (the service's normal exit 3 on a weekend is a stop without an alert) |
+| `WAITING` | a weekday, no attempt yet, before 19:30 (or the service is up and it is not yet past 23:30) |
+
+Errors are the same three codes. 503 `NOT_READY` is returned when the scheduler log cannot be read or has no usable line.
 
 ## Changes from the stage 1 draft
 

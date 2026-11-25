@@ -7,7 +7,7 @@ from conftest import EXAMPLES, REPO, example
 
 from bff import models as M
 
-PREFIX_MODEL = {"today_": M.Today, "account_": M.Account, "positions_": M.Positions, "trades_": M.Trades, "health_": M.Health, "error_": M.ErrorResponse}
+PREFIX_MODEL = {"today_": M.Today, "account_": M.Account, "positions_": M.Positions, "trades_": M.Trades, "health_": M.Health, "error_": M.ErrorResponse, "job": M.Job}
 FILES = sorted(p.name for p in EXAMPLES.glob("*.json"))
 
 
@@ -16,7 +16,8 @@ def model_for(name: str):
 
 
 def test_there_are_example_files():
-    assert len(FILES) >= 28
+    assert len(FILES) >= 34
+    assert {"job.json", "job_running.json", "job_retrying.json", "job_no_file.json", "job_alert.json", "job_service_off.json"} <= set(FILES)
 
 
 @pytest.mark.parametrize("name", FILES)
@@ -45,7 +46,7 @@ def props(schema: dict, spec: dict) -> set:
     return out
 
 
-@pytest.mark.parametrize("schema,model", [("Today", M.Today), ("Health", M.Health), ("Ticket", M.Ticket), ("BlockedItem", M.BlockedItem), ("PendingFill", M.PendingFill),
+@pytest.mark.parametrize("schema,model", [("Job", M.Job), ("Today", M.Today), ("Health", M.Health), ("Ticket", M.Ticket), ("BlockedItem", M.BlockedItem), ("PendingFill", M.PendingFill),
                                           ("Account", M.Account), ("Positions", M.Positions), ("Trades", M.Trades), ("Error", M.ErrorResponse)])
 def test_model_fields_match_openapi(schema, model, spec):
     assert props(spec[schema], spec) == set(model.model_fields), schema
@@ -60,6 +61,18 @@ def test_nested_openapi_objects_match_models(spec):
     tr = spec["Trades"]["allOf"][1]["properties"]
     assert set(tr["trades"]["items"]["properties"]) == set(M.ClosedTrade.model_fields)
     assert set(tr["stats"]["properties"]) == set(M.TradeStats.model_fields)
+
+
+def test_job_nested_openapi_objects_match_models(spec):
+    j = spec["Job"]["allOf"][1]["properties"]
+    assert set(j["service"]["properties"]) == set(M.JobService.model_fields)
+    assert set(j["today"]["properties"]) == set(M.JobToday.model_fields)
+    assert set(j["data"]["properties"]) == set(M.JobData.model_fields)
+    assert set(j["history"]["items"]["properties"]) == set(M.JobDay.model_fields)
+    assert set(j["attempts"]["items"]["properties"]) == set(M.JobAttempt.model_fields)
+    from typing import get_args
+    assert set(spec["JobState"]["enum"]) == set(get_args(M.JobState))
+    assert set(spec["JobDecision"]["enum"]) == set(get_args(M.JobDecision))
 
 
 def test_enums_in_openapi_match_models(spec):

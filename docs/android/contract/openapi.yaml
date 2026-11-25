@@ -107,6 +107,30 @@ paths:
         "503": { $ref: "#/components/responses/NotReady" }
         "500": { $ref: "#/components/responses/ServerError" }
 
+  /v1/job:
+    get:
+      summary: The daily job's status (Job screen). Added in v1.1, additive; apiVersion stays 1.
+      description: |
+        Read-only view of the scheduler service that runs the 19:30 IST job: whether the service is up, what today's job did, the last 10 days and the last 20 attempts.
+        There is no way to start, retry or stop anything through the API.
+      operationId: getJob
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Job" }
+              examples:
+                done: { externalValue: "examples/job.json" }
+                running: { externalValue: "examples/job_running.json" }
+                retrying: { externalValue: "examples/job_retrying.json" }
+                noFile: { externalValue: "examples/job_no_file.json" }
+                alert: { externalValue: "examples/job_alert.json" }
+                serviceOff: { externalValue: "examples/job_service_off.json" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "503": { $ref: "#/components/responses/NotReady" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
 components:
   securitySchemes:
     PaperToken:
@@ -383,3 +407,75 @@ components:
                   type: number
                   nullable: true
                   description: Gross profit / gross loss over unflagged trades; null when there is no losing unflagged trade.
+
+    JobState:
+      type: string
+      enum: [DONE, RUNNING, RETRYING, NO_FILE, ALERT, WAITING, WEEKEND]
+      description: Clients map any value they do not know to ALERT (shown as a neutral state; never a crash).
+    JobDecision:
+      type: string
+      enum: [done, retry, stopped, alert, catch-up]
+    Job:
+      allOf:
+        - $ref: "#/components/schemas/Envelope"
+        - type: object
+          required: [service, nextAttemptAt, today, data, history, attempts]
+          properties:
+            service:
+              type: object
+              required: [running, pid, startedAt]
+              properties:
+                running: { type: boolean, description: The scheduler service process is alive and has not logged "service stopped". }
+                pid: { type: integer, nullable: true, description: From the service's instance file; null when there is none. }
+                startedAt:
+                  allOf: [{ $ref: "#/components/schemas/Timestamp" }]
+                  nullable: true
+            nextAttemptAt:
+              allOf: [{ $ref: "#/components/schemas/Timestamp" }]
+              nullable: true
+              description: The next attempt (the logged retry time, or 19:30 today while waiting). Null when the day is done, over, running, or the service is off.
+            today:
+              type: object
+              required: [date, state, attempts, lastAttemptAt, lastExitCode, message]
+              properties:
+                date: { $ref: "#/components/schemas/Date" }
+                state: { $ref: "#/components/schemas/JobState" }
+                attempts: { type: integer, minimum: 0, description: Attempts of the daily job logged today (the 08:30 catch-up is not counted). }
+                lastAttemptAt:
+                  allOf: [{ $ref: "#/components/schemas/Timestamp" }]
+                  nullable: true
+                lastExitCode: { type: integer, nullable: true }
+                message: { type: string, description: One plain sentence. }
+            data:
+              type: object
+              required: [latestSealedDate, expectedAsOf]
+              properties:
+                latestSealedDate:
+                  allOf: [{ $ref: "#/components/schemas/Date" }]
+                  nullable: true
+                  description: The date the lake is sealed through (the same value /v1/health reports); null when it cannot be read.
+                expectedAsOf: { $ref: "#/components/schemas/Date" }
+            history:
+              type: array
+              description: Up to the last 10 days that the log covers, oldest first, today last.
+              items:
+                type: object
+                required: [date, state, attempts, finishedAt, lastExitCode]
+                properties:
+                  date: { $ref: "#/components/schemas/Date" }
+                  state: { $ref: "#/components/schemas/JobState" }
+                  attempts: { type: integer, minimum: 0 }
+                  finishedAt:
+                    allOf: [{ $ref: "#/components/schemas/Timestamp" }]
+                    nullable: true
+                  lastExitCode: { type: integer, nullable: true }
+            attempts:
+              type: array
+              description: The last 20 attempts and catch-ups, newest first.
+              items:
+                type: object
+                required: [at, exitCode, decision]
+                properties:
+                  at: { $ref: "#/components/schemas/Timestamp" }
+                  exitCode: { type: integer }
+                  decision: { $ref: "#/components/schemas/JobDecision" }
